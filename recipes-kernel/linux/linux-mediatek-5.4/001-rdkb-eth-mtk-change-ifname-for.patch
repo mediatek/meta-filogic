@@ -1,0 +1,12 @@
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+index 1bf43b3..3001525 100755
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -3395,6 +3395,7 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
+ 
+ 	eth->netdev[id]->irq = eth->irq[0];
+ 	eth->netdev[id]->dev.of_node = np;
++	sprintf (eth->netdev[id]->name, "eth%d",id+1);
+ 
+ 	return 0;
+ 

@@ -1,0 +1,44 @@
+#patch hack-5.4 (come from openwrt/lede/target/linux/mediatek)
+SRC_URI_append = " \
+    file://204-module_strip.patch \
+    file://210-darwin_scripts_include.patch \
+    file://211-darwin-uuid-typedef-clash.patch \
+    file://212-tools_portability.patch \
+    file://214-spidev_h_portability.patch \
+    file://220-gc_sections.patch \
+    file://221-module_exports.patch \
+    file://230-openwrt_lzma_options.patch \
+    file://249-udp-tunnel-selection.patch \
+    file://250-netfilter_depends.patch \
+    file://251-sound_kconfig.patch \
+    file://259-regmap_dynamic.patch \
+    file://260-crypto_test_dependencies.patch \
+    file://260-lib-arc4-unhide.patch \
+    file://280-rfkill-stubs.patch \
+    file://300-MIPS-r4k_cache-use-more-efficient-cache-blast.patch \
+    file://301-mips_image_cmdline_hack.patch \
+    file://321-powerpc_crtsavres_prereq.patch \
+    file://400-unlock_mx25l6406e_with_4bit_block_protect.patch \
+    file://531-debloat_lzma.patch \
+    file://550-loop-Report-EOPNOTSUPP-properly.patch \
+    file://640-bridge-only-accept-EAP-locally.patch \
+    file://645-netfilter-connmark-introduce-set-dscpmark.patch \
+    file://647-netfilter-flow-acct.patch \
+    file://650-netfilter-add-xt_OFFLOAD-target.patch \
+    file://651-wireless_mesh_header.patch \
+    file://660-fq_codel_defaults.patch \
+    file://661-use_fq_codel_by_default.patch \
+    file://662-remove_pfifo_fast.patch \
+    file://700-swconfig_switch_drivers.patch \
+    file://703-add_vsc8504_support.patch \
+    file://710-net-dsa-mv88e6xxx-default-VID-1.patch \
+    file://711-net-dsa-mv88e6xxx-disable-ATU-violation.patch \
+    file://721-phy_packets.patch \
+    file://773-bgmac-add-srab-switch.patch \
+    file://901-debloat_sock_diag.patch \
+    file://902-debloat_proc.patch \
+    file://904-debloat_dma_buf.patch \
+    file://910-kobject_uevent.patch \
+    file://911-kobject_add_broadcast_uevent.patch \
+    file://921-always-create-console-node-in-initramfs.patch \
+    "
