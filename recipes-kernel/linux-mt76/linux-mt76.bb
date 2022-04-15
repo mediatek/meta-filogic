@@ -12,11 +12,15 @@ SRC_URI = " \
     git://git@github.com/openwrt/mt76.git;protocol=https \
     file://COPYING;subdir=git \
     "
+SRC_URI += " \
+    file://src \
+    "
 
 DEPENDS += "virtual/kernel"
 DEPENDS += "linux-mac80211"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches:"
+FILESEXTRAPATHS_prepend := "${THISDIR}/src:"
 
 require files/patches/patches.inc
 
@@ -75,6 +79,48 @@ do_install() {
     install -m 0644 ${B}/mt76-connac-lib.ko ${D}/lib/modules/${KERNEL_VERSION}/updates/drivers/net/wireless/mediatek/mt76/
     install -m 0644 ${B}/mt7615/mt7615-common.ko ${D}/lib/modules/${KERNEL_VERSION}/updates/drivers/net/wireless/mediatek/mt76/mt7615/
     install -m 0644 ${B}/mt7915/mt7915e.ko ${D}/lib/modules/${KERNEL_VERSION}/updates/drivers/net/wireless/mediatek/mt76/mt7915/
+}
+
+do_install_append () {
+    install -d ${D}/${base_libdir}/firmware/mediatek/
+
+    install -m 644 ${WORKDIR}/src/firmware/mt7915_rom_patch.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${WORKDIR}/src/firmware/mt7915_wa.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${WORKDIR}/src/firmware/mt7915_wm.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${WORKDIR}/src/firmware/mt7915_eeprom.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${WORKDIR}/src/firmware/mt7915_eeprom_dbdc.bin ${D}${base_libdir}/firmware/mediatek/
+
+    install -m 644 ${WORKDIR}/src/firmware/mt7986_rom_patch.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${WORKDIR}/src/firmware/mt7986_rom_patch_mt7975.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${WORKDIR}/src/firmware/mt7986_wa.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${WORKDIR}/src/firmware/mt7986_wm.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${WORKDIR}/src/firmware/mt7986_wm_mt7975.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${WORKDIR}/src/firmware/mt7986_eeprom_mt7975_dual.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${WORKDIR}/src/firmware/mt7986_eeprom_mt7976_dbdc.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${WORKDIR}/src/firmware/mt7986_eeprom_mt7976.bin  ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${WORKDIR}/src/firmware/mt7986_eeprom_mt7976_dual.bin ${D}${base_libdir}/firmware/mediatek/
+}
+
+FILES_${PN} += " \
+    ${base_libdir}/firmware/mediatek/mt7915_rom_patch.bin \
+    ${base_libdir}/firmware/mediatek/mt7915_wa.bin \
+    ${base_libdir}/firmware/mediatek/mt7915_wm.bin \
+    ${base_libdir}/firmware/mediatek/mt7915_eeprom.bin \
+    ${base_libdir}/firmware/mediatek/mt7915_eeprom_dbdc.bin \
+    ${base_libdir}/firmware/mediatek/mt7986_rom_patch.bin\
+    ${base_libdir}/firmware/mediatek/mt7986_rom_patch_mt7975.bin \
+    ${base_libdir}/firmware/mediatek/mt7986_wa.bin \
+    ${base_libdir}/firmware/mediatek/mt7986_wm.bin \
+    ${base_libdir}/firmware/mediatek/mt7986_wm_mt7975.bin \
+    ${base_libdir}/firmware/mediatek/mt7986_eeprom_mt7975_dual.bin \
+    ${base_libdir}/firmware/mediatek/mt7986_eeprom_mt7976_dbdc.bin \
+    ${base_libdir}/firmware/mediatek/mt7986_eeprom_mt7976.bin \
+    ${base_libdir}/firmware/mediatek/mt7986_eeprom_mt7976_dual.bin \
+    "
+# Make linux-mt76 depend on all of the split-out packages.
+python populate_packages_prepend () {
+    firmware_pkgs = oe.utils.packages_filter_out_system(d)
+    d.appendVar('RDEPENDS_linux-mt76', ' ' + ' '.join(firmware_pkgs))
 }
 
 KERNEL_MODULE_AUTOLOAD += "mt7915e"
