@@ -4,10 +4,18 @@ SRC_URI_append = " \
     file://0002-mt76-testmode-rework-tx-antenna-setting.patch \
     file://0003-mt76-mt7915-rework-rx-testmode-stats.patch \
     file://0004-mt76-mt7915-fix-tx-descriptor.patch \
-    file://0005-mt76-mt7915-fix-MBSS-index-condition-in-DBDC-mode.patch \
-    file://0006-mt76-mt7915-support-VHT-MCS10-11.patch \
     file://0007-mt76-mt7915-update-mt7986-CR-for-different-adie-vers.patch \
     file://0008-mt76-mt7915-disable-mt7986-rx-hdr-trans-short.patch \
+    file://0009-mt76-mt7915-fix-table_mask-to-u16.patch \
+    file://0011-mt76-mt7915-add-list_del_init-msta-wcid.list.patch \
+    file://0012-mt76-mt7915-reject-duplicated-twt-flow.patch \
+    file://0013-mt76-mt7915-report-qos_ctl-without-ACK-policy-to-the.patch \
+    file://100-Revert-of-net-pass-the-dst-buffer-to-of_get_mac_addr.patch \
+    file://1001-mt76-mt7915-add-mtk-internal-debug-tools-for-mt76.patch \
+    file://1002-mt76-mt7915-csi-implement-csi-support.patch \
+    file://1003-mt76-mt7915-air-monitor-support.patch \
+    file://1004-mt76-mt7915-add-support-for-muru_onoff-via-debugfs.patch \
+    file://1005-mt76-certification-patches.patch \
     file://1100-mt76-testmode-support-eeprom-handle.patch \
     file://1101-mt76-enable-more-5g-channels.patch \
     file://1102-mt76-testmode-add-attributes-for-setting-rf-config.patch \
@@ -20,5 +28,6 @@ SRC_URI_append = " \
     file://1109-mt76-testmode-add-support-to-queue-skb-of-multiple-s.patch \
     file://1110-mt76-mt7915-implement-aid-support-in-testmode.patch \
     file://1111-mt76-tool-add-more-commands.patch \
-    file://2001-mt76-mt7915-add-L0.5-SER-for-mt7986.patch \
+    file://1112-mt76-mt7915-add-L0.5-SER-for-mt7986.patch \
+    file://3000-mt76-remove-WED-support-patch-for-build-err.patch \
     "
