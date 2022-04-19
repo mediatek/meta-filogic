@@ -8,5 +8,4 @@ SRC_URI_append = " \
     file://015-ipw200-mtu.patch \
     file://050-lib80211_option.patch \
     file://060-no_local_ssb_bcma.patch \
-    file://070-headers-fix-lockdep_assert_not_held.patch \
     "

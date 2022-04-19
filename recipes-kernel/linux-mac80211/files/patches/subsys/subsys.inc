@@ -4,12 +4,8 @@ SRC_URI_append = " \
     file://120-cfg80211_allow_perm_addr_change.patch \
     file://150-disable_addr_notifier.patch \
     file://210-ap_scan.patch \
-    file://300-mac80211-fix-rate-control-for-retransmitted-frames.patch \
     file://301-mac80211-sta-randomize-BA-session-dialog-token-alloc.patch \
-    file://302-mac80211-fix-regression-in-SSN-handling-of-addba-tx.patch \
     file://303-mac80211-set-up-the-fwd_skb-dev-for-mesh-forwarding.patch \
-    file://304-mac80211-send-ADDBA-requests-using-the-tid-queue-of-.patch \
-    file://305-mac80211-agg-tx-don-t-schedule_and_wake_txq-under-st.patch \
     file://306-mac80211-use-coarse-boottime-for-airtime-fairness-co.patch \
     file://307-mac80211_hwsim-make-6-GHz-channels-usable.patch \
     file://308-mac80211-add-support-for-.ndo_fill_forward_path.patch \
@@ -25,13 +21,15 @@ SRC_URI_append = " \
     file://318-cfg80211-allow-continuous-radar-monitoring-on-offcha.patch \
     file://319-mac80211-introduce-set_radar_offchan-callback.patch \
     file://320-cfg80211-rename-offchannel_chain-structs-to-backgrou.patch \
-    file://321-mac80211-fix-EAPoL-rekey-fail-in-802.3-rx-path.patch \
-    file://322-mac80211-fix-forwarded-mesh-frames-AC-queue-selectio.patch \
     file://323-mac80211-MBSSID-support-in-interface-handling.patch \
     file://324-mac80211-MBSSID-beacon-handling-in-AP-mode.patch \
     file://325-mac80211-MBSSID-channel-switch.patch \
     file://326-mac80211-update-bssid_indicator-in-ieee80211_assign_.patch \
+    file://329-mac80211-minstrel_ht-fix-where-rate-stats-are-stored.patch \
     file://400-allow-ibss-mixed.patch \
     file://500-mac80211_configure_antenna_gain.patch \
     file://782-net-next-1-of-net-pass-the-dst-buffer-to-of_get_mac_address.patch \
+    file://901-mac80211-check-twt-responder-when-setu-twt.patch \
+    file://902-nl80211-internal-extend-CAC-time-for-weather-radar-c.patch \
+    file://903-mac80211-it-s-invalid-case-when-frag_threshold-is-gr.patch \
     "
