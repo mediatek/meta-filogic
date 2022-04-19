@@ -24,9 +24,6 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/src:"
 
 require files/patches/patches.inc
 
-SRC_URI_append += " \
-    file://100-Revert-of-net-pass-the-dst-buffer-to-of_get_mac_addr.patch \
-    "
 S = "${WORKDIR}/git"
 
 NOSTDINC_FLAGS = " \
