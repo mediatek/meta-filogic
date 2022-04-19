@@ -163,7 +163,25 @@ SRC_URI_append = " \
     file://406-v5.13-0003-dt-bindings-mtd-Document-use-of-nvmem-cells-compatib.patch \
     file://407-v5.13-0001-dt-bindings-mtd-add-binding-for-Linksys-Northstar-pa.patch \
     file://407-v5.13-0002-mtd-parsers-ofpart-support-Linksys-Northstar-partiti.patch \
+    file://408-v5.7-mtd-nand-spi-rework-detect-procedure-for-different-read-id-op.patch \
     file://410-mtd-fix-calculating-partition-end-address.patch \
+    file://411-mtd-spinand-gigadevice-Support-GD5F1GQ5UExxG.patch \
+    file://430-mtd-spinand-macronix-Add-support-for-MX31LF1GE4BC.patch \
+    file://431-mtd-spinand-macronix-Add-support-for-MX31UF1GE4BC.patch \
+    file://432-mtd-spinand-macronix-Add-support-for-MX35LFxGE4AD.patch \
+    file://433-mtd-spinand-macronix-Add-support-for-MX35LFxG24AD.patch \
+    file://434-mtd-spinand-macronix-Add-support-for-serial-NAND-flash.patch \
+    file://435-mtd-spinand-macronix-Add-Quad-support-for-serial-NAND-flash.patch \
+    file://450-mtd-spinand-micron-Generalize-the-OOB-layout-structure-and-function-names.patch \
+    file://451-mtd-spinand-micron-Describe-the-SPI-NAND-device-MT29F2G01ABAGD.patch \
+    file://452-mtd-spinand-micron-Add-new-Micron-SPI-NAND-devices.patch \
+    file://453-mtd-spinand-micron-identify-SPI-NAND-device-with-Continuous-Read-mode.patch \
+    file://454-mtd-spinand-micron-Add-M70A-series-Micron-SPI-NAND-devices.patch \
+    file://455-mtd-spinand-micron-Add-new-Micron-SPI-NAND-devices-with-multiple-dies.patch \
+    file://456-mtd-spinand-micron-Use-more-specific-names.patch \
+    file://457-mtd-spinand-micron-Add-support-for-MT29F2G01AAAED.patch \
+    file://470-mtd-spinand-toshiba-Rename-function-name-to-change-suffix-and-prefix-8Gbit.patch \
+    file://471-mtd-spinand-toshiba-Support-for-new-Kioxia-Serial-NAND.patch \
     file://600-v5.12-net-extract-napi-poll-functionality-to-__napi_poll.patch \
     file://601-v5.12-net-implement-threaded-able-napi-poll-loop-support.patch \
     file://602-v5.12-net-add-sysfs-attribute-to-control-napi-threaded-mod.patch \
@@ -209,6 +227,7 @@ SRC_URI_append = " \
     file://757-v5.8-net-dsa-tag_rtl4_a-Implement-Realtek-4-byte-A-tag.patch \
     file://758-v5.8-net-dsa-rtl8366rb-Support-the-CPU-DSA-tag.patch \
     file://765-v5.12-net-dsa-automatically-bring-up-DSA-master-when-openi.patch \
+    file://768-net-sfp-cope-with-SFPs-that-set-both-LOS-normal-and-.patch \
     file://770-v5.12-net-bridge-notify-switchdev-of-disappearance-of-old-.patch \
     file://771-v5.12-net-dsa-be-louder-when-a-non-legacy-FDB-operation-fa.patch \
     file://772-v5.12-net-dsa-don-t-use-switchdev_notifier_fdb_info-in-dsa.patch \
@@ -216,6 +235,8 @@ SRC_URI_append = " \
     file://774-v5.12-net-dsa-exit-early-in-dsa_slave_switchdev_event-if-w.patch \
     file://775-v5.12-net-dsa-listen-for-SWITCHDEV_-FDB-DEL-_ADD_TO_DEVICE.patch \
     file://780-net-dsa-mt7530-setup-core-clock-even-in-TRGMII-mode.patch \
+    file://781-v5.18-1-net-dsa-Move-VLAN-filtering-syncing-out-of-dsa_switc.patch \
+    file://781-v5.18-2-net-dsa-Avoid-cross-chip-syncing-of-VLAN-filtering.patch \
     file://800-v5.5-iio-imu-Add-support-for-the-FXOS8700-IMU.patch \
     file://800-v5.5-scsi-core-Add-sysfs-attributes-for-VPD-pages-0h-and-.patch \
     file://801-v5.5-hwmon-Driver-for-disk-and-solid-state-drives-with-te.patch \

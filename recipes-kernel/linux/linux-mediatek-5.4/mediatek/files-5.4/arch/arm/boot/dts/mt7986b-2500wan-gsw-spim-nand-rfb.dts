@@ -4,7 +4,7 @@
 #include "mt7986-spim-nand-partition.dtsi"
 / {
 	model = "MediaTek MT7986b gsw RFB";
-	compatible = "mediatek,mt7986b-gsw-spim-snand-rfb";
+	compatible = "mediatek,mt7986b-2500wan-gsw-spim-snand-rfb";
 	chosen {
 		bootargs = "console=ttyS0,115200n1 loglevel=8  \
 				earlycon=uart8250,mmio32,0x11002000";
@@ -121,7 +121,7 @@
 
 	port6: port@6 {
 		compatible = "mediatek,mt753x-port";
-		mediatek,ssc-on;
+		/* mediatek,ssc-on; */
 		reg = <6>;
 		phy-mode = "sgmii";
 		fixed-link {
@@ -133,7 +133,7 @@
 
 &hnat {
 	mtketh-wan = "eth1";
-	mtketh-lan = "lan";
+	mtketh-lan = "eth0";
 	mtketh-max-gmac = <2>;
 	status = "okay";
 };

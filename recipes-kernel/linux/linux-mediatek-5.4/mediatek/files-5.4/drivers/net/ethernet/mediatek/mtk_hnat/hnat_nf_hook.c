@@ -1027,7 +1027,6 @@ struct foe_entry ppe_fill_info_blk(struct ethhdr *eth, struct foe_entry entry,
 	entry.bfib1.vpm = (entry.bfib1.vlan_layer) ? 1 : 0;
 	entry.bfib1.ttl = 1;
 	entry.bfib1.cah = 1;
-	entry.bfib1.ka = 1;
 	entry.bfib1.time_stamp = (hnat_priv->data->version == MTK_HNAT_V4) ?
 		readl(hnat_priv->fe_base + 0x0010) & (0xFF) :
 		readl(hnat_priv->fe_base + 0x0010) & (0x7FFF);
@@ -1108,6 +1107,8 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 		return 0;
 
 	entry.bfib1.pkt_type = foe->udib1.pkt_type; /* Get packte type state*/
+	entry.bfib1.state = foe->udib1.state;
+
 #if defined(CONFIG_MEDIATEK_NETSYS_V2)
 	entry.bfib1.sp = foe->udib1.sp;
 #endif
@@ -1558,13 +1559,13 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 	if (!whnat)
 		entry.bfib1.state = BIND;
 
+	wmb();
 	memcpy(foe, &entry, sizeof(entry));
 	/*reset statistic for this entry*/
 	if (hnat_priv->data->per_flow_accounting)
 		memset(&hnat_priv->acct[skb_hnat_ppe(skb)][skb_hnat_entry(skb)],
 		       0, sizeof(struct mib_entry));
 
-	wmb();
 	skb_hnat_filled(skb) = HNAT_INFO_FILLED;
 
 	return 0;
@@ -1574,6 +1575,7 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 {
 	struct foe_entry *entry;
 	struct ethhdr *eth;
+	struct hnat_bind_info_blk bfib1_tx;
 
 	if (skb_hnat_alg(skb) || !is_hnat_info_filled(skb) ||
 	    !is_magic_tag_valid(skb) || !IS_SPACE_AVAILABLE_HEAD(skb))
@@ -1604,6 +1606,7 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 		return NF_ACCEPT;
 
 	eth = eth_hdr(skb);
+	memcpy(&bfib1_tx, &entry->bfib1, sizeof(entry->bfib1));
 
 	/*not bind multicast if PPE mcast not enable*/
 	if (!hnat_priv->data->mcast) {
@@ -1619,7 +1622,7 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 	/* Some mt_wifi virtual interfaces, such as apcli,
 	 * will change the smac for specail purpose.
 	 */
-	switch (entry->bfib1.pkt_type) {
+	switch (bfib1_tx.pkt_type) {
 	case IPV4_HNAPT:
 	case IPV4_HNAT:
 		entry->ipv4_hnapt.smac_hi = swab32(*((u32 *)eth->h_source));
@@ -1636,24 +1639,18 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 	}
 
 	if (skb->vlan_tci) {
-		entry->bfib1.vlan_layer += 1;
-		entry->bfib1.vpm = 1;
+		bfib1_tx.vlan_layer = 1;
+		bfib1_tx.vpm = 1;
 		if (IS_IPV4_GRP(entry)) {
 			entry->ipv4_hnapt.etype = htons(ETH_P_8021Q);
-			if(entry->ipv4_hnapt.vlan1)
-				entry->ipv4_hnapt.vlan2 = skb->vlan_tci;
-			else
-				entry->ipv4_hnapt.vlan1 = skb->vlan_tci;
+			entry->ipv4_hnapt.vlan1 = skb->vlan_tci;
 		} else if (IS_IPV6_GRP(entry)) {
 			entry->ipv6_5t_route.etype = htons(ETH_P_8021Q);
-			if(entry->ipv6_5t_route.vlan1)
-				entry->ipv6_5t_route.vlan2 = skb->vlan_tci;
-			else
-				entry->ipv6_5t_route.vlan1 = skb->vlan_tci;
+			entry->ipv6_5t_route.vlan1 = skb->vlan_tci;
 		}
 	} else {
-		entry->bfib1.vpm = 0;
-		entry->bfib1.vlan_layer = 0;
+		bfib1_tx.vpm = 0;
+		bfib1_tx.vlan_layer = 0;
 	}
 
 	/* MT7622 wifi hw_nat not support QoS */
@@ -1666,7 +1663,6 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 			entry->ipv4_hnapt.winfo.bssid = skb_hnat_bss_id(skb);
 			entry->ipv4_hnapt.winfo.wcid = skb_hnat_wc_id(skb);
 #if defined(CONFIG_MEDIATEK_NETSYS_V2)
-			entry->ipv4_hnapt.iblk2.fqos = (IS_HQOS_MODE) ? 1 : 0;
 			entry->ipv4_hnapt.iblk2.rxid = skb_hnat_rx_id(skb);
 			entry->ipv4_hnapt.iblk2.winfoi = 1;
 #else
@@ -1676,8 +1672,8 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 #endif
 		} else {
 			if (IS_GMAC1_MODE && !hnat_dsa_is_enable(hnat_priv)) {
-				entry->bfib1.vpm = 1;
-				entry->bfib1.vlan_layer = 1;
+				bfib1_tx.vpm = 1;
+				bfib1_tx.vlan_layer = 1;
 
 				if (FROM_GE_LAN(skb))
 					entry->ipv4_hnapt.vlan1 = 1;
@@ -1687,8 +1683,8 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 
 			if (IS_HQOS_MODE &&
 			    (FROM_GE_LAN(skb) || FROM_GE_WAN(skb) || FROM_GE_VIRTUAL(skb))) {
-				entry->bfib1.vpm = 0;
-				entry->bfib1.vlan_layer = 1;
+				bfib1_tx.vpm = 0;
+				bfib1_tx.vlan_layer = 1;
 				entry->ipv4_hnapt.etype = htons(HQOS_MAGIC_TAG);
 				entry->ipv4_hnapt.vlan1 = skb_hnat_entry(skb);
 				entry->ipv4_hnapt.iblk2.fqos = 1;
@@ -1704,7 +1700,6 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 			entry->ipv6_5t_route.winfo.bssid = skb_hnat_bss_id(skb);
 			entry->ipv6_5t_route.winfo.wcid = skb_hnat_wc_id(skb);
 #if defined(CONFIG_MEDIATEK_NETSYS_V2)
-			entry->ipv6_5t_route.iblk2.fqos = (IS_HQOS_MODE) ? 1 : 0;
 			entry->ipv6_5t_route.iblk2.rxid = skb_hnat_rx_id(skb);
 			entry->ipv6_5t_route.iblk2.winfoi = 1;
 #else
@@ -1714,8 +1709,8 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 #endif
 		} else {
 			if (IS_GMAC1_MODE && !hnat_dsa_is_enable(hnat_priv)) {
-				entry->bfib1.vpm = 1;
-				entry->bfib1.vlan_layer = 1;
+				bfib1_tx.vpm = 1;
+				bfib1_tx.vlan_layer = 1;
 
 				if (FROM_GE_LAN(skb))
 					entry->ipv6_5t_route.vlan1 = 1;
@@ -1725,8 +1720,8 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 
 			if (IS_HQOS_MODE &&
 			    (FROM_GE_LAN(skb) || FROM_GE_WAN(skb) || FROM_GE_VIRTUAL(skb))) {
-				entry->bfib1.vpm = 0;
-				entry->bfib1.vlan_layer = 1;
+				bfib1_tx.vpm = 0;
+				bfib1_tx.vlan_layer = 1;
 				entry->ipv6_5t_route.etype = htons(HQOS_MAGIC_TAG);
 				entry->ipv6_5t_route.vlan1 = skb_hnat_entry(skb);
 				entry->ipv6_5t_route.iblk2.fqos = 1;
@@ -1735,7 +1730,9 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 		entry->ipv6_5t_route.iblk2.dp = gmac_no;
 	}
 
-	entry->bfib1.state = BIND;
+	bfib1_tx.state = BIND;
+	wmb();
+	memcpy(&entry->bfib1, &bfib1_tx, sizeof(bfib1_tx));
 
 	return NF_ACCEPT;
 }

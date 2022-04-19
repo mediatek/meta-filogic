@@ -6,8 +6,8 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/mediatek/patches-5.4:"
 
 KBRANCH ?= "v5.4/standard/base"
 
-LINUX_VERSION ?= "5.4.183"
-SRCREV_machine ?= "f840db108606f987e174f1658dc120795798e808"
+LINUX_VERSION ?= "5.4.188"
+SRCREV_machine ?= "d47303abd67e589778c28f3ccc688a0e12ba5692"
 KMETA = "kernel-meta"
 SRCREV_meta ?= "feeb59687bc0f054af837a5061f8d413ec7c93e9"
 
@@ -34,9 +34,10 @@ SRC_URI_append_mt7986 += " \
     file://mediatek/mt7986.cfg \
 "
 SRC_URI_append_mt7986-32bit += " \
-    file://mediatek/mt7986-32bit.cfg \
+    file://mediatek/patches-32bit-5.4/mt7986-32bit.cfg \
+    file://mediatek/patches-32bit-5.4/401-pinctrl-add-mt7986-driver-32bit.patch \
+    file://mediatek/patches-32bit-5.4/999-add_armv7_support_for_panther.patch \
 "
-
 require ${PN}-${PV}/generic/backport-5.4/backport-5.4.inc
 
 require ${PN}-${PV}/generic/pending-5.4/pending-5.4.inc
@@ -49,12 +50,11 @@ SRC_URI_remove = " \
     "
 require ${PN}-${PV}/mediatek/patches-5.4/patches-5.4.inc
 SRC_URI_remove = " \
-    file://1004_remove_eth_transmit_timeout_hw_reset.patch \
-    file://1005-mtkhnat-fix-pse-hang-for-multi-stations.patch \
     file://738-mt7531-gsw-internal_phy_calibration.patch \
     file://739-mt7531-gsw-port5_external_phy_init.patch \
-    file://9010-iwconfig-wireless-rate-fix.patch \
-    file://9999-null-test.patch \
+    "
+SRC_URI_remove_mt7986-32bit = " \
+    file://401-pinctrl-add-mt7986-driver.patch \
     "
 require linux-mediatek.inc
 
@@ -69,6 +69,8 @@ do_filogic_patches() {
         if [ ! -e patch_applied ]; then
             patch -p1 < ${WORKDIR}/001-rdkb-eth-mtk-change-ifname-for.patch
             patch -p1 < ${WORKDIR}/002-rdkb-mtd-ubi-relayout.patch
+            patch -p1 < ${WORKDIR}/0600-net-phylink-propagate-resolved-link-config-via-mac_l.patch
+            patch -p1 < ${WORKDIR}/9010-iwconfig-wireless-rate-fix.patch
             touch patch_applied
         fi
 }
