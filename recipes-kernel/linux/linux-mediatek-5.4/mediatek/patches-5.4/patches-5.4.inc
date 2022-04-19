@@ -13,12 +13,12 @@ SRC_URI_append = " \
     file://0020-dts-mt7622-enable-new-mtk-snand-for-ubi.patch \
     file://0021-dts-mt7622-remove-cooling-device.patch \
     file://0100-hwnat_Kconfig_Makefile.patch \
-    file://0101-add-mtk-wifi-utility-rbus.patch \
     file://0111-mt7986-trng-add-rng-support.patch \
     file://0200-show_model_name_in_cpuinfo_on_arm64.patch \
     file://0226-phy-phy-mtk-tphy-Add-hifsys-support.patch \
     file://0227-arm-dts-Add-Unielec-U7623-DTS.patch \
     file://0301-mtd-mtk-ecc-move-mtk-ecc-header-file-to-include-mtd.patch \
+    file://0303-mtd-spinand-disable-on-die-ECC.patch \
     file://0306-spi-spi-mem-MediaTek-Add-SPI-NAND-Flash-interface-dr.patch \
     file://0307-dts-mt7629-add-snand-support.patch \
     file://0308-dts-mt7622-add-snand-support.patch \
@@ -31,7 +31,7 @@ SRC_URI_append = " \
     file://0502-dts-mt7623-eip97-inside-secure-support.patch \
     file://0503-crypto-fix-eip97-cache-incoherent.patch \
     file://0504-macsec-revert-async-support.patch \
-    file://0600-net-phylink-propagate-resolved-link-config-via-mac_l.patch \
+    file://0600-net-phylink-propagate-resolved-link-config-via-mac_l.patch;apply=no \
     file://0601-net-dsa-propagate-resolved-link-config-via-mac_link_.patch \
     file://0602-net-dsa-mt7530-use-resolved-link-config-in-mac_link_.patch \
     file://0603-net-dsa-mt7530-Extend-device-data-ready-for-adding-a.patch \
@@ -43,8 +43,6 @@ SRC_URI_append = " \
     file://0668-spi-mediatek-fix-dma-unmap-twice.patch \
     file://0669-fix-SPIM-NAND-and-NOR-probing.patch \
     file://0670-fix-SPIM-dma-buffer-not-aligned.patch \
-    file://0671-add-micron-MT29F4G01ABAFD-spi-nand-support.patch \
-    file://0672-add-F50L1G41LB-and-GD5F1GQ5UExxG-snand-support.patch \
     file://0701-fix-mtk-nfi-driver-dependency.patch \
     file://0801-mtk-sd-add-mt7986-support.patch \
     file://0900-bt-mtk-serial-fix.patch \
@@ -61,8 +59,6 @@ SRC_URI_append = " \
     file://1001-mtkhnat-ipv6-fix-pskb-expand-head-limitation.patch \
     file://1002-mtkhnat-add-support-for-virtual-interface-acceleration.patch \
     file://1003-dts-mt7622-rfb-change-to-ax-mtd-layout.patch \
-    file://1004_remove_eth_transmit_timeout_hw_reset.patch \
-    file://1005-mtkhnat-fix-pse-hang-for-multi-stations.patch \
     file://1010-pcie-mediatek-fix-clearing-interrupt-status.patch \
     file://1015-pcie-add-pcie-gen3-upstream-driver.patch \
     file://1020-spi-nor-w25q512jv.patch \
@@ -74,6 +70,8 @@ SRC_URI_append = " \
     file://400-mtd-add-mtk-snand-driver.patch \
     file://401-pinctrl-add-mt7986-driver.patch \
     file://402-pinctrl-add-mt7981-driver.patch \
+    file://412-mtd-spinand-gigadevice-Add-support-for-F50L1G41LB-and-GD5F1GQ5UExxG.patch \
+    file://413-mtd-spinand-gigadevice-Add-support-for-GD5FxGQxUExxG-GD5FxGQxUExxH-and-GD5FxGMxUExxG-series.patch \
     file://500-auxadc-add-auxadc-32k-clk.patch \
     file://730-net-ethernet-mtk_eth_soc-add-mtk-dsa-tag-rx-offload.patch \
     file://738-mt7531-gsw-internal_phy_calibration.patch \
@@ -95,7 +93,5 @@ SRC_URI_append = " \
     file://9001-PATCH-1-2-xHCI-MT7986-USB-2.0-USBIF-compliance-toolkit.patch \
     file://9002-PATCH-1-1-usb-add-embedded-Host-feature-support.patch \
     file://9009-Add-spi-runtime-PM-support.patch \
-    file://9010-iwconfig-wireless-rate-fix.patch \
-    file://999-add_armv7_support_for_panther.patch \
-    file://9999-null-test.patch \
+    file://9010-iwconfig-wireless-rate-fix.patch;apply=no \
     "

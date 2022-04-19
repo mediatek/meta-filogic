@@ -44,7 +44,6 @@ SRC_URI_append = " \
     file://431-mtd-bcm47xxpart-check-for-bad-blocks-when-calculatin.patch \
     file://432-mtd-bcm47xxpart-detect-T_Meter-partition.patch \
     file://435-mtd-add-routerbootpart-parser-config.patch \
-    file://447-mtd-spinand-gigadevice-Add-support-for-GD5F4GQ4xC.patch \
     file://450-mtd-spi-nor-allow-NOR-driver-to-write-fewer-bytes-th.patch \
     file://460-mtd-cfi_cmdset_0002-no-erase_suspend.patch \
     file://461-mtd-cfi_cmdset_0002-add-buffer-write-cmd-timeout.patch \
@@ -122,6 +121,8 @@ SRC_URI_append = " \
     file://766-net-dsa-Include-bridge-addresses-in-assisted-CPU-por.patch \
     file://767-net-dsa-Sync-static-FDB-entries-on-foreign-interface.patch \
     file://768-net-dsa-mv88e6xxx-Request-assisted-learning-on-CPU-port.patch \
+    file://771-net-sfp-add-mode-quirk-Ubiquiti-UFiber-Instant.patch \
+    file://772-net-sfp-relax-bitrate-devided-check.patch \
     file://800-bcma-get-SoC-device-struct-copy-its-DMA-params-to-th.patch \
     file://810-pci_disable_common_quirks.patch \
     file://811-pci_disable_usb_common_quirks.patch \

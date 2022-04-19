@@ -485,10 +485,9 @@ static void mtk_mac_link_down(struct phylink_config *config, unsigned int mode,
 	mtk_w32(mac->hw, mcr, MTK_MAC_MCR(mac->id));
 }
 
-static void mtk_mac_link_up(struct phylink_config *config,
-                            struct phy_device *phy,
-                            unsigned int mode, phy_interface_t interface,
-                            int speed, int duplex, bool tx_pause, bool rx_pause)
+static void mtk_mac_link_up(struct phylink_config *config, unsigned int mode,
+			    phy_interface_t interface,
+			    struct phy_device *phy)
 {
 	struct mtk_mac *mac = container_of(config, struct mtk_mac,
 					   phylink_config);
@@ -2679,7 +2678,7 @@ static int mtk_open(struct net_device *dev)
 	netif_start_queue(dev);
 	phy_node = of_parse_phandle(mac->of_node, "phy-handle", 0);
 	if (!phy_node) {
-		regmap_write(eth->sgmii->regmap[0], SGMSYS_QPHY_PWR_STATE_CTRL, 0);
+		regmap_write(eth->sgmii->regmap[mac->id], SGMSYS_QPHY_PWR_STATE_CTRL, 0);
 	}
 	return 0;
 }
@@ -2723,9 +2722,9 @@ static int mtk_stop(struct net_device *dev)
 		val |= BMCR_PDOWN;
 		_mtk_mdio_write(eth, 0, 0, val);
 	}else {
-		regmap_read(eth->sgmii->regmap[0], SGMSYS_QPHY_PWR_STATE_CTRL, &val);
+		regmap_read(eth->sgmii->regmap[mac->id], SGMSYS_QPHY_PWR_STATE_CTRL, &val);
 		val |= SGMII_PHYA_PWD;
-		regmap_write(eth->sgmii->regmap[0], SGMSYS_QPHY_PWR_STATE_CTRL, val);
+		regmap_write(eth->sgmii->regmap[mac->id], SGMSYS_QPHY_PWR_STATE_CTRL, val);
 	}
 
 	//GMAC RX disable

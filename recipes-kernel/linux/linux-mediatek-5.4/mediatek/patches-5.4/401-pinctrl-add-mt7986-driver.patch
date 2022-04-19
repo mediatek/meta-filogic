@@ -2,13 +2,15 @@ diff --git a/drivers/pinctrl/mediatek/Kconfig b/drivers/pinctrl/mediatek/Kconfig
 index 701f9af..9109f91 100644
 --- a/drivers/pinctrl/mediatek/Kconfig
 +++ b/drivers/pinctrl/mediatek/Kconfig
-@@ -100,6 +100,11 @@ config PINCTRL_MT7622
+@@ -100,6 +100,13 @@ config PINCTRL_MT7622
  	default ARM64 && ARCH_MEDIATEK
  	select PINCTRL_MTK_MOORE
  
 +config PINCTRL_MT7986
 +	bool "Mediatek MT7986 pin control"
 +	depends on OF
++	depends on ARM64 || COMPILE_TEST
++	default ARM64 && ARCH_MEDIATEK
 +	select PINCTRL_MTK_MOORE
 +
  config PINCTRL_MT8173
