@@ -22,13 +22,6 @@ SRC_URI = " \
     file://001-rdkb-eth-mtk-change-ifname-for.patch;apply=no \
     file://002-rdkb-mtd-ubi-relayout.patch;apply=no \
     "
-SRC_URI += " \
-    file://rdkb_cfg/iptables.cfg \
-    file://rdkb_cfg/turris_rdkb.cfg \
-    file://rdkb_cfg/openvswitch.cfg \
-    file://rdkb_cfg/mac80211.cfg \
-    file://rdkb_cfg/prplmesh.cfg \
-"
 
 SRC_URI_append_mt7986 += " \
     file://mediatek/mt7986.cfg \
@@ -37,6 +30,13 @@ SRC_URI_append_mt7986-32bit += " \
     file://mediatek/patches-32bit-5.4/mt7986-32bit.cfg \
     file://mediatek/patches-32bit-5.4/401-pinctrl-add-mt7986-driver-32bit.patch \
     file://mediatek/patches-32bit-5.4/999-add_armv7_support_for_panther.patch \
+"
+SRC_URI_append += " \
+    file://rdkb_cfg/iptables.cfg \
+    file://rdkb_cfg/turris_rdkb.cfg \
+    file://rdkb_cfg/openvswitch.cfg \
+    file://rdkb_cfg/mac80211.cfg \
+    file://rdkb_cfg/prplmesh.cfg \
 "
 require ${PN}-${PV}/generic/backport-5.4/backport-5.4.inc
 
