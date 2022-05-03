@@ -47,6 +47,9 @@ do_copy_openwrt_src() {
 do_configure_append() {
     install -m 0644 ${WORKDIR}/hostapd-full.config ${B}/.config
 
+    echo "CONFIG_MBO=y" >> ${B}/.config
+    echo "CONFIG_WPS_UPNP=y" >> ${B}/.config
+
     echo "CONFIG_ACS=y" >> ${B}/.config
     echo "CONFIG_IEEE80211AX=y" >> ${B}/.config
     echo "CONFIG_TLS=openssl" >> ${B}/.config
