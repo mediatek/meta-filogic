@@ -15,7 +15,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches:"
 SRCREV ?= "cff80b4f7d3c0a47c052e8187d671710f48939e4"
 SRC_URI = " \
     git://w1.fi/hostap.git;protocol=https;branch=main \
-    file://defconfig \
+    file://hostapd-full.config \
     file://hostapd-2G.conf \
     file://hostapd-5G.conf \
     file://hostapd-bhaul2G.conf \
@@ -45,7 +45,17 @@ do_copy_openwrt_src() {
 }
 
 do_configure_append() {
-    install -m 0644 ${WORKDIR}/defconfig ${B}/.config
+    install -m 0644 ${WORKDIR}/hostapd-full.config ${B}/.config
+
+    echo "CONFIG_ACS=y" >> ${B}/.config
+    echo "CONFIG_IEEE80211AX=y" >> ${B}/.config
+    echo "CONFIG_TLS=openssl" >> ${B}/.config
+    echo "CONFIG_SAE=y" >> ${B}/.config
+    echo "CONFIG_OWE=y" >> ${B}/.config
+    echo "CONFIG_SUITEB192=y" >> ${B}/.config
+    echo "CONFIG_AP=y" >> ${B}/.config
+    echo "CONFIG_MESH=y" >> ${B}/.config
+    echo "CONFIG_WEP=y" >> ${B}/.config
 }
 
 do_filogic_patches() {
