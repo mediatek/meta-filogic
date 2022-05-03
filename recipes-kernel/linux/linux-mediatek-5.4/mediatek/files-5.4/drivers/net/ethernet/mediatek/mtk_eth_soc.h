@@ -382,6 +382,7 @@
 #define MTK_WCOMP_EN		BIT(24)
 #define MTK_RESV_BUF		(0x80 << 16)
 #define MTK_MUTLI_CNT		(0x4 << 12)
+#define MTK_RESV_BUF_MASK	(0xff << 16)
 
 /* QDMA Reset Index Register */
 #define MTK_QDMA_RST_IDX	(QDMA_BASE + 0x208)
@@ -680,9 +681,9 @@
 #if defined(CONFIG_MEDIATEK_NETSYS_V2)
 #define RSTCTRL_PPE0	BIT(30)
 #define RSTCTRL_PPE1 	BIT(31)
-#elif
+#else
 #define RSTCTRL_PPE0	BIT(31)
-#define RSTCTRL_PPE1 	NULL
+#define RSTCTRL_PPE1 	0
 #endif
 
 /* ethernet reset check idle register */
