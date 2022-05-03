@@ -32,4 +32,5 @@ SRC_URI_append = " \
     file://901-mac80211-check-twt-responder-when-setu-twt.patch \
     file://902-nl80211-internal-extend-CAC-time-for-weather-radar-c.patch \
     file://903-mac80211-it-s-invalid-case-when-frag_threshold-is-gr.patch \
+    file://904-mac80211-correct-legacy-rates-check-in-ieee80211_cal.patch \
     "

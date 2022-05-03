@@ -5,11 +5,8 @@ SRC_URI_append = " \
     file://0003-mt76-mt7915-rework-rx-testmode-stats.patch \
     file://0004-mt76-mt7915-fix-tx-descriptor.patch \
     file://0007-mt76-mt7915-update-mt7986-CR-for-different-adie-vers.patch \
-    file://0008-mt76-mt7915-disable-mt7986-rx-hdr-trans-short.patch \
     file://0009-mt76-mt7915-fix-table_mask-to-u16.patch \
-    file://0011-mt76-mt7915-add-list_del_init-msta-wcid.list.patch \
     file://0012-mt76-mt7915-reject-duplicated-twt-flow.patch \
-    file://0013-mt76-mt7915-report-qos_ctl-without-ACK-policy-to-the.patch \
     file://100-Revert-of-net-pass-the-dst-buffer-to-of_get_mac_addr.patch \
     file://1001-mt76-mt7915-add-mtk-internal-debug-tools-for-mt76.patch \
     file://1002-mt76-mt7915-csi-implement-csi-support.patch \
@@ -30,4 +27,5 @@ SRC_URI_append = " \
     file://1111-mt76-tool-add-more-commands.patch \
     file://1112-mt76-mt7915-add-L0.5-SER-for-mt7986.patch \
     file://3000-mt76-remove-WED-support-patch-for-build-err.patch \
+    file://3001-mt76-mt7915-init-rssi-in-WTBL-when-add-station.patch \
     "
