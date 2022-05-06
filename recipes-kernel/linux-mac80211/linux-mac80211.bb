@@ -49,7 +49,7 @@ do_configure () {
          LD="${BUILD_LD}" AR="${BUILD_AR}" LEX="flex" -C ${S}/kconf O=${S}/kconf conf
 
     cp ${WORKDIR}/config ${S}/.config
-    oe_runmake oldconfig
+    oe_runmake allnoconfig
 }
 
 do_install_prepend () {
