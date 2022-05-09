@@ -1,0 +1,28 @@
+diff -urN a/wpa_supplicant/wpa_supplicant_i.h b/wpa_supplicant/wpa_supplicant_i.h
+--- a/wpa_supplicant/wpa_supplicant_i.h	2022-05-05 11:09:32.099283258 +0800
++++ b/wpa_supplicant/wpa_supplicant_i.h	2022-05-05 11:18:09.402159866 +0800
+@@ -323,8 +323,9 @@
+ #endif /* CONFIG_WIFI_DISPLAY */
+ 
+ 	struct psk_list_entry *add_psk; /* From group formation */
+-
++#ifdef UBUS_SUPPORT
+ 	struct ubus_object ubus_global;
++#endif	
+ };
+ 
+ 
+diff -urN a/src/ap/hostapd.h b/src/ap/hostapd.h
+--- a/src/ap/hostapd.h	2022-04-28 12:18:51.607377262 +0800
++++ b/src/ap/hostapd.h	2022-04-28 12:20:10.510028480 +0800
+@@ -81,7 +81,9 @@
+ #ifdef CONFIG_CTRL_IFACE_UDP
+        unsigned char ctrl_iface_cookie[CTRL_IFACE_COOKIE_LEN];
+ #endif /* CONFIG_CTRL_IFACE_UDP */
+-	struct ubus_object ubus;
++#ifdef UBUS_SUPPORT
++       struct ubus_object ubus;
++#endif       
+ };
+ 
+ enum hostapd_chan_status {
