@@ -61,6 +61,13 @@ do_configure_append() {
     echo "CONFIG_WEP=y" >> ${B}/.config
 }
 
+SRC_URI_append_mt7915 += " \
+    file://hostapd-5G-7915.conf \
+"
+do_configure_append_mt7915() {
+    ln -sf ${WORKDIR}/hostapd-5G-7915.conf ${WORKDIR}/hostapd-5G.conf  
+}
+
 do_filogic_patches() {
     cd ${S}
         if [ ! -e patch_applied ]; then
