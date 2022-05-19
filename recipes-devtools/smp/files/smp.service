@@ -1,0 +1,13 @@
+[Unit]
+Description=SMP Service
+DefaultDependencies=no
+After=wifi-telemetry.target
+
+[Service]
+Type=oneshot
+#StandardOutput=kmsg+console
+ExecStart=/bin/sh /usr/sbin/smp-mt76.sh
+
+[Install]
+WantedBy=wifi-initialized.target
+
