@@ -37,6 +37,7 @@ SRC_URI_append += " \
     file://rdkb_cfg/openvswitch.cfg \
     file://rdkb_cfg/mac80211.cfg \
     file://rdkb_cfg/prplmesh.cfg \
+    file://rdkb_cfg/filogic_rdkb.cfg \
 "
 require ${PN}-${PV}/generic/backport-5.4/backport-5.4.inc
 
@@ -68,7 +69,7 @@ do_filogic_patches() {
     cd ${S}
         if [ ! -e patch_applied ]; then
             patch -p1 < ${WORKDIR}/001-rdkb-eth-mtk-change-ifname-for.patch
-            patch -p1 < ${WORKDIR}/002-rdkb-mtd-ubi-relayout.patch
+            
             patch -p1 < ${WORKDIR}/0600-net-phylink-propagate-resolved-link-config-via-mac_l.patch
             patch -p1 < ${WORKDIR}/9010-iwconfig-wireless-rate-fix.patch
             touch patch_applied

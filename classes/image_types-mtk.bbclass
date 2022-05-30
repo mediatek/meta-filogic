@@ -131,26 +131,48 @@ IMAGE_CMD_mtk.sd () {
     assemble_sd_image
 }
 
-#NAND_ROOTFS_TYPE ?= "squashfs-xz"
-NAND_ROOTFS_TYPE ?= "ubi"
+NAND_ROOTFS_TYPE ?= "squashfs-xz"
+#NAND_ROOTFS_TYPE ?= "ubi"
 NAND_FILE ?= "${IMGDEPLOYDIR}/${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.mtk.nand"
 
 IMAGE_CMD_mtk.nand () {
-    rm -f ${NAND_FILE}
 
-    # 1. dump fitImage into firmware
-    dd if=${DEPLOY_DIR_IMAGE}/fitImage >> ${NAND_FILE}
+# create factory image align to openwrt (kernel in ubi)   
 
-    # 2. pad to 256K
-    dd if=${NAND_FILE} of=${NAND_FILE}.new bs=256k conv=sync
-    mv -f ${NAND_FILE}.new ${NAND_FILE}
+    echo \[kernel\] > ubinize.cfg
+    echo mode=ubi >> ubinize.cfg
+    echo image=${DEPLOY_DIR_IMAGE}/fitImage >> ubinize.cfg
+    echo vol_id=0 >> ubinize.cfg
+    echo vol_type=dynamic >> ubinize.cfg
+    echo vol_name=kernel >> ubinize.cfg
+    echo \[rootfs\] >> ubinize.cfg
+    echo mode=ubi >> ubinize.cfg
+    echo image=${IMGDEPLOYDIR}/${PN}-${MACHINE}.squashfs-xz >> ubinize.cfg
+    echo vol_id=1 >> ubinize.cfg
+    echo vol_type=dynamic >> ubinize.cfg
+    echo vol_name=rootfs >> ubinize.cfg
+    echo \[rootfs_data\] >> ubinize.cfg
+    echo mode=ubi >> ubinize.cfg
+    echo vol_id=2 >> ubinize.cfg
+    echo vol_type=dynamic >> ubinize.cfg
+    echo vol_name=rootfs_data >> ubinize.cfg
+    echo vol_size=1MiB >> ubinize.cfg
+    echo vol_flags=autoresize >> ubinize.cfg
+    ubinize -o ${DEPLOY_DIR_IMAGE}/${PN}-${MACHINE}-factory.bin ${UBINIZE_ARGS} ubinize.cfg
+    mv ubinize.cfg ${DEPLOY_DIR_IMAGE}/
 
-    # 3. pad to kernel size = 0x800000 = 8388608
-    dd if=${NAND_FILE} of=${NAND_FILE}.new bs=8388608 conv=sync
-    mv -f ${NAND_FILE}.new ${NAND_FILE}
+# create sysupgrade image align to openwrt
 
-    # 4. dump filesystem into firmware
-    dd if=${IMGDEPLOYDIR}/${PN}-${MACHINE}.${NAND_ROOTFS_TYPE} >> ${NAND_FILE}
+    rm -rf ${IMGDEPLOYDIR}/sysupgrade-${PN}-${MACHINE}
+    rm -rf ${IMGDEPLOYDIR}/${PN}-${MACHINE}-sysupgrade.bin
+
+    mkdir ${IMGDEPLOYDIR}/sysupgrade-${PN}-${MACHINE}
+
+    cp ${DEPLOY_DIR_IMAGE}/fitImage ${IMGDEPLOYDIR}/sysupgrade-${PN}-${MACHINE}/kernel
+    cp ${IMGDEPLOYDIR}/${PN}-${MACHINE}.squashfs-xz ${IMGDEPLOYDIR}/sysupgrade-${PN}-${MACHINE}/root
+
+    cd ${IMGDEPLOYDIR}
+    tar cvf ${PN}-${MACHINE}-sysupgrade.bin sysupgrade-${PN}-${MACHINE}
 }
 
 # Both eMMC and SD requires the ext4 rootfs filesystem to be built before using
