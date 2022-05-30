@@ -1,0 +1,15 @@
+FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+SRC_URI_append = " file://init_readonlyfs.sh \
+                 "
+FILES_${PN} += " /overlay \
+               /rom \"
+
+do_install_append() {
+       install -d ${D}/overlay
+       install -d ${D}/rom
+       install -m 0755 ${WORKDIR}/init_readonlyfs.sh ${D}${rootlibexecdir}/init_readonlyfs.sh
+       [ -e ${D}/sbin/init ] && rm -rf ${D}/sbin/init
+       ln -s ${rootlibexecdir}/init_readonlyfs.sh ${D}/sbin/init
+}
+
+FILES_${PN} += " ${rootlibexecdir}/init_readonlyfs.sh "
