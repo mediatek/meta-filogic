@@ -59,6 +59,7 @@ do_configure_append() {
     echo "CONFIG_AP=y" >> ${B}/.config
     echo "CONFIG_MESH=y" >> ${B}/.config
     echo "CONFIG_WEP=y" >> ${B}/.config
+    echo "CONFIG_FILS=y" >> ${B}/.config
 }
 
 SRC_URI_append_mt7915 += " \

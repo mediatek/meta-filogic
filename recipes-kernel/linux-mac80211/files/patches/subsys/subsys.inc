@@ -26,6 +26,7 @@ SRC_URI_append = " \
     file://325-mac80211-MBSSID-channel-switch.patch \
     file://326-mac80211-update-bssid_indicator-in-ieee80211_assign_.patch \
     file://329-mac80211-minstrel_ht-fix-where-rate-stats-are-stored.patch \
+    file://350-bss-color-collision.patch \
     file://400-allow-ibss-mixed.patch \
     file://500-mac80211_configure_antenna_gain.patch \
     file://782-net-next-1-of-net-pass-the-dst-buffer-to-of_get_mac_address.patch \
@@ -33,4 +34,6 @@ SRC_URI_append = " \
     file://902-nl80211-internal-extend-CAC-time-for-weather-radar-c.patch \
     file://903-mac80211-it-s-invalid-case-when-frag_threshold-is-gr.patch \
     file://904-mac80211-correct-legacy-rates-check-in-ieee80211_cal.patch \
+    file://905-mac80211-airtime_flags-depends-on-NL80211_EXT_FEATUR.patch \
+    file://906-mac80211-add-support-for-runtime-set-inband-discovery.patch \
     "

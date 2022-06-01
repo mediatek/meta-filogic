@@ -61,5 +61,6 @@ SRC_URI_append = " \
     file://909-master-Add-hostapd_neighbor_set_own_report_pref.patch \
     file://910-master-Add-hostapd_neighbor_set_pref_by_non_pref_chan.patch \
     file://911-master-print-sae-groups-by-hostapd-ctrl.patch \
-    file://912-master-add-destination-address-of-unsolicited-probe.patch \
+    file://912-master-add-the-destination-address-of-unsolicited-Probe.patch \
+    file://913-master-add-support-for-runtime-set-in-band-discover.patch \
     "
