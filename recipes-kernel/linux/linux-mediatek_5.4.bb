@@ -6,8 +6,8 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/mediatek/patches-5.4:"
 
 KBRANCH ?= "v5.4/standard/base"
 
-LINUX_VERSION ?= "5.4.188"
-SRCREV_machine ?= "d47303abd67e589778c28f3ccc688a0e12ba5692"
+LINUX_VERSION ?= "5.4.194"
+SRCREV_machine ?= "1bd3be748c4520bf71481081d86e0e7f1c9467de"
 KMETA = "kernel-meta"
 SRCREV_meta ?= "feeb59687bc0f054af837a5061f8d413ec7c93e9"
 

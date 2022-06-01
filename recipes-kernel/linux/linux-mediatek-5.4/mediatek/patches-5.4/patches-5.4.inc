@@ -25,12 +25,14 @@ SRC_URI_append = " \
     file://0310-dts-add-wmac-support-for-mt7622-rfb1.patch \
     file://0400-sound-add-some-helpers-to-control-mtk_memif.patch \
     file://0401-sound-refine-hw-params-and-hw-prepare.patch \
-    file://0402-sound-add-mt7986-driver-and-slic-driver.patch \
+    file://0402-sound-add-mt7986-driver.patch \
+    file://0490-mtd-spinand-winbond-Support-for-W25MxxGV-W25NxxKV-series.patch \
     file://0500-v5.6-crypto-backport-inside-secure.patch \
     file://0501-crypto-add-eip97-inside-secure-support.patch \
     file://0502-dts-mt7623-eip97-inside-secure-support.patch \
     file://0503-crypto-fix-eip97-cache-incoherent.patch \
     file://0504-macsec-revert-async-support.patch \
+    file://0505-crypto-add-eip197-inside-secure-support.patch \
     file://0600-net-phylink-propagate-resolved-link-config-via-mac_l.patch;apply=no \
     file://0601-net-dsa-propagate-resolved-link-config-via-mac_link_.patch \
     file://0602-net-dsa-mt7530-use-resolved-link-config-in-mac_link_.patch \
@@ -45,6 +47,7 @@ SRC_URI_append = " \
     file://0670-fix-SPIM-dma-buffer-not-aligned.patch \
     file://0701-fix-mtk-nfi-driver-dependency.patch \
     file://0801-mtk-sd-add-mt7986-support.patch \
+    file://0802-mtk-sd-Add-subsys-clock-control.patch \
     file://0900-bt-mtk-serial-fix.patch \
     file://0900-i2c-busses-add-mt7986-support.patch \
     file://0901-i2c-busses-add-mt7981-support.patch \
@@ -72,6 +75,8 @@ SRC_URI_append = " \
     file://402-pinctrl-add-mt7981-driver.patch \
     file://412-mtd-spinand-gigadevice-Add-support-for-F50L1G41LB-and-GD5F1GQ5UExxG.patch \
     file://413-mtd-spinand-gigadevice-Add-support-for-GD5FxGQxUExxG-GD5FxGQxUExxH-and-GD5FxGMxUExxG-series.patch \
+    file://414-mtd-spinand-fix-gigadevice-read-dummy.patch \
+    file://415-mtd-spinand-fix-F50L1G41LB-ecc-check.patch \
     file://500-auxadc-add-auxadc-32k-clk.patch \
     file://730-net-ethernet-mtk_eth_soc-add-mtk-dsa-tag-rx-offload.patch \
     file://738-mt7531-gsw-internal_phy_calibration.patch \
@@ -94,4 +99,5 @@ SRC_URI_append = " \
     file://9002-PATCH-1-1-usb-add-embedded-Host-feature-support.patch \
     file://9009-Add-spi-runtime-PM-support.patch \
     file://9010-iwconfig-wireless-rate-fix.patch;apply=no \
+    file://9011-Modify-tick_delay-for-spi-work-safety.patch \
     "
