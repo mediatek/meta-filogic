@@ -131,8 +131,8 @@ IMAGE_CMD_mtk.sd () {
     assemble_sd_image
 }
 
-NAND_ROOTFS_TYPE ?= "squashfs-xz"
-#NAND_ROOTFS_TYPE ?= "ubi"
+#NAND_ROOTFS_TYPE ?= "squashfs-xz"
+NAND_ROOTFS_TYPE ?= "ubi"
 NAND_FILE ?= "${IMGDEPLOYDIR}/${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.mtk.nand"
 
 IMAGE_CMD_mtk.nand () {

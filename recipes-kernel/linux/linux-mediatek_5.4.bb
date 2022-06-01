@@ -21,6 +21,7 @@ SRC_URI = " \
     file://generic/defconfig \
     file://001-rdkb-eth-mtk-change-ifname-for.patch;apply=no \
     file://002-rdkb-mtd-ubi-relayout.patch;apply=no \
+    file://003-rdkb-mtd-kernel-ubi-relayout.patch;apply=no \
     "
 
 SRC_URI_append_mt7986 += " \
@@ -69,7 +70,11 @@ do_filogic_patches() {
     cd ${S}
         if [ ! -e patch_applied ]; then
             patch -p1 < ${WORKDIR}/001-rdkb-eth-mtk-change-ifname-for.patch
-            
+            if ${@bb.utils.contains('DISTRO_FEATURES','kernel_in_ubi','true','false',d)}; then
+            patch -p1 < ${WORKDIR}/003-rdkb-mtd-kernel-ubi-relayout.patch
+            else
+            patch -p1 < ${WORKDIR}/002-rdkb-mtd-ubi-relayout.patch
+            fi
             patch -p1 < ${WORKDIR}/0600-net-phylink-propagate-resolved-link-config-via-mac_l.patch
             patch -p1 < ${WORKDIR}/9010-iwconfig-wireless-rate-fix.patch
             touch patch_applied
