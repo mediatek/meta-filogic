@@ -1,0 +1,5 @@
+#patch patches (come from openwrt/lede/target/linux/mediatek)
+SRC_URI_append = " \
+    file://500-world-regd-5GHz.patch \
+    file://600-world-regd-6GHz.patch \
+    "
