@@ -25,15 +25,23 @@ SRC_URI_append = " \
     file://324-mac80211-MBSSID-beacon-handling-in-AP-mode.patch \
     file://325-mac80211-MBSSID-channel-switch.patch \
     file://326-mac80211-update-bssid_indicator-in-ieee80211_assign_.patch \
+    file://328-mac80211-do-not-wake-queues-on-a-vif-that-is-being-s.patch \
     file://329-mac80211-minstrel_ht-fix-where-rate-stats-are-stored.patch \
+    file://330-mac80211-fix-overflow-issues-in-airtime-fairness-cod.patch \
+    file://331-mac80211-improve-AQL-tx-time-estimation.patch \
+    file://332-mac80211-fix-ieee80211_txq_may_transmit-regression.patch \
+    file://333-mac80211-rework-the-airtime-fairness-implementation.patch \
     file://350-bss-color-collision.patch \
     file://400-allow-ibss-mixed.patch \
     file://500-mac80211_configure_antenna_gain.patch \
     file://782-net-next-1-of-net-pass-the-dst-buffer-to-of_get_mac_address.patch \
+    file://783-sync-nl80211.patch \
     file://901-mac80211-check-twt-responder-when-setu-twt.patch \
     file://902-nl80211-internal-extend-CAC-time-for-weather-radar-c.patch \
     file://903-mac80211-it-s-invalid-case-when-frag_threshold-is-gr.patch \
     file://904-mac80211-correct-legacy-rates-check-in-ieee80211_cal.patch \
     file://905-mac80211-airtime_flags-depends-on-NL80211_EXT_FEATUR.patch \
     file://906-mac80211-add-support-for-runtime-set-inband-discovery.patch \
+    file://907-mac80211-fix-331-include-minmax-fail.patch \
+    file://908-mac80211-add-s1g-category-to-_ieee80211_is_robust_mg.patch \
     "

@@ -7,7 +7,7 @@ inherit module
 
 PV = "1.0"
 
-SRCREV ?= "a666d5637bc3afd3e310be09fac048906560097b"
+SRCREV ?= "1d8af168e86fa4087351b7d10572accd5dee4d36"
 SRC_URI = " \
     git://git@github.com/openwrt/mt76.git;protocol=https \
     file://COPYING;subdir=git \

@@ -9,12 +9,12 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=878618a5c4af25e9b93ef0be1a93f774"
 
 DEPENDS = "libnl"
 
-SRC_URI = "http://www.kernel.org/pub/software/network/iw/${BP}.tar.gz \
+SRC_URI = "http://www.kernel.org/pub/software/network/iw/${BP}.tar.xz \
            file://0001-iw-version.sh-don-t-use-git-describe-for-versioning.patch \
            file://separate-objdir.patch \
 "
 
-SRC_URI[sha256sum] = "2a44676d28a87bbc232903d5d573e7618e4fae0cea3a1aff067a26fa66652b75"
+SRC_URI[sha256sum] = "f167bbe947dd53bb9ebc0c1dcef5db6ad73ac1d6084f2c6f9376c5c360cc4d4e"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/patches:"
 require patches/patches.inc

@@ -4,37 +4,23 @@ SRC_URI_append = " \
     file://0002-mt76-testmode-rework-tx-antenna-setting.patch \
     file://0003-mt76-mt7915-rework-rx-testmode-stats.patch \
     file://0004-mt76-mt7915-fix-tx-descriptor.patch \
-    file://0007-mt76-mt7915-update-mt7986-CR-for-different-adie-vers.patch \
-    file://0009-mt76-mt7915-fix-table_mask-to-u16.patch \
-    file://0012-mt76-mt7915-reject-duplicated-twt-flow.patch \
-    file://0014-mt76-mt7915-limit-minimum-twt-duration-due-to-hw-lim.patch \
-    file://0015-mt76-mt7915-drop-undefined-action-frame.patch \
-    file://0016-mt76-mt7915-reowrk-SER-debugfs-knob.patch \
-    file://0017-mt76-mt7615-mt7915-do-reset_work-with-mt76-s-work-qu.patch \
-    file://0018-mt76-mt7915-add-support-for-6G-in-band-discovery.patch \
-    file://0019-mt76-mt7915-add-the-maximum-size-of-beacon-offload.patch \
+    file://0005-mt76-mt7915-drop-undefined-action-frame.patch \
+    file://0006-mt76-mt7915-add-the-maximum-size-of-beacon-offload.patch \
+    file://0007-mt76-mt7915-update-mpdu-density-in-6g-capability.patch \
+    file://0008-mt76-common-RF-CR-idx-require-8-bits.patch \
     file://100-Revert-of-net-pass-the-dst-buffer-to-of_get_mac_addr.patch \
     file://1001-mt76-mt7915-add-mtk-internal-debug-tools-for-mt76.patch \
     file://1002-mt76-mt7915-csi-implement-csi-support.patch \
     file://1003-mt76-mt7915-air-monitor-support.patch \
     file://1004-mt76-mt7915-add-support-for-muru_onoff-via-debugfs.patch \
     file://1005-mt76-certification-patches.patch \
-    file://1007-mt76-mt7915-add-L0.5-system-error-recovery-support.patch \
-    file://1009-mt76-mt7915-add-support-for-runtime-set-in-band-disc.patch \
-    file://1100-mt76-testmode-support-eeprom-handle.patch \
-    file://1101-mt76-enable-more-5g-channels.patch \
-    file://1102-mt76-testmode-add-attributes-for-setting-rf-config.patch \
-    file://1103-mt76-mt7915-implement-config-set-in-testmode.patch \
-    file://1104-mt76-testmode-add-attributes-to-support-off-channel-.patch \
-    file://1105-mt76-mt7915-add-off-channel-scan-support-in-testmode.patch \
-    file://1106-mt76-testmode-add-virtual-stations-support.patch \
-    file://1107-mt76-testmode-support-to-dump-stats-from-different-v.patch \
-    file://1108-mt76-testmode-rework-the-flow-of-init-tx-skb.patch \
-    file://1109-mt76-testmode-add-support-to-queue-skb-of-multiple-s.patch \
-    file://1110-mt76-mt7915-implement-aid-support-in-testmode.patch \
-    file://1111-mt76-tool-add-more-commands.patch \
-    file://1113-mt76-mt7915-init-rssi-in-WTBL-when-add-station.patch \
-    file://1114-mt76-mt7915-drop-packets-when-TWT-stations-use-more-.patch \
-    file://1115-mt76-airtime-fairness-feature-off-in-mac80211.patch \
+    file://1006-mt76-mt7915-add-L0.5-system-error-recovery-support.patch \
+    file://1007-mt76-mt7915-add-support-for-runtime-set-in-band-disc.patch \
+    file://1008-mt76-mt7915-add-mt76-vendor-muru-onoff-command.patch \
+    file://1111-mt76-testmode-additional-supports.patch \
+    file://1112-mt76-mt7915-init-rssi-in-WTBL-when-add-station.patch \
+    file://1113-mt76-mt7915-drop-packets-when-TWT-stations-use-more-.patch \
+    file://1114-mt76-airtime-fairness-feature-off-in-mac80211.patch \
+    file://1115-mt76-mt7915-add-mt7986-and-mt7916-pre-calibration.patch \
     file://3000-mt76-remove-WED-support-patch-for-build-err.patch \
     "

@@ -10,15 +10,12 @@ DEPENDS = "dbus libnl"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches:"
 
-SRCREV ?= "cff80b4f7d3c0a47c052e8187d671710f48939e4"
+SRCREV ?= "b859b9bceadccd882252ff0aa2fdba0d3b91764e"
 SRC_URI = "git://w1.fi/hostap.git;protocol=https;branch=main \
            file://wpa-supplicant.sh \
            file://wpa_supplicant.conf \
            file://wpa_supplicant.conf-sane \
            file://99_wpa_supplicant \
-           file://0001-build-Re-enable-options-for-libwpa_client.so-and-wpa.patch \
-           file://0002-Fix-removal-of-wpa_passphrase-on-make-clean.patch \
-           file://0001-Install-wpa_passphrase-when-not-disabled.patch \
            file://wpa_supplicant-full.config \
            file://src \
            file://001-rdkb-remove-ubus-support.patch;apply=no \

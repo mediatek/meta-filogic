@@ -35,6 +35,7 @@ SRC_URI_append = " \
     file://461-driver_nl80211-use-new-parameters-during-ibss-join.patch \
     file://463-add-mcast_rate-to-11s.patch \
     file://464-fix-mesh-obss-check.patch \
+    file://465-hostapd-config-support-random-BSS-color.patch \
     file://470-survey_data_fallback.patch \
     file://500-lto-jobserver-support.patch \
     file://590-rrm-wnm-statistics.patch \
@@ -49,8 +50,7 @@ SRC_URI_append = " \
     file://740-snoop_iface.patch \
     file://750-qos_map_set_without_interworking.patch \
     file://751-qos_map_ignore_when_unsupported.patch \
-    file://900-master-sync-include-uapi-linux-nl80211.patch \
-    file://901-master-zero-wait_dfs.patch \
+    file://812-DFS-Rdd0-fail-to-rollback-non-DFS-channel-when-DFS-channels-under-NOP.patch \
     file://902-master-Add-hostapd_neighbor_count-and-hostapd_neighbor_inse.patch \
     file://903-master-Support-including-neighbor-report-elements-in-ANQP-r.patch \
     file://904-master-Support-including-neignbor-report-elements-in-BTM-re.patch \
@@ -61,6 +61,6 @@ SRC_URI_append = " \
     file://909-master-Add-hostapd_neighbor_set_own_report_pref.patch \
     file://910-master-Add-hostapd_neighbor_set_pref_by_non_pref_chan.patch \
     file://911-master-print-sae-groups-by-hostapd-ctrl.patch \
-    file://912-master-add-the-destination-address-of-unsolicited-Probe.patch \
     file://913-master-add-support-for-runtime-set-in-band-discover.patch \
+    file://990-ctrl-make-WNM_AP-functions-dependant-on-CONFIG_AP.patch \
     "
