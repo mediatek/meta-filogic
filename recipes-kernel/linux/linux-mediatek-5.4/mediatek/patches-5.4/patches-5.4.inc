@@ -23,6 +23,7 @@ SRC_URI_append = " \
     file://0307-dts-mt7629-add-snand-support.patch \
     file://0308-dts-mt7622-add-snand-support.patch \
     file://0310-dts-add-wmac-support-for-mt7622-rfb1.patch \
+    file://0322-fix-dirty-race-between-do_tmpfile.patch \
     file://0400-sound-add-some-helpers-to-control-mtk_memif.patch \
     file://0401-sound-refine-hw-params-and-hw-prepare.patch \
     file://0402-sound-add-mt7986-driver.patch \
@@ -78,6 +79,9 @@ SRC_URI_append = " \
     file://414-mtd-spinand-fix-gigadevice-read-dummy.patch \
     file://415-mtd-spinand-fix-F50L1G41LB-ecc-check.patch \
     file://500-auxadc-add-auxadc-32k-clk.patch \
+    file://7000-fix-race-inside-napi-enable.patch \
+    file://7001-net-make-napi-disable-symmetric-with-enable.patch \
+    file://7002-net-fix-premature-exit-from-napi-state-polling-in-napi-disable-v2.patch \
     file://730-net-ethernet-mtk_eth_soc-add-mtk-dsa-tag-rx-offload.patch \
     file://738-mt7531-gsw-internal_phy_calibration.patch \
     file://739-mt7531-gsw-port5_external_phy_init.patch \
@@ -86,6 +90,7 @@ SRC_URI_append = " \
     file://742-net-dsa-add-MT7531-Gigabit-Ethernet-PHY-setting.patch \
     file://743-add-mediatek-ge-gphy-support.patch \
     file://744-en8801s-gphy-support.patch \
+    file://745-mdiobus-add-c45.patch \
     file://8000-PATCH-1-4-tphy-support-type-switch-by-pericfg.patch \
     file://8001-PATCH-2-4-dt-bindings-phy-Add-PHY_TYPE_DP-definition.patch \
     file://8002-PATCH-3-4-dt-bindings-phy-Add-PHY_TYPE_XPCS-definition.patch \
