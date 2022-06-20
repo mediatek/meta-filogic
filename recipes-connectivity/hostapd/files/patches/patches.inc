@@ -63,4 +63,5 @@ SRC_URI_append = " \
     file://911-master-print-sae-groups-by-hostapd-ctrl.patch \
     file://913-master-add-support-for-runtime-set-in-band-discover.patch \
     file://990-ctrl-make-WNM_AP-functions-dependant-on-CONFIG_AP.patch \
+    file://991-fix-compile.patch \
     "

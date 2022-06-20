@@ -27,10 +27,6 @@ SRC_URI_append = " \
     file://326-mac80211-update-bssid_indicator-in-ieee80211_assign_.patch \
     file://328-mac80211-do-not-wake-queues-on-a-vif-that-is-being-s.patch \
     file://329-mac80211-minstrel_ht-fix-where-rate-stats-are-stored.patch \
-    file://330-mac80211-fix-overflow-issues-in-airtime-fairness-cod.patch \
-    file://331-mac80211-improve-AQL-tx-time-estimation.patch \
-    file://332-mac80211-fix-ieee80211_txq_may_transmit-regression.patch \
-    file://333-mac80211-rework-the-airtime-fairness-implementation.patch \
     file://350-bss-color-collision.patch \
     file://400-allow-ibss-mixed.patch \
     file://500-mac80211_configure_antenna_gain.patch \
@@ -42,6 +38,5 @@ SRC_URI_append = " \
     file://904-mac80211-correct-legacy-rates-check-in-ieee80211_cal.patch \
     file://905-mac80211-airtime_flags-depends-on-NL80211_EXT_FEATUR.patch \
     file://906-mac80211-add-support-for-runtime-set-inband-discovery.patch \
-    file://907-mac80211-fix-331-include-minmax-fail.patch \
     file://908-mac80211-add-s1g-category-to-_ieee80211_is_robust_mg.patch \
     "

@@ -10,7 +10,7 @@ DEPENDS = "dbus libnl"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches:"
 
-SRCREV ?= "b859b9bceadccd882252ff0aa2fdba0d3b91764e"
+SRCREV ?= "4383528e01955d995d3b3db201e4c0f9840e8236"
 SRC_URI = "git://w1.fi/hostap.git;protocol=https;branch=main \
            file://wpa-supplicant.sh \
            file://wpa_supplicant.conf \
