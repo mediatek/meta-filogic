@@ -1,4 +1,4 @@
-From 33d4383e72491f7e8879c6e4334bf36c30704d18 Mon Sep 17 00:00:00 2001
+From c07c8c699e63f32f431a7439145ecf1844690ca3 Mon Sep 17 00:00:00 2001
 From: Peter Chiu <chui-hao.chiu@mediatek.com>
 Date: Fri, 20 May 2022 19:19:25 +0800
 Subject: [PATCH 1115/1115] mt76: mt7915: add mt7986 and mt7916 pre-calibration
@@ -15,7 +15,7 @@ Signed-off-by: Peter Chiu <chui-hao.chiu@mediatek.com>
  3 files changed, 90 insertions(+), 32 deletions(-)
 
 diff --git a/mt7915/eeprom.c b/mt7915/eeprom.c
-index 4b1a9811..ee3049e5 100644
+index 4b1a981..ee3049e 100644
 --- a/mt7915/eeprom.c
 +++ b/mt7915/eeprom.c
 @@ -9,23 +9,22 @@ static int mt7915_eeprom_load_precal(struct mt7915_dev *dev)
@@ -50,7 +50,7 @@ index 4b1a9811..ee3049e5 100644
  
  static int mt7915_check_eeprom(struct mt7915_dev *dev)
 diff --git a/mt7915/eeprom.h b/mt7915/eeprom.h
-index 7578ac6d..e924baef 100644
+index 7578ac6..e924bae 100644
 --- a/mt7915/eeprom.h
 +++ b/mt7915/eeprom.h
 @@ -19,6 +19,7 @@ enum mt7915_eeprom_field {
@@ -103,10 +103,10 @@ index 7578ac6d..e924baef 100644
  
  #endif
 diff --git a/mt7915/mcu.c b/mt7915/mcu.c
-index 17a36ea3..2b9797c8 100644
+index 810d72e..a16081d 100644
 --- a/mt7915/mcu.c
 +++ b/mt7915/mcu.c
-@@ -3203,9 +3203,10 @@ static int mt7915_mcu_set_pre_cal(struct mt7915_dev *dev, u8 idx,
+@@ -2911,9 +2911,10 @@ static int mt7915_mcu_set_pre_cal(struct mt7915_dev *dev, u8 idx,
  int mt7915_mcu_apply_group_cal(struct mt7915_dev *dev)
  {
  	u8 idx = 0, *cal = dev->cal, *eep = dev->mt76.eeprom.data;
@@ -119,7 +119,7 @@ index 17a36ea3..2b9797c8 100644
  		return 0;
  
  	/*
-@@ -3241,9 +3242,9 @@ static int mt7915_find_freq_idx(const u16 *freqs, int n_freqs, u16 cur)
+@@ -2949,9 +2950,9 @@ static int mt7915_find_freq_idx(const u16 *freqs, int n_freqs, u16 cur)
  	return -1;
  }
  
@@ -131,7 +131,7 @@ index 17a36ea3..2b9797c8 100644
  		5180, 5200, 5220, 5240,
  		5260, 5280, 5300, 5320,
  		5500, 5520, 5540, 5560,
-@@ -3251,65 +3252,102 @@ static int mt7915_dpd_freq_idx(u16 freq, u8 bw)
+@@ -2959,65 +2960,102 @@ static int mt7915_dpd_freq_idx(u16 freq, u8 bw)
  		5660, 5680, 5700, 5745,
  		5765, 5785, 5805, 5825
  	};
