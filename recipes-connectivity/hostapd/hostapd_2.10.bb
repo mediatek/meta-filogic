@@ -4,7 +4,7 @@ SECTION = "kernel/userland"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://hostapd/README;md5=c905478466c90f1cefc0df987c40e172"
 
-DEPENDS = "libnl openssl"
+DEPENDS = "libnl openssl ubus"
 DEPENDS_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'telemetry2_0', 'telemetry', '', d)}"
 LDFLAGS_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'telemetry2_0', ' -ltelemetry_msgsender ', '', d)}"
 RDEPENDS_${PN} += "gawk"

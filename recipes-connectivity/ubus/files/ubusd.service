@@ -1,0 +1,13 @@
+[Unit]
+Description=U-Bus daemon
+After=local-fs.target
+Requires=local-fs.target
+
+[Service]
+ExecStart=/bin/sh -c '@SBINDIR@/ubusd &'
+Type=forking
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
