@@ -5,12 +5,8 @@ SRC_URI_append = " \
     file://0003-mt76-mt7915-rework-rx-testmode-stats.patch \
     file://0004-mt76-mt7915-fix-tx-descriptor.patch \
     file://0005-mt76-mt7915-drop-undefined-action-frame.patch \
-    file://0006-mt76-mt7915-add-the-maximum-size-of-beacon-offload.patch \
-    file://0007-mt76-mt7915-update-mpdu-density-in-6g-capability.patch \
     file://0008-mt76-common-RF-CR-idx-require-8-bits.patch \
-    file://0009-mt76-check-starec-newly.patch \
     file://0010-mt76-mt7915-4addr-null-frame-using-fixed-rate-to-suc.patch \
-    file://0011-mt76-do-not-check-the-ccmp-pn-for-ONLY_MONITOR-frame.patch \
     file://100-Revert-of-net-pass-the-dst-buffer-to-of_get_mac_addr.patch \
     file://1001-mt76-mt7915-add-mtk-internal-debug-tools-for-mt76.patch \
     file://1002-mt76-mt7915-csi-implement-csi-support.patch \
