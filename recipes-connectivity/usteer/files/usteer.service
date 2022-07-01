@@ -1,0 +1,13 @@
+[Unit]
+Description=Usteer daemon
+After=ubusd.service hostapd.service
+Requires=ubusd.service hostapd.service
+
+[Service]
+ExecStart=/bin/sh -c '@SBINDIR@/usteerd &'
+Type=forking
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
