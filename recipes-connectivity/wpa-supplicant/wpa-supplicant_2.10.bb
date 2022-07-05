@@ -68,6 +68,9 @@ do_configure_append () {
 	# mtk add
 	echo "CONFIG_MBO=y" >> wpa_supplicant/.config
 	echo "CONFIG_WPS_UPNP=y" >> wpa_supplicant/.config
+	echo "CONFIG_DPP=y" >> wpa_supplicant/.config
+	echo "CONFIG_DPP2=y" >> wpa_supplicant/.config
+	echo "CONFIG_DPP3=y" >> wpa_supplicant/.config
 
 	# OpenWRT hostapd Makefile add
 	echo "CONFIG_ACS=y" >> wpa_supplicant/.config

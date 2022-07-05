@@ -49,6 +49,9 @@ do_configure_append() {
 
     echo "CONFIG_MBO=y" >> ${B}/.config
     echo "CONFIG_WPS_UPNP=y" >> ${B}/.config
+    echo "CONFIG_DPP=y" >> ${B}/.config
+    echo "CONFIG_DPP2=y" >> ${B}/.config
+    echo "CONFIG_DPP3=y" >> ${B}/.config
 
     echo "CONFIG_ACS=y" >> ${B}/.config
     echo "CONFIG_IEEE80211AX=y" >> ${B}/.config
