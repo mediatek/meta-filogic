@@ -18,7 +18,6 @@ SRC_URI_append = " \
     file://0226-phy-phy-mtk-tphy-Add-hifsys-support.patch \
     file://0227-arm-dts-Add-Unielec-U7623-DTS.patch \
     file://0301-mtd-mtk-ecc-move-mtk-ecc-header-file-to-include-mtd.patch \
-    file://0303-mtd-spinand-disable-on-die-ECC.patch \
     file://0306-spi-spi-mem-MediaTek-Add-SPI-NAND-Flash-interface-dr.patch \
     file://0307-dts-mt7629-add-snand-support.patch \
     file://0308-dts-mt7622-add-snand-support.patch \

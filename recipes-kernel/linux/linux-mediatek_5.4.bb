@@ -4,17 +4,17 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/generic/pending-5.4:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/generic/hack-5.4:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/mediatek/patches-5.4:"
 
-KBRANCH ?= "v5.4/standard/base"
+KBRANCH ?= "linux-5.4.y"
 
-LINUX_VERSION ?= "5.4.194"
-SRCREV_machine ?= "1bd3be748c4520bf71481081d86e0e7f1c9467de"
+LINUX_VERSION ?= "5.4.203"
+SRCREV_machine ?= "871cbc208bf0aded1946cd1e3eebec75799d31e8"
 KMETA = "kernel-meta"
 SRCREV_meta ?= "feeb59687bc0f054af837a5061f8d413ec7c93e9"
 
 DEPENDS_append = " kern-tools-native xz-native bc-native"
 
 SRC_URI = " \
-    git://git.yoctoproject.org/linux-yocto.git;branch=${KBRANCH};name=machine \
+    git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git;protocol=https;branch=${KBRANCH};name=machine \
     git://git.yoctoproject.org/yocto-kernel-cache;type=kmeta;name=meta;branch=yocto-5.4;destsuffix=${KMETA} \
     file://generic \
     file://mediatek \

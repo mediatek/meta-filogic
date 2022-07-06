@@ -66,6 +66,7 @@ SRC_URI_append = " \
     file://497-mtd-mtdconcat-add-dt-driver-for-concat-devices.patch \
     file://498-mtd-mtdconcat-select-readwrite-function.patch \
     file://499-mtd-add-nmbm-support.patch \
+    file://500-ubi-add-configurable-rootdev.patch \
     file://530-jffs2_make_lzma_available.patch \
     file://532-jffs2_eofdetect.patch \
     file://600-netfilter_conntrack_flush.patch \

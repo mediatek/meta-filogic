@@ -26,7 +26,6 @@ SRC_URI_append = " \
     file://080-wireguard-0018-crypto-arm64-poly1305-incorporate-OpenSSL-CRYPTOGAMS.patch \
     file://080-wireguard-0019-crypto-arm-poly1305-incorporate-OpenSSL-CRYPTOGAMS-N.patch \
     file://080-wireguard-0020-crypto-mips-poly1305-incorporate-OpenSSL-CRYPTOGAMS-.patch \
-    file://080-wireguard-0021-crypto-blake2s-generic-C-library-implementation-and-.patch \
     file://080-wireguard-0022-crypto-testmgr-add-test-cases-for-Blake2s.patch \
     file://080-wireguard-0023-crypto-blake2s-implement-generic-shash-driver.patch \
     file://080-wireguard-0024-crypto-blake2s-x86_64-SIMD-implementation.patch \
@@ -141,6 +140,7 @@ SRC_URI_append = " \
     file://080-wireguard-0133-wireguard-allowedips-remove-nodes-in-O-1.patch \
     file://080-wireguard-0134-wireguard-allowedips-allocate-nodes-in-kmem_cache.patch \
     file://080-wireguard-0135-wireguard-allowedips-free-empty-intermediate-nodes-w.patch \
+    file://080-wireguard-0136-lib-crypto-blake2s-move-hmac-construction-into-wireg.patch \
     file://300-MIPS-Exclude-more-dsemul-code-when-CONFIG_MIPS_FP_SU.patch \
     file://310-mips-Kconfig-Add-ARCH_HAS_FORTIFY_SOURCE.patch \
     file://310-v5.6-mips-vdso-fix-jalr-t9-crash-in-vdso-code.patch \
@@ -187,6 +187,7 @@ SRC_URI_append = " \
     file://602-v5.12-net-add-sysfs-attribute-to-control-napi-threaded-mod.patch \
     file://603-v5.12-net-fix-race-between-napi-kthread-mode-and-busy-poll.patch \
     file://604-v5.12-net-fix-hangup-on-napi_disable-for-threaded-napi.patch \
+    file://610-v5.18-netfilter-flowtable-add-check_dst-in-packet-path.patch \
     file://610-v5.9-net-bridge-clear-bridge-s-private-skb-space-on-xmit.patch \
     file://700-v5.5-net-core-allow-fast-GRO-for-skbs-with-Ethernet-heade.patch \
     file://716-v5.5-net-sfp-move-fwnode-parsing-into-sfp-bus-layer.patch \

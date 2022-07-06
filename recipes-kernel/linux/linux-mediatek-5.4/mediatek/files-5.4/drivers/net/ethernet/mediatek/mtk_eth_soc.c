@@ -19,6 +19,7 @@
 #include <linux/interrupt.h>
 #include <linux/pinctrl/devinfo.h>
 #include <linux/phylink.h>
+#include <linux/gpio/consumer.h>
 #include <net/dsa.h>
 
 #include "mtk_eth_soc.h"
@@ -2468,7 +2469,7 @@ static void mtk_dma_free(struct mtk_eth *eth)
 		eth->phy_scratch_ring = 0;
 	}
 	mtk_tx_clean(eth);
-	mtk_rx_clean(eth, &eth->rx_ring[0],1);
+	mtk_rx_clean(eth, &eth->rx_ring[0],eth->soc->has_sram);
 	mtk_rx_clean(eth, &eth->rx_ring_qdma,0);
 
 	if (eth->hwlro) {
@@ -2542,6 +2543,36 @@ static irqreturn_t mtk_handle_irq(int irq, void *_eth)
 	if (mtk_r32(eth, eth->tx_int_mask_reg) & MTK_TX_DONE_INT) {
 		if (mtk_r32(eth, eth->tx_int_status_reg) & MTK_TX_DONE_INT)
 			mtk_handle_irq_tx(irq, _eth);
+	}
+
+	return IRQ_HANDLED;
+}
+
+static irqreturn_t mtk_handle_irq_fixed_link(int irq, void *_mac)
+{
+	struct mtk_mac *mac = _mac;
+	struct mtk_eth *eth = mac->hw;
+	struct mtk_phylink_priv *phylink_priv = &mac->phylink_priv;
+	struct net_device *dev = phylink_priv->dev;
+	int link_old, link_new;
+
+	// clear interrupt status for gpy211
+	_mtk_mdio_read(eth, phylink_priv->phyaddr, 0x1A);
+
+	link_old = phylink_priv->link;
+	link_new = _mtk_mdio_read(eth, phylink_priv->phyaddr, MII_BMSR) & BMSR_LSTATUS;
+
+	if (link_old != link_new) {
+		phylink_priv->link = link_new;
+		if (link_new) {
+			printk("phylink.%d %s: Link is Up\n", phylink_priv->id, dev->name);
+			if (dev)
+				netif_carrier_on(dev);
+		} else {
+			printk("phylink.%d %s: Link is Down\n", phylink_priv->id, dev->name);
+			if (dev)
+				netif_carrier_off(dev);
+		}
 	}
 
 	return IRQ_HANDLED;
@@ -2640,6 +2671,7 @@ static int mtk_open(struct net_device *dev)
 {
 	struct mtk_mac *mac = netdev_priv(dev);
 	struct mtk_eth *eth = mac->hw;
+	struct mtk_phylink_priv *phylink_priv = &mac->phylink_priv;
 	int err, i;
 	struct device_node *phy_node;
 
@@ -2684,6 +2716,34 @@ static int mtk_open(struct net_device *dev)
 	}
 	else
 		refcount_inc(&eth->dma_refcnt);
+
+	if (phylink_priv->desc) {
+		/*Notice: This programming sequence is only for GPY211 single PHY chip.
+		  If single PHY chip is not GPY211, the following step you should do:
+		  1. Contact your Single PHY chip vendor and get the details of
+		    - how to enables link status change interrupt
+		    - how to clears interrupt source
+		 */
+
+		// clear interrupt source for gpy211
+		_mtk_mdio_read(eth, phylink_priv->phyaddr, 0x1A);
+
+		// enable link status change interrupt for gpy211
+		_mtk_mdio_write(eth, phylink_priv->phyaddr, 0x19, 0x0001);
+
+		phylink_priv->dev = dev;
+
+		// override dev pointer for single PHY chip 0
+		if (phylink_priv->id == 0) {
+			struct net_device *tmp;
+
+			tmp = __dev_get_by_name(&init_net, phylink_priv->label);
+			if (tmp)
+				phylink_priv->dev = tmp;
+			else
+				phylink_priv->dev = NULL;
+		}
+	}
 
 	phylink_start(mac->phylink);
 	netif_start_queue(dev);
@@ -2937,8 +2997,11 @@ static int mtk_hw_init(struct mtk_eth *eth, u32 type)
 		/* PSE Free Queue Flow Control  */
 		mtk_w32(eth, 0x01fa01f4, PSE_FQFC_CFG2);
 
-		/* PSE should not drop port8 and port9 packets */
-		mtk_w32(eth, 0x00000300, PSE_DROP_CFG);
+		/* PSE should not drop port8 and port9 packets from WDMA Tx */
+		mtk_w32(eth, 0x00000300, PSE_NO_DROP_CFG);
+
+		/* PSE should drop p8 and p9 packets when WDMA Rx ring full*/
+		mtk_w32(eth, 0x00000300, PSE_PPE0_DROP);
 
 		/* PSE config input queue threshold */
 		mtk_w32(eth, 0x001a000e, PSE_IQ_REV(1));
@@ -3397,6 +3460,9 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
 	struct phylink *phylink;
 	int phy_mode, id, err;
 	struct mtk_mac *mac;
+	struct mtk_phylink_priv *phylink_priv;
+	struct fwnode_handle *fixed_node;
+	struct gpio_desc *desc;
 
 	if (!_id) {
 		dev_err(eth->dev, "missing mac id\n");
@@ -3465,6 +3531,41 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
 	}
 
 	mac->phylink = phylink;
+
+	fixed_node = fwnode_get_named_child_node(of_fwnode_handle(mac->of_node),
+						 "fixed-link");
+	if (fixed_node) {
+		desc = fwnode_get_named_gpiod(fixed_node, "link-gpio",
+					      0, GPIOD_IN, "?");
+		if (!IS_ERR(desc)) {
+			struct device_node *phy_np;
+			const char *label;
+			int irq, phyaddr;
+
+			phylink_priv = &mac->phylink_priv;
+
+			phylink_priv->desc = desc;
+			phylink_priv->id = id;
+			phylink_priv->link = -1;
+
+			irq = gpiod_to_irq(desc);
+			if (irq > 0) {
+				devm_request_irq(eth->dev, irq, mtk_handle_irq_fixed_link,
+						 IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
+					         "ethernet:fixed link", mac);
+			}
+
+			if (!of_property_read_string(to_of_node(fixed_node), "label", &label))
+				strcpy(phylink_priv->label, label);
+
+			phy_np = of_parse_phandle(to_of_node(fixed_node), "phy-handle", 0);
+			if (phy_np) {
+				if (!of_property_read_u32(phy_np, "reg", &phyaddr))
+					phylink_priv->phyaddr = phyaddr;
+			}
+		}
+		fwnode_handle_put(fixed_node);
+	}
 
 	SET_NETDEV_DEV(eth->netdev[id], eth->dev);
 	eth->netdev[id]->watchdog_timeo = 5 * HZ;
