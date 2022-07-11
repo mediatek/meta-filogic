@@ -32,7 +32,7 @@ S = "${WORKDIR}/backports-${PV}-1"
 
 do_filogic_patches() {
     cd ${S}
-    if [ ! -e "/sbin/depmod" ] && [ ! -e patch_applied ]; then
+    if [ ! -e patch_applied ]; then
         patch -p1 < ${WORKDIR}/0001-rdkb-fix_build_issue-mac80211-without_depmod.patch
         touch patch_applied
     fi
