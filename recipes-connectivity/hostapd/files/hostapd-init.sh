@@ -202,18 +202,24 @@ then
 fi
 
 #Work around for Ethernet connected clients
+if [ ! -f /sys/class/net/lan0 ]
+then
+brctl addif brlan0 eth1
+else
 brctl addif brlan0 lan0
 brctl addif brlan0 lan1
 brctl addif brlan0 lan2
 brctl addif brlan0 lan3
 brctl addif brlan0 lan4
 
-ifconfig eth1 up
 ifconfig lan0 up
 ifconfig lan1 up
 ifconfig lan2 up
 ifconfig lan3 up
 ifconfig lan4 up
+fi
+ifconfig eth1 up
+
 
 #workaround: creating /opt/secure folder for ssh service
 mkdir /opt/secure
