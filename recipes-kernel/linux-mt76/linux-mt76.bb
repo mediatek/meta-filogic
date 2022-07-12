@@ -7,7 +7,7 @@ inherit module
 
 PV = "1.0"
 
-SRCREV ?= "b6e865e2cc7080c91ec34a9dd3648d25f7ce04c6"
+SRCREV ?= "93e3fce916c62d06892d41bf00d0f4c2926c9a0b"
 SRC_URI = " \
     git://git@github.com/openwrt/mt76.git;protocol=https \
     file://COPYING;subdir=git \
@@ -96,6 +96,8 @@ do_install_append () {
     install -m 644 ${WORKDIR}/src/firmware/mt7986_eeprom_mt7976_dbdc.bin ${D}${base_libdir}/firmware/mediatek/
     install -m 644 ${WORKDIR}/src/firmware/mt7986_eeprom_mt7976.bin  ${D}${base_libdir}/firmware/mediatek/
     install -m 644 ${WORKDIR}/src/firmware/mt7986_eeprom_mt7976_dual.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${WORKDIR}/src/firmware/mt7986_wo_0.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${WORKDIR}/src/firmware/mt7986_wo_1.bin ${D}${base_libdir}/firmware/mediatek/
 }
 
 FILES_${PN} += " \
@@ -113,6 +115,8 @@ FILES_${PN} += " \
     ${base_libdir}/firmware/mediatek/mt7986_eeprom_mt7976_dbdc.bin \
     ${base_libdir}/firmware/mediatek/mt7986_eeprom_mt7976.bin \
     ${base_libdir}/firmware/mediatek/mt7986_eeprom_mt7976_dual.bin \
+    ${base_libdir}/firmware/mediatek/mt7986_wo_0.bin \
+    ${base_libdir}/firmware/mediatek/mt7986_wo_1.bin \
     "
 # Make linux-mt76 depend on all of the split-out packages.
 python populate_packages_prepend () {

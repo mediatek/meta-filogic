@@ -23,8 +23,6 @@ SRC_URI_append = " \
     file://550-loop-Report-EOPNOTSUPP-properly.patch \
     file://640-bridge-only-accept-EAP-locally.patch \
     file://645-netfilter-connmark-introduce-set-dscpmark.patch \
-    file://647-netfilter-flow-acct.patch \
-    file://650-netfilter-add-xt_OFFLOAD-target.patch \
     file://651-wireless_mesh_header.patch \
     file://660-fq_codel_defaults.patch \
     file://661-use_fq_codel_by_default.patch \
