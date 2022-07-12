@@ -62,6 +62,10 @@ SRC_URI_append = " \
     file://910-master-Add-hostapd_neighbor_set_pref_by_non_pref_chan.patch \
     file://911-master-print-sae-groups-by-hostapd-ctrl.patch \
     file://913-master-add-support-for-runtime-set-in-band-discover.patch \
+    file://914-Add-mtk_vendor.h.patch \
+    file://915-Support-new-hostapd-configuration-edcca_enable-and-e.patch \
+    file://916-Add-hostapd-command-handler-for-SET_EDCCA-GET_EDCCA-.patch \
     file://990-ctrl-make-WNM_AP-functions-dependant-on-CONFIG_AP.patch \
     file://991-fix-compile.patch \
+    file://992-openssl-include-rsa.patch \
     "

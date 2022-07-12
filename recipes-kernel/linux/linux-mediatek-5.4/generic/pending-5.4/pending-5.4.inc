@@ -12,7 +12,6 @@ SRC_URI_append = " \
     file://180-net-phy-at803x-add-support-for-AT8032.patch \
     file://190-rtc-rs5c372-support_alarms_up_to_1_week.patch \
     file://191-rtc-rs5c372-let_the_alarm_to_be_used_as_wakeup_source.patch \
-    file://201-extra_optimization.patch \
     file://203-kallsyms_uncompressed.patch \
     file://205-backtrace_module_info.patch \
     file://240-remove-unsane-filenames-from-deps_initramfs-list.patch \
