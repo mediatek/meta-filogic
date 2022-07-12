@@ -194,7 +194,7 @@ touch /tmp/hostapd9.psk
 touch /var/run/hostapd_wps_pin_requests.log
 
 #Setting brlan0 bridge
-if [ ! -f /sys/class/net/brlan0 ]
+if [ ! -d /sys/class/net/brlan0 ]
 then
     brctl addbr brlan0
     ip link set brlan0 address `cat /sys/class/net/eth1/address`
@@ -202,7 +202,7 @@ then
 fi
 
 #Work around for Ethernet connected clients
-if [ ! -f /sys/class/net/lan0 ]
+if [ ! -d /sys/class/net/lan0 ]
 then
 brctl addif brlan0 eth1
 else
