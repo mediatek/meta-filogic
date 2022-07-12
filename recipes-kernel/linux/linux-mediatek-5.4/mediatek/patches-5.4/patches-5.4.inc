@@ -103,4 +103,11 @@ SRC_URI_append = " \
     file://9009-Add-spi-runtime-PM-support.patch \
     file://9010-iwconfig-wireless-rate-fix.patch;apply=no \
     file://9011-Modify-tick_delay-for-spi-work-safety.patch \
+    file://9013-drivers-spi-mt65xx-Move-chip_config-to-driver-priv.patch \
+    file://9014-drivers-spi-Add-support-for-dynamic-calibration.patch \
+    file://9015-drivers-spi-mem-Add-spi-calibration-hook.patch \
+    file://9016-drivers-spi-mt65xx-Add-controller-calibration-parameter.patch \
+    file://9017-drivers-mtd-spinand-Add-calibration-support-for-spinand.patch \
+    file://9018-drivers-mtd-spi-nor-Add-calibration-support-for-spi-nor.patch \
+    file://9019-drivers-char-tpm-Add-calibration-example-for-SPI-TPM-module.patch \
     "
