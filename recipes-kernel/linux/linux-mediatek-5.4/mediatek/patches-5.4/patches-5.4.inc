@@ -60,7 +60,6 @@ SRC_URI_append = " \
     file://0993-arm64-dts-mediatek-Split-PCIe-node-for-MT2712-MT7622.patch \
     file://0994-ARM-dts-mediatek-Update-mt7629-PCIe-node.patch \
     file://1001-mtkhnat-ipv6-fix-pskb-expand-head-limitation.patch \
-    file://1002-mtkhnat-add-support-for-virtual-interface-acceleration.patch \
     file://1003-dts-mt7622-rfb-change-to-ax-mtd-layout.patch \
     file://1010-pcie-mediatek-fix-clearing-interrupt-status.patch \
     file://1015-pcie-add-pcie-gen3-upstream-driver.patch \

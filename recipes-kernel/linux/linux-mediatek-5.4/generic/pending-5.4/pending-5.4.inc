@@ -76,14 +76,6 @@ SRC_URI_append = " \
     file://613-netfilter_optional_tcp_window_check.patch \
     file://620-net_sched-codel-do-not-defer-queue-length-update.patch \
     file://630-packet_socket_type.patch \
-    file://640-netfilter-nf_flow_table-add-hardware-offload-support.patch \
-    file://641-netfilter-nf_flow_table-support-hw-offload-through-v.patch \
-    file://642-net-8021q-support-hardware-flow-table-offload.patch \
-    file://643-net-bridge-support-hardware-flow-table-offload.patch \
-    file://644-net-pppoe-support-hardware-flow-table-offload.patch \
-    file://645-netfilter-nf_flow_table-rework-hardware-offload-time.patch \
-    file://646-netfilter-nf_flow_table-rework-private-driver-data.patch \
-    file://647-net-dsa-support-hardware-flow-table-offload.patch \
     file://655-increase_skb_pad.patch \
     file://666-Add-support-for-MAP-E-FMRs-mesh-mode.patch \
     file://670-ipv6-allow-rejecting-with-source-address-failed-policy.patch \

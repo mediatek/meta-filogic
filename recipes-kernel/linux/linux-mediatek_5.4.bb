@@ -3,6 +3,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/generic/backport-5.4:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/generic/pending-5.4:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/generic/hack-5.4:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/mediatek/patches-5.4:"
+FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/mediatek/flow_patch:"
 
 KBRANCH ?= "linux-5.4.y"
 
@@ -77,6 +78,8 @@ do_filogic_patches() {
             fi
             patch -p1 < ${WORKDIR}/0600-net-phylink-propagate-resolved-link-config-via-mac_l.patch
             patch -p1 < ${WORKDIR}/9010-iwconfig-wireless-rate-fix.patch
+
+	    for i in ${WORKDIR}/mediatek/flow_patch/*.patch; do patch -p1 < $i; done
             touch patch_applied
         fi
 }

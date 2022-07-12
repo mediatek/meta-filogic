@@ -35,6 +35,7 @@ SRC_URI_append = " \
     file://335-mac80211-add-debugfs-file-to-display-per-phy-AQL-pen.patch \
     file://336-mac80211-only-accumulate-airtime-deficit-for-active-.patch \
     file://337-mac80211-increase-quantum-for-airtime-scheduler.patch \
+    file://338-mac80211-fix-queue-selection-for-mesh-OCB-interfaces.patch \
     file://350-bss-color-collision.patch \
     file://400-allow-ibss-mixed.patch \
     file://500-mac80211_configure_antenna_gain.patch \
@@ -47,4 +48,6 @@ SRC_URI_append = " \
     file://905-mac80211-airtime_flags-depends-on-NL80211_EXT_FEATUR.patch \
     file://906-mac80211-add-support-for-runtime-set-inband-discovery.patch \
     file://908-mac80211-add-s1g-category-to-_ieee80211_is_robust_mg.patch \
+    file://910-mac80211-offload.patch \
+    file://911-add-fill-receive-path-ops-to-get-wed-idx-v2.patch \
     "
