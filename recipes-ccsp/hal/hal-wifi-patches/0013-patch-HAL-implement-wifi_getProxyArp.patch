@@ -1,0 +1,43 @@
+From 3d2602233dc6190f9627fe48beb6ed05b5546783 Mon Sep 17 00:00:00 2001
+From: "howard.hsu" <howard-yh.hsu@mediatek.com>
+Date: Tue, 8 Mar 2022 16:33:44 +0800
+Subject: [PATCH 13/18] [patch] HAL: implement wifi_getProxyArp()
+
+Change-Id: I9e1d04eac09fe7ae1d43600a6c8549feb0ea7858
+---
+ source/wifi/wifi_hal.c | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+
+diff --git a/source/wifi/wifi_hal.c b/source/wifi/wifi_hal.c
+index cb5c6109..f10e16ab 100644
+--- a/source/wifi/wifi_hal.c
++++ b/source/wifi/wifi_hal.c
+@@ -8957,3 +8957,25 @@ INT wifi_getApAssociatedDevice(INT ap_index, CHAR *output_buf, INT output_buf_si
+      return RETURN_OK;
+ }
+ #endif
++
++INT wifi_getProxyArp(INT apIndex, BOOL *enable)
++{
++    char output[16]={'\0'};
++    char config_file[MAX_BUF_SIZE] = {0};
++
++    if (!enable)
++        return RETURN_ERR;
++
++    sprintf(config_file, "%s%d.conf", CONFIG_PREFIX, apIndex);
++    wifi_hostapdRead(config_file, "proxy_arp", output, sizeof(output));
++
++    if (strlen(output) == 0)
++        *enable = FALSE;
++    else if (strncmp(output, "1", 1) == 0)
++        *enable = TRUE;
++    else
++        *enable = FALSE;
++
++    wifi_dbg_printf("\n[%s]: proxy_arp is : %s", __func__, output);
++    return RETURN_OK;
++}
+-- 
+2.29.2
+

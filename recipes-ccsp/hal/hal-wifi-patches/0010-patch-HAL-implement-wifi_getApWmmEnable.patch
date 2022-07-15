@@ -1,0 +1,36 @@
+From 22017539d25420018d654e8f92ae517eacb08335 Mon Sep 17 00:00:00 2001
+From: "howard.hsu" <howard-yh.hsu@mediatek.com>
+Date: Mon, 7 Mar 2022 19:12:13 +0800
+Subject: [PATCH 10/18] [patch] HAL: implement wifi_getApWmmEnable()
+
+Change-Id: I5baf1c0402fac4795ff52e58bce8be92b9fbf13d
+---
+ source/wifi/wifi_hal.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/source/wifi/wifi_hal.c b/source/wifi/wifi_hal.c
+index 680b4283..4e220ed6 100644
+--- a/source/wifi/wifi_hal.c
++++ b/source/wifi/wifi_hal.c
+@@ -4496,7 +4496,17 @@ INT wifi_getApWmmEnable(INT apIndex, BOOL *output)
+     //get the running status from driver
+     if(!output)
+         return RETURN_ERR;
+-    *output=TRUE;
++
++    char config_file[MAX_BUF_SIZE] = {0};
++    char buf[16] = {0};
++
++    sprintf(config_file,"%s%d.conf",CONFIG_PREFIX,apIndex);
++    wifi_hostapdRead(config_file, "wmm_enabled", buf, sizeof(buf));
++    if (strncmp("1",buf,1) == 0)
++        *output = TRUE;
++    else
++        *output = FALSE;
++
+     return RETURN_OK;
+ }
+ 
+-- 
+2.29.2
+

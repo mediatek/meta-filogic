@@ -1,0 +1,70 @@
+From b0ea47cacafdc1aa512afd04129a23267d7d3533 Mon Sep 17 00:00:00 2001
+From: "howard.hsu" <howard-yh.hsu@mediatek.com>
+Date: Wed, 6 Apr 2022 16:34:31 +0800
+Subject: [PATCH 1/2] HAL: add wifi_getApDenyAclDevics() and refactor
+ wifi_kickApAclAssociatedDevices()
+
+According to the description of wifi_kickApAclAssociatedDevice(), wifi_kickApAclAssociatedDevices()
+have to kicks the devices written in the deny mac lsit. But current Implementation
+kicks the devices in the accept list. This commit is created to refactor this API.
+---
+ source/wifi/wifi_hal.c | 26 +++++++++++++++++---------
+ 1 file changed, 17 insertions(+), 9 deletions(-)
+
+diff --git a/source/wifi/wifi_hal.c b/source/wifi/wifi_hal.c
+index c753d99..6427a43 100644
+--- a/source/wifi/wifi_hal.c
++++ b/source/wifi/wifi_hal.c
+@@ -4068,6 +4068,20 @@ INT wifi_getApAclDevices(INT apIndex, CHAR *macArray, UINT buf_size)
+     return RETURN_OK;
+ }
+ 
++INT wifi_getApDenyAclDevices(INT apIndex, CHAR *macArray, UINT buf_size)
++{
++    char cmd[MAX_CMD_SIZE]={'\0'};
++    int ret = 0;
++
++    sprintf(cmd, "hostapd_cli -i %s%d deny_acl SHOW | awk '{print $1}'", AP_PREFIX,apIndex);
++    ret = _syscmd(cmd,macArray,buf_size);
++    if (ret != 0)
++        return RETURN_ERR;
++
++    return RETURN_OK;
++}
++
++
+ // Get the list of stations associated per AP
+ INT wifi_getApDevicesAssociated(INT apIndex, CHAR *macArray, UINT buf_size)
+ {
+@@ -4159,7 +4173,7 @@ INT wifi_kickApAclAssociatedDevices(INT apIndex, BOOL enable)
+     char aclArray[512] = {0}, *acl = NULL;
+     char assocArray[512] = {0}, *asso = NULL;
+ 
+-    wifi_getApAclDevices(apIndex, aclArray, sizeof(aclArray));
++    wifi_getApDenyAclDevices(apIndex, aclArray, sizeof(aclArray));
+     wifi_getApDevicesAssociated(apIndex, assocArray, sizeof(assocArray));
+ 
+     // if there are no devices connected there is nothing to do
+@@ -4176,17 +4190,11 @@ INT wifi_kickApAclAssociatedDevices(INT apIndex, BOOL enable)
+ 
+             acl = strtok(NULL, "\r\n");
+         }
++		wifi_setApMacAddressControlMode(apIndex, 2);
+     }
+     else
+     {
+-        //kick off the MAC which is not in ACL array (allow list)
+-        asso = strtok(assocArray, "\r\n");
+-        while (asso != NULL) {
+-            if (strlen(asso) >= 17 && !strcasestr(aclArray, asso))
+-                wifi_kickApAssociatedDevice(apIndex, asso);
+-
+-            asso = strtok(NULL, "\r\n");
+-        }
++		wifi_setApMacAddressControlMode(apIndex, 0);
+     }
+ 
+ #if 0
+-- 
+2.18.0
+

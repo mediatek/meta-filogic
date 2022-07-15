@@ -1,0 +1,47 @@
+From 22612dd89f434aac2383f0601e3a5d921896eb11 Mon Sep 17 00:00:00 2001
+From: "howard.hsu" <howard-yh.hsu@mediatek.com>
+Date: Wed, 23 Feb 2022 11:40:41 +0800
+Subject: [PATCH 02/18] [patch] HAL: refactor wifi_getRadioChannel()
+
+Change-Id: Idf011ea57255837f1cdd1ee62ef3dc9d391090d0
+---
+ source/wifi/wifi_hal.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/source/wifi/wifi_hal.c b/source/wifi/wifi_hal.c
+index 14452dd4..19f7508c 100644
+--- a/source/wifi/wifi_hal.c
++++ b/source/wifi/wifi_hal.c
+@@ -29,7 +29,7 @@ Copyright (c) 2007        Mike Kershaw
+ Copyright (c) 2008-2009        Luis R. Rodriguez
+ Licensed under the ISC license
+ */
+-
++#define MTK_IMPL
+ #define HAL_NETLINK_IMPL
+ 
+ #include <stdio.h>
+@@ -1593,6 +1593,12 @@ INT wifi_getRadioChannelsInUse(INT radioIndex, CHAR *output_string)	//RDKB
+ //Get the running channel number 
+ INT wifi_getRadioChannel(INT radioIndex,ULONG *output_ulong)	//RDKB
+ {
++#ifdef MTK_IMPL
++    if(!wifi_getApChannel(radioIndex, output_ulong))
++        return RETURN_OK;
++    else
++        return RETURN_ERR;
++#else
+     char cmd[1024] = {0}, buf[5] = {0};
+     char interface_name[50] = {0};
+ 
+@@ -1613,6 +1619,7 @@ INT wifi_getRadioChannel(INT radioIndex,ULONG *output_ulong)	//RDKB
+ 
+     WIFI_ENTRY_EXIT_DEBUG("Exiting %s:%d\n",__func__, __LINE__);
+     return RETURN_OK;
++#endif
+ }
+ 
+ 
+-- 
+2.29.2
+

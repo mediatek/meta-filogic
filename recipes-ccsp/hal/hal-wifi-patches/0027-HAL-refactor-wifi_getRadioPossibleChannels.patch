@@ -1,0 +1,39 @@
+From 312aae9b294a5cb7448887db34654383839a32da Mon Sep 17 00:00:00 2001
+From: "Allen.Ye" <allen.ye@mediatek.com>
+Date: Tue, 24 May 2022 13:53:35 +0800
+Subject: [PATCH] HAL: refactor wifi_getRadioPossibleChannels
+
+---
+ source/wifi/wifi_hal.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/source/wifi/wifi_hal.c b/source/wifi/wifi_hal.c
+index f15d2c9..a451b30 100644
+--- a/source/wifi/wifi_hal.c
++++ b/source/wifi/wifi_hal.c
+@@ -1571,10 +1571,20 @@ INT wifi_setRadioChannelMode(INT radioIndex, CHAR *channelMode, BOOL gOnlyFlag,
+ //The output_string is a max length 64 octet string that is allocated by the RDKB code.  Implementations must ensure that strings are not longer than this.
+ INT wifi_getRadioPossibleChannels(INT radioIndex, CHAR *output_string)	//RDKB
+ {
++    WIFI_ENTRY_EXIT_DEBUG("Inside %s:%d\n",__func__, __LINE__);
+     if (NULL == output_string) 
+         return RETURN_ERR;
+-    //TODO:read this from iw phy phyX info |grep MHz
+-    snprintf(output_string, 64, (radioIndex == 0)?"1,2,3,4,5,6,7,8,9,10,11":"36,40,44,48,52,56,60,64,100,104,108,112,116,120,124,128,132,136,140");
++
++    char cmd[MAX_CMD_SIZE] = {0};
++    char buf[MAX_BUF_SIZE] = {0};
++
++    // Parse possible channel number and separate them with commas.
++    snprintf(cmd, sizeof(cmd), "iwlist %s%d channel | grep GHz | tr -s ' ' | cut -d ' ' -f3 | tr '\n' ',' | sed 's/.$//'", AP_PREFIX, radioIndex);
++    _syscmd(cmd,buf,sizeof(buf));
++    snprintf(output_string, 128, "%s", buf);
++
++    WIFI_ENTRY_EXIT_DEBUG("Exiting %s:%d\n",__func__, __LINE__);
++    return RETURN_OK;
+ #if 0
+     char IFName[50] ={0};
+     char buf[MAX_BUF_SIZE] = {0};
+-- 
+2.18.0
+

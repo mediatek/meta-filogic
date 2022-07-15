@@ -1,0 +1,36 @@
+From 5e446b7ed3ee1040ccacc90747f69879fec5f4d6 Mon Sep 17 00:00:00 2001
+From: "howard.hsu" <howard-yh.hsu@mediatek.com>
+Date: Mon, 7 Mar 2022 19:11:24 +0800
+Subject: [PATCH 09/18] [patch] HAL: implement wifi_getApWmmUapsdEnable()
+
+Change-Id: I4127956b14d984dc8470d66423f4b7560e48708f
+---
+ source/wifi/wifi_hal.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/source/wifi/wifi_hal.c b/source/wifi/wifi_hal.c
+index 3ddbc802..680b4283 100644
+--- a/source/wifi/wifi_hal.c
++++ b/source/wifi/wifi_hal.c
+@@ -4513,7 +4513,17 @@ INT wifi_getApWmmUapsdEnable(INT apIndex, BOOL *output)
+     //get the running status from driver
+     if(!output)
+         return RETURN_ERR;
+-    *output=TRUE;
++
++    char config_file[MAX_BUF_SIZE] = {0};
++    char buf[16] = {0};
++
++    sprintf(config_file,"%s%d.conf",CONFIG_PREFIX,apIndex);
++    wifi_hostapdRead(config_file, "uapsd_advertisement_enabled", buf, sizeof(buf));
++    if (strncmp("1",buf,1) == 0)
++        *output = TRUE;
++    else
++        *output = FALSE;
++
+     return RETURN_OK;
+ }
+ 
+-- 
+2.29.2
+

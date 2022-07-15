@@ -1,0 +1,39 @@
+From bd22b8ef61e88e1e379925aecb6224bc3cd43963 Mon Sep 17 00:00:00 2001
+From: "howard.hsu" <howard-yh.hsu@mediatek.com>
+Date: Mon, 7 Mar 2022 19:17:56 +0800
+Subject: [PATCH 11/18] [patch] HAL: implement wifi_setApWmmEnable()
+
+Change-Id: Ifee29de1c42ef26528d26996937db7c959d8fd06
+---
+ source/wifi/wifi_hal.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/source/wifi/wifi_hal.c b/source/wifi/wifi_hal.c
+index 4e220ed6..62350c1b 100644
+--- a/source/wifi/wifi_hal.c
++++ b/source/wifi/wifi_hal.c
+@@ -4514,7 +4514,20 @@ INT wifi_getApWmmEnable(INT apIndex, BOOL *output)
+ INT wifi_setApWmmEnable(INT apIndex, BOOL enable)
+ {
+     //Save config and apply instantly.
+-    return RETURN_ERR;
++    char config_file[MAX_BUF_SIZE] = {0};
++    struct params list;
++
++    WIFI_ENTRY_EXIT_DEBUG("Inside %s:%d\n",__func__, __LINE__);
++    list.name = "wmm_enabled";
++    list.value = enable?"1":"0";
++
++    sprintf(config_file,"%s%d.conf",CONFIG_PREFIX,apIndex);
++    wifi_hostapdWrite(config_file, &list, 1);
++    wifi_hostapdProcessUpdate(apIndex, &list, 1);
++    wifi_reloadAp(apIndex);
++    WIFI_ENTRY_EXIT_DEBUG("Exiting %s:%d\n",__func__, __LINE__);
++
++    return RETURN_OK;
+ }
+ 
+ //Whether U-APSD support is currently enabled. When enabled, this is indicated in beacon frames. Note: U-APSD can only be enabled if WMM is also enabled.
+-- 
+2.29.2
+

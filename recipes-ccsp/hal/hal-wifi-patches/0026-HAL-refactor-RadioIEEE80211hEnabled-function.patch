@@ -1,0 +1,66 @@
+From 3efd6b24e39dd13b0fbbbd97d7be129df438d0de Mon Sep 17 00:00:00 2001
+From: "Allen.Ye" <allen.ye@mediatek.com>
+Date: Mon, 23 May 2022 15:15:31 +0800
+Subject: [PATCH] HAL: refactor RadioIEEE80211hEnabled function
+
+---
+ source/wifi/wifi_hal.c | 35 ++++++++++++++++++++++++++++++++---
+ 1 file changed, 32 insertions(+), 3 deletions(-)
+
+diff --git a/source/wifi/wifi_hal.c b/source/wifi/wifi_hal.c
+index ea400bf..af7cb10 100644
+--- a/source/wifi/wifi_hal.c
++++ b/source/wifi/wifi_hal.c
+@@ -2260,17 +2260,46 @@ INT wifi_getRadioIEEE80211hSupported(INT radioIndex, BOOL *Supported)  //Tr181
+ //Get 80211h feature enable
+ INT wifi_getRadioIEEE80211hEnabled(INT radioIndex, BOOL *enable) //Tr181
+ {
+-    if (NULL == enable)
++    char cmd[MAX_BUF_SIZE]={'\0'};
++    char buf[MAX_CMD_SIZE]={'\0'};
++
++    WIFI_ENTRY_EXIT_DEBUG("Inside %s:%d\n",__func__, __LINE__);
++    if(enable == NULL)
+         return RETURN_ERR;
+-    *enable = FALSE;
+ 
++    snprintf(cmd, sizeof(cmd),  "hostapd_cli -i %s%d status | grep ieee80211h | cut -d '=' -f2", AP_PREFIX, radioIndex);
++    _syscmd(cmd, buf, sizeof(buf));
++
++    if (strncmp(buf, "1", 1) == 0)
++        *enable = true;
++    else
++        *enable = false;
++
++    WIFI_ENTRY_EXIT_DEBUG("Exiting %s:%d\n",__func__, __LINE__);
+     return RETURN_OK;
+ }
+ 
+ //Set 80211h feature enable
+ INT wifi_setRadioIEEE80211hEnabled(INT radioIndex, BOOL enable)  //Tr181
+ {
+-    return RETURN_ERR;
++    WIFI_ENTRY_EXIT_DEBUG("Inside %s:%d\n",__func__, __LINE__);
++    struct params params={'\0'};
++    char config_file[MAX_BUF_SIZE] = {0};
++
++    params.name = "ieee80211h";
++
++    if (enable) {
++        params.value = "1";
++    } else {
++        params.value = "0";
++    }
++
++    sprintf(config_file,"%s%d.conf",CONFIG_PREFIX,radioIndex);
++    wifi_hostapdWrite(config_file, &params, 1);
++    
++    wifi_hostapdProcessUpdate(radioIndex, &params, 1);
++    WIFI_ENTRY_EXIT_DEBUG("Exiting %s:%d\n",__func__, __LINE__);
++    return RETURN_OK;
+ }
+ 
+ //Indicates the Carrier Sense ranges supported by the radio. It is measured in dBm. Refer section A.2.3.2 of CableLabs Wi-Fi MGMT Specification.
+-- 
+2.18.0
+

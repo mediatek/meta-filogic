@@ -1,0 +1,26 @@
+From df5ff0159878e1b71cb6c2e223226cf7b5644a3a Mon Sep 17 00:00:00 2001
+From: "howard.hsu" <howard-yh.hsu@mediatek.com>
+Date: Mon, 14 Mar 2022 20:43:14 +0800
+Subject: [PATCH 17/18] [PATCH] HAL: refactor
+ wifi_setApSsidAdvertisementEnable()
+
+Change-Id: I5d17d443e0763b6728561548117c8a5b047ed882
+---
+ source/wifi/wifi_hal.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/source/wifi/wifi_hal.c b/source/wifi/wifi_hal.c
+index 6be09577..e44a9d02 100644
+--- a/source/wifi/wifi_hal.c
++++ b/source/wifi/wifi_hal.c
+@@ -4481,6 +4481,7 @@ INT wifi_setApSsidAdvertisementEnable(INT apIndex, BOOL enable)
+     wifi_hostapdWrite(config_file, &list, 1);
+     wifi_hostapdProcessUpdate(apIndex, &list, 1);
+     //TODO: call hostapd_cli for dynamic_config_control
++    wifi_reloadAp(apIndex);
+     WIFI_ENTRY_EXIT_DEBUG("Exiting %s:%d\n",__func__, __LINE__);
+ 
+     return RETURN_OK;
+-- 
+2.29.2
+

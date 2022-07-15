@@ -1,0 +1,28 @@
+From 0d63e3eeb35f082a51f03517ad2dcff2609c5a4f Mon Sep 17 00:00:00 2001
+From: "howard.hsu" <howard-yh.hsu@mediatek.com>
+Date: Wed, 23 Feb 2022 14:33:12 +0800
+Subject: [PATCH 03/18] [patch] HAL: implement wifi_reset()
+
+Change-Id: I8e969e2f167c96852c02374b463bf9567de40365
+---
+ source/wifi/wifi_hal.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/source/wifi/wifi_hal.c b/source/wifi/wifi_hal.c
+index 19f7508c..be9d4f67 100644
+--- a/source/wifi/wifi_hal.c
++++ b/source/wifi/wifi_hal.c
+@@ -848,6 +848,10 @@ INT wifi_init()                            //RDKB
+ INT wifi_reset()
+ {
+     //TODO: resets the wifi subsystem, deletes all APs
++    system("systemctl stop hostapd.service");
++    sleep(2);
++    system("systemctl start hostapd.service");
++    sleep(5);
+     return RETURN_OK;
+ }
+ 
+-- 
+2.29.2
+

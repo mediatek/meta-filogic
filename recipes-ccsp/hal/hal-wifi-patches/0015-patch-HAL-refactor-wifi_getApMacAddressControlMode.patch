@@ -1,0 +1,43 @@
+From 522c439c6253be13a508464bb9e9676a057c09f1 Mon Sep 17 00:00:00 2001
+From: "howard.hsu" <howard-yh.hsu@mediatek.com>
+Date: Mon, 14 Mar 2022 19:06:29 +0800
+Subject: [PATCH 15/18] [patch] HAL: refactor wifi_getApMacAddressControlMode()
+
+Change-Id: I612e055e60ef9a48f2f7d719cb9baf486644b5be
+---
+ source/wifi/wifi_hal.c | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
+
+diff --git a/source/wifi/wifi_hal.c b/source/wifi/wifi_hal.c
+index 533226b5..05413f5e 100644
+--- a/source/wifi/wifi_hal.c
++++ b/source/wifi/wifi_hal.c
+@@ -6736,7 +6736,24 @@ INT wifi_getApMacAddressControlMode(INT apIndex, INT *output_filterMode)
+     //_syscmd(cmd, buf, sizeof(buf));
+     sprintf(config_file, "%s%d.conf", CONFIG_PREFIX, apIndex);
+     wifi_hostapdRead(config_file, "macaddr_acl", buf, sizeof(buf));
+-    *output_filterMode = atoi(buf);
++    if(strlen(buf) == 0) {
++        *output_filterMode = 0;
++    }
++    else {
++        int macaddr_acl_mode = atoi(buf);
++        if (macaddr_acl_mode == 1) {
++            *output_filterMode = 1;
++        } else if (macaddr_acl_mode == 0) {
++            wifi_hostapdRead(config_file, "deny_mac_file", buf, sizeof(buf));
++            if (strlen(buf) == 0) {
++                *output_filterMode = 0;
++            } else {
++                *output_filterMode = 2;
++            }
++        } else {
++            return RETURN_ERR;
++        }
++    }
+ 
+     return RETURN_OK;
+ }
+-- 
+2.29.2
+

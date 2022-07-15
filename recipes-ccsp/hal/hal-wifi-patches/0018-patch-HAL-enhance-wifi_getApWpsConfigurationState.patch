@@ -1,0 +1,26 @@
+From 969e24609034a30bb45321e3098ac7ed49d9ca6c Mon Sep 17 00:00:00 2001
+From: "howard.hsu" <howard-yh.hsu@mediatek.com>
+Date: Wed, 23 Feb 2022 11:27:47 +0800
+Subject: [PATCH 18/18] [patch] HAL: enhance wifi_getApWpsConfigurationState()
+
+Change-Id: Ibecd442a3884d6b4f17b623ee5c696d04a7b9754
+---
+ source/wifi/wifi_hal.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/source/wifi/wifi_hal.c b/source/wifi/wifi_hal.c
+index e44a9d02..13af7e36 100644
+--- a/source/wifi/wifi_hal.c
++++ b/source/wifi/wifi_hal.c
+@@ -5181,7 +5181,7 @@ INT wifi_getApWpsConfigurationState(INT apIndex, CHAR *output_string)
+     snprintf(cmd, sizeof(cmd), "hostapd_cli -i %s%d get_config | grep wps_state | cut -d'=' -f2", AP_PREFIX, apIndex);
+     _syscmd(cmd, buf, sizeof(buf));
+ 
+-    if(!strcmp(buf, "configured"))
++    if(!strncmp(buf, "configured", 10))
+         snprintf(output_string, 32, "Configured");
+     WIFI_ENTRY_EXIT_DEBUG("Exiting %s:%d\n",__func__, __LINE__);
+ 
+-- 
+2.29.2
+
