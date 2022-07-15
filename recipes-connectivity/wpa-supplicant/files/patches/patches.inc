@@ -50,7 +50,6 @@ SRC_URI_append = " \
     file://740-snoop_iface.patch \
     file://750-qos_map_set_without_interworking.patch \
     file://751-qos_map_ignore_when_unsupported.patch \
-    file://812-DFS-Rdd0-fail-to-rollback-non-DFS-channel-when-DFS-channels-under-NOP.patch \
     file://902-master-Add-hostapd_neighbor_count-and-hostapd_neighbor_inse.patch \
     file://903-master-Support-including-neighbor-report-elements-in-ANQP-r.patch \
     file://904-master-Support-including-neignbor-report-elements-in-BTM-re.patch \
