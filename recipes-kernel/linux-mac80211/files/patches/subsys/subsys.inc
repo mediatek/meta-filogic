@@ -51,4 +51,5 @@ SRC_URI_append = " \
     file://908-mac80211-add-s1g-category-to-_ieee80211_is_robust_mg.patch \
     file://910-mac80211-offload.patch \
     file://911-add-fill-receive-path-ops-to-get-wed-idx-v2.patch \
+    file://912-mac80211-make-4addr-null-frames-using-min-rate-for-WDS.patch \
     "

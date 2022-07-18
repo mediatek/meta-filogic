@@ -6,7 +6,6 @@ SRC_URI_append = " \
     file://0004-mt76-mt7915-fix-tx-descriptor.patch \
     file://0005-mt76-mt7915-drop-undefined-action-frame.patch \
     file://0008-mt76-common-RF-CR-idx-require-8-bits.patch \
-    file://0010-mt76-mt7915-4addr-null-frame-using-fixed-rate-to-suc.patch \
     file://0011-mt76-testmode-use-random-payload-for-tx-packets.patch \
     file://0012-mt76-mt7915-add-spatial-extension-index-support.patch \
     file://100-Revert-of-net-pass-the-dst-buffer-to-of_get_mac_addr.patch \
