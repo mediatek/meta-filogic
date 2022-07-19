@@ -98,6 +98,7 @@ SRC_URI_append = " \
     file://8006-phy-phy-mtk-tphy-add-support-efuse-setting.patch \
     file://8007-phy-phy-mtk-tphy-Add-PCIe-2-lane-efuse-support.patch \
     file://8008-phy-phy-mtk-tphy-add-auto-load-valid-check-mechanism.patch \
+    file://8010-ovs-support-flow-offload.patch \
     file://9001-PATCH-1-2-xHCI-MT7986-USB-2.0-USBIF-compliance-toolkit.patch \
     file://9002-PATCH-1-1-usb-add-embedded-Host-feature-support.patch \
     file://9009-Add-spi-runtime-PM-support.patch \
