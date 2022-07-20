@@ -1,0 +1,201 @@
+#!/bin/sh
+
+
+COMMAND=/lib/upgrade/do_stage2
+
+
+RAMFS_COPY_BIN='fw_printenv fw_setenv'
+RAMFS_COPY_DATA="/etc/fw_env.config /var/lock/fw_printenv.lock"
+RAM_ROOT=/tmp/root                                                              
+
+export IMAGE=$1
+export VERBOSE=1
+
+_vn() {
+    [ -n "$VERBOSE" ] && [ "$VERBOSE" -ge 1 ] && echo -n "$*" >&2
+}
+
+vn() {
+    _vn "$(date) upgrade: $@"
+}
+
+_v() {
+    [ -n "$VERBOSE" ] && [ "$VERBOSE" -ge 1 ] && echo "$*" >&2
+}
+
+v() {
+    _v "$(date) upgrade: $@"
+}
+
+
+#include /lib/upgrade
+
+
+rootfs_type() {
+    /bin/mount | awk '($3 ~ /^\/$/) && ($5 !~ /rootfs/) { print $5 }'
+}
+
+[ -x /usr/bin/ldd ] || ldd() { LD_TRACE_LOADED_OBJECTS=1 $*; } 
+libs() { ldd $* 2>/dev/null | sed -r 's/(.* => )?(.*) .*/\2/'; }
+
+install_file() { # <file> [ <file> ... ]
+    local target dest dir
+    for file in "$@"; do
+        if [ -L "$file" ]; then
+            target="$(readlink -f "$file")"
+            dest="$RAM_ROOT/$file"
+            [ ! -f "$dest" ] && {
+                dir="$(dirname "$dest")"
+                mkdir -p "$dir"
+                ln -s "$target" "$dest"
+            }
+            file="$target"
+        fi
+        dest="$RAM_ROOT/$file"
+        [ -f "$file" -a ! -f "$dest" ] && {
+            dir="$(dirname "$dest")"
+            mkdir -p "$dir"
+            cp "$file" "$dest"
+        }
+    done
+}
+
+install_bin() {                                                                 
+    local src files                                                             
+    src=$1                                                                      
+    files=$1                                                                    
+    [ -x "$src" ] && files="$src $(libs $src)"                                  
+    install_file $files                                                         
+}
+
+supivot_orig() { # <new_root> <old_root>
+	/bin/mount | grep "on $1 type" 2>&- 1>&- || /bin/mount -o bind $1 $1
+	mkdir -p $1$2 $1/proc $1/sys $1/dev $1/tmp $1/overlay && \
+	/bin/mount -o noatime,move /proc $1/proc && \
+	pivot_root $1 $1$2 || {
+		/bin/umount -l $1 $1
+		return 1
+	}
+
+	/bin/mount -o noatime,move $2/sys /sys
+	/bin/mount -o noatime,move $2/dev /dev
+	/bin/mount -o noatime,move $2/tmp /tmp
+	/bin/mount -o noatime,move $2/overlay /overlay 2>&-
+	return 0
+}
+
+supivot() { # <new_root> <old_root>
+	v "in supivot $1 $2"
+	mount --make-rprivate /
+	mount --make-rprivate /tmp
+	/bin/mount | grep "on $1 type" 2>&- 1>&- || /bin/mount -o bind $1 $1
+	#mount --make-rprivate /proc
+	#mount --make-rprivate /tmp
+	#mount --make-rprivate $1
+	#cd /
+	#mkdir -p $1$2 $1/proc $1/sys $1/dev $1/tmp $1/overlay $1/home/root && \
+	mkdir -p $1$2 $1/proc $1/sys $1/dev $1/tmp $1/overlay && \
+	/bin/mount --bind /proc $1/proc && \
+	pivot_root $1 $1$2 || {
+		/bin/umount -l $1 $1
+		v "pivot_root failed, supivot return 1"
+		return 1
+	}
+
+	for i in sys dev tmp overlay; do mount --move $2/$i /$i; done
+	v "supivot return 0"
+	return 0
+}
+
+switch_to_ramfs() {
+	for binary in \
+		/bin/busybox /bin/ash /bin/sh /bin/mount /bin/umount	\
+		pivot_root mount_root reboot sync kill sleep		\
+		md5sum hexdump cat zcat bzcat dd tar			\
+		ls basename find cp mv rm mkdir rmdir mknod touch chmod \
+		'[' printf wc grep awk sed cut				\
+		mtd partx losetup mkfs.ext4 nandwrite flash_erase	\
+		ubiupdatevol ubiattach ubiblock ubiformat		\
+		ubidetach ubirsvol ubirmvol ubimkvol			\
+		snapshot snapshot_tool date	ps ifconfig \
+		$RAMFS_COPY_BIN
+	do
+		local file="$(command -v "$binary" 2>/dev/null)"
+		[ -n "$file" ] && install_bin "$file"
+	done
+	install_file /etc/resolv.conf /usr/bin/* /usr/sbin/* /lib/*.sh /lib/upgrade/sysupgrade /lib/upgrade/*.sh /lib/upgrade/do_stage2 /usr/share/libubox/jshn.sh $RAMFS_COPY_DATA
+
+	[ -L "/lib64" ] && ln -s /lib $RAM_ROOT/lib64
+
+	supivot $RAM_ROOT /mnt || {
+		v "Failed to switch over to ramfs. Please reboot."
+		exit 1
+	}
+
+	/bin/mount -o remount,ro /mnt
+	/bin/umount -l /mnt
+
+	grep /overlay /proc/mounts > /dev/null && {
+		/bin/mount -o noatime,remount,ro /overlay
+		/bin/umount -l /overlay
+	}
+    v "switch_ramfs end"
+}
+
+
+kill_remaining() { # [ <signal> [ <loop> ] ]
+	local loop_limit=10
+
+	local sig="${1:-TERM}"
+	local loop="${2:-0}"
+	local run=true
+	local stat
+	local proc_ppid=$(cut -d' ' -f4  /proc/$$/stat)
+
+	vn "Sending $sig to remaining processes ..."
+
+	while $run; do
+		run=false
+		for stat in /proc/[0-9]*/stat; do
+			[ -f "$stat" ] || continue
+
+			local pid name state ppid rest
+			read pid name state ppid rest < $stat
+			name="${name#(}"; name="${name%)}"
+
+			# Skip PID1, our parent, ourself and our children
+			[ $pid -ne 1 -a $pid -ne $proc_ppid -a $pid -ne $$ -a $ppid -ne $$ ] || continue
+
+			local cmdline
+			read cmdline < /proc/$pid/cmdline
+
+			# Skip kernel threads
+			[ -n "$cmdline" ] || continue
+
+			_vn " $name"
+			kill -$sig $pid 2>/dev/null
+
+			[ $loop -eq 1 ] && run=true
+		done
+
+		let loop_limit--
+		[ $loop_limit -eq 0 ] && {
+			_v
+			v "Failed to kill all processes."
+			exit 1
+		}
+	done
+	_v
+}
+
+echo 3 > /proc/sys/vm/drop_caches
+
+dual_boot=$(cat /sys/module/boot_param/parameters/dual_boot 2>/dev/null)
+
+if [ -n "$(rootfs_type)" ] && [ x"${dual_boot}" != xY ]; then
+	v "Switching to ramdisk..."
+	switch_to_ramfs
+fi
+
+# Exec new shell from ramfs
+exec /bin/busybox ash -c "$COMMAND"
