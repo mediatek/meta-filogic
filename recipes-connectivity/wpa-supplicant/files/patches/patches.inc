@@ -64,6 +64,7 @@ SRC_URI_append = " \
     file://914-Add-mtk_vendor.h.patch \
     file://915-Support-new-hostapd-configuration-edcca_enable-and-e.patch \
     file://916-Add-hostapd-command-handler-for-SET_EDCCA-GET_EDCCA-.patch \
+    file://920-hostapd-hemu-onoff-ctrl.patch \
     file://990-ctrl-make-WNM_AP-functions-dependant-on-CONFIG_AP.patch \
     file://991-fix-compile.patch \
     file://992-openssl-include-rsa.patch \
