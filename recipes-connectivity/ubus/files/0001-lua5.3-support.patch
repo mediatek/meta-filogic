@@ -1,0 +1,96 @@
+From 24b5aae13f1fe1ae90eab5fbd8e62df72681d065 Mon Sep 17 00:00:00 2001
+From: sah4009 <peter.deherdt@softathome.com>
+Date: Mon, 16 Sep 2019 09:22:16 +0000
+Subject: [PATCH] Lua 5.3 support
+
+---
+ lua/CMakeLists.txt |  3 ++-
+ lua/ubus.c         | 23 +++++++++++++++++++----
+ 2 files changed, 21 insertions(+), 5 deletions(-)
+
+diff --git a/lua/CMakeLists.txt b/lua/CMakeLists.txt
+index e4821bf..5dae67a 100644
+--- a/lua/CMakeLists.txt
++++ b/lua/CMakeLists.txt
+@@ -8,7 +8,7 @@ IF(NOT LUA_CFLAGS)
+ 	FIND_PROGRAM(PKG_CONFIG pkg-config)
+ 	IF(PKG_CONFIG)
+ 		EXECUTE_PROCESS(
+-			COMMAND pkg-config --silence-errors --cflags lua5.1
++			COMMAND pkg-config --silence-errors --cflags lua5.3
+ 			OUTPUT_VARIABLE LUA_CFLAGS
+ 			OUTPUT_STRIP_TRAILING_WHITESPACE
+ 		)
+@@ -45,6 +45,7 @@ IF(BUILD_LUA)
+ 		PREFIX ""
+ 	)
+ 	TARGET_LINK_LIBRARIES(ubus_lua ubus)
++	TARGET_LINK_LIBRARIES(ubus_lua -llua)
+ 
+ 	INSTALL(TARGETS ubus_lua
+ 		LIBRARY DESTINATION ${LUAPATH}
+diff --git a/lua/ubus.c b/lua/ubus.c
+index 86dcc50..6d7ba00 100644
+--- a/lua/ubus.c
++++ b/lua/ubus.c
+@@ -23,6 +23,11 @@
+ #define MODNAME		"ubus"
+ #define METANAME	MODNAME ".meta"
+ 
++#if LUA_VERSION_NUM > 501
++#define luaL_optint luaL_optinteger
++#define lua_objlen lua_rawlen
++#endif
++
+ static lua_State *state;
+ 
+ struct ubus_lua_connection {
+@@ -275,7 +280,7 @@ ubus_lua_objects_cb(struct ubus_context *c, struct ubus_object_data *o, void *p)
+ 	lua_State *L = (lua_State *)p;
+ 
+ 	lua_pushstring(L, o->path);
+-	lua_rawseti(L, -2, lua_objlen(L, -2) + 1);
++	lua_rawseti(L, -2, lua_rawlen(L, -2) + 1);
+ }
+ 
+ static int
+@@ -572,11 +577,11 @@ static int ubus_lua_add(lua_State *L)
+ 			if (obj){
+ 				ubus_add_object(c->ctx, obj);
+ 
+-                                /* allow future reference of ubus obj */
++                /* allow future reference of ubus obj */
+ 				lua_pushstring(state,"__ubusobj");
+ 				lua_pushlightuserdata(state, obj);
+ 				lua_settable(state,-3);
+-                        }
++            }
+ 		}
+ 		lua_pop(L, 1);
+ 	}
+@@ -973,11 +978,21 @@ luaopen_ubus(lua_State *L)
+ 	lua_setfield(L, -2, "__index");
+ 
+ 	/* fill metatable */
++#if LUA_VERSION_NUM > 501
++	luaL_setfuncs(L, ubus, 0);
++#else
+ 	luaL_register(L, NULL, ubus);
+-	lua_pop(L, 1);
++#endif
+ 
+ 	/* create module */
++#if LUA_VERSION_NUM > 501
++	lua_newtable(L);
++    luaL_setfuncs (L, ubus, 0);
++    lua_pushvalue(L, -1);
++    lua_setglobal(L, MODNAME);
++#else
+ 	luaL_register(L, MODNAME, ubus);
++#endif
+ 
+ 	/* set some enum defines */
+ 	lua_pushinteger(L, BLOBMSG_TYPE_ARRAY);
+-- 
+2.26.2
+
