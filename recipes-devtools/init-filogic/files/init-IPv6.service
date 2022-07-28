@@ -1,0 +1,14 @@
+[Unit]
+Description=Init IPv6
+DefaultDependencies=no
+After=hostapd.service
+Before=RdkWanManager.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh /usr/sbin/init-IPv6.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+
