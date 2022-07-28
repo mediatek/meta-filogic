@@ -1,0 +1,44 @@
+From c0c3e7efb51a66544b5b222c352cc6b43bb5368d Mon Sep 17 00:00:00 2001
+From: "Allen.Ye" <allen.ye@mediatek.com>
+Date: Wed, 27 Jul 2022 17:46:24 +0800
+Subject: [PATCH] HAL: refactor setApDTIMInterval
+
+---
+ source/wifi/wifi_hal.c | 21 ++++++++++++++++++++-
+ 1 file changed, 20 insertions(+), 1 deletion(-)
+
+diff --git a/source/wifi/wifi_hal.c b/source/wifi/wifi_hal.c
+index 1365b11..6596cfc 100644
+--- a/source/wifi/wifi_hal.c
++++ b/source/wifi/wifi_hal.c
+@@ -1882,7 +1882,26 @@ INT wifi_setBandSteeringApGroup(char *ApGroup)
+ 
+ INT wifi_setApDTIMInterval(INT apIndex, INT dtimInterval)
+ {
+-   return RETURN_OK;
++    struct params params={0};
++    char config_file[MAX_BUF_SIZE] = {'\0'};
++    char buf[MAX_BUF_SIZE] = {'\0'};
++
++    WIFI_ENTRY_EXIT_DEBUG("Inside %s:%d\n",__func__, __LINE__);
++    if (dtimInterval < 1 || dtimInterval > 255) {
++        return RETURN_ERR;
++        WIFI_ENTRY_EXIT_DEBUG("Invalid dtimInterval: %d\n", dtimInterval);
++    }
++    
++    params.name = "dtim_period";
++    snprintf(buf, sizeof(buf), "%d", dtimInterval);
++    params.value = buf;
++
++    sprintf(config_file,"%s%d.conf", CONFIG_PREFIX, apIndex);
++    wifi_hostapdWrite(config_file, &params, 1);
++    wifi_hostapdProcessUpdate(apIndex, &params, 1);
++
++    WIFI_ENTRY_EXIT_DEBUG("Exiting %s:%d\n",__func__, __LINE__);
++    return RETURN_OK;
+ }
+ 
+ //Check if the driver support the Dfs
+-- 
+2.18.0
+
