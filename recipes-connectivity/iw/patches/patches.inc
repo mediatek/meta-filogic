@@ -4,5 +4,4 @@ SRC_URI_append = " \
     file://010-Revert-iw-allow-specifying-CFLAGS-LIBS-externally.patch \
     file://120-antenna_gain.patch \
     file://130-survey-bss-rx-time.patch \
-    file://200-reduce_size.patch \
     "
