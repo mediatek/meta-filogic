@@ -29,4 +29,5 @@ SRC_URI_append = " \
     file://3001-mt76-add-wed-tx-support.patch \
     file://3002-mt76-add-wed-rx-support.patch \
     file://3003-mt76-add-fill-receive-path-to-report-wed-idx.patch \
+    file://3004-mt76-add-ser-spport-when-wed-on.patch \
     "

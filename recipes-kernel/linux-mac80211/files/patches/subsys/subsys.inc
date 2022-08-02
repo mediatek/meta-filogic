@@ -26,7 +26,6 @@ SRC_URI_append = " \
     file://325-mac80211-MBSSID-channel-switch.patch \
     file://326-mac80211-update-bssid_indicator-in-ieee80211_assign_.patch \
     file://328-mac80211-do-not-wake-queues-on-a-vif-that-is-being-s.patch \
-    file://329-mac80211-minstrel_ht-fix-where-rate-stats-are-stored.patch \
     file://330-mac80211-switch-airtime-fairness-back-to-deficit-rou.patch \
     file://331-mac80211-make-sta-airtime-deficit-field-s32-instead-.patch \
     file://332-mac80211-consider-aql_tx_pending-when-checking-airti.patch \
@@ -35,7 +34,6 @@ SRC_URI_append = " \
     file://335-mac80211-add-debugfs-file-to-display-per-phy-AQL-pen.patch \
     file://336-mac80211-only-accumulate-airtime-deficit-for-active-.patch \
     file://337-mac80211-increase-quantum-for-airtime-scheduler.patch \
-    file://338-mac80211-fix-queue-selection-for-mesh-OCB-interfaces.patch \
     file://339-mac80211-exclude-multicast-packets-from-AQL-pending-.patch \
     file://350-bss-color-collision.patch \
     file://400-allow-ibss-mixed.patch \
