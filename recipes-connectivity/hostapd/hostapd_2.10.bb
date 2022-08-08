@@ -24,6 +24,7 @@ SRC_URI = " \
     file://hostapd-init.sh \
     file://src \
     file://001-rdkb-remove-ubus-support.patch;apply=no \
+    file://wireless \
 "
 require files/patches/patches.inc
 
@@ -98,6 +99,8 @@ do_install() {
          install -m 0644 ${WORKDIR}/hostapd-bhaul5G.conf ${D}${sysconfdir}
          install -m 0644 ${WORKDIR}/hostapd.service ${D}${systemd_unitdir}/system
          install -m 0755 ${WORKDIR}/hostapd-init.sh ${D}${base_libdir}/rdk
+         install -d ${D}${sysconfdir}/config
+         install -m 0644 ${WORKDIR}/wireless ${D}${sysconfdir}/config
 }
 
 FILES_${PN} += " \
@@ -107,4 +110,5 @@ FILES_${PN} += " \
                 ${sysconfdir}/hostapd-bhaul2G.conf \
                 ${sysconfdir}/hostapd-bhaul5G.conf \
                 ${base_libdir}/rdk/hostapd-init.sh \
+                ${sysconfdir}/config/wireless \
 "
