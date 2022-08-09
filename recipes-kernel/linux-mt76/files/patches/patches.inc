@@ -8,6 +8,7 @@ SRC_URI_append = " \
     file://0008-mt76-common-RF-CR-idx-require-8-bits.patch \
     file://0011-mt76-testmode-use-random-payload-for-tx-packets.patch \
     file://0012-mt76-mt7915-add-spatial-extension-index-support.patch \
+    file://0013-mt76-mt7915-set-the-first-antenna-to-detect-radar-fo.patch \
     file://100-Revert-of-net-pass-the-dst-buffer-to-of_get_mac_addr.patch \
     file://1001-mt76-mt7915-add-mtk-internal-debug-tools-for-mt76.patch \
     file://1002-mt76-mt7915-csi-implement-csi-support.patch \

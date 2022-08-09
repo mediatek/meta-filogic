@@ -12,6 +12,7 @@ SRC_URI_append = " \
     file://0010-dts-mt7629-rfb-fix-firmware-partition.patch \
     file://0020-dts-mt7622-enable-new-mtk-snand-for-ubi.patch \
     file://0021-dts-mt7622-remove-cooling-device.patch \
+    file://0030-introduce_read_poll_timeout_macro.patch \
     file://0100-hwnat_Kconfig_Makefile.patch \
     file://0111-mt7986-trng-add-rng-support.patch \
     file://0200-show_model_name_in_cpuinfo_on_arm64.patch \
@@ -88,7 +89,10 @@ SRC_URI_append = " \
     file://742-net-dsa-add-MT7531-Gigabit-Ethernet-PHY-setting.patch \
     file://743-add-mediatek-ge-gphy-support.patch \
     file://744-en8801s-gphy-support.patch \
+    file://745-en8801sc-gphy-support.patch \
     file://745-mdiobus-add-c45.patch \
+    file://746-mxl-gpy-phy-support.patch \
+    file://747-net-phy-aquantia-add-AQR113C.patch \
     file://8000-PATCH-1-4-tphy-support-type-switch-by-pericfg.patch \
     file://8001-PATCH-2-4-dt-bindings-phy-Add-PHY_TYPE_DP-definition.patch \
     file://8002-PATCH-3-4-dt-bindings-phy-Add-PHY_TYPE_XPCS-definition.patch \

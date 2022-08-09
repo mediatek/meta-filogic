@@ -35,6 +35,7 @@ SRC_URI_append = " \
     file://336-mac80211-only-accumulate-airtime-deficit-for-active-.patch \
     file://337-mac80211-increase-quantum-for-airtime-scheduler.patch \
     file://339-mac80211-exclude-multicast-packets-from-AQL-pending-.patch \
+    file://340-wifi-mac80211-do-not-abuse-fq.lock-in-ieee80211_do_s.patch \
     file://350-bss-color-collision.patch \
     file://400-allow-ibss-mixed.patch \
     file://500-mac80211_configure_antenna_gain.patch \
