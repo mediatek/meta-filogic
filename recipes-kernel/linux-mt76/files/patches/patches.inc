@@ -20,13 +20,14 @@ SRC_URI_append = " \
     file://1008-mt76-mt7915-add-mt76-vendor-muru-onoff-command.patch \
     file://1111-mt76-testmode-additional-supports.patch \
     file://1112-mt76-mt7915-init-rssi-in-WTBL-when-add-station.patch \
-    file://1113-mt76-mt7915-drop-packets-when-TWT-stations-use.patch \
+    file://1113-mt76-mt7915-reduce-TWT-SP-sent-to-FW-for-cert.patch \
     file://1114-mt76-airtime-fairness-feature-off-in-mac80211.patch \
     file://1115-mt76-mt7915-add-mt7986-and-mt7916-pre-calibration.patch \
     file://1116-mt76-mt7915-add-phy-capability-vendor-command.patch \
     file://1117-mt76-mt7915-add-vendor-subcmd-EDCCA-ctrl.patch \
     file://1118-mt76-mt7915-implement-bin-file-mode.patch \
     file://1119-mt76-mt7915-initialize-wcid.patch \
+    file://1120-mt76-HEMU-Add-dump-support.patch \
     file://3001-mt76-add-wed-tx-support.patch \
     file://3002-mt76-add-wed-rx-support.patch \
     file://3003-mt76-add-fill-receive-path-to-report-wed-idx.patch \
