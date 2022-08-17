@@ -1,0 +1,167 @@
+From f3ddc9ecc94827f7d4e0884d57afed1878aebc69 Mon Sep 17 00:00:00 2001
+From: "Allen.Ye" <allen.ye@mediatek.com>
+Date: Wed, 17 Aug 2022 14:30:27 +0800
+Subject: [PATCH] HAL: add get and set radio mode
+
+---
+ source/wifi/wifi_hal.c | 135 ++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 133 insertions(+), 2 deletions(-)
+
+diff --git a/source/wifi/wifi_hal.c b/source/wifi/wifi_hal.c
+index 1d7833d..b4628c9 100644
+--- a/source/wifi/wifi_hal.c
++++ b/source/wifi/wifi_hal.c
+@@ -1526,10 +1526,59 @@ INT wifi_getRadioStandard(INT radioIndex, CHAR *output_string, BOOL *gOnly, BOOL
+ #endif
+ }
+ 
+-//Set the radio operating mode, and pure mode flag. 
++INT wifi_getRadioMode(INT radioIndex, CHAR *output_string, UINT *pureMode)
++{
++    char cmd[128] = {0};
++    char buf[64] = {0};
++    char config_file[64] = {0};
++
++    WIFI_ENTRY_EXIT_DEBUG("Inside %s:%d\n",__func__, __LINE__);
++    if(NULL == output_string || NULL == pureMode)
++        return RETURN_ERR;
++
++    // grep all of the ieee80211 protocol config set to 1
++    snprintf(config_file, sizeof(cmd), "%s%d.conf", CONFIG_PREFIX, radioIndex);
++    snprintf(cmd, sizeof(cmd), "cat %s | grep -E\"ieee.*=1\" | cut -d '=' -f1 | tr -d 'ieee80211'", config_file);
++    _syscmd(cmd, buf, sizeof(buf));
++
++    // puremode is a bit map
++    *pureMode = 0;
++    if (radioIndex == 0) {
++        strcat(output_string, "b,g");
++        *pureMode |= 4;
++        if (strstr(buf, "n") != NULL) {
++            strcat(output_string, ",n");
++            *pureMode |= 8;
++        }
++        if (strstr(buf, "ax") != NULL) {
++            strcat(output_string, ",ax");
++            *pureMode |= 32;
++        }
++    } else if (radioIndex == 1) {
++        strcat(output_string, "a");
++        *pureMode |= 1;
++        if (strstr(buf, "n") != NULL) {
++            strcat(output_string, ",n");
++            *pureMode |= 8;
++        }
++        if (strstr(buf, "ac") != NULL) {
++            strcat(output_string, ",ac");
++            *pureMode |= 16;
++        }
++        if (strstr(buf, "ax") != NULL) {
++            strcat(output_string, ",ax");
++            *pureMode |= 32;
++        }
++    }
++
++    WIFI_ENTRY_EXIT_DEBUG("Exiting %s:%d\n",__func__, __LINE__);
++    return RETURN_OK;
++}
++
++// Set the radio operating mode, and pure mode flag.
+ INT wifi_setRadioChannelMode(INT radioIndex, CHAR *channelMode, BOOL gOnlyFlag, BOOL nOnlyFlag, BOOL acOnlyFlag)	//RDKB
+ {
+-    WIFI_ENTRY_EXIT_DEBUG("Inside %s_%s_%d_%d:%d\n",__func__,channelMode,nOnlyFlag,gOnlyFlag,__LINE__);  
++    WIFI_ENTRY_EXIT_DEBUG("Inside %s_%s_%d_%d:%d\n",__func__,channelMode,nOnlyFlag,gOnlyFlag,__LINE__);
+     if (strcmp (channelMode,"11A") == 0)
+     {
+         writeBandWidth(radioIndex,"20MHz");
+@@ -1621,6 +1670,88 @@ INT wifi_setRadioChannelMode(INT radioIndex, CHAR *channelMode, BOOL gOnlyFlag,
+     return RETURN_OK;
+ }
+ 
++// Set the radio operating mode, and pure mode flag.
++INT wifi_setRadioMode(INT radioIndex, CHAR *channelMode, UINT pureMode)
++{
++    int num_hostapd_support_mode = 3;   // n, ac, ax
++    struct params list[num_hostapd_support_mode];
++    char config_file[64] = {0};
++    char bandwidth[16] = {0};
++    int mode_check_bit = 1 << 3;    // n mode
++
++    WIFI_ENTRY_EXIT_DEBUG("Inside %s_%d:%d\n", __func__, channelMode, pureMode, __LINE__);
++    // Set radio mode
++    list[0].name = "ieee80211n";
++    list[1].name = "ieee80211ac";
++    list[2].name = "ieee80211ax";
++    snprintf(config_file, sizeof(config_file), "%s%d.conf", CONFIG_PREFIX, radioIndex);
++
++    // check the bit map from n to ax, and set hostapd config
++    for(int i = 0; i < num_hostapd_support_mode; i++) {
++        if (pureMode & mode_check_bit)
++            list[i].value = "1";
++        else
++            list[i].value = "0";
++        mode_check_bit = mode_check_bit << 1;
++    }
++    wifi_hostapdWrite(config_file, list, num_hostapd_support_mode);
++
++    // Set bandwidth
++    // 5G
++    if (strcmp (channelMode,"11A") == 0)
++        strcpy(bandwidth, "20MHz");
++    else if (strcmp (channelMode,"11NAHT20") == 0)
++        strcpy(bandwidth, "20MHz");
++    else if (strcmp (channelMode,"11NAHT40PLUS") == 0)
++        strcpy(bandwidth, "40MHz");
++    else if (strcmp (channelMode,"11NAHT40MINUS") == 0)
++        strcpy(bandwidth, "40MHz");
++    else if (strcmp (channelMode,"11ACVHT20") == 0)
++        strcpy(bandwidth, "20MHz");
++    else if (strcmp (channelMode,"11ACVHT40PLUS") == 0)
++        strcpy(bandwidth, "40MHz");
++    else if (strcmp (channelMode,"11ACVHT40MINUS") == 0)
++        strcpy(bandwidth, "40MHz");
++    else if (strcmp (channelMode,"11ACVHT80") == 0)
++        strcpy(bandwidth, "80MHz");
++    else if (strcmp (channelMode,"11ACVHT160") == 0)
++        strcpy(bandwidth, "160MHz");
++    else if (strcmp (channelMode,"11AXHE80") == 0)
++        strcpy(bandwidth, "80MHz");
++    else if (strcmp (channelMode,"11AXHE160") == 0)
++        strcpy(bandwidth, "160MHz");
++    // 2.4G
++    else if (strcmp (channelMode,"11B") == 0)
++        strcpy(bandwidth, "20MHz");
++    else if (strcmp (channelMode,"11G") == 0)
++        strcpy(bandwidth, "20MHz");
++    else if (strcmp (channelMode,"11NGHT20") == 0)
++        strcpy(bandwidth, "20MHz");
++    else if (strcmp (channelMode,"11NGHT40PLUS") == 0)
++        strcpy(bandwidth, "40MHz");
++    else if (strcmp (channelMode,"11NGHT40MINUS") == 0)
++        strcpy(bandwidth, "40MHz");
++    else if (strcmp (channelMode,"11AXHE20") == 0)
++        strcpy(bandwidth, "20MHz");
++    else if (strcmp (channelMode,"11AXHE40PLUS") == 0)
++        strcpy(bandwidth, "40MHz");
++    else if (strcmp (channelMode,"11AXHE40MINUS") == 0)
++        strcpy(bandwidth, "40MHz");
++    else
++    {
++        wifi_dbg_printf("%s: input parameter channelMode format error\n", __func__);
++        return RETURN_ERR;
++    }
++
++    writeBandWidth(radioIndex, bandwidth);
++    wifi_setRadioOperatingChannelBandwidth(radioIndex, bandwidth);
++
++    wifi_reloadAp(radioIndex);
++    WIFI_ENTRY_EXIT_DEBUG("Exiting %s:%d\n",__func__, __LINE__);
++
++    return RETURN_OK;
++}
++
+ //Get the list of supported channel. eg: "1-11"
+ //The output_string is a max length 64 octet string that is allocated by the RDKB code.  Implementations must ensure that strings are not longer than this.
+ INT wifi_getRadioPossibleChannels(INT radioIndex, CHAR *output_string)	//RDKB
+-- 
+2.18.0
+
