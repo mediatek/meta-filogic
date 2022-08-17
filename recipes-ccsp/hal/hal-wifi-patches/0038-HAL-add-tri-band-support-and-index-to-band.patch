@@ -1,0 +1,53 @@
+From 3d455f415b25ba719445281c208575d086b907b3 Mon Sep 17 00:00:00 2001
+From: "Allen.Ye" <allen.ye@mediatek.com>
+Date: Wed, 17 Aug 2022 17:24:41 +0800
+Subject: [PATCH] HAL: add tri-band support and index to band
+
+---
+ source/wifi/wifi_hal.c | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
+
+diff --git a/source/wifi/wifi_hal.c b/source/wifi/wifi_hal.c
+index 1d7833d..f4430ba 100644
+--- a/source/wifi/wifi_hal.c
++++ b/source/wifi/wifi_hal.c
+@@ -164,6 +164,7 @@ typedef enum
+     band_invalid = -1,
+     band_2_4 = 0,
+     band_5 = 1,
++    band_6 = 2,
+ } wifi_band;
+ 
+ #ifdef WIFI_HAL_VERSION_3
+@@ -425,6 +426,28 @@ static int _syscmd(char *cmd, char *retBuf, int retBufSize)
+     return cmd_ret >> 8;
+ }
+ 
++wifi_band wifi_index_to_band(int radioIndex)
++{
++    char cmd[64] = {0};
++    char buf[64] = {0};
++    int freq = 0;
++    wifi_band band = band_invalid;
++
++    WIFI_ENTRY_EXIT_DEBUG("Inside %s:%d\n",__func__, __LINE__);
++    snprintf(cmd, sizeof(cmd), "iw dev %s%d info | grep MHz | awk '{print $9}");
++    _syscmd(cmd, buf, sizeof(buf));
++    freq = atoi(buf);
++    if (freq > 2401 && freq < 2495)
++        band = band_2_4;
++    else if (freq > 5160 && freq < 5915)
++        band = band_5;
++    else if (freq > 5955 && freq < 7125)
++        band = band_6;
++
++    WIFI_ENTRY_EXIT_DEBUG("Exiting %s:%d\n",__func__, __LINE__);
++    return band;
++}
++
+ static int wifi_hostapdRead(char *conf_file, char *param, char *output, int output_size)
+ {
+     char cmd[MAX_CMD_SIZE]={'\0'};
+-- 
+2.18.0
+
