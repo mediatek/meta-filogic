@@ -1,0 +1,179 @@
+From 019d55137b9c3a0c033675f55cc098bb472d677c Mon Sep 17 00:00:00 2001
+From: "Allen.Ye" <allen.ye@mediatek.com>
+Date: Thu, 18 Aug 2022 15:22:24 +0800
+Subject: [PATCH] HAL: refactor set and get radius server functions
+
+---
+ source/wifi/wifi_hal.c | 137 ++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 127 insertions(+), 10 deletions(-)
+
+diff --git a/source/wifi/wifi_hal.c b/source/wifi/wifi_hal.c
+index 7a137f7..6c00ceb 100644
+--- a/source/wifi/wifi_hal.c
++++ b/source/wifi/wifi_hal.c
+@@ -5624,35 +5624,152 @@ INT wifi_setApSecurityReset(INT apIndex)
+ //The IP Address and port number of the RADIUS server used for WLAN security. RadiusServerIPAddr is only applicable when ModeEnabled is an Enterprise type (i.e. WPA-Enterprise, WPA2-Enterprise or WPA-WPA2-Enterprise).
+ INT wifi_getApSecurityRadiusServer(INT apIndex, CHAR *IP_output, UINT *Port_output, CHAR *RadiusSecret_output)
+ {
++    char config_file[64] = {0};
++    char buf[64] = {0};
++    char cmd[256] = {0};
++
++    WIFI_ENTRY_EXIT_DEBUG("Inside %s:%d\n",__func__, __LINE__);
++
+     if(!IP_output || !Port_output || !RadiusSecret_output)
+         return RETURN_ERR;
+-    snprintf(IP_output, 64, "75.56.77.78");
+-    *Port_output = 123;
+-    snprintf(RadiusSecret_output, 64, "12345678");
+ 
++    // Read the first matched config
++    snprintf(config_file, sizeof(config_file), "%s%d.conf", CONFIG_PREFIX, apIndex);
++    sprintf(cmd, "cat %s | grep \"^auth_server_addr=\" | cut -d \"=\" -f 2 | head -n1 | tr -d \"\\n\"", config_file);
++    _syscmd(cmd, buf, sizeof(buf));
++    strncpy(IP_output, buf, 64);
++
++    memset(buf, 0, sizeof(buf));
++    sprintf(cmd, "cat %s | grep \"^auth_server_port=\" | cut -d \"=\" -f 2 | head -n1 | tr -d \"\\n\"", config_file);
++    _syscmd(cmd, buf, sizeof(buf));
++    *Port_output = atoi(buf);
++
++    memset(buf, 0, sizeof(buf));
++    sprintf(cmd, "cat %s | grep \"^auth_server_shared_secret=\" | cut -d \"=\" -f 2 | head -n1 | tr -d \"\\n\"", config_file);
++    _syscmd(cmd, buf, sizeof(buf));
++    strncpy(RadiusSecret_output, buf, 64);
++
++    WIFI_ENTRY_EXIT_DEBUG("Exiting %s:%d\n",__func__, __LINE__);
+     return RETURN_OK;
+ }
+ 
+ INT wifi_setApSecurityRadiusServer(INT apIndex, CHAR *IPAddress, UINT port, CHAR *RadiusSecret)
+ {
+-    //store the paramters, and apply instantly
+-    return RETURN_ERR;
++    char config_file[64] = {0};
++    char port_str[8] = {0};
++    char cmd[256] = {0};
++    char buf[128] = {0};
++
++    WIFI_ENTRY_EXIT_DEBUG("Inside %s:%d\n",__func__, __LINE__);
++
++    snprintf(config_file, sizeof(config_file), "%s%d.conf", CONFIG_PREFIX, apIndex);
++
++    snprintf(cmd, sizeof(cmd), "cat %s | grep '# radius 1'", config_file);
++    _syscmd(cmd, buf, sizeof(buf));
++    memset(cmd, 0, sizeof(cmd));
++
++    snprintf(port_str, sizeof(port_str), "%d", port);
++    if (strlen(buf) == 0)
++        // Append
++        snprintf(cmd, sizeof(cmd), "echo -e '# radius 1\\n"
++                                "auth_server_addr=%s\\n"
++                                "auth_server_port=%s\\n"
++                                "auth_server_shared_secret=%s' >> %s", IPAddress, port_str, RadiusSecret, config_file);
++    else {
++        // Delete the three lines setting after the "# radius 1" comment
++        snprintf(cmd, sizeof(cmd), "sed -i '/# radius 1/{n;N;N;d}' %s", config_file);
++        _syscmd(cmd, buf, sizeof(buf));
++        memset(cmd, 0, sizeof(cmd));
++        // Use "# radius 1" comment to find the location to insert the radius setting
++        snprintf(cmd, sizeof(cmd), "sed -i 's/# radius 1/"
++                                "# radius 1\\n"
++                                "auth_server_addr=%s\\n"
++                                "auth_server_port=%s\\n"
++                                "auth_server_shared_secret=%s/' %s", IPAddress, port_str, RadiusSecret, config_file);
++    }
++    if(_syscmd(cmd, buf, sizeof(buf))) {
++        wifi_dbg_printf("%s: command failed, cmd: %s\n", __func__, cmd);
++        return RETURN_ERR;
++    }
++
++    wifi_reloadAp(apIndex);
++    WIFI_ENTRY_EXIT_DEBUG("Exiting %s:%d\n",__func__, __LINE__);
++    return RETURN_OK;
+ }
+ 
+ INT wifi_getApSecuritySecondaryRadiusServer(INT apIndex, CHAR *IP_output, UINT *Port_output, CHAR *RadiusSecret_output)
+ {
++    char config_file[64] = {0};
++    char buf[64] = {0};
++    char cmd[256] = {0};
++
++    WIFI_ENTRY_EXIT_DEBUG("Inside %s:%d\n",__func__, __LINE__);
++
+     if(!IP_output || !Port_output || !RadiusSecret_output)
+         return RETURN_ERR;
+-    snprintf(IP_output, 64, "75.56.77.78");
+-    *Port_output = 123;
+-    snprintf(RadiusSecret_output, 64, "12345678");
++
++    // Read the second matched config
++    snprintf(config_file, sizeof(config_file), "%s%d.conf", CONFIG_PREFIX, apIndex);
++    sprintf(cmd, "cat %s | grep \"^auth_server_addr=\" | cut -d \"=\" -f 2 | tail -n +2 | head -n1 | tr -d \"\\n\"", config_file);
++    _syscmd(cmd, buf, sizeof(buf));
++    strncpy(IP_output, buf, 64);
++
++    memset(buf, 0, sizeof(buf));
++    sprintf(cmd, "cat %s | grep \"^auth_server_port=\" | cut -d \"=\" -f 2 | tail -n +2 | head -n1 | tr -d \"\\n\"", config_file);
++    _syscmd(cmd, buf, sizeof(buf));
++    *Port_output = atoi(buf);
++
++    memset(buf, 0, sizeof(buf));
++    sprintf(cmd, "cat %s | grep \"^auth_server_shared_secret=\" | cut -d \"=\" -f 2 | tail -n +2 | head -n1 | tr -d \"\\n\"", config_file);
++    _syscmd(cmd, buf, sizeof(buf));
++    strncpy(RadiusSecret_output, buf, 64);
++
++    WIFI_ENTRY_EXIT_DEBUG("Exiting %s:%d\n",__func__, __LINE__);
+     return RETURN_OK;
+ }
+ 
+ INT wifi_setApSecuritySecondaryRadiusServer(INT apIndex, CHAR *IPAddress, UINT port, CHAR *RadiusSecret)
+ {
+-    //store the paramters, and apply instantly
+-    return RETURN_ERR;
++    char config_file[64] = {0};
++    char port_str[8] = {0};
++    char cmd[256] = {0};
++    char buf[128] = {0};
++
++    WIFI_ENTRY_EXIT_DEBUG("Inside %s:%d\n",__func__, __LINE__);
++
++    snprintf(config_file, sizeof(config_file), "%s%d.conf", CONFIG_PREFIX, apIndex);
++
++    snprintf(cmd, sizeof(cmd), "cat %s | grep '# radius 2'", config_file);
++    _syscmd(cmd, buf, sizeof(buf));
++    memset(cmd, 0, sizeof(cmd));
++
++    snprintf(port_str, sizeof(port_str), "%d", port);
++    if (strlen(buf) == 0)
++        // Append
++        snprintf(cmd, sizeof(cmd), "echo -e '# radius 2\\n"
++                                "auth_server_addr=%s\\n"
++                                "auth_server_port=%s\\n"
++                                "auth_server_shared_secret=%s' >> %s", IPAddress, port_str, RadiusSecret, config_file);
++    else {
++        // Delete the three lines setting after the "# radius 2" comment
++        snprintf(cmd, sizeof(cmd), "sed -i '/# radius 2/{n;N;N;d}' %s", config_file);
++        _syscmd(cmd, buf, sizeof(buf));
++        memset(cmd, 0, sizeof(cmd));
++        // Use "# radius 2" comment to find the location to insert the radius setting
++        snprintf(cmd, sizeof(cmd), "sed -i 's/# radius 2/"
++                                "# radius 2\\n"
++                                "auth_server_addr=%s\\n"
++                                "auth_server_port=%s\\n"
++                                "auth_server_shared_secret=%s/' %s", IPAddress, port_str, RadiusSecret, config_file);
++    }
++    if(_syscmd(cmd, buf, sizeof(buf))) {
++        wifi_dbg_printf("%s: command failed, cmd: %s\n", __func__, cmd);
++        return RETURN_ERR;
++    }
++
++    wifi_reloadAp(apIndex);
++    WIFI_ENTRY_EXIT_DEBUG("Exiting %s:%d\n",__func__, __LINE__);
++    return RETURN_OK;
+ }
+ 
+ //RadiusSettings
+-- 
+2.18.0
+
