@@ -1,0 +1,15 @@
+[Unit]
+Description=MACSec service
+DefaultDependencies=no
+After=RdkWanManager.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh /usr/sbin/MACSec.sh
+ExecStop=/sbin/ip link delete macsec0
+TimeoutSec=10 
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+
