@@ -277,4 +277,5 @@ SRC_URI_append = " \
     file://900-v5.9-0001-dt-bindings-Add-multicolor-class-dt-bindings-documen.patch \
     file://900-v5.9-0002-leds-Add-multicolor-ID-to-the-color-ID-list.patch \
     file://900-v5.9-0003-leds-add-RGB-color-option-as-that-is-different-from-.patch \
+    file://999-update-uapi-header-files-for-bridger.patch \
     "
