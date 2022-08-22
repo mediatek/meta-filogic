@@ -1,0 +1,14 @@
+[Unit]
+Description=Init UCI wireless config
+DefaultDependencies=no
+After=hostapd.service
+Before=RdkWanManager.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh /usr/sbin/mac80211.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+

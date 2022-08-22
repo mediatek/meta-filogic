@@ -10,15 +10,23 @@ SRC_URI = " \
     file://COPYING \
     file://init-IPv6.sh \
     file://init-IPv6.service \
+    file://mac80211.sh \
+    file://init-uci-config.service \
     "
+
+RDEPENDS_${PN} += "bash"
 
 SYSTEMD_PACKAGES = "${PN}"
 SYSTEMD_SERVICE_${PN} = " init-IPv6.service"
+SYSTEMD_SERVICE_${PN} += " init-uci-config.service"
 FILES_${PN} += "{systemd_unitdir}/system/init-IPv6.service"
+FILES_${PN} += "{systemd_unitdir}/system/init-uci-config.service"
 
 do_install() {
     install -d ${D}${sbindir}
     install -m 0755 ${WORKDIR}/init-IPv6.sh ${D}${sbindir}
+    install -m 0755 ${WORKDIR}/mac80211.sh ${D}${sbindir}
     install -d ${D}${systemd_unitdir}/system/
     install -m 0644 ${S}/init-IPv6.service ${D}${systemd_unitdir}/system
+    install -m 0644 ${S}/init-uci-config.service ${D}${systemd_unitdir}/system
 }
