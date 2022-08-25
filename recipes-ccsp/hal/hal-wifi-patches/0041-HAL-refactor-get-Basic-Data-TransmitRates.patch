@@ -1,0 +1,82 @@
+From 7dc63d195649ea3012fae3577f9b4ee7a50278bf Mon Sep 17 00:00:00 2001
+From: "Allen.Ye" <allen.ye@mediatek.com>
+Date: Thu, 25 Aug 2022 13:58:05 +0800
+Subject: [PATCH] HAL: refactor get Basic Data TransmitRates
+
+---
+ source/wifi/wifi_hal.c | 48 ++++++++++++++++++++----------------------
+ 1 file changed, 23 insertions(+), 25 deletions(-)
+
+diff --git a/source/wifi/wifi_hal.c b/source/wifi/wifi_hal.c
+index 8ec1d0e..419b5d1 100644
+--- a/source/wifi/wifi_hal.c
++++ b/source/wifi/wifi_hal.c
+@@ -2643,42 +2643,40 @@ INT wifi_setRadioBeaconPeriod(INT radioIndex, UINT BeaconPeriod)
+ //Comma-separated list of strings. The set of data rates, in Mbps, that have to be supported by all stations that desire to join this BSS. The stations have to be able to receive and transmit at each of the data rates listed inBasicDataTransmitRates. For example, a value of "1,2", indicates that stations support 1 Mbps and 2 Mbps. Most control packets use a data rate in BasicDataTransmitRates.
+ INT wifi_getRadioBasicDataTransmitRates(INT radioIndex, CHAR *output)
+ {
+-    if (NULL == output)
+-        return RETURN_ERR;
+-    snprintf(output, 64, (radioIndex == 0) ? "1,2" : "1.5,150");
+-#if 0
+     //TODO: need to revisit below implementation
+     char *temp;
+-    char temp_output[128];
+-    char temp_TransmitRates[512];
+-    char config_file[MAX_BUF_SIZE] = {0};
++    char temp_output[128] = {0};
++    char temp_TransmitRates[64] = {0};
++    char config_file[64] = {0};
+ 
+     WIFI_ENTRY_EXIT_DEBUG("Inside %s:%d\n",__func__, __LINE__);
+     if (NULL == output)
+         return RETURN_ERR;
+     sprintf(config_file,"%s%d.conf",CONFIG_PREFIX,radioIndex);
+-    wifi_hostapdRead(config_file,"basic_rates",output,64);
+-
+-    strcpy(temp_TransmitRates,output);
+-    strcpy(temp_output,"");
+-    temp = strtok(temp_TransmitRates," ");
+-    while(temp!=NULL)
+-    {
+-        temp[strlen(temp)-1]=0;
+-        if((temp[0]=='5') && (temp[1]=='\0'))
+-        {
+-            temp="5.5";
+-        }
+-        strcat(temp_output,temp);
+-        temp = strtok(NULL," ");
+-        if(temp!=NULL)
++    wifi_hostapdRead(config_file,"basic_rates",temp_TransmitRates,64);
++ 
++    if (strlen(temp_TransmitRates) == 0) {  // config not set, use supported rate
++        wifi_getRadioSupportedDataTransmitRates(radioIndex, output);
++    } else {
++        temp = strtok(temp_TransmitRates," ");
++        while(temp!=NULL)
+         {
+-            strcat(temp_output,",");
++            // Convert 100 kbps to Mbps
++            temp[strlen(temp)-1]=0;
++            if((temp[0]=='5') && (temp[1]=='\0'))
++            {
++                temp="5.5";
++            }
++            strcat(temp_output,temp);
++            temp = strtok(NULL," ");
++            if(temp!=NULL)
++            {
++                strcat(temp_output,",");
++            }
+         }
++        strcpy(output,temp_output);
+     }
+-    strcpy(output,temp_output);
+     WIFI_ENTRY_EXIT_DEBUG("Exiting %s:%d\n",__func__, __LINE__);
+-#endif
+     return RETURN_OK;
+ }
+ 
+-- 
+2.18.0
+
