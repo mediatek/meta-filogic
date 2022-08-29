@@ -1,8 +1,8 @@
 [Unit]
 Description=Init UCI wireless config
 DefaultDependencies=no
-After=hostapd.service
-Before=RdkWanManager.service
+Before=hostapd.service
+After=CcspPandMSsp.service
 
 [Service]
 Type=oneshot

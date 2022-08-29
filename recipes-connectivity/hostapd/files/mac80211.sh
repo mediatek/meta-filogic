@@ -149,6 +149,14 @@ detect_mac80211() {
 		echo -n > /etc/config/wireless
 	fi
 
+	pcieCheck="$(uci get wireless.radio1.path)"
+	checkpath="$(realpath /sys/class/ieee80211/phy1/device | cut -d/ -f4-)"
+
+	if [[ "$pcieCheck"* != "$checkpath"* ]]; then
+		echo -n > /etc/config/wireless
+		rm /nvram/hostapd*
+	fi
+
 	old_path=""
 	for _dev in /sys/class/ieee80211/*; do
 		[ -e "$_dev" ] || continue
@@ -168,6 +176,7 @@ detect_mac80211() {
 		htmode=""
 		ht_capab=""
 		
+
 		get_band_defaults "$dev"
 
 		path="$(realpath /sys/class/ieee80211/"$dev"/device | cut -d/ -f4-)"
@@ -181,6 +190,20 @@ detect_mac80211() {
 			dev_id="set wireless.radio${devidx}.macaddr=$(cat /sys/class/ieee80211/${dev}/macaddress)"
 		fi
 
+		if [ "$(cat /sys/class/ieee80211/"$dev"/device/device)" == "0x7906" ]; then
+			isMerlin=1
+		fi
+
+		if [ "$mode_band" = "6g" ]; then
+			channel="37"
+		fi
+		setdisable="set wireless.radio${devidx}.disabled=0"
+
+
+		if [ "$isMerlin" == "1" ] && [ "$devidx" == "2" ] && [ "$mode_band" == "2g" ]; then
+			setdisable="set wireless.radio${devidx}.disabled=1"
+		fi
+	
 		uci -q batch <<-EOF
 			set wireless.radio${devidx}=wifi-device
 			set wireless.radio${devidx}.type=mac80211
@@ -188,8 +211,7 @@ detect_mac80211() {
 			set wireless.radio${devidx}.channel=${channel}
 			set wireless.radio${devidx}.band=${mode_band}
 			set wireless.radio${devidx}.htmode=$htmode
-			set wireless.radio${devidx}.disabled=1
-
+			${setdisable}
 			set wireless.default_radio${devidx}=wifi-iface
 			set wireless.default_radio${devidx}.device=radio${devidx}
 			set wireless.default_radio${devidx}.network=lan

@@ -1,0 +1,13 @@
+[Unit]
+Description=Init LAN and Bridge
+DefaultDependencies=no
+Before=CcspPandMSsp.service
+After=utopia.service
+
+[Service]
+Type=oneshot
+ExecStart=-/bin/sh /usr/sbin/init-bridge.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
