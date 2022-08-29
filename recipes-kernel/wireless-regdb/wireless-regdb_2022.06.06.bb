@@ -10,7 +10,13 @@ SRC_URI[sha256sum] = "ac00f97efecce5046ed069d1d93f3365fdf994c7c7854a8fc50831e959
 FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches:"
 require files/patches/patches.inc
 
-inherit bin_package allarch
+inherit bin_package allarch pythonnative
+
+S = "${WORKDIR}/${PN}-${PV}"
+
+do_install_prepend() {
+    (python ${S}/db2fw.py ${S}/regulatory.db ${S}/db.txt)
+}
 
 do_install() {
     install -d -m0755 ${D}${nonarch_libdir}/crda
