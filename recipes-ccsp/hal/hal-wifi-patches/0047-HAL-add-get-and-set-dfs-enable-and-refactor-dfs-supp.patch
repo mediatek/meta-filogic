@@ -1,0 +1,96 @@
+From 229ee92b43901c1f5d1dca5a82d9a51592dafd5e Mon Sep 17 00:00:00 2001
+From: "Allen.Ye" <allen.ye@mediatek.com>
+Date: Wed, 31 Aug 2022 13:47:19 +0800
+Subject: [PATCH] HAL: add get and set dfs enable and refactor dfs support
+
+---
+ source/wifi/wifi_hal.c | 50 +++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 47 insertions(+), 3 deletions(-)
+
+diff --git a/source/wifi/wifi_hal.c b/source/wifi/wifi_hal.c
+index 097f8c6..bb4ab8b 100644
+--- a/source/wifi/wifi_hal.c
++++ b/source/wifi/wifi_hal.c
+@@ -76,6 +76,7 @@ Licensed under the ISC license
+ #define ESSID_FILE "/tmp/essid"
+ #define GUARD_INTERVAL_FILE "/tmp/guard-interval"
+ #define CHANNEL_STATS_FILE "/tmp/channel_stats"
++#define DFS_ENABLE_FILE "/tmp/dfs_enable.txt"
+ 
+ #ifdef MTK_IMPL
+ #define DRIVER_2GHZ "mt7915e"
+@@ -2244,7 +2245,7 @@ INT wifi_getRadioDfsSupport(INT radioIndex, BOOL *output_bool) //Tr181
+ {
+     if (NULL == output_bool) 
+         return RETURN_ERR;
+-    *output_bool=FALSE;
++    *output_bool=TRUE;
+     return RETURN_OK;
+ }
+ 
+@@ -2286,17 +2287,60 @@ INT wifi_setRadioDCSScanTime(INT radioIndex, INT interval_seconds, INT dwell_mil
+ //Get the Dfs enable status
+ INT wifi_getRadioDfsEnable(INT radioIndex, BOOL *output_bool)	//Tr181
+ {
++    char buf[16] = {0};
++    FILE *f = NULL;
++    wifi_band band;
++
++    WIFI_ENTRY_EXIT_DEBUG("Inside %s:%d\n",__func__, __LINE__);
++    
++    *output_bool = TRUE;        // default
+     if (NULL == output_bool) 
+         return RETURN_ERR;
+-    *output_bool = FALSE;
+ 
++    band = wifi_index_to_band(radioIndex);
++    if (band != band_5)
++        return RETURN_OK;
++
++    f = fopen(DFS_ENABLE_FILE, "r");
++    if (f != NULL) {
++        fgets(buf, 2, f);
++        if (strncmp(buf, "0", 0) == 0)
++            *output_bool = FALSE;
++    }
++    fclose(f);
++    WIFI_ENTRY_EXIT_DEBUG("Exiting %s:%d\n",__func__, __LINE__);
+     return RETURN_OK;
+ }
+ 
+ //Set the Dfs enable status
+ INT wifi_setRadioDfsEnable(INT radioIndex, BOOL enable)	//Tr181
+ {
+-    return RETURN_ERR;
++    char buf[128] = {0};
++    char config_file[128] = {0};
++    FILE *f = NULL;
++    struct params params={0};
++    wifi_band band;
++
++    WIFI_ENTRY_EXIT_DEBUG("Inside %s:%d\n",__func__, __LINE__);
++
++    band = wifi_index_to_band(radioIndex);
++    if (band != band_5)
++        return RETURN_OK;
++
++    f = fopen(DFS_ENABLE_FILE, "w");
++    if (f == NULL)
++        return RETURN_ERR;
++    fprintf(f, "%d", enable);
++    fclose(f);
++
++    params.name = "acs_exclude_dfs";
++    sprintf(buf, "%d", enable?"1":"0");
++    params.value = buf;
++    sprintf(config_file, "%s%d.conf", CONFIG_PREFIX, radioIndex);
++    wifi_hostapdWrite(config_file, &params, 1);
++    wifi_reloadAp(radioIndex);
++
++    WIFI_ENTRY_EXIT_DEBUG("Exiting %s:%d\n",__func__, __LINE__);
+ }
+ 
+ //Check if the driver support the AutoChannelRefreshPeriod
+-- 
+2.18.0
+
