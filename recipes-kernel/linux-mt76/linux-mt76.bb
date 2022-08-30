@@ -87,6 +87,11 @@ do_install_append () {
     install -m 644 ${WORKDIR}/src/firmware/mt7915_eeprom.bin ${D}${base_libdir}/firmware/mediatek/
     install -m 644 ${WORKDIR}/src/firmware/mt7915_eeprom_dbdc.bin ${D}${base_libdir}/firmware/mediatek/
 
+    install -m 644 ${WORKDIR}/src/firmware/mt7916_rom_patch.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${WORKDIR}/src/firmware/mt7916_wa.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${WORKDIR}/src/firmware/mt7916_wm.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${WORKDIR}/src/firmware/mt7916_eeprom.bin ${D}${base_libdir}/firmware/mediatek/
+
     install -m 644 ${WORKDIR}/src/firmware/mt7986_rom_patch.bin ${D}${base_libdir}/firmware/mediatek/
     install -m 644 ${WORKDIR}/src/firmware/mt7986_rom_patch_mt7975.bin ${D}${base_libdir}/firmware/mediatek/
     install -m 644 ${WORKDIR}/src/firmware/mt7986_wa.bin ${D}${base_libdir}/firmware/mediatek/
@@ -106,6 +111,10 @@ FILES_${PN} += " \
     ${base_libdir}/firmware/mediatek/mt7915_wm.bin \
     ${base_libdir}/firmware/mediatek/mt7915_eeprom.bin \
     ${base_libdir}/firmware/mediatek/mt7915_eeprom_dbdc.bin \
+    ${base_libdir}/firmware/mediatek/mt7916_rom_patch.bin \
+    ${base_libdir}/firmware/mediatek/mt7916_wa.bin \
+    ${base_libdir}/firmware/mediatek/mt7916_wm.bin \
+    ${base_libdir}/firmware/mediatek/mt7916_eeprom.bin \
     ${base_libdir}/firmware/mediatek/mt7986_rom_patch.bin\
     ${base_libdir}/firmware/mediatek/mt7986_rom_patch_mt7975.bin \
     ${base_libdir}/firmware/mediatek/mt7986_wa.bin \
