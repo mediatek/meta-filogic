@@ -5,9 +5,9 @@ LIC_FILES_CHKSUM = "file://README.md;md5=26019f6caa040c198cccce12a534366f"
 SECTION = "kernel/userland"
 DEPENDS = "json-c libubox ubus libnl-tiny libpcap"
 
-SRC_URI = "git://git.openwrt.org/project/usteer.git"
+SRC_URI = "git://git.openwrt.org/project/usteer.git;protocol=https"
 
-SRCREV = "${AUTOREV}"
+SRCREV = "7d2b17c91baf67419c0ce63dc6c65a7659ab6a5c"
 PV = "git${SRCPV}"
 
 S = "${WORKDIR}/git"
