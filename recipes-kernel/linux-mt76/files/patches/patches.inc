@@ -3,7 +3,6 @@ SRC_URI_append = " \
     file://0001-mt76-mt7915-rework-testmode-init-registers.patch \
     file://0002-mt76-testmode-rework-tx-antenna-setting.patch \
     file://0003-mt76-mt7915-rework-rx-testmode-stats.patch \
-    file://0004-mt76-mt7915-fix-tx-descriptor.patch \
     file://0005-mt76-mt7915-drop-undefined-action-frame.patch \
     file://0008-mt76-common-RF-CR-idx-require-8-bits.patch \
     file://0011-mt76-testmode-use-random-payload-for-tx-packets.patch \
