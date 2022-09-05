@@ -238,8 +238,6 @@ SRC_URI_append = " \
     file://780-net-dsa-mt7530-setup-core-clock-even-in-TRGMII-mode.patch \
     file://781-v5.18-1-net-dsa-Move-VLAN-filtering-syncing-out-of-dsa_switc.patch \
     file://781-v5.18-2-net-dsa-Avoid-cross-chip-syncing-of-VLAN-filtering.patch \
-    file://800-v5.20-0001-dt-bindings-leds-add-Broadcom-s-BCM63138-controller.patch \
-    file://800-v5.20-0002-leds-bcm63138-add-support-for-BCM63138-controller.patch \
     file://800-v5.5-iio-imu-Add-support-for-the-FXOS8700-IMU.patch \
     file://800-v5.5-scsi-core-Add-sysfs-attributes-for-VPD-pages-0h-and-.patch \
     file://801-v5.5-hwmon-Driver-for-disk-and-solid-state-drives-with-te.patch \
@@ -269,9 +267,11 @@ SRC_URI_append = " \
     file://831-v5.13-0003-firmware-bcm47xx_nvram-extract-code-copying-NVRAM.patch \
     file://831-v5.13-0004-firmware-bcm47xx_nvram-look-for-NVRAM-with-for-inste.patch \
     file://831-v5.13-0005-firmware-bcm47xx_nvram-inline-code-checking-NVRAM-si.patch \
-    file://846-v5.20-0001-dt-bindings-leds-leds-bcm63138-unify-full-stops-in-d.patch \
-    file://846-v5.20-0002-leds-add-help-info-about-BCM63138-module-name.patch \
-    file://846-v5.20-0003-leds-leds-bcm63138-get-rid-of-LED_OFF.patch \
+    file://845-v6.0-0001-dt-bindings-leds-add-Broadcom-s-BCM63138-controller.patch \
+    file://845-v6.0-0002-leds-bcm63138-add-support-for-BCM63138-controller.patch \
+    file://846-v6.0-0001-dt-bindings-leds-leds-bcm63138-unify-full-stops-in-d.patch \
+    file://846-v6.0-0002-leds-add-help-info-about-BCM63138-module-name.patch \
+    file://846-v6.0-0003-leds-leds-bcm63138-get-rid-of-LED_OFF.patch \
     file://852-v5.10-0001-net-sfp-VSOL-V2801F-CarlitoxxPro-CPGOS03-0490-v2.0-w.patch \
     file://852-v5.10-0002-net-sfp-add-workaround-for-Realtek-RTL8672-and-RTL96.patch \
     file://900-v5.9-0001-dt-bindings-Add-multicolor-class-dt-bindings-documen.patch \
