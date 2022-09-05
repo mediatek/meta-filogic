@@ -1,6 +1,6 @@
-From 229ee92b43901c1f5d1dca5a82d9a51592dafd5e Mon Sep 17 00:00:00 2001
+From 7b736ee3ec6acebeb4fccef1a59afe6d87912935 Mon Sep 17 00:00:00 2001
 From: "Allen.Ye" <allen.ye@mediatek.com>
-Date: Wed, 31 Aug 2022 13:47:19 +0800
+Date: Mon, 5 Sep 2022 09:55:10 +0800
 Subject: [PATCH] HAL: add get and set dfs enable and refactor dfs support
 
 ---
@@ -8,7 +8,7 @@ Subject: [PATCH] HAL: add get and set dfs enable and refactor dfs support
  1 file changed, 47 insertions(+), 3 deletions(-)
 
 diff --git a/source/wifi/wifi_hal.c b/source/wifi/wifi_hal.c
-index 097f8c6..bb4ab8b 100644
+index 9b7ac7e..05029a3 100644
 --- a/source/wifi/wifi_hal.c
 +++ b/source/wifi/wifi_hal.c
 @@ -76,6 +76,7 @@ Licensed under the ISC license
@@ -19,7 +19,7 @@ index 097f8c6..bb4ab8b 100644
  
  #ifdef MTK_IMPL
  #define DRIVER_2GHZ "mt7915e"
-@@ -2244,7 +2245,7 @@ INT wifi_getRadioDfsSupport(INT radioIndex, BOOL *output_bool) //Tr181
+@@ -2264,7 +2265,7 @@ INT wifi_getRadioDfsSupport(INT radioIndex, BOOL *output_bool) //Tr181
  {
      if (NULL == output_bool) 
          return RETURN_ERR;
@@ -28,7 +28,7 @@ index 097f8c6..bb4ab8b 100644
      return RETURN_OK;
  }
  
-@@ -2286,17 +2287,60 @@ INT wifi_setRadioDCSScanTime(INT radioIndex, INT interval_seconds, INT dwell_mil
+@@ -2306,17 +2307,60 @@ INT wifi_setRadioDCSScanTime(INT radioIndex, INT interval_seconds, INT dwell_mil
  //Get the Dfs enable status
  INT wifi_getRadioDfsEnable(INT radioIndex, BOOL *output_bool)	//Tr181
  {
@@ -37,7 +37,7 @@ index 097f8c6..bb4ab8b 100644
 +    wifi_band band;
 +
 +    WIFI_ENTRY_EXIT_DEBUG("Inside %s:%d\n",__func__, __LINE__);
-+    
++
 +    *output_bool = TRUE;        // default
      if (NULL == output_bool) 
          return RETURN_ERR;
@@ -52,8 +52,8 @@ index 097f8c6..bb4ab8b 100644
 +        fgets(buf, 2, f);
 +        if (strncmp(buf, "0", 0) == 0)
 +            *output_bool = FALSE;
++        fclose(f);
 +    }
-+    fclose(f);
 +    WIFI_ENTRY_EXIT_DEBUG("Exiting %s:%d\n",__func__, __LINE__);
      return RETURN_OK;
  }
