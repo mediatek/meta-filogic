@@ -1,17 +1,17 @@
-From 04376f0cc22533f9d2cf635bcb3bb9d564d5a3b5 Mon Sep 17 00:00:00 2001
+From 31bc9c1435e62e442d0dbd68a4445d3b4d8f862f Mon Sep 17 00:00:00 2001
 From: "Allen.Ye" <allen.ye@mediatek.com>
-Date: Fri, 29 Jul 2022 10:11:31 +0800
+Date: Wed, 7 Sep 2022 14:17:50 +0800
 Subject: [PATCH] HAL: refactor SSIDTrafficStats2 function
 
 ---
- source/wifi/wifi_hal.c | 69 ++++++++++++++++++++++++++++++++++--------
- 1 file changed, 56 insertions(+), 13 deletions(-)
+ source/wifi/wifi_hal.c | 77 +++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 64 insertions(+), 13 deletions(-)
 
 diff --git a/source/wifi/wifi_hal.c b/source/wifi/wifi_hal.c
-index 0e047fc..556c73f 100644
+index e8c9acf..33259dd 100644
 --- a/source/wifi/wifi_hal.c
 +++ b/source/wifi/wifi_hal.c
-@@ -7450,38 +7450,81 @@ INT wifi_getSSIDTrafficStats2(INT ssidIndex,wifi_ssidTrafficStats2_t *output_str
+@@ -8288,38 +8288,89 @@ INT wifi_getSSIDTrafficStats2(INT ssidIndex,wifi_ssidTrafficStats2_t *output_str
  
      sprintf(HConf_file,"%s%d%s","/nvram/hostapd",ssidIndex,".conf");
      GetInterfaceName(interface_name,HConf_file);
@@ -76,25 +76,25 @@ index 0e047fc..556c73f 100644
 +    out->ssid_DiscardedPacketsReceived = atol(str);
 +    pclose(fp);
 +
-+    sprintf(pipeCmd,"%s%s%s","tail -n1 /proc/net/netstat | cut -d  ' ' -f5 | tr -d '\\n'");
++    sprintf(pipeCmd,"%s","tail -n1 /proc/net/netstat | cut -d  ' ' -f5 | tr -d '\\n'");
 +    fp = popen(pipeCmd, "r");
 +    fgets(str, MAX_BUF_SIZE,fp);
 +    out->ssid_MulticastPacketsSent = atol(str);
 +    pclose(fp);
 +
-+    sprintf(pipeCmd,"%s%s%s","tail -n1 /proc/net/netstat | cut -d  ' ' -f4 | tr -d '\\n'");
++    sprintf(pipeCmd,"%s","tail -n1 /proc/net/netstat | cut -d  ' ' -f4 | tr -d '\\n'");
 +    fp = popen(pipeCmd, "r");
 +    fgets(str, MAX_BUF_SIZE,fp);
 +    out->ssid_MulticastPacketsReceived = atol(str);
 +    pclose(fp);
 +
-+    sprintf(pipeCmd,"%s%s%s","tail -n1 /proc/net/netstat | cut -d  ' ' -f7 | tr -d '\\n'");
++    sprintf(pipeCmd,"%s","tail -n1 /proc/net/netstat | cut -d  ' ' -f7 | tr -d '\\n'");
 +    fp = popen(pipeCmd, "r");
 +    fgets(str, MAX_BUF_SIZE,fp);
 +    out->ssid_BroadcastPacketsSent = atol(str);
 +    pclose(fp);
 +
-+    sprintf(pipeCmd,"%s%s%s","tail -n1 /proc/net/netstat | cut -d  ' ' -f6 | tr -d '\\n'");
++    sprintf(pipeCmd,"%s","tail -n1 /proc/net/netstat | cut -d  ' ' -f6 | tr -d '\\n'");
 +    fp = popen(pipeCmd, "r");
 +    fgets(str, MAX_BUF_SIZE,fp);
 +    out->ssid_BroadcastPacketsRecevied = atol(str);
@@ -102,7 +102,15 @@ index 0e047fc..556c73f 100644
 +
 +    out->ssid_UnicastPacketsSent = out->ssid_PacketsSent - out->ssid_MulticastPacketsSent - out->ssid_BroadcastPacketsSent - out->ssid_DiscardedPacketsSent;
 +    out->ssid_UnicastPacketsReceived = out->ssid_PacketsReceived - out->ssid_MulticastPacketsReceived - out->ssid_BroadcastPacketsRecevied - out->ssid_DiscardedPacketsReceived;
-+    
++
++    // Not supported
++    output_struct->ssid_RetransCount = 0;
++    output_struct->ssid_FailedRetransCount = 0;
++    output_struct->ssid_RetryCount = 0;
++    output_struct->ssid_MultipleRetryCount = 0;
++    output_struct->ssid_ACKFailureCount = 0;
++    output_struct->ssid_AggregatedPacketCount = 0;
++
      return RETURN_OK;
  }
  
