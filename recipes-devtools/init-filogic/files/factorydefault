@@ -1,0 +1,5 @@
+#!/bin/sh
+
+touch /reset-default
+
+reboot -f

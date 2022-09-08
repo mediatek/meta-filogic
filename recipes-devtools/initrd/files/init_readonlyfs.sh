@@ -38,6 +38,14 @@ mkdir -p /mnt
 
 $MOUNT -n -t ubifs /dev/$data_ubivol -o rw,noatime /overlay
 
+if [ -f "/overlay/upper/reset-default" ]; then
+	v "Proceed with reset to default"
+	$UMOUNT /overlay
+	rootfs_data_length=$(cat /sys/class/ubi/$data_ubivol/data_bytes)
+	ubirmvol /dev/ubi0 -N rootfs_data
+	ubimkvol /dev/ubi0 -N rootfs_data -s $rootfs_data_length
+	$MOUNT -n -t ubifs /dev/$data_ubivol -o rw,noatime /overlay
+fi
 
 [ ! -d  "/overlay/upper" ] && mkdir /overlay/upper
 [ ! -d  "/overlay/work" ] && mkdir /overlay/work

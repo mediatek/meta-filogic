@@ -12,6 +12,7 @@ SRC_URI = " \
     file://init-IPv6.service \
     file://init-bridge.sh \
     file://init-Lanbridge.service \
+    file://factorydefault \
     "
 
 RDEPENDS_${PN} += "bash"
@@ -26,6 +27,7 @@ do_install() {
     install -d ${D}${sbindir}
     install -m 0755 ${WORKDIR}/init-IPv6.sh ${D}${sbindir}
     install -m 0755 ${WORKDIR}/init-bridge.sh ${D}${sbindir}
+    install -m 0755 ${WORKDIR}/factorydefault ${D}${sbindir}
     install -d ${D}${systemd_unitdir}/system/
     install -m 0644 ${S}/init-IPv6.service ${D}${systemd_unitdir}/system
     install -m 0644 ${S}/init-Lanbridge.service ${D}${systemd_unitdir}/system
