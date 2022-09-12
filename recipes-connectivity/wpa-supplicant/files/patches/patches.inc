@@ -66,6 +66,7 @@ SRC_URI_append = " \
     file://916-Add-hostapd-command-handler-for-SET_EDCCA-GET_EDCCA-.patch \
     file://920-Add-hostapd-HEMU-SET-GET-control.patch \
     file://921-Add-three-wire-PTA-ctrl-hostapd-vendor-command.patch \
+    file://922-Add-hostapd-iBF-control.patch \
     file://990-ctrl-make-WNM_AP-functions-dependant-on-CONFIG_AP.patch \
     file://991-fix-compile.patch \
     file://992-openssl-include-rsa.patch \
