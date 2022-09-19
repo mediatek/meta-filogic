@@ -166,6 +166,8 @@ SRC_URI_append = " \
     file://408-v5.7-mtd-nand-spi-rework-detect-procedure-for-different-read-id-op.patch \
     file://410-mtd-fix-calculating-partition-end-address.patch \
     file://411-mtd-spinand-gigadevice-Support-GD5F1GQ5UExxG.patch \
+    file://412-v5.19-mtd-call-of_platform_populate-for-MTD-partitions.patch \
+    file://414-v6.1-mtd-allow-getting-MTD-device-associated-with-a-speci.patch \
     file://430-mtd-spinand-macronix-Add-support-for-MX31LF1GE4BC.patch \
     file://431-mtd-spinand-macronix-Add-support-for-MX31UF1GE4BC.patch \
     file://432-mtd-spinand-macronix-Add-support-for-MX35LFxGE4AD.patch \
@@ -242,6 +244,7 @@ SRC_URI_append = " \
     file://800-v5.5-scsi-core-Add-sysfs-attributes-for-VPD-pages-0h-and-.patch \
     file://801-v5.5-hwmon-Driver-for-disk-and-solid-state-drives-with-te.patch \
     file://801-v5.6-leds-populate-the-device-s-of_node.patch \
+    file://801-v6.1-nvmem-add-driver-handling-U-Boot-environment-variabl.patch \
     file://803-v5.8-i2c-pxa-use-official-address-byte-helper.patch \
     file://804-v5.8-i2c-pxa-remove-unneeded-includes.patch \
     file://805-v5.8-i2c-pxa-re-arrange-includes-to-be-in-alphabetical-or.patch \

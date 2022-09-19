@@ -5,9 +5,8 @@ SRC_URI_append = " \
     file://0003-mt76-mt7915-rework-rx-testmode-stats.patch \
     file://0004-mt76-mt7915-drop-undefined-action-frame.patch \
     file://0005-mt76-common-RF-CR-idx-require-8-bits.patch \
-    file://0006-mt76-testmode-use-random-payload-for-tx-packets.patch \
-    file://0007-mt76-mt7915-add-spatial-extension-index-support.patch \
-    file://0008-mt76-mt7915-set-the-first-antenna-to-detect-radar-fo.patch \
+    file://0006-mt76-mt7915-add-spatial-extension-index-support.patch \
+    file://0007-mt76-mt7915-set-the-first-antenna-to-detect-radar-fo.patch \
     file://100-Revert-of-net-pass-the-dst-buffer-to-of_get_mac_addr.patch \
     file://1001-mt76-mt7915-add-mtk-internal-debug-tools-for-mt76.patch \
     file://1002-mt76-mt7915-csi-implement-csi-support.patch \
@@ -20,23 +19,23 @@ SRC_URI_append = " \
     file://1009-mt76-mt7915-add-fw_version-dump.patch \
     file://1111-mt76-testmode-additional-supports.patch \
     file://1112-mt76-testmode-add-pre-cal-support.patch \
-    file://1113-mt76-mt7915-init-rssi-in-WTBL-when-add-station.patch \
-    file://1114-mt76-mt7915-reduce-TWT-SP-sent-to-FW-for-cert.patch \
-    file://1115-mt76-airtime-fairness-feature-off-in-mac80211.patch \
-    file://1116-mt76-mt7915-add-mt7986-and-mt7916-pre-calibration.patch \
-    file://1117-mt76-mt7915-add-phy-capability-vendor-command.patch \
-    file://1118-mt76-mt7915-add-vendor-subcmd-EDCCA-ctrl.patch \
-    file://1119-mt76-mt7915-implement-bin-file-mode.patch \
-    file://1120-mt76-mt7915-initialize-wcid.patch \
-    file://1121-mt76-HEMU-Add-dump-support.patch \
-    file://1122-mt76-mt7915-add-vendor-subcmd-three-wire-PTA-ctrl.patch \
-    file://1123-mt76-add-ibf-control-vendor-cmd.patch \
+    file://1113-mt76-testmode-add-iBF-command-mode-support.patch \
+    file://1114-mt76-mt7915-init-rssi-in-WTBL-when-add-station.patch \
+    file://1115-mt76-mt7915-reduce-TWT-SP-sent-to-FW-for-cert.patch \
+    file://1116-mt76-airtime-fairness-feature-off-in-mac80211.patch \
+    file://1117-mt76-mt7915-add-mt7986-and-mt7916-pre-calibration.patch \
+    file://1118-mt76-mt7915-add-phy-capability-vendor-command.patch \
+    file://1119-mt76-mt7915-add-vendor-subcmd-EDCCA-ctrl.patch \
+    file://1120-mt76-mt7915-implement-bin-file-mode.patch \
+    file://1121-mt76-mt7915-initialize-wcid.patch \
+    file://1122-mt76-HEMU-Add-dump-support.patch \
+    file://1123-mt76-mt7915-add-vendor-subcmd-three-wire-PTA-ctrl.patch \
+    file://1124-mt76-add-ibf-control-vendor-cmd.patch \
     file://3001-mt76-add-wed-tx-support.patch \
-    file://3001-mt76-add-wed-tx-wds-support.patch \
-    file://3002-mt76-add-wed-rx-support.patch \
-    file://3003-mt76-add-fill-receive-path-to-report-wed-idx.patch \
-    file://3004-mt76-add-ser-spport-when-wed-on.patch \
-    file://3005-mt76-mt7915-add-statistic-for-HW-Tx-Path.patch \
-    file://3006-mt76-mt7915-add-statistic-for-HW-Rx-Path.patch \
+    file://3002-add-wed-tx-wds-support-on-mt7986.patch \
+    file://3003-mt76-add-wed-rx-support.patch \
+    file://3004-mt76-add-fill-receive-path-to-report-wed-idx.patch \
+    file://3005-mt76-add-ser-spport-when-wed-on.patch \
+    file://3006-mt76-mt7915-add-statistic-for-H-W-Rx-Path.patch \
     file://3007-mt76-mt7915-enable-red-per-band-token-drop-for-HW-Pa.patch \
     "

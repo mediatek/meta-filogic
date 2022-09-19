@@ -36,7 +36,12 @@ SRC_URI_append = " \
     file://337-mac80211-increase-quantum-for-airtime-scheduler.patch \
     file://339-mac80211-exclude-multicast-packets-from-AQL-pending-.patch \
     file://340-wifi-mac80211-do-not-abuse-fq.lock-in-ieee80211_do_s.patch \
+    file://341-mac80211-Fix-deadlock-Don-t-start-TX-while-holding-f.patch \
+    file://342-mac80211-Ensure-vif-queues-are-operational-after-sta.patch \
     file://350-bss-color-collision.patch \
+    file://360-mac80211-fix-a-memory-leak-where-sta_info-is-not-fre.patch \
+    file://361-wifi-mac80211-Don-t-finalize-CSA-in-IBSS-mode-if-sta.patch \
+    file://362-wifi-mac80211-Fix-UAF-in-ieee80211_scan_rx.patch \
     file://400-allow-ibss-mixed.patch \
     file://500-mac80211_configure_antenna_gain.patch \
     file://782-net-next-1-of-net-pass-the-dst-buffer-to-of_get_mac_address.patch \
