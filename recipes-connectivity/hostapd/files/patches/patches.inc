@@ -51,24 +51,23 @@ SRC_URI_append = " \
     file://750-qos_map_set_without_interworking.patch \
     file://751-qos_map_ignore_when_unsupported.patch \
     file://800-acs-don-t-select-indoor-channel-on-outdoor-operation.patch \
-    file://902-master-Add-hostapd_neighbor_count-and-hostapd_neighbor_inse.patch \
-    file://903-master-Support-including-neighbor-report-elements-in-ANQP-r.patch \
-    file://904-master-Support-including-neignbor-report-elements-in-BTM-re.patch \
-    file://905-master-Support-configuring-BSS-Termination-TSF-by-using-hos.patch \
-    file://906-master-Disable-interface-if-BSS-Termination-TSF-is-set.patch \
-    file://907-master-Add-set_send_disassoc_frame_timer-to-send-disassocia.patch \
-    file://908-master-Support-including-neighbor-report-elements-in-BTM-re.patch \
-    file://909-master-Add-hostapd_neighbor_set_own_report_pref.patch \
-    file://910-master-Add-hostapd_neighbor_set_pref_by_non_pref_chan.patch \
-    file://911-master-print-sae-groups-by-hostapd-ctrl.patch \
-    file://913-master-add-support-for-runtime-set-in-band-discover.patch \
-    file://914-Add-mtk_vendor.h.patch \
-    file://915-Support-new-hostapd-configuration-edcca_enable-and-e.patch \
-    file://916-Add-hostapd-command-handler-for-SET_EDCCA-GET_EDCCA-.patch \
-    file://920-Add-hostapd-HEMU-SET-GET-control.patch \
-    file://921-Add-three-wire-PTA-ctrl-hostapd-vendor-command.patch \
-    file://922-Add-hostapd-iBF-control.patch \
     file://990-ctrl-make-WNM_AP-functions-dependant-on-CONFIG_AP.patch \
-    file://991-fix-compile.patch \
     file://992-openssl-include-rsa.patch \
+    file://99900-master-Add-hostapd_neighbor_count-and-hostapd_neighbor_ins.patch \
+    file://99901-master-Support-including-neighbor-report-elements-in-ANQP-.patch \
+    file://99902-master-Support-including-neignbor-report-elements-in-BTM-r.patch \
+    file://99903-master-Support-configuring-BSS-Termination-TSF-by-using-ho.patch \
+    file://99904-master-Disable-interface-if-BSS-Termination-TSF-is-set.patch \
+    file://99905-master-Add-set_send_disassoc_frame_timer-to-send-disassoci.patch \
+    file://99906-master-Support-including-neighbor-report-elements-in-BTM-r.patch \
+    file://99907-master-Add-hostapd_neighbor_set_own_report_pref.patch \
+    file://99908-master-Add-hostapd_neighbor_set_pref_by_non_pref_chan.patch \
+    file://99909-master-print-sae-groups-by-hostapd-ctrl.patch \
+    file://99910-master-hostapd-add-support-for-runtime-set-in-band-discove.patch \
+    file://99911-master-Add-mtk_vendor.h.patch \
+    file://99912-master-Support-new-hostapd-configuration-edcca_enable-and-.patch \
+    file://99913-master-Add-hostapd-command-handler-for-SET_EDCCA-GET_EDCCA.patch \
+    file://99914-master-Add-hostapd-HEMU-SET-GET-control.patch \
+    file://99915-master-Add-three-wire-PTA-ctrl-hostapd-vendor-command.patch \
+    file://99916-master-Add-hostapd-iBF-control.patch \
     "
