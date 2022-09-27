@@ -70,4 +70,5 @@ SRC_URI_append = " \
     file://99914-master-Add-hostapd-HEMU-SET-GET-control.patch \
     file://99915-master-Add-three-wire-PTA-ctrl-hostapd-vendor-command.patch \
     file://99916-master-Add-hostapd-iBF-control.patch \
+    file://99918-Do-not-include-HE-capab-IE-if-associated-sta-s-HE-c.patch \
     "

@@ -7,6 +7,7 @@ SRC_URI_append = " \
     file://0005-mt76-common-RF-CR-idx-require-8-bits.patch \
     file://0006-mt76-mt7915-add-spatial-extension-index-support.patch \
     file://0007-mt76-mt7915-set-the-first-antenna-to-detect-radar-fo.patch \
+    file://0008-mt76-mt7915-set-chainmask-to-3-for-mt7916.patch \
     file://100-Revert-of-net-pass-the-dst-buffer-to-of_get_mac_addr.patch \
     file://1001-mt76-mt7915-add-mtk-internal-debug-tools-for-mt76.patch \
     file://1002-mt76-mt7915-csi-implement-csi-support.patch \
@@ -38,4 +39,5 @@ SRC_URI_append = " \
     file://3005-mt76-add-ser-spport-when-wed-on.patch \
     file://3006-mt76-mt7915-add-statistic-for-H-W-Rx-Path.patch \
     file://3007-mt76-mt7915-enable-red-per-band-token-drop-for-HW-Pa.patch \
+    file://3008-mt76-mt7915-update-mt7916-trinfo-when-hw-path-enable.patch \
     "
