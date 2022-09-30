@@ -40,4 +40,5 @@ SRC_URI_append = " \
     file://3006-mt76-mt7915-add-statistic-for-H-W-Rx-Path.patch \
     file://3007-mt76-mt7915-enable-red-per-band-token-drop-for-HW-Pa.patch \
     file://3008-mt76-mt7915-update-mt7916-trinfo-when-hw-path-enable.patch \
+    file://3009-mt76-mt7915-find-rx-token-by-physical-address.patch \
     "
