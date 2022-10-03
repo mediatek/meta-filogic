@@ -13,6 +13,7 @@ SRC_URI = " \
     file://init-bridge.sh \
     file://init-Lanbridge.service \
     file://factorydefault \
+    file://init-PPPQ.service \
     "
 
 RDEPENDS_${PN} += "bash"
@@ -20,8 +21,10 @@ RDEPENDS_${PN} += "bash"
 SYSTEMD_PACKAGES = "${PN}"
 SYSTEMD_SERVICE_${PN} = " init-IPv6.service"
 SYSTEMD_SERVICE_${PN} += " init-Lanbridge.service"
+SYSTEMD_SERVICE_${PN} += " init-PPPQ.service"
 FILES_${PN} += "{systemd_unitdir}/system/init-IPv6.service"
 FILES_${PN} += "{systemd_unitdir}/system/init-Lanbridge.service"
+FILES_${PN} += "{systemd_unitdir}/system/init-PPPQ.service"
 
 do_install() {
     install -d ${D}${sbindir}
@@ -31,4 +34,5 @@ do_install() {
     install -d ${D}${systemd_unitdir}/system/
     install -m 0644 ${S}/init-IPv6.service ${D}${systemd_unitdir}/system
     install -m 0644 ${S}/init-Lanbridge.service ${D}${systemd_unitdir}/system
+    install -m 0644 ${S}/init-PPPQ.service ${D}${systemd_unitdir}/system
 }
