@@ -1,0 +1,15 @@
+diff --git a/wifi_hal_radio.h b/wifi_hal_radio.h
+index 4f8e710..524530e 100644
+--- a/wifi_hal_radio.h
++++ b/wifi_hal_radio.h
+@@ -318,6 +318,10 @@ INT wifi_getRadioDfsEnable(INT radioIndex, BOOL *output_bool);
+ */
+ INT wifi_setRadioDfsEnable(INT radioIndex, BOOL enabled);
+ 
++INT wifi_getRadioDfsAtBootUpEnable(INT radioIndex, BOOL *output_bool);
++
++INT wifi_setRadioDfsAtBootUpEnable(INT radioIndex, BOOL enabled);
++
+ /* wifi_getRadioMCS() function */
+ /**
+ * @brief Get the Modulation Coding Scheme index, eg: "-1", "1", "15".
