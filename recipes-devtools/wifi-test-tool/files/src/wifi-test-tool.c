@@ -13,12 +13,12 @@ void set_channel(wifi_radio_param *radio_param, char *channel)
     }
 }
 
-void set_band(wifi_radio_param *radio_param, char *country)
+void set_country(wifi_radio_param *radio_param, char *country)
 {
     strcpy(radio_param->country, country);
 }
 
-void set_country(wifi_radio_param *radio_param, char *band)
+void set_band(wifi_radio_param *radio_param, char *band)
 {
     strcpy(radio_param->band, band);
 }
