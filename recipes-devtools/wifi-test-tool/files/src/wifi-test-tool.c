@@ -7,10 +7,14 @@
 
 void set_channel(wifi_radio_param *radio_param, char *channel)
 {
-    if (strcmp(channel, "auto") != 0) {
+    if (strcmp(channel, "auto") == 0) {
+        radio_param->auto_channel = TRUE;
+        radio_param->channel = 0;
+    } else {
         radio_param->auto_channel = FALSE;
-        radio_param->channel = atoi(channel);
+        radio_param->channel = strtol(channel, NULL, 10);
     }
+    return;
 }
 
 void set_country(wifi_radio_param *radio_param, char *country)
@@ -133,25 +137,24 @@ void set_radio_param(wifi_radio_param radio_parameter)
 {
     BOOL enable;
     BOOL current;
-    char config_file[64] = {0};
     int ret = 0;
     struct params param;
+    wifi_radio_operationParam_t operationParam = {0};
+
+    if (radio_parameter.disabled == TRUE) {
+        wifi_setRadioEnable(radio_parameter.radio_index, FALSE);
+        return;
+    }
+    operationParam.enable = TRUE;
 
     fprintf(stderr, "Start setting radio\n");
-    sprintf(config_file, "/nvram/hostapd%d.conf", radio_parameter.radio_index);
-
-    // Call hal to set in this function
-    // Channel
-    fprintf(stderr, "Set channel: %d, bandwidth: %d\n", radio_parameter.channel, radio_parameter.bandwidth);
-    if (radio_parameter.auto_channel == TRUE) {
-        ret = wifi_setRadioAutoChannelEnable(radio_parameter.radio_index, TRUE);
-    } else {
-        // wifi_setRadioChannel(radio_parameter.radio_index, radio_parameter.channel);
-        ret = wifi_pushRadioChannel2(radio_parameter.radio_index, radio_parameter.channel, radio_parameter.bandwidth, 30);
-    }
+    ret = wifi_getRadioOperatingParameters(radio_parameter.radio_index, &operationParam);
     if (ret != RETURN_OK)
-        fprintf(stderr, "[Set channel failed!!!]\n");
-    ret = 0;
+        fprintf(stderr, "[Get OperatingParameters failed!!!]\n");
+
+    // Channel
+    operationParam.autoChannelEnabled = radio_parameter.auto_channel;
+    operationParam.channel = radio_parameter.channel;
 
     // Country
     fprintf(stderr, "Set Country: %s\n", radio_parameter.country);
@@ -168,60 +171,65 @@ void set_radio_param(wifi_radio_param radio_parameter)
     ret = 0;
 
     // htmode
-    wifi_ieee80211_Mode pure_mode;
+    unsigned int mode = 0;      // enum wifi_ieee80211Variant_t
     if (strcmp(radio_parameter.band, "2g") == 0) {
-
-        pure_mode |= WIFI_MODE_B | WIFI_MODE_G;
+        mode |= WIFI_80211_VARIANT_B | WIFI_80211_VARIANT_G;
         if (strcmp(radio_parameter.htmode, "NOHT") == 0 || strcmp(radio_parameter.htmode, "NONE") == 0)
             strcpy(radio_parameter.htmode, "11G");
 
-    } else if (strcmp(radio_parameter.band, "5g") == 0) {
+        if (strstr(radio_parameter.htmode, "HE") != NULL)
+            mode |= WIFI_80211_VARIANT_N | WIFI_80211_VARIANT_AX;
 
-        pure_mode |= WIFI_MODE_A;
+    } else if (strcmp(radio_parameter.band, "5g") == 0) {
+        mode |= WIFI_80211_VARIANT_A;
         if (strcmp(radio_parameter.htmode, "NOHT") == 0 || strcmp(radio_parameter.htmode, "NONE") == 0) 
             strcpy(radio_parameter.htmode, "11A");
+
+        if (strstr(radio_parameter.htmode, "HE") != NULL)
+            mode |= WIFI_80211_VARIANT_N | WIFI_80211_VARIANT_AC | WIFI_80211_VARIANT_AX;
     }
 
     if (strstr(radio_parameter.htmode, "VHT") != NULL)
-        pure_mode |= WIFI_MODE_N | WIFI_MODE_AC;
+        mode |= WIFI_80211_VARIANT_N | WIFI_80211_VARIANT_AC;
     else if (strstr(radio_parameter.htmode, "HT") != NULL && strstr(radio_parameter.htmode, "NO") == NULL)
-        pure_mode |= WIFI_MODE_N;
-    else if (strstr(radio_parameter.htmode, "HE") != NULL)
-        pure_mode |= WIFI_MODE_N | WIFI_MODE_AC | WIFI_MODE_AX;
+        mode |= WIFI_80211_VARIANT_N;
 
-    radio_parameter.pure_mode = (int)pure_mode;
-    fprintf(stderr, "Set htmode: %s, puremode: %d\n", radio_parameter.htmode, radio_parameter.pure_mode);
-    ret = wifi_setRadioMode(radio_parameter.radio_index, radio_parameter.htmode, radio_parameter.pure_mode);
-    if (ret != RETURN_OK)
-        fprintf(stderr, "[Set htmode failed!!!]\n");
-    ret = 0;
+    operationParam.variant = mode;
 
-    // disabled
-    if (radio_parameter.disabled == FALSE)
-        enable = TRUE;
-    ret = wifi_getRadioEnable(radio_parameter.radio_index, &current);
-    fprintf(stderr, "radio %d, current: %s, set: %s, getstatus return: %s\n", radio_parameter.radio_index, current ? "enable":"disable", radio_parameter.disabled ? "disable":"enable",  (ret==RETURN_OK)? "success": "failed");
-    // fprintf(stderr, "In if closure. enable: %d, current: %d.\n", enable, current);
-    if (enable != current) {
-        ret = wifi_setRadioEnable(radio_parameter.radio_index, enable);
-    }
+    // apply setting
+    ret = wifi_setRadioOperatingParameters(radio_parameter.radio_index, &operationParam);
     if (ret != RETURN_OK)
-        fprintf(stderr, "[Set radio %s failed!!!]\n", enable?"enble":"disable");
-    ret = 0;
+        fprintf(stderr, "[Apply setting failed!!!]\n");
 
 }
 
 void set_ap_param(wifi_ap_param ap_param)
 {
     int ret = 0;
+    int vap_index_in_map = 0;
+    wifi_vap_info_t vap_info = {0};
+    wifi_vap_info_map_t vap_map = {0};
+
+    ret = wifi_getRadioVapInfoMap(ap_param.radio_index, &vap_map);
+    if (ret != RETURN_OK) {     // if failed, we set assume this vap as the first vap.
+        fprintf(stderr, "[Get vap map failed!!!]\n");
+        vap_map.num_vaps = MAX_NUM_VAP_PER_RADIO;
+    } else {                    // get the index of the map
+        for (int i = 0; i < vap_map.num_vaps; i++) {
+            if (vap_map.vap_array[i].vap_index == ap_param.ap_index) {
+                vap_index_in_map = i;
+                break;
+            }
+        }
+    }
+
+    // get current setting
+    vap_info = vap_map.vap_array[vap_index_in_map];
 
     fprintf(stderr, "Start setting ap\n");
-    // Call hal to set in this function
     // SSID
-    fprintf(stderr, "Set SSID: %s\n", ap_param.ssid);
-    ret = wifi_setSSIDName(ap_param.ap_index, ap_param.ssid);
-    if (ret != RETURN_OK)
-        fprintf(stderr, "[Set SSID failed!!!]\n");
+    strncpy(vap_info.u.bss_info.ssid, ap_param.ssid, 33);
+    vap_info.u.bss_info.ssid[32] = '\0';
 
     // wpa and security mode
     fprintf(stderr, "Set encryption mode: %s\n", ap_param.enctyption_mode);
@@ -236,6 +244,13 @@ void set_ap_param(wifi_ap_param ap_param)
         if (ret != RETURN_OK)
             fprintf(stderr, "[Set password failed!!!]\n");
     }
+
+
+    // Replace the setting with uci config
+    vap_map.vap_array[vap_index_in_map] = vap_info;
+    ret = wifi_createVAP(ap_param.radio_index, &vap_map);
+    if (ret != RETURN_OK)
+        fprintf(stderr, "[Apply vap setting failed!!!]\n");
 
     // restart ap
     wifi_setApEnable(ap_param.ap_index, FALSE);
