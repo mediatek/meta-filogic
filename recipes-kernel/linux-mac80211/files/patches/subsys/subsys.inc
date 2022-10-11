@@ -38,6 +38,9 @@ SRC_URI_append = " \
     file://340-wifi-mac80211-do-not-abuse-fq.lock-in-ieee80211_do_s.patch \
     file://341-mac80211-Fix-deadlock-Don-t-start-TX-while-holding-f.patch \
     file://342-mac80211-Ensure-vif-queues-are-operational-after-sta.patch \
+    file://343-wifi-mac80211-fix-decap-offload-for-stations-on-AP_V.patch \
+    file://344-wifi-cfg80211-fix-ieee80211_data_to_8023_exthdr-hand.patch \
+    file://345-wifi-mac80211-do-not-drop-packets-smaller-than-the-L.patch \
     file://350-bss-color-collision.patch \
     file://360-mac80211-fix-a-memory-leak-where-sta_info-is-not-fre.patch \
     file://361-wifi-mac80211-Don-t-finalize-CSA-in-IBSS-mode-if-sta.patch \
@@ -46,14 +49,19 @@ SRC_URI_append = " \
     file://500-mac80211_configure_antenna_gain.patch \
     file://782-net-next-1-of-net-pass-the-dst-buffer-to-of_get_mac_address.patch \
     file://783-sync-nl80211.patch \
-    file://901-mac80211-check-twt-responder-when-setu-twt.patch \
-    file://902-nl80211-internal-extend-CAC-time-for-weather-radar-c.patch \
-    file://903-mac80211-it-s-invalid-case-when-frag_threshold-is-gr.patch \
-    file://904-mac80211-correct-legacy-rates-check-in-ieee80211_cal.patch \
-    file://905-mac80211-airtime_flags-depends-on-NL80211_EXT_FEATUR.patch \
-    file://906-mac80211-add-support-for-runtime-set-inband-discovery.patch \
-    file://908-mac80211-add-s1g-category-to-_ieee80211_is_robust_mg.patch \
-    file://910-mac80211-offload.patch \
-    file://911-add-fill-receive-path-ops-to-get-wed-idx-v2.patch \
-    file://912-mac80211-make-4addr-null-frames-using-min-rate-for-WDS.patch \
+    file://800-mac80211-mask-nested-A-MSDU-support-for-mesh.patch \
+    file://900-mac80211-mtk-export-del-all-station-for-ampdu-amsdu-on-off-function.patch \
+    file://901-mac80211-mtk-check-twt-responder-when-setu-twt.patch \
+    file://902-nl80211-mtk-internal-extend-CAC-time-for-weather-radar-c.patch \
+    file://903-mac80211-mtk-it-s-invalid-case-when-frag_threshold-is-gr.patch \
+    file://904-mac80211-mtk-correct-legacy-rates-check-in-ieee80211_cal.patch \
+    file://905-mac80211-mtk-airtime_flags-depends-on-NL80211_EXT_FEATUR.patch \
+    file://906-mac80211-mtk-add-support-for-runtime-set-inband-discovery.patch \
+    file://908-mac80211-mtk-add-s1g-category-to-_ieee80211_is_robust_mg.patch \
+    file://910-mac80211-mtk-offload.patch \
+    file://911-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-idx-v2.patch \
+    file://912-mac80211-mtk-make-4addr-null-frames-using-min-rate-for-WDS.patch \
+    file://913-mac80211-mtk-remove-timerout-handle-for-ax210-iot-issue.patch \
+    file://914-cfg80211-mtk-implement-DFS-status-show-cac-and-nop-skip-command.patch \
+    file://915-mac80211-mtk-Set-TWT-Information-Frame-Disabled-bit-as-1.-This-mo.patch \
     "

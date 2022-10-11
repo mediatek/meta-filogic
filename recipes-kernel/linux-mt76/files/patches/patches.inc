@@ -1,13 +1,8 @@
 #patch patches (come from openwrt/lede/target/linux/mediatek)
 SRC_URI_append = " \
     file://0001-mt76-mt7915-rework-testmode-init-registers.patch \
-    file://0002-mt76-testmode-rework-tx-antenna-setting.patch \
-    file://0003-mt76-mt7915-rework-rx-testmode-stats.patch \
-    file://0004-mt76-mt7915-drop-undefined-action-frame.patch \
-    file://0005-mt76-common-RF-CR-idx-require-8-bits.patch \
-    file://0006-mt76-mt7915-add-spatial-extension-index-support.patch \
-    file://0007-mt76-mt7915-set-the-first-antenna-to-detect-radar-fo.patch \
-    file://0008-mt76-mt7915-set-chainmask-to-3-for-mt7916.patch \
+    file://0002-mt76-mt7915-rework-rx-testmode-stats.patch \
+    file://0003-mt76-mt7915-drop-undefined-action-frame.patch \
     file://100-Revert-of-net-pass-the-dst-buffer-to-of_get_mac_addr.patch \
     file://1001-mt76-mt7915-add-mtk-internal-debug-tools-for-mt76.patch \
     file://1002-mt76-mt7915-csi-implement-csi-support.patch \
@@ -32,6 +27,7 @@ SRC_URI_append = " \
     file://1122-mt76-HEMU-Add-dump-support.patch \
     file://1123-mt76-mt7915-add-vendor-subcmd-three-wire-PTA-ctrl.patch \
     file://1124-mt76-add-ibf-control-vendor-cmd.patch \
+    file://1125-mt76-add-ampdu-amsdu-control.patch \
     file://3001-mt76-add-wed-tx-support.patch \
     file://3002-mt76-mt7915-add-wed-tx-wds-support-on-mt7986.patch \
     file://3003-mt76-add-wed-rx-support.patch \
@@ -41,4 +37,5 @@ SRC_URI_append = " \
     file://3007-mt76-mt7915-enable-red-per-band-token-drop-for-HW-Pa.patch \
     file://3008-mt76-mt7915-update-mt7916-trinfo-when-hw-path-enable.patch \
     file://3009-mt76-mt7915-find-rx-token-by-physical-address.patch \
+    file://3010-mt76-mt7915-drop-scatter-and-gather-frame.patch \
     "
