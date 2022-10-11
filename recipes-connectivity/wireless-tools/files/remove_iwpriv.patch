@@ -1,0 +1,10 @@
+--- wireless_tools.30/Makefile.bak	2022-09-21 10:43:47.715582300 +0800
++++ wireless_tools.30/Makefile	2022-09-21 10:44:47.190639431 +0800
+@@ -198,7 +198,6 @@
+ 	( cd $(INSTALL_DIR) ; \
+ 	  ln -f -s iwconfig iwlist ; \
+ 	  ln -f -s iwconfig iwspy ; \
+-	  ln -f -s iwconfig iwpriv ; \
+ 	  ln -f -s iwconfig iwgetid )
+ 
+ clean::
