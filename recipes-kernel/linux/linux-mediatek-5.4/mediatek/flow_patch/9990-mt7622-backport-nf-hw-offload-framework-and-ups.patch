@@ -66,8 +66,8 @@ index 13c5b4e8f..0a6af99f1 100755
  #
  
  obj-$(CONFIG_NET_MEDIATEK_SOC)			+= mtk_eth.o
--mtk_eth-y := mtk_eth_soc.o mtk_sgmii.o mtk_eth_path.o mtk_eth_dbg.o mtk_eth_reset.o
-+mtk_eth-y := mtk_eth_soc.o mtk_sgmii.o mtk_eth_path.o mtk_eth_dbg.o mtk_eth_reset.o	\
+-mtk_eth-y := mtk_eth_soc.o mtk_sgmii.o mtk_usxgmii.o mtk_eth_path.o mtk_eth_dbg.o mtk_eth_reset.o
++mtk_eth-y := mtk_eth_soc.o mtk_sgmii.o mtk_usxgmii.o mtk_eth_path.o mtk_eth_dbg.o mtk_eth_reset.o	\
 +	     mtk_ppe.o mtk_ppe_debugfs.o mtk_ppe_offload.o
  obj-$(CONFIG_NET_MEDIATEK_HNAT)			+= mtk_hnat/
 diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
@@ -256,7 +256,7 @@ index b6380ffeb..349f98503 100755
 +int mtk_eth_setup_tc(struct net_device *dev, enum tc_setup_type type,
 +		     void *type_data);
 +
- #endif /* MTK_ETH_H */
+ int mtk_mac2xgmii_id(struct mtk_eth *eth, int mac_id);
 diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.c b/drivers/net/ethernet/mediatek/mtk_ppe.c
 new file mode 100644
 index 000000000..66298e223
@@ -4941,7 +4941,7 @@ new file mode 100644
 index 000000000..d94c6fb92
 --- /dev/null
 +++ b/net/netfilter/nf_flow_table_offload.c
-@@ -0,0 +1,1191 @@
+@@ -0,0 +1,1195 @@
 +#include <linux/kernel.h>
 +#include <linux/init.h>
 +#include <linux/module.h>
@@ -6011,6 +6011,8 @@ index 000000000..d94c6fb92
 +	struct flow_block_cb *block_cb, *next;
 +	int err = 0;
 +
++	down_read(&flowtable->flow_block_lock);
++
 +	switch (cmd) {
 +	case FLOW_BLOCK_BIND:
 +		list_splice(&bo->cb_list, &flowtable->flow_block.cb_list);
@@ -6025,6 +6027,8 @@ index 000000000..d94c6fb92
 +		WARN_ON_ONCE(1);
 +		err = -EOPNOTSUPP;
 +	}
++
++	up_read(&flowtable->flow_block_lock);
 +
 +	return err;
 +}
