@@ -169,6 +169,7 @@ SRC_URI_append = " \
     file://412-v5.19-mtd-call-of_platform_populate-for-MTD-partitions.patch \
     file://413-v6.0-mtd-next-mtd-core-introduce-of-support-for-dynamic-partitions.patch \
     file://414-v6.1-mtd-allow-getting-MTD-device-associated-with-a-speci.patch \
+    file://415-v6.0-mtd-core-check-partition-before-dereference.patch \
     file://430-mtd-spinand-macronix-Add-support-for-MX31LF1GE4BC.patch \
     file://431-mtd-spinand-macronix-Add-support-for-MX31UF1GE4BC.patch \
     file://432-mtd-spinand-macronix-Add-support-for-MX35LFxGE4AD.patch \
