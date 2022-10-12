@@ -186,7 +186,7 @@ int main(int argc, char **argv)
 	} else {
 		atenl_info("Currently using bridge name: %s\n", an->bridge_name);
 	}
-	
+
 	/* background ourself */
 	if (!fork()) {
 		ret = atenl_eeprom_init(an, phy_idx);
