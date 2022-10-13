@@ -107,30 +107,56 @@ void set_ssid(wifi_ap_param *ap_param, char *ssid)
 
 void set_encryption(wifi_ap_param *ap_param, char *encryption_mode)
 {
-    if (strstr(encryption_mode, "3") != NULL) {
-        strcpy(ap_param->enctyption_mode, "WPA3-");
-    } else if (strstr(encryption_mode, "2") != NULL) {
-        strcpy(ap_param->enctyption_mode, "WPA2-");
-    } else if (strstr(encryption_mode, "1") != NULL) {
-        strcpy(ap_param->enctyption_mode, "WPA-");
-    } else if (strstr(encryption_mode, "mix") != NULL) {
-        strcpy(ap_param->enctyption_mode, "WPA-WPA2-");
+    if (strcmp(encryption_mode, "none") == 0) {
+        ap_param->security.mode = wifi_security_mode_none;
+        ap_param->security.encr = wifi_encryption_none;
+    }else if(strncmp(encryption_mode, "psk2", 4) == 0){
+        ap_param->security.mode = wifi_security_mode_wpa2_personal;
+    }else if(strncmp(encryption_mode, "psk-",4) == 0){
+       ap_param->security.mode = wifi_security_mode_wpa_wpa2_personal;
+    }else if(strncmp(encryption_mode, "psk",3) == 0){
+        ap_param->security.mode = wifi_security_mode_wpa_personal;
+    }else if(strncmp(encryption_mode, "wpa2",4) == 0){
+        ap_param->security.mode = wifi_security_mode_wpa2_enterprise;
+    }else if(strncmp(encryption_mode, "wpa-",4) == 0){
+        ap_param->security.mode = wifi_security_mode_wpa_wpa2_enterprise;
+    }else if(strcmp(encryption_mode, "sae") == 0){
+        ap_param->security.mode = wifi_security_mode_wpa3_personal;
+    }else if(strcmp(encryption_mode, "wpa3") == 0){
+        ap_param->security.mode = wifi_security_mode_wpa3_enterprise;
+    }else if(strcmp(encryption_mode, "sae-mixed") == 0){
+        ap_param->security.mode = wifi_security_mode_wpa3_transition;
     }
 
-    if (strstr(encryption_mode, "psk") != NULL) {
-        strcat(ap_param->enctyption_mode, "Personal");
-    } else if (strstr(encryption_mode, "wpa") != NULL) {
-        strcat(ap_param->enctyption_mode, "Enterprise");
+    if(strstr(encryption_mode, "tkip") && (strstr(encryption_mode, "ccmp") || strstr(encryption_mode, "aes") )){
+        ap_param->security.encr = wifi_encryption_aes_tkip;
+    }else if (strstr(encryption_mode, "tkip")){
+        ap_param->security.encr = wifi_encryption_tkip;
+    }else{
+        ap_param->security.encr = wifi_encryption_aes;
     }
-    
-    if (strcmp(encryption_mode, "none") == 0) {
-        strcpy(ap_param->enctyption_mode, "None");
+
+    if(!strcmp(encryption_mode, "wpa3") || !strcmp(encryption_mode, "sae")){
+        ap_param->security.mfp = wifi_mfp_cfg_required;
+    }else if (!strcmp(encryption_mode, "sae-mixed")){
+        ap_param->security.mfp = wifi_mfp_cfg_optional;
+    }else{
+        ap_param->security.mfp = wifi_mfp_cfg_disabled;
     }
+
+    if (!strcmp(encryption_mode, "sae")){
+        ap_param->security.u.key.type = wifi_security_key_type_sae;
+    }else if (!strcmp(encryption_mode, "sae-mixed")){
+        ap_param->security.u.key.type = wifi_security_key_type_psk_sae;
+    }else{
+        ap_param->security.u.key.type = wifi_security_key_type_psk;
+    }
+
 }
 
 void set_key(wifi_ap_param *ap_param, char *key)
 {
-    strncpy(ap_param->password, key, 64);
+    strncpy(ap_param->security.u.key.key, key, 64);
 }
 
 void set_radio_param(wifi_radio_param radio_parameter)
@@ -231,21 +257,16 @@ void set_ap_param(wifi_ap_param ap_param)
     strncpy(vap_info.u.bss_info.ssid, ap_param.ssid, 33);
     vap_info.u.bss_info.ssid[32] = '\0';
 
-    // wpa and security mode
-    fprintf(stderr, "Set encryption mode: %s\n", ap_param.enctyption_mode);
-    ret = wifi_setApSecurityModeEnabled(ap_param.ap_index, ap_param.enctyption_mode);
+    vap_info.u.bss_info.security.mode = ap_param.security.mode;
+    vap_info.u.bss_info.security.encr = ap_param.security.encr;
+    vap_info.u.bss_info.security.mfp = ap_param.security.mfp;
+    vap_info.u.bss_info.security.u.key.type = ap_param.security.u.key.type;
+    strncpy(vap_info.u.bss_info.security.u.key.key, ap_param.security.u.key.key, 64);
+    
+    ret = wifi_setApSecurity(ap_param.ap_index, &vap_info.u.bss_info.security);
     if (ret != RETURN_OK)
-        fprintf(stderr, "[Set encryption mode failed!!!]\n");
-
-    // key
-    if (strlen(ap_param.password) > 0) {
-        fprintf(stderr, "Set password: %s\n", ap_param.password);
-        ret = wifi_setApSecurityKeyPassphrase(ap_param.ap_index, ap_param.password);
-        if (ret != RETURN_OK)
-            fprintf(stderr, "[Set password failed!!!]\n");
-    }
-
-
+        fprintf(stderr, "[set Security failed!!!]\n");
+        
     // Replace the setting with uci config
     vap_map.vap_array[vap_index_in_map] = vap_info;
     ret = wifi_createVAP(ap_param.radio_index, &vap_map);

@@ -50,7 +50,7 @@ typedef struct {
     char ssid[33];
     int wpa;
     char password[64];
-    char enctyption_mode[64];
+    wifi_vap_security_t security;
 } wifi_ap_param;
 
 struct params
