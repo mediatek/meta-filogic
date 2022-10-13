@@ -182,6 +182,16 @@ void set_radio_param(wifi_radio_param radio_parameter)
     operationParam.autoChannelEnabled = radio_parameter.auto_channel;
     operationParam.channel = radio_parameter.channel;
 
+    //bandwidth
+    if (radio_parameter.bandwidth == 20){
+        operationParam.channelWidth = WIFI_CHANNELBANDWIDTH_20MHZ;
+    }else if (radio_parameter.bandwidth == 40){
+        operationParam.channelWidth = WIFI_CHANNELBANDWIDTH_40MHZ;
+    }else if (radio_parameter.bandwidth == 80){
+        operationParam.channelWidth = WIFI_CHANNELBANDWIDTH_80MHZ;
+    }else if (radio_parameter.bandwidth == 160){
+        operationParam.channelWidth = WIFI_CHANNELBANDWIDTH_160MHZ;
+    }
     // Country
     fprintf(stderr, "Set Country: %s\n", radio_parameter.country);
     ret = wifi_setRadioCountryCode(radio_parameter.radio_index, radio_parameter.country);
@@ -266,7 +276,7 @@ void set_ap_param(wifi_ap_param ap_param)
     ret = wifi_setApSecurity(ap_param.ap_index, &vap_info.u.bss_info.security);
     if (ret != RETURN_OK)
         fprintf(stderr, "[set Security failed!!!]\n");
-        
+
     // Replace the setting with uci config
     vap_map.vap_array[vap_index_in_map] = vap_info;
     ret = wifi_createVAP(ap_param.radio_index, &vap_map);
