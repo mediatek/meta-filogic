@@ -159,6 +159,25 @@ void set_key(wifi_ap_param *ap_param, char *key)
     strncpy(ap_param->security.u.key.key, key, 64);
 }
 
+int set_ap_bssid(int radio_index, int offset, mac_address_t *bssid)
+{
+    FILE *f;
+    char mac_file[64] = {0};
+    char mac_address[20] = {0};
+    char *tmp = NULL;
+
+    sprintf(mac_file, "/sys/class/net/wlan%d/address", radio_index);
+    f = fopen(mac_file, "r");
+    if (f == NULL)
+        return -1;
+    fgets(mac_address, 20, f);
+    fclose(f);
+
+    sscanf(mac_address, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx", &(*bssid)[0], &(*bssid)[1], &(*bssid)[2], &(*bssid)[3], &(*bssid)[4], &(*bssid)[5]);
+    (*bssid)[0] += (offset + 1)*2;
+    return 0;
+}
+
 void set_radio_param(wifi_radio_param radio_parameter)
 {
     BOOL enable;
@@ -246,6 +265,7 @@ void set_ap_param(wifi_ap_param ap_param)
     wifi_vap_info_t vap_info = {0};
     wifi_vap_info_map_t vap_map = {0};
 
+    // get current setting
     ret = wifi_getRadioVapInfoMap(ap_param.radio_index, &vap_map);
     if (ret != RETURN_OK) {     // if failed, we set assume this vap as the first vap.
         fprintf(stderr, "[Get vap map failed!!!]\n");
@@ -259,10 +279,15 @@ void set_ap_param(wifi_ap_param ap_param)
         }
     }
 
-    // get current setting
-    vap_info = vap_map.vap_array[vap_index_in_map];
-
     fprintf(stderr, "Start setting ap\n");
+
+    vap_info = vap_map.vap_array[vap_index_in_map];
+    vap_info.u.bss_info.enabled = TRUE;
+    if (set_ap_bssid(vap_info.radio_index, vap_index_in_map, &vap_info.u.bss_info.bssid) == -1) {
+        fprintf(stderr, "Get mac address failed.\n");
+        return -1;
+    }
+
     // SSID
     strncpy(vap_info.u.bss_info.ssid, ap_param.ssid, 33);
     vap_info.u.bss_info.ssid[32] = '\0';
@@ -272,11 +297,6 @@ void set_ap_param(wifi_ap_param ap_param)
     vap_info.u.bss_info.security.mfp = ap_param.security.mfp;
     vap_info.u.bss_info.security.u.key.type = ap_param.security.u.key.type;
     strncpy(vap_info.u.bss_info.security.u.key.key, ap_param.security.u.key.key, 64);
-    
-    ret = wifi_setApSecurity(ap_param.ap_index, &vap_info.u.bss_info.security);
-    if (ret != RETURN_OK)
-        fprintf(stderr, "[set Security failed!!!]\n");
-
     // Replace the setting with uci config
     vap_map.vap_array[vap_index_in_map] = vap_info;
     ret = wifi_createVAP(ap_param.radio_index, &vap_map);
