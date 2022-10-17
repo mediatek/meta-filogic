@@ -27,7 +27,9 @@ SRC_URI_append = " \
     file://1122-mt76-HEMU-Add-dump-support.patch \
     file://1123-mt76-mt7915-add-vendor-subcmd-three-wire-PTA-ctrl.patch \
     file://1124-mt76-add-ibf-control-vendor-cmd.patch \
-    file://1125-mt76-add-ampdu-amsdu-control.patch \
+    file://1125-mt76-mt7915-add-AMPDU-AMSDU-OnOff-ctonrol.patch \
+    file://1126-mt76-mt7915-add-E3-re-bonding-for-low-yield-rate-iss.patch \
+    file://1127-mt76-support-on-off-SW-ACI-through-debugfs.patch \
     file://3001-mt76-add-wed-tx-support.patch \
     file://3002-mt76-mt7915-add-wed-tx-wds-support-on-mt7986.patch \
     file://3003-mt76-add-wed-rx-support.patch \

@@ -1,14 +1,21 @@
 #patch patches-5.4 (come from openwrt/lede/target/linux/mediatek)
 SRC_URI_append = " \
     file://0001-clk-mtk-add-mt7986-support.patch \
+    file://0001-cpufreq-add-the-missing-platform-driver-unregister.patch \
     file://0001-v5.7-spi-make-spi-max-frequency-optional.patch \
     file://0002-clk-mtk-add-mt7981-support.patch \
+    file://0002-cpufreq-Enable-clocks-and-regulators.patch \
     file://0002-v5.7-spi-add-support-for-mediatek-spi-nor-controller.patch \
+    file://0003-clk-mtk-add-mt7988-support.patch \
+    file://0003-cpufreq-add-mt7988a-spim-snand-support.patch \
     file://0003-switch-add-mt7531.patch \
+    file://0005-clk-mtk-add-chg-shift-control.patch \
     file://0005-dts-mt7622-add-gsw.patch \
     file://0005-dts-mt7629-add-gsw.patch \
     file://0006-dts-fix-bpi2-console.patch \
     file://0006-dts-fix-bpi64-console.patch \
+    file://0006-powerdomain-add-mt7988-support.patch \
+    file://0007-cpufreq-mtk-vbining-add-mt7988-support.patch \
     file://0010-dts-mt7629-rfb-fix-firmware-partition.patch \
     file://0020-dts-mt7622-enable-new-mtk-snand-for-ubi.patch \
     file://0021-dts-mt7622-remove-cooling-device.patch \
@@ -54,6 +61,8 @@ SRC_URI_append = " \
     file://0901-i2c-busses-add-mt7981-support.patch \
     file://0930-pwm-add-mt7986-support.patch \
     file://0931-pwm-add-mt7981-support.patch \
+    file://0932-add-pwm-feature-in-mt7988-project.patch \
+    file://0950-add-pmic-config.patch \
     file://0960-watchdog-add-mt7986-assert.patch \
     file://0990-gsw-rtl8367s-mt7622-support.patch \
     file://0991-dt-bindings-PCI-Mediatek-Update-PCIe-binding.patch \
@@ -69,15 +78,18 @@ SRC_URI_append = " \
     file://1023-kgdb-add-interrupt-control.patch \
     file://1024-pcie-add-multi-MSI-support.patch \
     file://1661-Add-trngv2-driver-support.patch \
+    file://1662-trng-Add-trng-support-for-mt7988.patch \
     file://2000-misc-add-mtk-platform.patch \
     file://400-mtd-add-mtk-snand-driver.patch \
     file://401-pinctrl-add-mt7986-driver.patch \
+    file://401-pinctrl-enable-mt7988-pinctrl-config.patch \
     file://402-pinctrl-add-mt7981-driver.patch \
     file://412-mtd-spinand-gigadevice-Add-support-for-F50L1G41LB-and-GD5F1GQ5UExxG.patch \
     file://413-mtd-spinand-gigadevice-Add-support-for-GD5FxGQxUExxG-GD5FxGQxUExxH-and-GD5FxGMxUExxG-series.patch \
     file://414-mtd-spinand-fix-gigadevice-read-dummy.patch \
     file://415-mtd-spinand-fix-F50L1G41LB-ecc-check.patch \
     file://500-auxadc-add-auxadc-32k-clk.patch \
+    file://6001-mtk-thermal-add-lvts-support.patch \
     file://7000-fix-race-inside-napi-enable.patch \
     file://7001-net-make-napi-disable-symmetric-with-enable.patch \
     file://7002-net-fix-premature-exit-from-napi-state-polling-in-napi-disable-v2.patch \
@@ -91,8 +103,12 @@ SRC_URI_append = " \
     file://744-en8801s-gphy-support.patch \
     file://745-en8801sc-gphy-support.patch \
     file://745-mdiobus-add-c45.patch \
+    file://746-add-mediatek-2p5ge-phy-support.patch \
     file://746-mxl-gpy-phy-support.patch \
     file://747-net-phy-aquantia-add-AQR113C.patch \
+    file://748-add-netlink-support-for-dsa.patch \
+    file://749-net-dsa-support-mt7988.patch \
+    file://750-add-mdio-bus-for-phy-node.patch \
     file://8000-PATCH-1-4-tphy-support-type-switch-by-pericfg.patch \
     file://8001-PATCH-2-4-dt-bindings-phy-Add-PHY_TYPE_DP-definition.patch \
     file://8002-PATCH-3-4-dt-bindings-phy-Add-PHY_TYPE_XPCS-definition.patch \
@@ -103,6 +119,8 @@ SRC_URI_append = " \
     file://8007-phy-phy-mtk-tphy-Add-PCIe-2-lane-efuse-support.patch \
     file://8008-phy-phy-mtk-tphy-add-auto-load-valid-check-mechanism.patch \
     file://8010-ovs-support-flow-offload.patch \
+    file://8010-phy-phy-mtk-xsphy-support-type-switch-by-pericfg.patch \
+    file://9000-PATCH-1-1-xHCI-change-compliance-mode-de-emphasis-default-as-g.patch \
     file://9001-PATCH-1-2-xHCI-MT7986-USB-2.0-USBIF-compliance-toolkit.patch \
     file://9002-PATCH-1-1-usb-add-embedded-Host-feature-support.patch \
     file://9009-Add-spi-runtime-PM-support.patch \

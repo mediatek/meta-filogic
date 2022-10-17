@@ -40,7 +40,7 @@ void usage(void)
 
 	fprintf(stderr, "Usage:\n");
 	for (i = 0; i < ARRAY_SIZE(commands); i++)
-		printf("  %s wifiX %s\n", progname, commands[i]);
+		printf("  %s wlanX %s\n", progname, commands[i]);
 
 	exit(1);
 }
