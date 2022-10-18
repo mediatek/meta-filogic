@@ -5,6 +5,60 @@
 #include <uci.h>
 #include "wifi-test-tool.h"
 
+
+static int _syscmd(char *cmd, char *retBuf, int retBufSize)
+{
+    FILE *f;
+    char *ptr = retBuf;
+    int bufSize=retBufSize, bufbytes=0, readbytes=0, cmd_ret=0;
+
+    
+    if((f = popen(cmd, "r")) == NULL) {
+        fprintf(stderr,"\npopen %s error\n", cmd);
+        return RETURN_ERR;
+    }
+
+    while(!feof(f))
+    {
+        *ptr = 0;
+        if(bufSize>=128) {
+            bufbytes=128;
+        } else {
+            bufbytes=bufSize-1;
+        }
+
+        fgets(ptr,bufbytes,f);
+        readbytes=strlen(ptr);
+
+        if(!readbytes)
+            break;
+
+        bufSize-=readbytes;
+        ptr += readbytes;
+    }
+    cmd_ret = pclose(f);
+    retBuf[retBufSize-1]=0;
+
+    return cmd_ret >> 8;
+}
+
+int phy_index_to_radio(int phyIndex)
+{
+    char cmd[128] = {0};
+    char buf[64] = {0};
+    int radioIndex = 0;
+    snprintf(cmd, sizeof(cmd), "ls /tmp | grep phy%d | cut -d '-' -f2 | tr -d '\n'", phyIndex);
+    _syscmd(cmd, buf, sizeof(buf));
+
+    if (strlen(buf) == 0 || strstr(buf, "wifi") == NULL) {
+        fprintf(stderr, "%s: failed to get wifi index\n", __func__);
+        return RETURN_ERR;
+    }
+    sscanf(buf, "wifi%d", &radioIndex);
+    fprintf(stderr, "%s:  radio index = %d \n", __func__, radioIndex);
+    return radioIndex;      
+}
+
 void set_channel(wifi_radio_param *radio_param, char *channel)
 {
     if (strcmp(channel, "auto") == 0) {
@@ -89,11 +143,13 @@ void set_radionum(wifi_ap_param *ap_param, char *radio_name)
 {
     int radio_num;
     char *ptr = radio_name;
+    int phyId = 0;
 
     while (*ptr) {
         if (isdigit(*ptr)) {
             radio_num = strtoul(ptr, NULL, 10);
-            ap_param->radio_index = radio_num;
+            phyId = phy_index_to_radio(radio_num);
+            ap_param->radio_index = phyId;
             break;
         }
         ptr++;
@@ -186,6 +242,9 @@ void set_radio_param(wifi_radio_param radio_parameter)
     struct params param;
     wifi_radio_operationParam_t operationParam = {0};
 
+    if(radio_parameter.radio_index == -1)
+        return;
+
     if (radio_parameter.disabled == TRUE) {
         wifi_setRadioEnable(radio_parameter.radio_index, FALSE);
         return;
@@ -242,7 +301,9 @@ void set_radio_param(wifi_radio_param radio_parameter)
 
         if (strstr(radio_parameter.htmode, "HE") != NULL)
             mode |= WIFI_80211_VARIANT_N | WIFI_80211_VARIANT_AC | WIFI_80211_VARIANT_AX;
-    }
+    }else if (strcmp(radio_parameter.band, "6g") == 0) {
+        mode |= WIFI_80211_VARIANT_A | WIFI_80211_VARIANT_N | WIFI_80211_VARIANT_AC | WIFI_80211_VARIANT_AX;;
+    }    
 
     if (strstr(radio_parameter.htmode, "VHT") != NULL)
         mode |= WIFI_80211_VARIANT_N | WIFI_80211_VARIANT_AC;
@@ -265,7 +326,8 @@ void set_ap_param(wifi_ap_param ap_param)
     wifi_vap_info_t vap_info = {0};
     wifi_vap_info_map_t vap_map = {0};
 
-    // get current setting
+    if(ap_param.radio_index == -1)
+        return;
     ret = wifi_getRadioVapInfoMap(ap_param.radio_index, &vap_map);
     if (ret != RETURN_OK) {     // if failed, we set assume this vap as the first vap.
         fprintf(stderr, "[Get vap map failed!!!]\n");
@@ -297,6 +359,8 @@ void set_ap_param(wifi_ap_param ap_param)
     vap_info.u.bss_info.security.mfp = ap_param.security.mfp;
     vap_info.u.bss_info.security.u.key.type = ap_param.security.u.key.type;
     strncpy(vap_info.u.bss_info.security.u.key.key, ap_param.security.u.key.key, 64);
+    
+
     // Replace the setting with uci config
     vap_map.vap_array[vap_index_in_map] = vap_info;
     ret = wifi_createVAP(ap_param.radio_index, &vap_map);
@@ -317,6 +381,7 @@ int apply_uci_config ()
     const char cfg_name[] = "wireless";
     int max_radio_num = 0;
     BOOL parsing_radio = FALSE;
+    int apCount[3] = {0};
 
     wifi_getMaxRadioNumber(&max_radio_num);
     fprintf(stderr, "max radio number: %d\n", max_radio_num);
@@ -332,17 +397,17 @@ int apply_uci_config ()
         struct uci_element *option = NULL;
         wifi_radio_param radio_param = {0};
         wifi_ap_param ap_param = {0};
+        int phyId = 0;
         radio_param.radio_index = -1;
         ap_param.ap_index = -1;
 
         if (strcmp(s->type, "wifi-device") == 0) {
-            sscanf(s->e.name, "radio%d", &radio_param.radio_index);
+            sscanf(s->e.name, "radio%d", &phyId);
+            radio_param.radio_index = phy_index_to_radio(phyId);
             parsing_radio = TRUE;
             fprintf(stderr, "\n----- Start parsing radio %d config. -----\n", radio_param.radio_index);
         } else if (strcmp(s->type, "wifi-iface") == 0) {
-            sscanf(s->e.name, "default_radio%d", &ap_param.ap_index);
             parsing_radio = FALSE;
-            fprintf(stderr, "\n----- Start parsing ap %d config. -----\n", ap_param.ap_index);
         }
 
         uci_foreach_element(&s->options, option) {
@@ -368,16 +433,22 @@ int apply_uci_config ()
                     fprintf(stderr, "[%s %s not set!]\n", op->e.name, op->v.string);
             } else {        
                 // parsing iface
-                if (strcmp(op->e.name, "device") == 0)
+                if (strcmp(op->e.name, "device") == 0){
                     set_radionum(&ap_param, op->v.string);
-                else if (strcmp(op->e.name, "ssid") == 0)
+                    if (ap_param.radio_index != -1){
+                        ap_param.ap_index = ap_param.radio_index + apCount[ap_param.radio_index]*max_radio_num;
+                        fprintf(stderr, "\n----- Start parsing ap %d config. -----\n", ap_param.ap_index);
+                        apCount[ap_param.radio_index] ++ ;
+                    }   
+                }else if (strcmp(op->e.name, "ssid") == 0){
                     set_ssid(&ap_param, op->v.string);
-                else if (strcmp(op->e.name, "encryption") == 0)
+                }else if (strcmp(op->e.name, "encryption") == 0){
                     set_encryption(&ap_param, op->v.string);
-                else if (strcmp(op->e.name, "key") == 0)
+                }else if (strcmp(op->e.name, "key") == 0){
                     set_key(&ap_param, op->v.string);
-                else
+                }else{
                     fprintf(stderr, "[%s %s not set!]\n", op->e.name, op->v.string);
+                }    
             }
         }
         if (parsing_radio == TRUE)
