@@ -24,7 +24,9 @@ SRC_URI = " \
     file://002-rdkb-mtd-ubi-relayout.patch;apply=no \
     file://003-rdkb-mtd-kernel-ubi-relayout.patch;apply=no \
     "
-
+SRC_URI_append_mt7988 += " \
+    file://mediatek/mt7988.cfg \
+"
 SRC_URI_append_mt7986 += " \
     file://mediatek/mt7986.cfg \
 "
