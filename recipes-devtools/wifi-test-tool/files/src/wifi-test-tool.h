@@ -41,6 +41,7 @@ typedef struct {
     char supported_rates[64];
     int log_level;
     char hostapd_options[64];
+    char noscan[2];
 } wifi_radio_param;
 
 typedef struct {

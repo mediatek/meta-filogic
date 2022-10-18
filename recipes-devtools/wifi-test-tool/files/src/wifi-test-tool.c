@@ -81,6 +81,12 @@ void set_band(wifi_radio_param *radio_param, char *band)
     strcpy(radio_param->band, band);
 }
 
+void set_noscan(wifi_radio_param *radio_param, char *noscan)
+{
+    snprintf(radio_param->noscan, 2, "%s", noscan);
+    radio_param->noscan[1] = '\0';
+}
+
 void set_hwmode(wifi_radio_param *radio_param, char *hwmode)
 {
     if (strncmp(hwmode, "11a", 3) == 0)
@@ -312,6 +318,13 @@ void set_radio_param(wifi_radio_param radio_parameter)
 
     operationParam.variant = mode;
 
+    // noscan
+    fprintf(stderr, "Set noscan: %s\n", radio_parameter.noscan);
+    ret = wifi_setNoscan(radio_parameter.radio_index, radio_parameter.noscan);
+    if (ret != RETURN_OK)
+        fprintf(stderr, "[Set noscan failed!!!]\n");
+    ret = 0;
+
     // apply setting
     ret = wifi_setRadioOperatingParameters(radio_parameter.radio_index, &operationParam);
     if (ret != RETURN_OK)
@@ -428,7 +441,7 @@ int apply_uci_config ()
                 else if (strcmp(op->e.name, "country") == 0)
                     set_country(&radio_param, op->v.string);
                 else if (strcmp(op->e.name, "noscan") == 0)
-                    set_band(&radio_param, op->v.string);
+                    set_noscan(&radio_param, op->v.string);
                 else
                     fprintf(stderr, "[%s %s not set!]\n", op->e.name, op->v.string);
             } else {        
