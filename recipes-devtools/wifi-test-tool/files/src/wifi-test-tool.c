@@ -324,10 +324,12 @@ void set_radio_param(wifi_radio_param radio_parameter)
     operationParam.variant = mode;
 
     // noscan
-    fprintf(stderr, "Set noscan: %s\n", radio_parameter.noscan);
-    ret = wifi_setNoscan(radio_parameter.radio_index, radio_parameter.noscan);
-    if (ret != RETURN_OK)
-        fprintf(stderr, "[Set noscan failed!!!]\n");
+    fprintf(stderr, "Set noscan: %s \n", radio_parameter.noscan);
+    if(strlen(radio_parameter.noscan)){
+        ret = wifi_setNoscan(radio_parameter.radio_index, radio_parameter.noscan);
+        if (ret != RETURN_OK)
+            fprintf(stderr, "[Set noscan failed!!!]\n");
+    }    
     ret = 0;
 
     // apply setting
@@ -337,36 +339,33 @@ void set_radio_param(wifi_radio_param radio_parameter)
 
 }
 
-void set_ap_param(wifi_ap_param ap_param)
+void set_ap_param(wifi_ap_param ap_param , wifi_vap_info_map_t *map)
 {
     int ret = 0;
     int vap_index_in_map = 0;
     wifi_vap_info_t vap_info = {0};
-    wifi_vap_info_map_t vap_map = {0};
     BOOL radio_enable = FALSE;
+
+    if(ap_param.radio_index == -1)
+        return;
 
     wifi_getRadioEnable(ap_param.radio_index, &radio_enable);
     if (radio_enable == FALSE)
         return;
 
-    if(ap_param.radio_index == -1)
-        return;
-    ret = wifi_getRadioVapInfoMap(ap_param.radio_index, &vap_map);
-    if (ret != RETURN_OK) {     // if failed, we set assume this vap as the first vap.
-        fprintf(stderr, "[Get vap map failed!!!]\n");
-        vap_map.num_vaps = MAX_NUM_VAP_PER_RADIO;
-    } else {                    // get the index of the map
-        for (int i = 0; i < vap_map.num_vaps; i++) {
-            if (vap_map.vap_array[i].vap_index == ap_param.ap_index) {
-                vap_index_in_map = i;
-                break;
-            }
+
+    // get the index of the map
+    for (int i = 0; i < map->num_vaps; i++) {
+        if (map->vap_array[i].vap_index == ap_param.ap_index) {
+            vap_index_in_map = i;
+            break;
         }
     }
 
+
     fprintf(stderr, "Start setting ap\n");
 
-    vap_info = vap_map.vap_array[vap_index_in_map];
+    vap_info = map->vap_array[vap_index_in_map];
     vap_info.u.bss_info.enabled = TRUE;
     if (set_ap_bssid(vap_info.radio_index, vap_index_in_map, &vap_info.u.bss_info.bssid) == -1) {
         fprintf(stderr, "Get mac address failed.\n");
@@ -385,14 +384,7 @@ void set_ap_param(wifi_ap_param ap_param)
     
 
     // Replace the setting with uci config
-    vap_map.vap_array[vap_index_in_map] = vap_info;
-    ret = wifi_createVAP(ap_param.radio_index, &vap_map);
-    if (ret != RETURN_OK)
-        fprintf(stderr, "[Apply vap setting failed!!!]\n");
-
-    // restart ap
-    wifi_setApEnable(ap_param.ap_index, FALSE);
-    wifi_setApEnable(ap_param.ap_index, TRUE);
+    map->vap_array[vap_index_in_map] = vap_info;
 }
 
 int apply_uci_config ()
@@ -405,9 +397,19 @@ int apply_uci_config ()
     int max_radio_num = 0;
     BOOL parsing_radio = FALSE;
     int apCount[3] = {0};
+    wifi_vap_info_map_t vap_map[3] = {0};
+    int ret = 0;
+    int i = 0;
 
     wifi_getMaxRadioNumber(&max_radio_num);
     fprintf(stderr, "max radio number: %d\n", max_radio_num);
+    for (i = 0; i < max_radio_num ;i++ ){
+        ret = wifi_getRadioVapInfoMap(i, &vap_map[i]);
+        if (ret != RETURN_OK) {     // if failed, we set assume this vap as the first vap.
+            fprintf(stderr, "[Get vap map failed!!!]\n");
+            vap_map[i].num_vaps = MAX_NUM_VAP_PER_RADIO;
+        } 
+    }
     if (uci_load(uci_ctx, cfg_name, &uci_pkg) != UCI_OK) {
         uci_free_context(uci_ctx);
         fprintf(stderr, "%s: load uci failed.\n", __func__);
@@ -477,9 +479,15 @@ int apply_uci_config ()
         if (parsing_radio == TRUE)
             set_radio_param(radio_param);
         else
-            set_ap_param(ap_param);
+            set_ap_param(ap_param, &vap_map[ap_param.radio_index]);
     }
 
+    for (i = 0; i < max_radio_num ;i++ ){
+        ret = wifi_createVAP(i, &vap_map[i]);
+        if (ret != RETURN_OK)
+            fprintf(stderr, "[Apply vap setting failed!!!]\n");
+    }
+    
     uci_unload(uci_ctx, uci_pkg);
     uci_free_context(uci_ctx);
     return RETURN_OK;
