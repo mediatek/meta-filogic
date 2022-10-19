@@ -108,7 +108,7 @@ SRC_URI_append = " \
     file://747-net-phy-aquantia-add-AQR113C.patch \
     file://748-add-netlink-support-for-dsa.patch \
     file://749-net-dsa-support-mt7988.patch \
-    file://750-add-mdio-bus-for-phy-node.patch \
+    file://750-add-mdio-bus-for-gphy-calibration.patch \
     file://8000-PATCH-1-4-tphy-support-type-switch-by-pericfg.patch \
     file://8001-PATCH-2-4-dt-bindings-phy-Add-PHY_TYPE_DP-definition.patch \
     file://8002-PATCH-3-4-dt-bindings-phy-Add-PHY_TYPE_XPCS-definition.patch \
@@ -120,6 +120,7 @@ SRC_URI_append = " \
     file://8008-phy-phy-mtk-tphy-add-auto-load-valid-check-mechanism.patch \
     file://8010-ovs-support-flow-offload.patch \
     file://8010-phy-phy-mtk-xsphy-support-type-switch-by-pericfg.patch \
+    file://8011-ovs-add-multicast-to-unicast-support.patch \
     file://9000-PATCH-1-1-xHCI-change-compliance-mode-de-emphasis-default-as-g.patch \
     file://9001-PATCH-1-2-xHCI-MT7986-USB-2.0-USBIF-compliance-toolkit.patch \
     file://9002-PATCH-1-1-usb-add-embedded-Host-feature-support.patch \
