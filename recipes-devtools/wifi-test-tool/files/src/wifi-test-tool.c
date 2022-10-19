@@ -255,12 +255,17 @@ void set_radio_param(wifi_radio_param radio_parameter)
         wifi_setRadioEnable(radio_parameter.radio_index, FALSE);
         return;
     }
-    operationParam.enable = TRUE;
 
     fprintf(stderr, "Start setting radio\n");
+
+    wifi_setRadioEnable(radio_parameter.radio_index, TRUE);
+    sleep(1);
+
+    // Get current radio setting
     ret = wifi_getRadioOperatingParameters(radio_parameter.radio_index, &operationParam);
     if (ret != RETURN_OK)
         fprintf(stderr, "[Get OperatingParameters failed!!!]\n");
+    operationParam.enable = TRUE;
 
     // Channel
     operationParam.autoChannelEnabled = radio_parameter.auto_channel;
@@ -338,6 +343,11 @@ void set_ap_param(wifi_ap_param ap_param)
     int vap_index_in_map = 0;
     wifi_vap_info_t vap_info = {0};
     wifi_vap_info_map_t vap_map = {0};
+    BOOL radio_enable = FALSE;
+
+    wifi_getRadioEnable(ap_param.radio_index, &radio_enable);
+    if (radio_enable == FALSE)
+        return;
 
     if(ap_param.radio_index == -1)
         return;
