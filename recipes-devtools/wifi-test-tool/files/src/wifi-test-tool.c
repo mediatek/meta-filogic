@@ -261,6 +261,29 @@ void set_radio_param(wifi_radio_param radio_parameter)
     wifi_setRadioEnable(radio_parameter.radio_index, TRUE);
     sleep(1);
 
+    // Country
+    fprintf(stderr, "Set Country: %s\n", radio_parameter.country);
+    ret = wifi_setRadioCountryCode(radio_parameter.radio_index, radio_parameter.country);
+    if (ret != RETURN_OK)
+        fprintf(stderr, "[Set Country failed!!!]\n");
+    ret = 0;
+
+    // hwmode
+    fprintf(stderr, "Set hwmode: %s\n", radio_parameter.hwmode);
+    ret = wifi_setRadioHwMode(radio_parameter.radio_index, radio_parameter.hwmode);
+    if (ret != RETURN_OK)
+        fprintf(stderr, "[Set hwmode failed!!!]\n");
+    ret = 0;
+
+    // noscan
+    fprintf(stderr, "Set noscan: %s \n", radio_parameter.noscan);
+    if(strlen(radio_parameter.noscan)){
+        ret = wifi_setNoscan(radio_parameter.radio_index, radio_parameter.noscan);
+        if (ret != RETURN_OK)
+            fprintf(stderr, "[Set noscan failed!!!]\n");
+    }
+    ret = 0;
+
     // Get current radio setting
     ret = wifi_getRadioOperatingParameters(radio_parameter.radio_index, &operationParam);
     if (ret != RETURN_OK)
@@ -281,19 +304,6 @@ void set_radio_param(wifi_radio_param radio_parameter)
     }else if (radio_parameter.bandwidth == 160){
         operationParam.channelWidth = WIFI_CHANNELBANDWIDTH_160MHZ;
     }
-    // Country
-    fprintf(stderr, "Set Country: %s\n", radio_parameter.country);
-    ret = wifi_setRadioCountryCode(radio_parameter.radio_index, radio_parameter.country);
-    if (ret != RETURN_OK)
-        fprintf(stderr, "[Set Country failed!!!]\n");
-    ret = 0;
-
-    // hwmode
-    fprintf(stderr, "Set hwmode: %s\n", radio_parameter.hwmode);
-    ret = wifi_setRadioHwMode(radio_parameter.radio_index, radio_parameter.hwmode);
-    if (ret != RETURN_OK)
-        fprintf(stderr, "[Set hwmode failed!!!]\n");
-    ret = 0;
 
     // htmode
     unsigned int mode = 0;      // enum wifi_ieee80211Variant_t
@@ -322,15 +332,6 @@ void set_radio_param(wifi_radio_param radio_parameter)
         mode |= WIFI_80211_VARIANT_N;
 
     operationParam.variant = mode;
-
-    // noscan
-    fprintf(stderr, "Set noscan: %s \n", radio_parameter.noscan);
-    if(strlen(radio_parameter.noscan)){
-        ret = wifi_setNoscan(radio_parameter.radio_index, radio_parameter.noscan);
-        if (ret != RETURN_OK)
-            fprintf(stderr, "[Set noscan failed!!!]\n");
-    }    
-    ret = 0;
 
     // apply setting
     ret = wifi_setRadioOperatingParameters(radio_parameter.radio_index, &operationParam);
