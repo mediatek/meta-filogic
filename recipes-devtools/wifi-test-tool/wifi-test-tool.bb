@@ -19,4 +19,5 @@ CFLAGS_append = " -I=${includedir}/ccsp "
 do_install_append() {
     install -d ${D}${sbindir}
     install -m 0755 ${WORKDIR}/build/wifi_test_tool ${D}${sbindir}/wifi
+    install -m 0755 ${WORKDIR}/git/src/wmm-*.sh ${D}${sbindir}
 }
