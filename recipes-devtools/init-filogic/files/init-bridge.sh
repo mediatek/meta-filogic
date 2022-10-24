@@ -18,12 +18,14 @@ brctl addif brlan0 lan1
 brctl addif brlan0 lan2
 brctl addif brlan0 lan3
 brctl addif brlan0 lan4
+brctl addif brlan0 lan5
 
 ifconfig lan0 up
 ifconfig lan1 up
 ifconfig lan2 up
 ifconfig lan3 up
 ifconfig lan4 up
+ifconfig lan5 up
 fi
 ifconfig eth1 up
 
