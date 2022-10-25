@@ -41,23 +41,6 @@ SRC_URI_append = " \
     file://343-wifi-mac80211-fix-decap-offload-for-stations-on-AP_V.patch \
     file://344-wifi-cfg80211-fix-ieee80211_data_to_8023_exthdr-hand.patch \
     file://345-wifi-mac80211-do-not-drop-packets-smaller-than-the-L.patch \
-    file://346-mac80211-mesh-clean-up-rx_bcn_presp-API.patch \
-    file://347-mac80211-move-CRC-into-struct-ieee802_11_elems.patch \
-    file://348-mac80211-mlme-find-auth-challenge-directly.patch \
-    file://349-mac80211-always-allocate-struct-ieee802_11_elems.patch \
-    file://350-mac80211-fix-memory-leaks-with-element-parsing.patch \
-    file://351-wifi-cfg80211-fix-u8-overflow-in-cfg80211_update_not.patch \
-    file://352-wifi-cfg80211-mac80211-reject-bad-MBSSID-elements.patch \
-    file://353-wifi-mac80211-fix-MBSSID-parsing-use-after-free.patch \
-    file://354-wifi-cfg80211-ensure-length-byte-is-present-before-a.patch \
-    file://355-wifi-cfg80211-fix-BSS-refcounting-bugs.patch \
-    file://356-wifi-cfg80211-avoid-nontransmitted-BSS-list-corrupti.patch \
-    file://357-wifi-mac80211_hwsim-avoid-mac80211-warning-on-bad-ra.patch \
-    file://358-wifi-mac80211-fix-crash-in-beacon-protection-for-P2P.patch \
-    file://359-wifi-cfg80211-update-hidden-BSSes-to-avoid-WARN_ON.patch \
-    file://360-mac80211-fix-a-memory-leak-where-sta_info-is-not-fre.patch \
-    file://361-wifi-mac80211-Don-t-finalize-CSA-in-IBSS-mode-if-sta.patch \
-    file://362-wifi-mac80211-Fix-UAF-in-ieee80211_scan_rx.patch \
     file://363-bss-color-collision.patch \
     file://364-mac80211-add-support-for-restricting-netdev-features.patch \
     file://400-allow-ibss-mixed.patch \
@@ -72,12 +55,12 @@ SRC_URI_append = " \
     file://904-mac80211-mtk-correct-legacy-rates-check-in-ieee80211_cal.patch \
     file://905-mac80211-mtk-airtime_flags-depends-on-NL80211_EXT_FEATUR.patch \
     file://906-mac80211-mtk-add-support-for-runtime-set-inband-discovery.patch \
-    file://908-mac80211-mtk-add-s1g-category-to-_ieee80211_is_robust_mg.patch \
-    file://910-mac80211-mtk-offload.patch \
-    file://911-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-idx-v2.patch \
-    file://912-mac80211-mtk-make-4addr-null-frames-using-min-rate-for-WDS.patch \
-    file://913-mac80211-mtk-remove-timerout-handle-for-ax210-iot-issue.patch \
-    file://914-cfg80211-mtk-implement-DFS-status-show-cac-and-nop-skip-command.patch \
-    file://915-mac80211-mtk-Set-TWT-Information-Frame-Disabled-bit-as-1.-This-mo.patch \
-    file://916-mac80211-mtk-fix-the-issue-of-AP-and-STA-starting-on-DFS-channel-concurrently.patch \
+    file://907-mac80211-mtk-add-s1g-category-to-_ieee80211_is_robust_mg.patch \
+    file://908-mac80211-mtk-mask-kernel-version-limitation-and-fill-for.patch \
+    file://909-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-idx.patch \
+    file://910-mac80211-mtk-make-4addr-null-frames-using-min_rate-.patch \
+    file://911-mac80211-mtk-remove-timerout-handle-for-ax210-iot-issue.patch \
+    file://912-cfg80211-mtk-implement-DFS-status-show-cac-and-nop-skip-.patch \
+    file://913-mac80211-mtk-Set-TWT-Information-Frame-Disabled-bit-as-1.patch \
+    file://914-mac80211-mtk-fix-the-issue-of-AP-and-STA-starting-on-DFS.patch \
     "

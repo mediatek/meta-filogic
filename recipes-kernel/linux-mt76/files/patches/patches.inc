@@ -3,7 +3,9 @@ SRC_URI_append = " \
     file://0001-mt76-mt7915-rework-testmode-init-registers.patch \
     file://0002-mt76-mt7915-rework-rx-testmode-stats.patch \
     file://0003-mt76-mt7915-drop-undefined-action-frame.patch \
+    file://0004-mt76-connac-update-nss-calculation-in-txs.patch \
     file://100-Revert-of-net-pass-the-dst-buffer-to-of_get_mac_addr.patch \
+    file://100-aggregation-definitions.patch \
     file://1001-mt76-mt7915-add-mtk-internal-debug-tools-for-mt76.patch \
     file://1002-mt76-mt7915-csi-implement-csi-support.patch \
     file://1003-mt76-mt7915-air-monitor-support.patch \

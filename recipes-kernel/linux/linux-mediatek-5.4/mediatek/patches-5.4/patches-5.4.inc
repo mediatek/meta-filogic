@@ -35,6 +35,7 @@ SRC_URI_append = " \
     file://0401-sound-refine-hw-params-and-hw-prepare.patch \
     file://0402-sound-add-mt7986-driver.patch \
     file://0490-mtd-spinand-winbond-Support-for-W25MxxGV-W25NxxKV-series.patch \
+    file://0491-mtd-spinand-macronix-suppress-mx35lf1ge4ab-warning-log.patch \
     file://0500-v5.6-crypto-backport-inside-secure.patch \
     file://0501-crypto-add-eip97-inside-secure-support.patch \
     file://0502-dts-mt7623-eip97-inside-secure-support.patch \

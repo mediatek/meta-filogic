@@ -72,6 +72,5 @@ SRC_URI_append = " \
     file://99916-hostapd-mtk-Add-hostapd-iBF-control.patch \
     file://99917-hostapd-mtk-Add-hostapd-AMPDU-AMSDU-control.patch \
     file://99918-hostapd-mtk-Do-not-include-HE-capab-IE-if-associated-sta-s-HE-c.patch \
-    file://99919-hostapd-mtk-Add-DFS-disable-channel-switch-when-receive-radar.patch \
-    file://99920-hostapd-mtk-Fix-the-issue-of-AP-and-STA-starting-on-DFS-channel.patch \
+    file://99919-hostapd-mtk--Add-DFS-and-ZWDFS-support.patch \
     "
