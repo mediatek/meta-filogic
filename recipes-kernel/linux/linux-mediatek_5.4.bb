@@ -21,7 +21,6 @@ SRC_URI = " \
     file://mediatek \
     file://generic/defconfig \
     file://001-rdkb-eth-mtk-change-ifname-for.patch;apply=no \
-    file://002-rdkb-mtd-ubi-relayout.patch;apply=no \
     file://003-rdkb-mtd-kernel-ubi-relayout.patch;apply=no \
     "
 SRC_URI_append_mt7988 += " \
