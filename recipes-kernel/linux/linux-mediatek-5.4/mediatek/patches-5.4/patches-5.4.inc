@@ -119,6 +119,7 @@ SRC_URI_append = " \
     file://8006-phy-phy-mtk-tphy-add-support-efuse-setting.patch \
     file://8007-phy-phy-mtk-tphy-Add-PCIe-2-lane-efuse-support.patch \
     file://8008-phy-phy-mtk-tphy-add-auto-load-valid-check-mechanism.patch \
+    file://8009-tphy-one-setting-of-TTSSC-Freq-Dev-for-all-IC-cases.patch \
     file://8010-ovs-support-flow-offload.patch \
     file://8010-phy-phy-mtk-xsphy-support-type-switch-by-pericfg.patch \
     file://8011-ovs-add-multicast-to-unicast-support.patch \
