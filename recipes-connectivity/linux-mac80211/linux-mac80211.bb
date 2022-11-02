@@ -18,10 +18,6 @@ SRC_URI[sha256sum] = "98098d0cab24cc76a04db738dc746a0c8d38d180398805481224f141cc
 DEPENDS += "virtual/kernel"
 DEPENDS += "bison-native coreutils-native flex-native"
 
-PROVIDES += "kernel-module-compat"
-PROVIDES += "kernel-module-cfg80211"
-PROVIDES += "kernel-module-mac80211"
-
 FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches/build:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches/subsys:"
 
@@ -65,6 +61,17 @@ do_install_prepend () {
     rm -f ${STAGING_KERNEL_BUILDDIR}/usr/include/mac80211-backport/linux/module.h
 }
 
-do_install_append () {
+do_install_append() {
+    # Module
     cat ${D}/usr/include/linux-mac80211/Module.symvers >> ${TMPDIR}/work-shared/${MACHINE}/kernel-build-artifacts/Module.symvers
+    install -d ${D}/lib/modules/${KERNEL_VERSION}/updates/compat/
+    install -d ${D}/lib/modules/${KERNEL_VERSION}/updates/net/wireless
+    install -d ${D}/lib/modules/${KERNEL_VERSION}/updates/net/mac80211
+    install -m 0644 ${B}/compat/compat.ko ${D}/lib/modules/${KERNEL_VERSION}/updates/compat/
+    install -m 0644 ${B}/net/wireless/cfg80211.ko ${D}/lib/modules/${KERNEL_VERSION}/updates/net/wireless/
+    install -m 0644 ${B}/net/mac80211/mac80211.ko ${D}/lib/modules/${KERNEL_VERSION}/updates/net/mac80211/
 }
+
+PROVIDES += "kernel-module-compat"
+PROVIDES += "kernel-module-cfg80211"
+PROVIDES += "kernel-module-mac80211"
