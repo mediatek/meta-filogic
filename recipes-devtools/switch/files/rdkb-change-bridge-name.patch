@@ -1,0 +1,51 @@
+--- ../switch_ioctl.h.bak	2022-11-02 19:27:43.197665700 +0800
++++ ../switch_ioctl.h	2022-11-02 19:30:58.210080614 +0800
+@@ -5,8 +5,8 @@
+ #ifndef SWITCH_IOCTL_H
+ #define SWITCH_IOCTL_H
+ 
+-#define ETH_DEVNAME "eth0"
+-#define BR_DEVNAME "br-lan"
++#define ETH_DEVNAME "eth1"
++#define BR_DEVNAME "brlan0"
+ 
+ #define RAETH_MII_READ                  0x89F3
+ #define RAETH_MII_WRITE                 0x89F4
+
+
+--- ../switch_fun.c.bak	2022-10-11 16:07:00.560664900 +0800
++++ ../switch_fun.c	2022-11-03 09:44:01.559470656 +0800
+@@ -1334,6 +1334,23 @@
+ 				printf("%03x:   ", (value >> 16) & 0xfff);
+ 				reg_read(REG_ATRD_ADDR, &value2);
+ 				j = (value2 >> 4) & 0xff; //r_port_map
++				if(j & 0x01)
++					printf("0");
++				else if (j & 0x02)
++					printf("1"); 
++				else if (j & 0x04)
++					printf("2"); 
++				else if (j & 0x08)
++					printf("3");
++				else if (j & 0x10)
++					printf("4");
++				else if (j & 0x20)
++					printf("5");
++				else if (j & 0x40)
++					printf("6");
++				else if (j & 0x80)
++					printf("7");
++				/*	 	 	 	
+ 				printf("%c", (j & 0x01) ? '1' : '-');
+ 				printf("%c", (j & 0x02) ? '1' : '-');
+ 				printf("%c", (j & 0x04) ? '1' : '-');
+@@ -1342,7 +1359,8 @@
+ 				printf("%c", (j & 0x20) ? '1' : '-');
+ 				printf("%c", (j & 0x40) ? '1' : '-');
+ 				printf("%c", (j & 0x80) ? '1' : '-');
+-
++				*/
++				printf("       ");
+ 				reg_read(REG_TSRA2_ADDR, &mac2);
+ 
+ 				printf("   %2d", (mac2 >> 12) & 0x7); //FID

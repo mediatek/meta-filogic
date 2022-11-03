@@ -7,6 +7,7 @@
 #define MT753X_NETLINK_H
 
 #define MT753X_GENL_NAME "mt753x"
+#define MT753X_DSA_GENL_NAME "mt753x_dsa"
 #define MT753X_GENL_VERSION 0X1
 
 /*add your cmd to here*/
@@ -47,17 +48,23 @@ struct mt753x_attr {
 	int dev_id;
 };
 
-int mt753x_netlink_init(void);
+int mt753x_netlink_init(const char *name);
 void mt753x_netlink_free(void);
 void mt753x_list_swdev(struct mt753x_attr *arg, int cmd);
-int reg_read_netlink(struct mt753x_attr *arg, int offset, int *value);
-int reg_write_netlink(struct mt753x_attr *arg, int offset, int value);
-int phy_cl22_read_netlink(struct mt753x_attr *arg, int port_num, int phy_addr, int *value);
-int phy_cl22_write_netlink(struct mt753x_attr *arg, int port_num, int phy_addr, int value);
-int phy_cl45_read_netlink(struct mt753x_attr *arg, int port_num, int phy_dev,
-			 int phy_addr, int *value);
-int phy_cl45_write_netlink(struct mt753x_attr *arg, int port_num, int phy_dev,
-			  int phy_addr, int value);
+int reg_read_netlink(struct mt753x_attr *arg, unsigned int offset,
+		     unsigned int *value);
+int reg_write_netlink(struct mt753x_attr *arg, unsigned int offset,
+		      unsigned int value);
+int phy_cl22_read_netlink(struct mt753x_attr *arg, unsigned int port_num,
+			  unsigned int phy_addr, unsigned int *value);
+int phy_cl22_write_netlink(struct mt753x_attr *arg, unsigned int port_num,
+			   unsigned int phy_addr, unsigned int value);
+int phy_cl45_read_netlink(struct mt753x_attr *arg, unsigned int port_num,
+			  unsigned int phy_dev, unsigned int phy_addr,
+			  unsigned int *value);
+int phy_cl45_write_netlink(struct mt753x_attr *arg, unsigned int port_num,
+			   unsigned int phy_dev, unsigned int phy_addr,
+			   unsigned int value);
 int phy_dump_netlink(struct mt753x_attr *arg, int phy_addr);
 
 #endif

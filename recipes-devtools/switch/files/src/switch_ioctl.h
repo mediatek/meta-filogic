@@ -5,8 +5,8 @@
 #ifndef SWITCH_IOCTL_H
 #define SWITCH_IOCTL_H
 
-#define ETH_DEVNAME "eth1"
-#define BR_DEVNAME "brlan0"
+#define ETH_DEVNAME "eth0"
+#define BR_DEVNAME "br-lan"
 
 #define RAETH_MII_READ                  0x89F3
 #define RAETH_MII_WRITE                 0x89F4
@@ -18,13 +18,15 @@ struct esw_reg {
 };
 
 struct ra_mii_ioctl_data {
-        __u32 phy_id;
-        __u32 reg_num;
+        __u16 phy_id;
+        __u16 reg_num;
         __u32 val_in;
         __u32 val_out;
+/*
         __u32 port_num;
         __u32 dev_addr;
         __u32 reg_addr;
+*/
 };
 
 struct ra_switch_ioctl_data {
@@ -52,14 +54,17 @@ struct ra_switch_ioctl_data {
 
 extern int chip_name;
 
-void switch_ioctl_init(void);
+int switch_ioctl_init(void);
 void switch_ioctl_fini(void);
-int reg_read_ioctl(int offset, int *value);
-int reg_write_ioctl(int offset, int value);
-int phy_dump_ioctl(int phy_addr);
-int mii_mgr_cl22_read_ioctl(unsigned int port_num, unsigned int reg, int *value);
+int reg_read_ioctl(unsigned int offset, unsigned int *value);
+int reg_write_ioctl(unsigned int offset, unsigned int value);
+int phy_dump_ioctl(unsigned int phy_addr);
+int mii_mgr_cl22_read_ioctl(unsigned int port_num, unsigned int reg,
+			    unsigned int *value);
 int mii_mgr_cl22_write_ioctl(unsigned int port_num, unsigned int reg,
-			unsigned int value);
-int mii_mgr_cl45_read_ioctl(int port_num, int dev, int reg, int *value);
-int mii_mgr_cl45_write_ioctl(int port_num, int dev, int reg, int value);
+			     unsigned int value);
+int mii_mgr_cl45_read_ioctl(unsigned int port_num, unsigned int dev,
+			    unsigned int reg, unsigned int *value);
+int mii_mgr_cl45_write_ioctl(unsigned int port_num, unsigned int dev,
+			     unsigned int reg, unsigned int value);
 #endif

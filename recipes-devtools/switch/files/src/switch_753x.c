@@ -113,8 +113,10 @@ static void usage(char *cmd)
 
 	/* 8. vlan table operations */
 	printf("8) mt753x switch sip table operations====================================================================================================================>>>>\n");
-	printf(" 8.1) %s vlan dump						- dump switch vlan table\n", cmd);
-	printf(" 8.2) %s vlan set [vlan idx] [vid] [portmap]			- set vlan id and associated member at switch vlan table\n", cmd);
+	printf(" 8.1) %s vlan dump (egtag)					- dump switch vlan table (with per port eg_tag setting)\n", cmd);
+	printf(" 8.2) %s vlan set [fid:0~7] [vid] [portmap]			- set vlan id and associated member at switch vlan table\n", cmd);
+	printf("			([stag:0~4095] [eg_con:0|1] [egtagPortMap 0:untagged 2:tagged]) \n");
+	printf("			Full Example: %s vlan set 0 3 10000100 0 0 20000200\n", cmd);
 	printf(" 8.3) %s vlan vid [vlan idx] [active:0|1] [vid] [portMap] 	- set switch vlan vid elements  \n", cmd);
 	printf("			[egtagPortMap] [ivl_en] [fid] [stag]							 \n");
 	printf(" 8.4) %s vlan pvid [port] [pvid]				- set switch vlan pvid  \n", cmd);
@@ -192,13 +194,20 @@ static void usage(char *cmd)
 	printf(" 15.3) %s pfc tx_counter [port]					- get port n pfc 8 up rx counter \n", cmd);
 	printf("																			\n");
 
+	/*15. pfc(priority flow control) operations*/
+	printf("16) mt753x EEE(802.3az) operations==============================================================================================================>>>>\n");
+	printf(" 16.1) %s eee enable [enable 0|1] ([portMap])			- enable or disable EEE (by portMap)\n", cmd);
+	printf(" 16.2) %s eee dump ([port])					- dump EEE capability (by port)\n", cmd);
+	printf("																			\n");
+
 	exit_free();
 	exit(0);
 }
 
 static void parse_reg_cmd(int argc, char *argv[], int len)
 {
-	int off, val = -1;
+	unsigned int val;
+	unsigned int off;
 	int i, j;
 
 	if (!strncmp(argv[len - 3], "reg", 4)) {
@@ -232,6 +241,9 @@ static void parse_reg_cmd(int argc, char *argv[], int len)
 static int get_chip_name()
 {
 	int temp;
+	FILE *fp = NULL;
+	char buff[255];
+
 	/*judge 7530*/
 	reg_read((0x7ffc), &temp);
 	temp = temp >> 16;
@@ -242,14 +254,29 @@ static int get_chip_name()
 	temp = temp >> 16;
 	if (temp == 0x7531)
 		return temp;
+
+	/*judge jaguar embedded switch*/
+	fp = fopen("/proc/device-tree/compatible", "r");
+	if (fp != NULL) {
+		temp = -1;
+		if (fgets(buff, 255, (FILE *)fp) && strstr(buff, "mt7988"))
+			temp = 0x7988;
+
+		fclose(fp);
+		return temp;
+	}
+
 	return -1;
 }
 
 static int phy_operate(int argc, char *argv[])
 {
+	unsigned int port_num;
+	unsigned int dev_num;
+	unsigned int value, cl_value;
+	unsigned int reg;
+	int ret = 0, cl_ret = 0;
 	char op;
-	int ret = 0;
-	int port_num, dev_num, reg, value=-1;
 
 	if (strncmp(argv[2], "cl22", 4) && strncmp(argv[2], "cl45", 4))
 		usage(argv[0]);
@@ -262,7 +289,7 @@ static int phy_operate(int argc, char *argv[])
 			if (argc == 6) {
 				port_num = strtoul(argv[argc-2], NULL, 0);
 				ret = mii_mgr_read(port_num, reg, &value);
-				if (value == -1)
+				if (ret < 0)
 					printf(" Phy read reg fail\n");
 				else
 					printf(" Phy read reg=0x%x, value=0x%x\n", reg, value);
@@ -270,7 +297,7 @@ static int phy_operate(int argc, char *argv[])
 				dev_num = strtoul(argv[argc-2], NULL, 0);
 				port_num = strtoul(argv[argc-3], NULL, 0);
 				ret = mii_mgr_c45_read(port_num, dev_num, reg, &value);
-				if (value == -1)
+				if (ret < 0)
 					printf(" Phy read reg fail\n");
 				else
 					printf(" Phy read reg=0x%x, value=0x%x\n", reg, value);
@@ -283,11 +310,21 @@ static int phy_operate(int argc, char *argv[])
 			if (argc == 7) {
 				port_num = strtoul(argv[argc-3], NULL, 0);
 				ret = mii_mgr_write(port_num, reg, value);
+				cl_ret = mii_mgr_read(port_num, reg, &cl_value);
+				if (cl_ret < 0)
+					printf(" Phy read reg fail\n");
+				else
+					printf(" Phy read reg=0x%x, value=0x%x\n", reg, cl_value);
 			}
 			else if (argc == 8) {
 				dev_num = strtoul(argv[argc-3], NULL, 0);
 				port_num = strtoul(argv[argc-4], NULL, 0);
 				ret = mii_mgr_c45_write(port_num, dev_num, reg, value);
+				cl_ret = mii_mgr_c45_read(port_num, dev_num, reg, &cl_value);
+				if (cl_ret < 0)
+					printf(" Phy read reg fail\n");
+				else
+					printf(" Phy read reg=0x%x, value=0x%x\n", reg, cl_value);
 			}
 			else
 				usage(argv[0]);
@@ -302,7 +339,6 @@ static int phy_operate(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-	int i, j;
 	int err;
 
 	attres = (struct mt753x_attr *)malloc(sizeof(struct mt753x_attr));
@@ -311,16 +347,28 @@ int main(int argc, char *argv[])
 	attres->phy_dev = -1;
 	nl_init_flag = true;
 
-	switch_ioctl_init();
-	err = mt753x_netlink_init();
-	if (err < 0)
-		nl_init_flag = false;
+	/* dsa netlink family might not be enabled. Try gsw netlink family. */
+	err = mt753x_netlink_init(MT753X_DSA_GENL_NAME);
+	if (!err)
+		chip_name = get_chip_name();
 
-	chip_name = get_chip_name();
-	if (chip_name < 0) {
-		printf("no chip unsupport or chip id is invalid!\n");
-		exit_free();
-		exit(0);
+	if (err < 0) {
+		err = mt753x_netlink_init(MT753X_GENL_NAME);
+		if (!err)
+			chip_name = get_chip_name();
+	}
+	
+	if (err < 0) {
+		err = switch_ioctl_init();
+		if (!err) {
+			nl_init_flag = false;
+			chip_name = get_chip_name();
+			if (chip_name < 0) {
+				printf("no chip unsupport or chip id is invalid!\n");
+				exit_free();
+				exit(0);
+			}
+		}
 	}
 
 	if (argc < 2)
@@ -536,7 +584,7 @@ int main(int argc, char *argv[])
 		if (argc < 3)
 			usage(argv[0]);
 		if (!strncmp(argv[2], "dump", 5))
-			vlan_dump();
+			vlan_dump(argc, argv);
 		else if (!strncmp(argv[2], "set", 4))
 			vlan_set(argc, argv);
 		else if (!strncmp(argv[2], "clear", 6))
@@ -642,6 +690,16 @@ int main(int argc, char *argv[])
 			usage(argv[0]);
 		else
 			phy_crossover(argc, argv);
+	} else if (!strncmp(argv[1], "eee", 4)) {
+		if (argc < 3)
+			usage(argv[0]);
+		if (!strncmp(argv[2], "enable", 7) ||
+			 !strncmp(argv[2], "disable", 8))
+			eee_enable(argc, argv);
+		else if (!strncmp(argv[2], "dump", 5))
+			eee_dump(argc, argv);
+		else
+			usage(argv[0]);
 	} else
 		usage(argv[0]);
 

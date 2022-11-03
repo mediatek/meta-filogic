@@ -28,10 +28,8 @@ static int getnext(char *src, int separator, char *dest)
 		return -1;
 
 	c = strchr(src, separator);
-	if (c == NULL) {
-		strcpy(dest, src);
+	if (c == NULL)
 		return -1;
-	}
 
 	len = c - src;
 	strncpy(dest, src, len);
@@ -61,7 +59,7 @@ static int str_to_ip(unsigned int *ip, char *str)
 /*convert IP address from number to string */
 static void ip_to_str(char *str, unsigned int ip)
 {
-	unsigned char *ptr = (char *)&ip;
+	unsigned char *ptr = (unsigned char *)&ip;
 	unsigned char c[4];
 
 	c[0] = *(ptr);
@@ -72,7 +70,7 @@ static void ip_to_str(char *str, unsigned int ip)
 	sprintf(str, "%d.%d.%d.%d", c[3], c[2], c[1], c[0]);
 }
 
-int reg_read(int offset, int *value)
+int reg_read(unsigned int offset, unsigned int *value)
 {
 	int ret = -1;
 
@@ -84,14 +82,14 @@ int reg_read(int offset, int *value)
 	}
 	if (ret < 0) {
 		printf("Read fail\n");
-		exit_free();
-		exit(0);
+		*value = 0;
+		return ret;
 	}
 
 	return 0;
 }
 
-int reg_write(int offset, int value)
+int reg_write(unsigned int offset, unsigned int value)
 {
 	int ret = -1;
 
@@ -109,11 +107,11 @@ int reg_write(int offset, int value)
 	return 0;
 }
 
-int mii_mgr_read(unsigned int port_num, unsigned int reg, int *value)
+int mii_mgr_read(unsigned int port_num, unsigned int reg, unsigned int *value)
 {
-	int ret = -1;
+	int ret;
 
-	if (port_num > 31 || port_num < 0) {
+	if (port_num > 31) {
 		printf("Invalid Port or PHY addr \n");
 		return -1;
 	}
@@ -124,7 +122,7 @@ int mii_mgr_read(unsigned int port_num, unsigned int reg, int *value)
 		ret = mii_mgr_cl22_read_ioctl(port_num, reg, value);
 
 	if (ret < 0) {
-		printf("Phy read fail\n");
+		printf("Phy cl22 read fail\n");
 		exit_free();
 		exit(0);
 	}
@@ -134,9 +132,9 @@ int mii_mgr_read(unsigned int port_num, unsigned int reg, int *value)
 
 int mii_mgr_write(unsigned int port_num, unsigned int reg, unsigned int value)
 {
-	int ret = -1;
+	int ret;
 
-	if (port_num > 31 || port_num < 0) {
+	if (port_num > 31) {
 		printf("Invalid Port or PHY addr \n");
 		return -1;
 	}
@@ -147,7 +145,7 @@ int mii_mgr_write(unsigned int port_num, unsigned int reg, unsigned int value)
 		ret = mii_mgr_cl22_write_ioctl(port_num, reg, value);
 
 	if (ret < 0) {
-		printf("Phy write fail\n");
+		printf("Phy cl22 write fail\n");
 		exit_free();
 		exit(0);
 	}
@@ -155,11 +153,11 @@ int mii_mgr_write(unsigned int port_num, unsigned int reg, unsigned int value)
 	return 0;
 }
 
-int mii_mgr_c45_read(unsigned int port_num, unsigned int dev, unsigned int reg, int *value)
+int mii_mgr_c45_read(unsigned int port_num, unsigned int dev, unsigned int reg, unsigned int *value)
 {
-	int ret = -1;
+	int ret;
 
-	if (port_num > 31 || port_num < 0) {
+	if (port_num > 31) {
 		printf("Invalid Port or PHY addr \n");
 		return -1;
 	}
@@ -170,7 +168,7 @@ int mii_mgr_c45_read(unsigned int port_num, unsigned int dev, unsigned int reg, 
 		ret = mii_mgr_cl45_read_ioctl(port_num, dev, reg, value);
 
 	if (ret < 0) {
-		printf("Phy read fail\n");
+		printf("Phy cl45 read fail\n");
 		exit_free();
 		exit(0);
 	}
@@ -180,9 +178,9 @@ int mii_mgr_c45_read(unsigned int port_num, unsigned int dev, unsigned int reg, 
 
 int mii_mgr_c45_write(unsigned int port_num, unsigned int dev, unsigned int reg, unsigned int value)
 {
-	int ret = -1;
+	int ret;
 
-	if (port_num > 31 || port_num < 0) {
+	if (port_num > 31) {
 		printf("Invalid Port or PHY addr \n");
 		return -1;
 	}
@@ -193,17 +191,18 @@ int mii_mgr_c45_write(unsigned int port_num, unsigned int dev, unsigned int reg,
 		ret = mii_mgr_cl45_write_ioctl(port_num, dev, reg, value);
 
 	if (ret < 0) {
-		printf("Phy write fail\n");
+		printf("Phy cl45 write fail\n");
 		exit_free();
 		exit(0);
 	}
+
 	return 0;
 }
 
 
 int phy_dump(int phy_addr)
 {
-	int ret = -1;
+	int ret;
 
 	if (nl_init_flag == true)
 		ret = phy_dump_netlink(attres, phy_addr);
@@ -221,12 +220,11 @@ int phy_dump(int phy_addr)
 
 void phy_crossover(int argc, char *argv[])
 {
-	int port_num = strtoul(argv[2], NULL, 10);
-	int value;
-	int ret = -1;
+	unsigned int port_num = strtoul(argv[2], NULL, 10);
+	unsigned int value;
+	int ret;
 
-	if ((port_num < 0) || (port_num > 4))
-	{
+	if (port_num > 4) {
 		printf("invaild value, port_name:0~4\n");
 		return;
 	}
@@ -272,8 +270,11 @@ void phy_crossover(int argc, char *argv[])
 
 int rw_phy_token_ring(int argc, char *argv[])
 {
-	int port_num, ch_addr, node_addr, data_addr,val_l=0;
-	int Tr_reg_control, val_h = 0;
+	int ch_addr, node_addr, data_addr;
+	unsigned int tr_reg_control;
+	unsigned int val_l = 0;
+	unsigned int val_h = 0;
+	unsigned int port_num;
 
 	if (argc < 4)
 		return -1;
@@ -283,7 +284,7 @@ int rw_phy_token_ring(int argc, char *argv[])
 			return -1;
 		mii_mgr_write(0, 0x1f, 0x52b5); // r31 = 0x52b5
 		port_num = strtoul(argv[3], NULL, 0);
-		if (port_num < 0 || port_num > MAX_PORT) {
+		if (port_num > MAX_PORT) {
 			printf("Illegal port index and port:0~6\n");
 			return -1;
 		}
@@ -291,17 +292,17 @@ int rw_phy_token_ring(int argc, char *argv[])
 		node_addr = strtoul(argv[5], NULL, 0);
 		data_addr = strtoul(argv[6], NULL, 0);
 		printf("port = %x, ch_addr = %x, node_addr=%x, data_addr=%x\n", port_num, ch_addr, node_addr, data_addr);
-		Tr_reg_control = (1 << 15) | (1 << 13) | (ch_addr << 11) | (node_addr << 7) | (data_addr << 1);
-		mii_mgr_write(port_num, 16, Tr_reg_control); // r16 = Tr_reg_control
+		tr_reg_control = (1 << 15) | (1 << 13) | (ch_addr << 11) | (node_addr << 7) | (data_addr << 1);
+		mii_mgr_write(port_num, 16, tr_reg_control); // r16 = tr_reg_control
 		mii_mgr_read(port_num, 17, &val_l);
 		mii_mgr_read(port_num, 18, &val_h);
-		printf("switch trreg read Tr_reg_control=%x, value_H=%x, value_L=%x\n", Tr_reg_control, val_h, val_l);
+		printf("switch trreg read tr_reg_control=%x, value_H=%x, value_L=%x\n", tr_reg_control, val_h, val_l);
 	} else if (argv[2][0] == 'w') {
 		if (argc != 9)
 			return -1;
 		mii_mgr_write(0, 0x1f, 0x52b5); // r31 = 0x52b5
 		port_num = strtoul(argv[3], NULL, 0);
-		if (port_num < 0 || port_num > MAX_PORT) {
+		if (port_num > MAX_PORT) {
 			printf("\n**Illegal port index and port:0~6\n");
 			return -1;
 		}
@@ -311,11 +312,11 @@ int rw_phy_token_ring(int argc, char *argv[])
 		val_h = strtoul(argv[7], NULL, 0);
 		val_l = strtoul(argv[8], NULL, 0);
 		printf("port = %x, ch_addr = %x, node_addr=%x, data_addr=%x\n", port_num, ch_addr, node_addr, data_addr);
-		Tr_reg_control = (1 << 15) | (0 << 13) | (ch_addr << 11) | (node_addr << 7) | (data_addr << 1);
+		tr_reg_control = (1 << 15) | (0 << 13) | (ch_addr << 11) | (node_addr << 7) | (data_addr << 1);
 		mii_mgr_write(port_num, 17, val_l);
 		mii_mgr_write(port_num, 18, val_h);
-		mii_mgr_write(port_num, 16, Tr_reg_control); // r16 = Tr_reg_control
-		printf("switch trreg Write Tr_reg_control=%x, value_H=%x, value_L=%x\n", Tr_reg_control, val_h, val_l);
+		mii_mgr_write(port_num, 16, tr_reg_control); // r16 = tr_reg_control
+		printf("switch trreg Write tr_reg_control=%x, value_H=%x, value_L=%x\n", tr_reg_control, val_h, val_l);
 	} else
 		return -1;
 	return 0;
@@ -326,7 +327,7 @@ void write_acl_table(unsigned char tbl_idx, unsigned int vawd1, unsigned int vaw
 	unsigned int value, reg;
 	unsigned int max_index;
 
-	if (chip_name == 0x7531)
+	if (chip_name == 0x7531 || chip_name == 0x7988)
 		max_index = 256;
 	else
 		max_index = 64;
@@ -379,7 +380,7 @@ void write_acl_mask_table(unsigned char tbl_idx, unsigned int vawd1, unsigned in
 	unsigned int value, reg;
 	unsigned int max_index;
 
-	if (chip_name == 0x7531)
+	if (chip_name == 0x7531 || chip_name == 0x7988)
 		max_index = 128;
 	else
 		max_index = 32;
@@ -429,7 +430,7 @@ void write_acl_rule_table(unsigned char tbl_idx, unsigned int vawd1, unsigned in
 	unsigned int value, reg;
 	unsigned int max_index;
 
-	if (chip_name == 0x7531)
+	if (chip_name == 0x7531 || chip_name == 0x7988)
 		max_index = 128;
 	else
 		max_index = 32;
@@ -563,7 +564,7 @@ void write_trTCM_table(unsigned char tbl_idx, unsigned int vawd1, unsigned int v
 int acl_parameters_pre_del(int len1, int len2, int argc, char *argv[], int *port)
 {
 	int i;
-	int ret = 0;
+
 	*port = 0;
 	if (argc < len1) {
 		printf("insufficient arguments!\n");
@@ -590,6 +591,7 @@ int acl_parameters_pre_del(int len1, int len2, int argc, char *argv[], int *port
 		}
 		*port += (argv[5][i] - '0') * (1 << i);
 	}
+	return 0;
 }
 
 void acl_compare_pattern(int ports, int comparion, int base, int word, unsigned char table_index)
@@ -608,7 +610,7 @@ void acl_compare_pattern(int ports, int comparion, int base, int word, unsigned 
 
 void acl_mac_add(int argc, char *argv[])
 {
-	unsigned int i, value, mac;
+	unsigned int value;
 	int ports;
 	char tmpstr[5];
 	int ret;
@@ -645,13 +647,11 @@ void acl_mac_add(int argc, char *argv[])
 
 void acl_dip_meter(int argc, char *argv[])
 {
-	unsigned int i, value, ip_value, meter;
-	unsigned int idx, vid;
-	int stag = 0;
+	unsigned int value, ip_value, meter;
 	int ports;
-	char tmpstr[16];
 	int ret;
 
+	ip_value = 0;
 	ret = acl_parameters_pre_del(7, -1, argc, argv, &ports);
 	if (ret < 0)
 		return;
@@ -670,12 +670,13 @@ void acl_dip_meter(int argc, char *argv[])
 
 	//set action
 	meter = strtoul(argv[6], NULL, 0);
-	if (meter < 0 || ((chip_name == 0x7530) && (meter > 1000000)) ||
-		((chip_name == 0x7531) && (meter > 2500000))) {
-		printf("\n**Illegal meter input, and 7530: 0~1000000Kpbs, 7531: 0~2500000Kpbs**\n");
+	if (((chip_name == 0x7530) && (meter > 1000000)) ||
+		((chip_name == 0x7531) && (meter > 2500000)) ||
+		((chip_name == 0x7988) && (meter > 4000000))) {
+		printf("\n**Illegal meter input, and 7530: 0~1000000Kpbs, 7531: 0~2500000Kpbs, 7988: 0~4000000Kpbs**\n");
 		return;
 	}
-	if (((chip_name == 0x7531) && (meter > 1000000))) {
+	if (((chip_name == 0x7531 || chip_name == 0x7988) && (meter > 1000000))) {
 		reg_read(0xc,&value);
 		value |= 0x1 << 30;
 		reg_write(0xC,value);
@@ -695,14 +696,12 @@ void acl_dip_meter(int argc, char *argv[])
 
 void acl_dip_trtcm(int argc, char *argv[])
 {
-	unsigned int i, value, value2, ip_value;
-	unsigned int idx, vid;
+	unsigned int value, value2, ip_value;
 	unsigned int CIR, CBS, PIR, PBS;
-	int stag = 0;
 	int ports;
-	char tmpstr[16];
 	int ret;
 
+	ip_value = 0;
 	ret = acl_parameters_pre_del(10, -1, argc, argv, &ports);
 	if (ret < 0)
 		return;
@@ -722,8 +721,7 @@ void acl_dip_trtcm(int argc, char *argv[])
 	PIR = strtoul(argv[8], NULL, 0);
 	PBS = strtoul(argv[9], NULL, 0);
 
-	if (CIR < 0 || CBS < 0 || PIR < 0 || PBS < 0 ||
-	CIR > 65535*64 || CBS > 65535 || PIR > 65535*64  || PBS > 65535) {
+	if (CIR > 65535*64 || CBS > 65535 || PIR > 65535*64  || PBS > 65535) {
 		printf("\n**Illegal input parameters**\n");
 		return;
 	}
@@ -751,11 +749,8 @@ void acl_dip_trtcm(int argc, char *argv[])
 
 void acl_ethertype(int argc, char *argv[])
 {
-	unsigned int i, value, ethertype;
-	unsigned int idx, vid;
-	int stag = 0;
+	unsigned int value, ethertype;
 	int ports;
-	char tmpstr[16];
 	int ret;
 
 	ret = acl_parameters_pre_del(6, -1, argc, argv, &ports);
@@ -780,14 +775,12 @@ void acl_ethertype(int argc, char *argv[])
 
 void acl_dip_modify(int argc, char *argv[])
 {
-	unsigned int i, value, ip_value;
-	unsigned int idx, vid;
-	int stag = 0;
+	unsigned int value, ip_value;
 	int ports;
 	int priority;
-	char tmpstr[16];
 	int ret;
 
+	ip_value = 0;
 	priority = strtoul(argv[6], NULL, 16);
 	if (priority < 0 || priority > 7) {
 		printf("\n**Illegal priority value!**\n");
@@ -820,13 +813,11 @@ void acl_dip_modify(int argc, char *argv[])
 
 void acl_dip_pppoe(int argc, char *argv[])
 {
-	unsigned int i, value, ip_value;
-	unsigned int idx, vid;
-	int stag = 0;
+	unsigned int value, ip_value;
 	int ports;
-	char tmpstr[16];
 	int ret;
 
+	ip_value = 0;
 	ret = acl_parameters_pre_del(6, -1, argc, argv, &ports);
 	if (ret < 0)
 		return;
@@ -855,13 +846,11 @@ void acl_dip_pppoe(int argc, char *argv[])
 
 void acl_dip_add(int argc, char *argv[])
 {
-	unsigned int i, value, ip_value;
-	unsigned int idx, vid;
+	unsigned int value, ip_value;
 	int ports;
-	int stag = 0;
-	char tmpstr[16];
 	int ret;
 
+	ip_value = 0;
 	ret = acl_parameters_pre_del(6, -1, argc, argv, &ports);
 	if (ret < 0)
 		return;
@@ -889,11 +878,8 @@ void acl_dip_add(int argc, char *argv[])
 
 void acl_l4_add(int argc, char *argv[])
 {
-	unsigned int i, value;
-	unsigned int idx, vid;
+	unsigned int value;
 	int ports;
-	int stag = 0;
-	char tmpstr[16];
 	int ret;
 
 	ret = acl_parameters_pre_del(6, -1, argc, argv, &ports);
@@ -914,11 +900,8 @@ void acl_l4_add(int argc, char *argv[])
 
 void acl_sp_add(int argc, char *argv[])
 {
-	unsigned int i, value;
-	unsigned int idx, vid;
+	unsigned int value;
 	int ports;
-	int stag = 0;
-	char tmpstr[16];
 	int ret;
 
 	ret = acl_parameters_pre_del(6, -1, argc, argv, &ports);
@@ -964,18 +947,11 @@ void acl_port_enable(int argc, char *argv[])
 
 static void dip_dump_internal(int type)
 {
-	int i, j, value, mac, mac2, value2;
-	int vid[16];
+	unsigned int i, j, value, mac, mac2, value2;
 	char tmpstr[16];
 	int table_size = 0;
 	int hit_value1 = 0;
 	int hit_value2 = 0;
-
-	for (i = 0; i < 8; i++) {
-		reg_read(REG_VLAN_ID_BASE + 4 * i, &value);
-		vid[2 * i] = value & 0xfff;
-		vid[2 * i + 1] = (value & 0xfff000) >> 12;
-	}
 
 	if(type == GENERAL_TABLE) {
 		table_size = 0x800;
@@ -1052,15 +1028,16 @@ void dip_dump(void)
 
 void dip_add(int argc, char *argv[])
 {
-	unsigned int i, j, value;
-	char tmpstr[9];
+	unsigned int value = 0;
+	unsigned int i, j;
+
+	value = 0;
 
 	str_to_ip(&value, argv[3]);
 
 	reg_write(REG_ATA1_ADDR, value);
 	printf("REG_ATA1_ADDR is 0x%x\n\r", value);
 
-	value = 0;
 #if 0
 	reg_write(REG_ATA2_ADDR, value);
 	printf("REG_ATA2_ADDR is 0x%x\n\r", value);
@@ -1105,9 +1082,9 @@ void dip_add(int argc, char *argv[])
 
 void dip_del(int argc, char *argv[])
 {
-	unsigned int i, j, value;
-	char tmpstr[9];
+	unsigned int i, value;
 
+	value = 0;
 	str_to_ip(&value, argv[3]);
 
 	reg_write(REG_ATA1_ADDR, value);
@@ -1137,7 +1114,8 @@ void dip_del(int argc, char *argv[])
 void dip_clear(void)
 {
 
-	int value;
+	unsigned int value;
+
 	reg_write(REG_ATC_ADDR, 0x8102); //clear all dip
 	usleep(5000);
 	reg_read(REG_ATC_ADDR, &value);
@@ -1146,19 +1124,11 @@ void dip_clear(void)
 
 static void sip_dump_internal(int type)
 {
-	int i, j, value, mac, mac2, value2;
-	int vid[16];
-	char tmpstr[16];
-
+	unsigned int i, j, value, mac, mac2, value2;
 	int table_size = 0;
 	int hit_value1 = 0;
 	int hit_value2 = 0;
-
-	for (i = 0; i < 8; i++) {
-		reg_read(REG_VLAN_ID_BASE + 4 * i, &value);
-		vid[2 * i] = value & 0xfff;
-		vid[2 * i + 1] = (value & 0xfff000) >> 12;
-	}
+	char tmpstr[16];
 
 	if (type == GENERAL_TABLE) {
 		table_size = 0x800;
@@ -1237,8 +1207,8 @@ void sip_dump(void)
 void sip_add(int argc, char *argv[])
 {
 	unsigned int i, j, value;
-	char tmpstr[9];
 
+	value = 0;
 	str_to_ip(&value, argv[3]); //SIP
 
 	reg_write(REG_ATA2_ADDR, value);
@@ -1290,9 +1260,9 @@ void sip_add(int argc, char *argv[])
 
 void sip_del(int argc, char *argv[])
 {
-	unsigned int i, j, value;
-	char tmpstr[9];
+	unsigned int i, value;
 
+	value = 0;
 	str_to_ip(&value, argv[3]);
 
 	reg_write(REG_ATA2_ADDR, value); //SIP
@@ -1321,7 +1291,7 @@ void sip_del(int argc, char *argv[])
 
 void sip_clear(void)
 {
-	int value;
+	unsigned int value;
 
 	reg_write(REG_ATC_ADDR, 0x8202); //clear all sip
 	usleep(5000);
@@ -1331,18 +1301,12 @@ void sip_clear(void)
 
 static void table_dump_internal(int type)
 {
-	int i, j, value, mac, mac2, value2;
-	int vid[16];
+	unsigned int i, j, value, mac, mac2, value2;
 	int table_size = 0;
 	int table_end = 0;
 	int hit_value1 = 0;
 	int hit_value2 = 0;
 
-	for (i = 0; i < 8; i++) {
-		reg_read(REG_VLAN_ID_BASE + 4 * i, &value);
-		vid[2 * i] = value & 0xfff;
-		vid[2 * i + 1] = (value & 0xfff000) >> 12;
-	}
 	if (type == GENERAL_TABLE){
 		table_size = 0x800;
 		table_end = 0x7FF;
@@ -1370,23 +1334,6 @@ static void table_dump_internal(int type)
 				printf("%03x:   ", (value >> 16) & 0xfff);
 				reg_read(REG_ATRD_ADDR, &value2);
 				j = (value2 >> 4) & 0xff; //r_port_map
-				if(j & 0x01)
-					printf("0");
-				else if (j & 0x02)
-					printf("1"); 
-				else if (j & 0x04)
-					printf("2"); 
-				else if (j & 0x08)
-					printf("3");
-				else if (j & 0x10)
-					printf("4");
-				else if (j & 0x20)
-					printf("5");
-				else if (j & 0x40)
-					printf("6");
-				else if (j & 0x80)
-					printf("7");
-				/*	 	 	 	
 				printf("%c", (j & 0x01) ? '1' : '-');
 				printf("%c", (j & 0x02) ? '1' : '-');
 				printf("%c", (j & 0x04) ? '1' : '-');
@@ -1395,8 +1342,7 @@ static void table_dump_internal(int type)
 				printf("%c", (j & 0x20) ? '1' : '-');
 				printf("%c", (j & 0x40) ? '1' : '-');
 				printf("%c", (j & 0x80) ? '1' : '-');
-				*/
-				printf("       ");
+
 				reg_read(REG_TSRA2_ADDR, &mac2);
 
 				printf("   %2d", (mac2 >> 12) & 0x7); //FID
@@ -1708,7 +1654,7 @@ void table_search_mac_fid(int argc, char *argv[])
 
 void table_del_fid(int argc, char *argv[])
 {
-	int i, j, value;
+	unsigned int i, j, value;
 	char tmpstr[9];
 
 	if (!argv[3] || strlen(argv[3]) != 12) {
@@ -1726,7 +1672,7 @@ void table_del_fid(int argc, char *argv[])
 
 	if (argc > 5) {
 		j = strtoul(argv[5], NULL, 0);
-		if (j < 0 || 7 < j) {
+		if (j > 7) {
 			printf("wrong fid range, should be within 0~7\n");
 			return;
 		}
@@ -1756,7 +1702,7 @@ void table_del_fid(int argc, char *argv[])
 
 void table_del_vid(int argc, char *argv[])
 {
-	int i, j, value;
+	unsigned int i, j, value;
 	char tmpstr[9];
 
 	if (!argv[3] || strlen(argv[3]) != 12) {
@@ -1774,7 +1720,7 @@ void table_del_vid(int argc, char *argv[])
 	value = (value << 16);
 
 	j = strtoul(argv[5], NULL, 0);
-	if (j < 0 || 4095 < j) {
+	if (j > 4095) {
 		printf("wrong fid range, should be within 0~4095\n");
 		return;
 	}
@@ -1803,7 +1749,7 @@ void table_del_vid(int argc, char *argv[])
 
 void table_clear(void)
 {
-	int i, value, mac;
+	unsigned int value;
 	reg_write(REG_ATC_ADDR, 0x8002);
 	usleep(5000);
 	reg_read(REG_ATC_ADDR, &value);
@@ -1867,14 +1813,22 @@ void set_mirror_from(int argc, char *argv[])
 	reg_write(offset, value);
 }
 
-void vlan_dump(void)
+void vlan_dump(int argc, char *argv[])
 {
-	int i, j, vid, value, value2;
+	unsigned int i, j, value, value2;
+	int eg_tag = 0;
 
-	printf("  vid  fid  portmap    s-tag\n");
+	if (argc == 4) {
+		if (!strncmp(argv[3], "egtag", 6))
+			eg_tag = 1;
+	}
+
+	if (eg_tag)
+		printf("  vid  fid  portmap    s-tag\teg_tag(0:untagged 2:tagged)\n");
+	else
+		printf("  vid  fid  portmap    s-tag\n");
+
 	for (i = 1; i < 4095; i++) {
-		//reg_read(REG_VLAN_ID_BASE + 4*i, &vid);
-		//value = (0x80000000 + 2*i);  //r_vid_cmd
 		value = (0x80000000 + i); //r_vid_cmd
 		reg_write(REG_VTCR_ADDR, value);
 
@@ -1904,7 +1858,28 @@ void vlan_dump(void)
 			printf("%c", (value & 0x00200000) ? '1' : '-');
 			printf("%c", (value & 0x00400000) ? '1' : '-');
 			printf("%c", (value & 0x00800000) ? '1' : '-');
-			printf("    %4d\n", ((value & 0xfff0) >> 4));
+			printf("    %4d", ((value & 0xfff0) >> 4));
+			if (eg_tag) {
+				printf("\t");
+				if ((value & (0x3 << 28)) == (0x3 << 28)) {
+					/* VTAG_EN=1 and EG_CON=1 */
+					printf("CONSISTENT");
+				} else if (value & (0x1 << 28)) {
+					/* VTAG_EN=1 */
+					printf("%d", (value2 & 0x0003) >> 0);
+					printf("%d", (value2 & 0x000c) >> 2);
+					printf("%d", (value2 & 0x0030) >> 4);
+					printf("%d", (value2 & 0x00c0) >> 6);
+					printf("%d", (value2 & 0x0300) >> 8);
+					printf("%d", (value2 & 0x0c00) >> 10);
+					printf("%d", (value2 & 0x3000) >> 12);
+					printf("%d", (value2 & 0xc000) >> 14);
+				} else {
+					/* VTAG_EN=0 */
+					printf("DISABLED");
+				}
+			}
+			printf("\n");
 		} else {
 			/*print 16 vid for reference information*/
 			if (i <= 16) {
@@ -1940,8 +1915,8 @@ static long timespec_diff_us(struct timespec start, struct timespec end)
 
 void vlan_clear(int argc, char *argv[])
 {
-	unsigned int i, j, value, value2;
-	int idx, vid;
+	unsigned int value;
+	int vid;
 	unsigned long duration_us = 0;
 	struct timespec start, end;
 
@@ -1967,86 +1942,104 @@ void vlan_clear(int argc, char *argv[])
 
 void vlan_set(int argc, char *argv[])
 {
-	unsigned int i, j, value, value2;
-	int idx, vid;
+	unsigned int vlan_mem = 0;
+	unsigned int value = 0;
+	unsigned int value2 = 0;
+	int i, vid, fid;
 	int stag = 0;
-	unsigned char eg_con = 0;
-	unsigned char eg_tag = 0;
+	unsigned long eg_con = 0;
+	unsigned int eg_tag = 0;
 
 	if (argc < 5) {
 		printf("insufficient arguments!\n");
 		return;
 	}
+
+	fid = strtoul(argv[3], NULL, 0);
+	if (fid < 0 || fid > 7) {
+		printf("wrong filtering db id range, should be within 0~7\n");
+		return;
+	}
+	value |= (fid << 1);
+
 	vid = strtoul(argv[4], NULL, 0);
 	if (vid < 0 || 0xfff < vid) {
 		printf("wrong vlan id range, should be within 0~4095\n");
 		return;
 	}
+
 	if (strlen(argv[5]) != 8) {
 		printf("portmap format error, should be of length 7\n");
 		return;
 	}
-	j = 0;
+
+	vlan_mem = 0;
 	for (i = 0; i < 8; i++) {
 		if (argv[5][i] != '0' && argv[5][i] != '1') {
 			printf("portmap format error, should be of combination of 0 or 1\n");
 			return;
 		}
-		j += (argv[5][i] - '0') * (1 << i);
+		vlan_mem += (argv[5][i] - '0') * (1 << i);
 	}
-	//set vlan identifier
-	/*
-	reg_read(REG_VLAN_ID_BASE + 4*(idx/2), &value);
-	if (idx % 2 == 0) {
-	value &= 0xfff000;
-	value |= vid;
-	}
-	else {
-	value &= 0xfff;
-	value |= (vid << 12);
-	}
-	reg_write(REG_VLAN_ID_BASE + 4*(idx/2), value);
-	*/
 
-	/*port stag*/
+	/* VLAN stag */
 	if (argc > 6) {
 		stag = strtoul(argv[6], NULL, 16);
-		printf("STAG index is 0x%x\n", stag);
+		if (stag < 0 || 0xfff < stag) {
+			printf("wrong stag id range, should be within 0~4095\n");
+			return;
+		}
+		//printf("STAG is 0x%x\n", stag);
 	}
 
-	//set vlan member
-	value = (j << 16);
-	//value |= (idx << 1);//fid
+	/* set vlan member */
+	value |= (vlan_mem << 16);
 	value |= (1 << 30);		//IVL=1
 	value |= ((stag & 0xfff) << 4); //stag
 	value |= 1;			//valid
 
 	if (argc > 7) {
+		eg_con = strtoul(argv[7], NULL, 2);
+		eg_con = !!eg_con;
 		value |= (eg_con << 29); //eg_con
 		value |= (1 << 28);      //eg tag control enable
 	}
 
-	if (argc > 8) {
+	if (argc > 8 && !eg_con) {
+		if (strlen(argv[8]) != 8) {
+			printf("egtag portmap format error, should be of length 7\n");
+			return;
+		}
+
+		for (i = 0; i < 8; i++) {
+			if (argv[8][i] < '0' || argv[8][i] > '3') {
+				printf("egtag portmap format error, should be of combination of 0 or 3\n");
+				return;
+			}
+			//eg_tag += (argv[8][i] - '0') * (1 << i * 2);
+			eg_tag |= (argv[8][i] - '0') << (i * 2);
+		}
+
 		value |= (1 << 28);    //eg tag control enable
-		value2 = eg_tag;       //port 0
-		value2 |= eg_tag << 2; //port  1
-		value2 |= eg_tag << 4; //port 2
-		reg_write(REG_VAWD2_ADDR, value2);
+		value2 &= ~(0xffff);
+		value2 |= eg_tag;
 	}
 	reg_write(REG_VAWD1_ADDR, value);
+	reg_write(REG_VAWD2_ADDR, value2);
+	//printf("VAWD1=0x%08x VAWD2=0x%08x ", value, value2);
 
-	//value = (0x80001000 + idx);  //w_vid_cmd
 	value = (0x80001000 + vid); //w_vid_cmd
 	reg_write(REG_VTCR_ADDR, value);
+	//printf("VTCR=0x%08x\n", value);
 
-	for (j = 0; j < 300; j++) {
+	for (i = 0; i < 300; i++) {
 		usleep(1000);
 		reg_read(REG_VTCR_ADDR, &value);
 		if ((value & 0x80000000) == 0) //table busy
 			break;
 	}
 
-	if (j == 300)
+	if (i == 300)
 		printf("config vlan timeout.\n");
 }
 
@@ -2056,6 +2049,7 @@ void igmp_on(int argc, char *argv[])
 	unsigned int wan_num = 4;
 	unsigned int port, offset, value;
 	char cmd[80];
+	int ret;
 
 	if (argc > 3)
 		leaky_en = strtoul(argv[3], NULL, 10);
@@ -2166,8 +2160,11 @@ void igmp_on(int argc, char *argv[])
 	reg_write(0x90, 0x8000b003);
 
 	/*Force eth2 to receive all igmp packets*/
-	sprintf(cmd,"echo 2 > /sys/devices/virtual/net/%s/brif/%s/multicast_router",BR_DEVNAME,ETH_DEVNAME);
-	system(cmd);
+	snprintf(cmd, sizeof(cmd), "echo 2 > /sys/devices/virtual/net/%s/brif/%s/multicast_router", BR_DEVNAME, ETH_DEVNAME);
+	ret = system(cmd);
+	if (ret)
+		printf("Failed to set /sys/devices/virtual/net/%s/brif/%s/multicast_router\n",
+		       BR_DEVNAME, ETH_DEVNAME);
 }
 
 void igmp_disable(int argc, char *argv[])
@@ -2232,8 +2229,11 @@ void igmp_off()
 	printf("config igmpsnoop off.\n");
 }
 
-void switch_reset(int argc, char *argv[])
+int switch_reset(int argc, char *argv[])
 {
+	if (chip_name == 0x7988)
+		return -1;
+
 	unsigned int value = 0;
 	/*Software Register Reset  and Software System Reset */
 	reg_write(0x7000, 0x3);
@@ -2245,6 +2245,7 @@ void switch_reset(int argc, char *argv[])
 		printf("GPIO Mode (0x7c0c) select value =0x%x  \n", value);
 	}
 	printf("Switch Software Reset !!! \n");
+	return 0;
 }
 
 int phy_set_fc(int argc, char *argv[])
@@ -2256,8 +2257,7 @@ int phy_set_fc(int argc, char *argv[])
 	pause_capable = atoi(argv[4]);
 
 	/*Check the input parameters is right or not.*/
-	if (port < 0 || port > MAX_PORT-2 || pause_capable < 0
-		|| pause_capable > 1) {
+	if (port > MAX_PORT - 2 || pause_capable > 1) {
 		printf("Illegal parameter (port:0~4, full_duplex_pause_capable:0|1)\n");
 		return -1;
 	}
@@ -2284,8 +2284,7 @@ int phy_set_an(int argc, char *argv[])
 	auto_negotiation_en = atoi(argv[4]);
 
 	/*Check the input parameters is right or not.*/
-	if (port < 0 || port > MAX_PORT-2 || auto_negotiation_en < 0
-		|| auto_negotiation_en > 1) {
+	if (port > MAX_PORT - 2 || auto_negotiation_en > 1) {
 		printf("Illegal parameter (port:0~4, auto_negotiation_en:0|1)\n");
 		return -1;
 	}
@@ -2302,7 +2301,7 @@ int phy_set_an(int argc, char *argv[])
 int set_mac_pfc(int argc, char *argv[])
 {
 	unsigned int value;
-	unsigned char port, enable = 0;
+	int port, enable = 0;
 
 	port = atoi(argv[3]);
 	enable = atoi(argv[4]);
@@ -2311,7 +2310,7 @@ int set_mac_pfc(int argc, char *argv[])
 		printf("Illegal parameter (port:0~6, enable|diable:0|1) \n");
 		return -1;
 	}
-	if (chip_name == 0x7531) {
+	if (chip_name == 0x7531 || chip_name == 0x7988) {
 		reg_read(REG_PFC_CTRL_ADDR, &value);
 		value &= ~(1 << port);
 		value |= (enable << port);
@@ -2351,7 +2350,8 @@ int global_set_mac_fc(int argc, char *argv[])
 
 int qos_sch_select(int argc, char *argv[])
 {
-	unsigned char type = 0, port, queue;
+	unsigned char port, queue;
+	unsigned char type = 0;
 	unsigned int value, reg;
 
 	if (argc < 7)
@@ -2361,10 +2361,11 @@ int qos_sch_select(int argc, char *argv[])
 	queue = atoi(argv[4]);
 	type = atoi(argv[6]);
 
-	if (port < 0 || port > 6 || queue < 0 || queue > 7) {
+	if (port > 6 || queue > 7) {
 		printf("\n Illegal input parameters\n");
 		return -1;
 	}
+
 	if ((type != 0 && type != 1 && type != 2)) {
 		printf(HELP_QOS_TYPE);
 		return -1;
@@ -2378,13 +2379,13 @@ int qos_sch_select(int argc, char *argv[])
 			/*min sharper-->round roubin, disable min sharper rate limit*/
 			reg = GSW_MMSCR0_Q(queue) + 0x100 * port;
 			reg_read(reg, &value);
-			value &= (0x0);
+			value = 0x0;
 			reg_write(reg, value);
 		} else if (type == 1) {
 			/*min sharper-->sp, disable min sharper rate limit*/
 			reg = GSW_MMSCR0_Q(queue) + 0x100 * port;
 			reg_read(reg, &value);
-			value &= (0x0);
+			value = 0x0;
 			value |= (1 << 31);
 			reg_write(reg, value);
 		} else {
@@ -2396,14 +2397,14 @@ int qos_sch_select(int argc, char *argv[])
 			/*max sharper-->sp, disable max sharper rate limit*/
 			reg = GSW_MMSCR1_Q(queue) + 0x100 * port;
 			reg_read(reg, &value);
-			value &= (0x0);
+			value = 0x0;
 			value |= (1 << 31);
 			reg_write(reg, value);
 		} else if (type == 2) {
 			/*max sharper-->wfq, disable max sharper rate limit*/
 			reg = GSW_MMSCR1_Q(queue) + 0x100 * port;
 			reg_read(reg, &value);
-			value &= (0x0);
+			value = 0x0;
 			reg_write(reg, value);
 		} else {
 			printf("max sharper only support: wfq or sp\n");
@@ -2418,7 +2419,7 @@ int qos_sch_select(int argc, char *argv[])
 	return 0;
 }
 
-void get_upw(int *value, unsigned char base)
+void get_upw(unsigned int *value, unsigned char base)
 {
 	*value &= (~((0x7 << 0) | (0x7 << 4) | (0x7 << 8) | (0x7 << 12) |
 		     (0x7 << 16) | (0x7 << 20)));
@@ -2455,7 +2456,8 @@ void get_upw(int *value, unsigned char base)
 
 void qos_set_base(int argc, char *argv[])
 {
-	unsigned char base = 0, port;
+	unsigned char base = 0;
+	unsigned char port;
 	unsigned int value;
 
 	if (argc < 5)
@@ -2464,12 +2466,12 @@ void qos_set_base(int argc, char *argv[])
 	port = atoi(argv[3]);
 	base = atoi(argv[4]);
 
-	if ((base < 0 || base > 6)) {
+	if (base > 6) {
 		printf(HELP_QOS_BASE);
 		return;
 	}
 
-	if ((port < 0 || port > 6)) {
+	if (port > 6) {
 		printf("Illegal port index:%d\n",port);
 		return;
 	}
@@ -2484,7 +2486,7 @@ void qos_set_base(int argc, char *argv[])
 		reg_write(0x44, value);
 		printf("reg: 0x44, value: 0x%x\n", value);
 
-	} else if (chip_name == 0x7531) {
+	} else if (chip_name == 0x7531 || chip_name == 0x7988) {
 
 		reg_read(GSW_UPW(port), &value);
 		get_upw(&value, base);
@@ -2499,7 +2501,8 @@ void qos_set_base(int argc, char *argv[])
 
 void qos_wfq_set_weight(int argc, char *argv[])
 {
-	unsigned char port, queue, weight[8], i;
+	int port, weight[8], i;
+	unsigned char queue;
 	unsigned int reg, value;
 
 	port = atoi(argv[3]);
@@ -2543,7 +2546,7 @@ void qos_set_portpri(int argc, char *argv[])
 	port = atoi(argv[3]);
 	prio = atoi(argv[4]);
 
-	if ((port < 0 || port >= 7) || (prio < 0 || prio > 7)) {
+	if (port >= 7 || prio > 7) {
 		printf(HELP_QOS_PORT_PRIO);
 		return;
 	}
@@ -2563,7 +2566,7 @@ void qos_set_dscppri(int argc, char *argv[])
 	dscp = atoi(argv[3]);
 	prio = atoi(argv[4]);
 
-	if ((dscp < 0 || dscp > 63) || (prio < 0 || prio > 7)) {
+	if (dscp > 63 || prio > 7) {
 		printf(HELP_QOS_DSCP_PRIO);
 		return;
 	}
@@ -2590,7 +2593,7 @@ void qos_pri_mapping_queue(int argc, char *argv[])
 	prio = atoi(argv[4]);
 	queue = atoi(argv[5]);
 
-	if ((prio < 0 || prio > 7) || (queue < 0 || queue > 7)) {
+	if (prio > 7 || queue > 7) {
 		printf(HELP_QOS_PRIO_QMAP);
 		return;
 	}
@@ -2607,7 +2610,7 @@ void qos_pri_mapping_queue(int argc, char *argv[])
 		}
 		reg_write(reg, value);
 		printf("write reg: %x, value: %x\n", reg, value);
-	} else if (chip_name == 0x7531) {
+	} else if (chip_name == 0x7531 || chip_name == 0x7988) {
 		pem_n = prio / 2;
 		reg = GSW_PEM(pem_n) + 0x100 * port;
 		reg_read(reg, &value);
@@ -2633,7 +2636,7 @@ static int macMT753xVlanSetVid(unsigned char index, unsigned char active,
 {
 	unsigned int value = 0;
 	unsigned int value2 = 0;
-	int reg = 0;
+	unsigned int reg;
 	int i;
 
 	printf("index: %x, active: %x, vid: %x, portMap: %x, \
@@ -2683,10 +2686,9 @@ static int macMT753xVlanSetVid(unsigned char index, unsigned char active,
 	return 0;
 
 } /*end macMT753xVlanSetVid*/
-
+/*
 static int macMT753xVlanGetVtbl(unsigned short index)
 {
-	unsigned short vid = 0;
 	unsigned int reg, value, vawd1, vawd2;
 
 	reg = 0x90; // VTCR
@@ -2714,7 +2716,7 @@ static int macMT753xVlanGetVtbl(unsigned short index)
 			(vawd1 & 0xff0000) >> 16, vawd2, (vawd1 & 0xfff0) >> 0x4, (vawd1 >> 30) & 0x1);
 	}
 	return 0;
-} /*end macMT753xVlanGetVtbl*/
+} */ /*end macMT753xVlanGetVtbl*/
 
 static int macMT753xVlanSetPvid(unsigned char port, unsigned short pvid)
 {
@@ -2740,20 +2742,19 @@ static int macMT753xVlanSetPvid(unsigned char port, unsigned short pvid)
 	printf("SetPVID: port:%d pvid:%d\r\n", port, pvid);
 	return 0;
 }
-
+/*
 static int macMT753xVlanGetPvid(unsigned char port)
 {
 	unsigned int value;
 	unsigned int reg;
 
-	/*Parameters is error*/
 	if (port > 6)
 		return -1;
 	reg = 0x2014 + (port * 0x100);
 	reg_read(reg, &value);
 	return (value & 0xfff);
-}
-
+} */
+/*
 static int macMT753xVlanDisp(void)
 {
 	unsigned int i = 0;
@@ -2771,7 +2772,8 @@ static int macMT753xVlanDisp(void)
 	for (i = 0; i < MAX_VID_VALUE; i++)
 		macMT753xVlanGetVtbl(i);
 
-} /*end macMT753xVlanDisp*/
+	return 0;
+}*/ /*end macMT753xVlanDisp*/
 
 void doVlanSetPvid(int argc, char *argv[])
 {
@@ -2872,7 +2874,7 @@ void doVlanSetPortAttr(int argc, char *argv[])
 	printf("port: %x, attr: %x\n", port, attr);
 
 	/*Check the input parameters is right or not.*/
-	if ((port < 0 || port > SWITCH_MAX_PORT) || (attr < 0 || attr > 3)) {
+	if (port > SWITCH_MAX_PORT || attr > 3) {
 		printf(HELP_VLAN_PORT_ATTR);
 		return;
 	}
@@ -2897,7 +2899,7 @@ void doVlanSetPortMode(int argc, char *argv[])
 	printf("port: %x, mode: %x\n", port, mode);
 
 	/*Check the input parameters is right or not.*/
-	if ((port < 0 || port > SWITCH_MAX_PORT) || (mode < 0 || mode > 3)) {
+	if (port > SWITCH_MAX_PORT || mode > 3) {
 		printf(HELP_VLAN_PORT_MODE);
 		return;
 	}
@@ -3100,7 +3102,7 @@ void doStp(int argc, char *argv[])
 	reg_write(reg, value);
 }
 
-int ingress_rate_set(int on_off, int port, int bw)
+int ingress_rate_set(int on_off, unsigned int port, unsigned int bw)
 {
 	unsigned int reg, value;
 
@@ -3109,21 +3111,27 @@ int ingress_rate_set(int on_off, int port, int bw)
 	/*token-bucket*/
 	if (on_off == 1) {
 		if (chip_name == 0x7530) {
-			if (bw < 0 || bw > 1000000) {
+			if (bw > 1000000) {
 				printf("\n**Charge rate(%d) is larger than line rate(1000000kbps)**\n",bw);
 				return -1;
 			}
 			value = ((bw / 32) << 16) + (1 << 15) + (7 << 8) + (1 << 7) + 0x0f;
-		} else if (chip_name == 0x7531) {
-			if (bw < 0 || bw > 2500000) {
+		} else if (chip_name == 0x7531 || chip_name == 0x7988) {
+			if ((chip_name == 0x7531) && (bw > 2500000)) {
 				printf("\n**Charge rate(%d) is larger than line rate(2500000kbps)**\n",bw);
 				return -1;
 			}
-		        if (bw/32 >= 65536) //supoort 2.5G case
-                                value = ((bw / 32) << 16) + (1 << 15) + (1 << 14) + (1 << 12) + (7 << 8) + 0xf;
-                        else
-                                value = ((bw / 32) << 16) + (1 << 15) + (1 << 14) + (7 << 8) + 0xf;
+
+			if ((chip_name == 0x7988) && (bw > 4000000)) {
+				printf("\n**Charge rate(%d) is larger than line rate(4000000kbps)**\n",bw);
+				return -1;
 			}
+
+			if (bw/32 >= 65536) //supoort 2.5G case
+				value = ((bw / 32) << 16) + (1 << 15) + (1 << 14) + (1 << 12) + (7 << 8) + 0xf;
+			else
+				value = ((bw / 32) << 16) + (1 << 15) + (1 << 14) + (7 << 8) + 0xf;
+		}
 		else
 			printf("unknow chip\n");
 	}
@@ -3175,15 +3183,20 @@ int egress_rate_set(int on_off, int port, int bw)
 				return -1;
 			}
 			value = ((bw / 32) << 16) + (1 << 15) + (7 << 8) + (1 << 7) + 0xf;
-		} else if (chip_name == 0x7531) {
-			if (bw < 0 || bw > 2500000) {
+		} else if (chip_name == 0x7531 || chip_name == 0x7988) {
+			if ((chip_name == 0x7531) && (bw < 0 || bw > 2500000)) {
 				printf("\n**Charge rate(%d) is larger than line rate(2500000kbps)**\n",bw);
 				return -1;
 			}
-		        if (bw/32 >= 65536)	//support 2.5G cases
-                                value = ((bw / 32) << 16) + (1 << 15) + (1 << 14) + (1 << 12) + (7 << 8) + 0xf;
-                        else
-                                value = ((bw / 32) << 16) + (1 << 15) + (1 << 14) + (7 << 8) + 0xf;
+			if ((chip_name == 0x7988) && (bw < 0 || bw > 4000000)) {
+				printf("\n**Charge rate(%d) is larger than line rate(4000000kbps)**\n",bw);
+				return -1;
+			}
+
+			if (bw/32 >= 65536)	//support 2.5G cases
+				value = ((bw / 32) << 16) + (1 << 15) + (1 << 14) + (1 << 12) + (7 << 8) + 0xf;
+			else
+				value = ((bw / 32) << 16) + (1 << 15) + (1 << 14) + (7 << 8) + 0xf;
 		}
 		else
 			printf("unknow chip\n");
@@ -3207,7 +3220,7 @@ void rate_control(int argc, char *argv[])
 	port = atoi(argv[3]);
 	rate = atoi(argv[4]);
 
-	if (rate < 0)
+	if (port > 6)
 		return;
 
 	if (dir == 1) //ingress
@@ -3230,12 +3243,12 @@ int collision_pool_enable(int argc, char *argv[])
 	printf("collision pool enable: %d \n", enable);
 
 	/*Check the input parameters is right or not.*/
-	if ((enable > 1) || (enable < 0)) {
+	if (enable > 1) {
 		printf(HELP_COLLISION_POOL_EN);
 		return -1;
 	}
 
-	if (chip_name == 0x7531) {
+	if (chip_name == 0x7531 || chip_name == 0x7988) {
 		reg = REG_CPGC_ADDR;
 		if(enable == 1) {
 			/* active reset */
@@ -3301,7 +3314,7 @@ void collision_pool_mac_dump()
 {
 	unsigned int value, reg;
 
-	if (chip_name == 0x7531) {
+	if (chip_name == 0x7531 || chip_name == 0x7988) {
 		reg = REG_CPGC_ADDR;
 		reg_read(reg, &value);
 		if(value & REG_CPCG_COL_EN_MASK)
@@ -3317,7 +3330,7 @@ void collision_pool_dip_dump()
 {
 	unsigned int value, reg;
 
-	if (chip_name == 0x7531) {
+	if (chip_name == 0x7531 || chip_name == 0x7988) {
 		reg = REG_CPGC_ADDR;
 		reg_read(reg, &value);
 		if(value & REG_CPCG_COL_EN_MASK)
@@ -3335,7 +3348,7 @@ void collision_pool_sip_dump()
 {
 	unsigned int value, reg;
 
-	if (chip_name == 0x7531) {
+	if (chip_name == 0x7531 ||  chip_name == 0x7988) {
 		reg = REG_CPGC_ADDR;
 		reg_read(reg, &value);
 		if(value & REG_CPCG_COL_EN_MASK)
@@ -3361,7 +3374,7 @@ void pfc_get_rx_counter(int argc, char *argv[])
 		return;
 	}
 
-	if (chip_name == 0x7531) {
+	if (chip_name == 0x7531 ||  chip_name == 0x7988) {
 		reg= PFC_RX_COUNTER_L(port);
 		reg_read(reg, &value);
 		user_pri = value & 0xff;
@@ -3405,7 +3418,7 @@ void pfc_get_tx_counter(int argc, char *argv[])
 		return;
 	}
 
-	if (chip_name == 0x7531) {
+	if (chip_name == 0x7531 || chip_name == 0x7988) {
 		reg= PFC_TX_COUNTER_L(port);
 		reg_read(reg, &value);
 		user_pri = value & 0xff;
@@ -3438,104 +3451,103 @@ void pfc_get_tx_counter(int argc, char *argv[])
 
 void read_output_queue_counters()
 {
+	unsigned int port=0;
+	unsigned int value, output_queue;
+	unsigned int base=0x220;
 
-unsigned int port=0;
-unsigned int value, output_queue;
-unsigned int base=0x220;
+	for (port = 0; port < 7; port++) {
+		reg_write(0x7038, base + (port *4));
+		reg_read(0x7034, &value);
+		output_queue = value & 0xff;
+		printf("\n port %d  output queue 0 counter is %d.\n", port,output_queue);
+		output_queue = (value & 0xff00) >> 8;
+		printf("\n port %d  output queue 1 counter is %d.\n", port,output_queue);
 
-for (port = 0; port < 7; port++) {
-	reg_write(0x7038, base + (port *4));
-	reg_read(0x7034, &value);
-	output_queue = value & 0xff;
-	printf("\n port %d  output queue 0 counter is %d.\n", port,output_queue);
-	output_queue = (value & 0xff00) >> 8;
-	printf("\n port %d  output queue 1 counter is %d.\n", port,output_queue);
+		reg_write(0x7038, base + (port *4) + 1);
+		reg_read(0x7034, &value);
+		output_queue = value & 0xff;
+		printf("\n port %d  output queue 2 counter is %d.\n", port,output_queue);
+		output_queue = (value & 0xff00) >> 8;
+		printf("\n port %d  output queue 3 counter is %d.\n", port,output_queue);
 
-	reg_write(0x7038, base + (port *4) + 1);
-	reg_read(0x7034, &value);
-	output_queue = value & 0xff;
-	printf("\n port %d  output queue 2 counter is %d.\n", port,output_queue);
-	output_queue = (value & 0xff00) >> 8;
-	printf("\n port %d  output queue 3 counter is %d.\n", port,output_queue);
+		reg_write(0x7038, base + (port *4) + 2);
+		reg_read(0x7034, &value);
+		output_queue = value & 0xff;
+		printf("\n port %d  output queue 4 counter is %d.\n", port,output_queue);
+		output_queue = (value & 0xff00) >> 8;
+		printf("\n port %d  output queue 5 counter is %d.\n", port,output_queue);
 
-	reg_write(0x7038, base + (port *4) + 2);
-	reg_read(0x7034, &value);
-	output_queue = value & 0xff;
-	printf("\n port %d  output queue 4 counter is %d.\n", port,output_queue);
-	output_queue = (value & 0xff00) >> 8;
-	printf("\n port %d  output queue 5 counter is %d.\n", port,output_queue);
-
-	reg_write(0x7038, base + (port *4) + 3);
-	reg_read(0x7034, &value);
-	output_queue = value & 0xff;
-	printf("\n port %d  output queue 6 counter is %d.\n", port,output_queue);
-	output_queue = (value & 0xff00) >> 8;
-	printf("\n port %d  output queue 7 counter is %d.\n", port,output_queue);
+		reg_write(0x7038, base + (port *4) + 3);
+		reg_read(0x7034, &value);
+		output_queue = value & 0xff;
+		printf("\n port %d  output queue 6 counter is %d.\n", port,output_queue);
+		output_queue = (value & 0xff00) >> 8;
+		printf("\n port %d  output queue 7 counter is %d.\n", port,output_queue);
 	}
 }
 
 void read_free_page_counters()
 {
-unsigned int value;
-unsigned int free_page,free_page_last_read;
-unsigned int fc_free_blk_lothd,fc_free_blk_hithd;
-unsigned int fc_port_blk_thd,fc_port_blk_hi_thd;
-unsigned int queue[8]={0};
+	unsigned int value;
+	unsigned int free_page,free_page_last_read;
+	unsigned int fc_free_blk_lothd,fc_free_blk_hithd;
+	unsigned int fc_port_blk_thd,fc_port_blk_hi_thd;
+	unsigned int queue[8]={0};
 
-if (chip_name == 0x7531) {
-	/* get system free page link counter*/
-	reg_read(0x1fc0, &value);
-	free_page = value & 0xFFF;
-	free_page_last_read = (value & 0xFFF0000) >> 16;
+	if (chip_name == 0x7531 || chip_name == 0x7988) {
+		/* get system free page link counter*/
+		reg_read(0x1fc0, &value);
+		free_page = value & 0xFFF;
+		free_page_last_read = (value & 0xFFF0000) >> 16;
 
-	/* get system flow control waterwark */
-	reg_read(0x1fe0, &value);
-	fc_free_blk_lothd = value & 0x3FF;
-	fc_free_blk_hithd = (value & 0x3FF0000) >> 16;
+		/* get system flow control waterwark */
+		reg_read(0x1fe0, &value);
+		fc_free_blk_lothd = value & 0x3FF;
+		fc_free_blk_hithd = (value & 0x3FF0000) >> 16;
 
-	/* get port flow control waterwark */
-	reg_read(0x1fe4, &value);
-	fc_port_blk_thd = value & 0x3FF;
-	fc_port_blk_hi_thd = (value & 0x3FF0000) >> 16;
+		/* get port flow control waterwark */
+		reg_read(0x1fe4, &value);
+		fc_port_blk_thd = value & 0x3FF;
+		fc_port_blk_hi_thd = (value & 0x3FF0000) >> 16;
 
-	/* get queue flow control waterwark */
-	reg_read(0x1fe8, &value);
-	queue[0]= value & 0x3F;
-	queue[1]= (value & 0x3F00) >> 8;
-	queue[2]= (value & 0x3F0000) >> 16;
-	queue[3]= (value & 0x3F000000) >> 24;
-	reg_read(0x1fec, &value);
-	queue[4]= value & 0x3F;
-	queue[5]= (value & 0x3F00) >> 8;
-	queue[6]= (value & 0x3F0000) >> 16;
-	queue[7]= (value & 0x3F000000) >> 24;
-	}else{
-	/* get system free page link counter*/
-	reg_read(0x1fc0, &value);
-	free_page = value & 0x3FF;
-	free_page_last_read = (value & 0x3FF0000) >> 16;
+		/* get queue flow control waterwark */
+		reg_read(0x1fe8, &value);
+		queue[0]= value & 0x3F;
+		queue[1]= (value & 0x3F00) >> 8;
+		queue[2]= (value & 0x3F0000) >> 16;
+		queue[3]= (value & 0x3F000000) >> 24;
+		reg_read(0x1fec, &value);
+		queue[4]= value & 0x3F;
+		queue[5]= (value & 0x3F00) >> 8;
+		queue[6]= (value & 0x3F0000) >> 16;
+		queue[7]= (value & 0x3F000000) >> 24;
+	} else {
+		/* get system free page link counter*/
+		reg_read(0x1fc0, &value);
+		free_page = value & 0x3FF;
+		free_page_last_read = (value & 0x3FF0000) >> 16;
 
-	/* get system flow control waterwark */
-	reg_read(0x1fe0, &value);
-	fc_free_blk_lothd = value & 0xFF;
-	fc_free_blk_hithd = (value & 0xFF00) >> 8;
+		/* get system flow control waterwark */
+		reg_read(0x1fe0, &value);
+		fc_free_blk_lothd = value & 0xFF;
+		fc_free_blk_hithd = (value & 0xFF00) >> 8;
 
-	/* get port flow control waterwark */
-	reg_read(0x1fe0, &value);
-	fc_port_blk_thd = (value & 0xFF0000) >> 16;
-	reg_read(0x1ff4, &value);
-	fc_port_blk_hi_thd = (value & 0xFF00) >> 8;
+		/* get port flow control waterwark */
+		reg_read(0x1fe0, &value);
+		fc_port_blk_thd = (value & 0xFF0000) >> 16;
+		reg_read(0x1ff4, &value);
+		fc_port_blk_hi_thd = (value & 0xFF00) >> 8;
 
-	/* get queue flow control waterwark */
-	reg_read(0x1fe4, &value);
-	queue[0]= value & 0xF;
-	queue[1]= (value & 0xF0) >> 4;
-	queue[2]= (value & 0xF00) >> 8;
-	queue[3]= (value & 0xF000) >>12;
-	queue[4]= (value & 0xF0000) >>16;
-	queue[5]= (value & 0xF00000) >> 20;
-	queue[6]= (value & 0xF000000) >> 24;
-	queue[7]= (value & 0xF0000000) >> 28;
+		/* get queue flow control waterwark */
+		reg_read(0x1fe4, &value);
+		queue[0]= value & 0xF;
+		queue[1]= (value & 0xF0) >> 4;
+		queue[2]= (value & 0xF00) >> 8;
+		queue[3]= (value & 0xF000) >>12;
+		queue[4]= (value & 0xF0000) >>16;
+		queue[5]= (value & 0xF00000) >> 20;
+		queue[6]= (value & 0xF000000) >> 24;
+		queue[7]= (value & 0xF0000000) >> 28;
 	}
 
 	printf("<===Free Page=======Current=======Last Read access=====> \n ");
@@ -3558,7 +3570,133 @@ if (chip_name == 0x7531) {
 	printf("=========================================================\n ");
 }
 
-void dump_each_port(int base)
+void eee_enable(int argc, char *argv[])
+{
+	unsigned long enable;
+	unsigned int value;
+	unsigned int eee_cap;
+	unsigned int eee_en_bitmap = 0;
+	unsigned long port_map;
+	long port_num = -1;
+	int p;
+
+	if (argc < 3)
+		goto error;
+
+	/*Check the input parameters is right or not.*/
+	if (!strncmp(argv[2], "enable", 7))
+		enable = 1;
+	else if (!strncmp(argv[2], "disable", 8))
+		enable = 0;
+	else
+		goto error;
+
+	if (argc > 3) {
+		if (strlen(argv[3]) == 1) {
+			port_num = strtol(argv[3], (char **)NULL, 10);
+			if (port_num < 0 || port_num > MAX_PHY_PORT - 1) {
+				printf("Illegal port index and port:0~4\n");
+				goto error;
+			}
+			port_map = 1 << port_num;
+		} else if (strlen(argv[3]) == 5) {
+			port_map = 0;
+			for (p = 0; p < MAX_PHY_PORT; p++) {
+				if (argv[3][p] != '0' && argv[3][p] != '1') {
+					printf("portmap format error, should be combination of 0 or 1\n");
+					goto error;
+				}
+				port_map |= ((argv[3][p] - '0') << p);
+			}
+		} else {
+			printf("port_no or portmap format error, should be length of 1 or 5\n");
+			goto error;
+		}
+	} else {
+		port_map = 0x1f;
+	}
+
+	eee_cap = (enable)? 6: 0;
+	for (p = 0; p < MAX_PHY_PORT; p++) {
+		/* port_map describe p0p1p2p3p4 from left to rignt */
+		if(!!(port_map & (1 << p)))
+			mii_mgr_c45_write(p, 0x7, 0x3c, eee_cap);
+
+		mii_mgr_c45_read(p, 0x7, 0x3c, &value);
+		/* mt7531: Always readback eee_cap = 0 when global EEE switch
+		 * is turned off.
+		 */
+		if (value | eee_cap)
+			eee_en_bitmap |= (1 << (MAX_PHY_PORT - 1 - p));
+	}
+
+	/* Turn on/off global EEE switch */
+	if (chip_name == 0x7531 || chip_name == 0x7988) {
+		mii_mgr_c45_read(0, 0x1f, 0x403, &value);
+		if (eee_en_bitmap)
+			value |= (1 << 6);
+		else
+			value &= ~(1 << 6);
+		mii_mgr_c45_write(0, 0x1f, 0x403, value);
+	} else {
+		printf("\nCommand not support by this chip.\n");
+	}
+
+	printf("EEE(802.3az) %s", (enable)? "enable": "disable");
+	if (argc == 4) {
+		if (port_num >= 0)
+			printf(" port%ld", port_num);
+		else
+			printf(" port_map: %s", argv[3]);
+	} else {
+		printf(" all ports");
+	}
+	printf("\n");
+
+	return;
+error:
+	printf(HELP_EEE_EN);
+	return;
+}
+
+void eee_dump(int argc, char *argv[])
+{
+	unsigned int cap, lp_cap;
+	long port = -1;
+	int p;
+
+	if (argc > 3) {
+		if (strlen(argv[3]) > 1) {
+			printf("port# format error, should be of length 1\n");
+			return;
+		}
+
+		port = strtol(argv[3], (char **)NULL, 0);
+		if (port < 0 || port > MAX_PHY_PORT) {
+			printf("port# format error, should be 0 to %d\n",
+				       MAX_PHY_PORT);
+			return;
+		}
+	}
+
+	for (p = 0; p < MAX_PHY_PORT; p++) {
+		if (port >= 0 && p != port)
+			continue;
+
+		mii_mgr_c45_read(p, 0x7, 0x3c, &cap);
+		mii_mgr_c45_read(p, 0x7, 0x3d, &lp_cap);
+		printf("port%d EEE cap=0x%02x, link partner EEE cap=0x%02x",
+		       p, cap, lp_cap);
+
+		if (port >= 0 && p == port) {
+			mii_mgr_c45_read(p, 0x3, 0x1, &cap);
+			printf(", st=0x%03x", cap);
+		}
+		printf("\n");
+	}
+}
+
+void dump_each_port(unsigned int base)
 {
 	unsigned int pkt_cnt = 0;
 	int i = 0;

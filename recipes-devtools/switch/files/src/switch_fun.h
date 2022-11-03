@@ -9,6 +9,7 @@
 #define MT7530_T10_TEST_CONTROL 0x145
 
 #define MAX_PORT 6
+#define MAX_PHY_PORT 5
 #define CONFIG_MTK_7531_DVT 1
 
 extern int chip_name;
@@ -16,11 +17,11 @@ extern struct mt753x_attr *attres;
 extern bool nl_init_flag;
 
 /*basic operation*/
-int reg_read(int offset, int *value);
-int reg_write(int offset, int value);
-int mii_mgr_read(unsigned int port_num, unsigned int reg, int *value);
+int reg_read(unsigned int offset, unsigned int *value);
+int reg_write(unsigned int offset, unsigned int value);
+int mii_mgr_read(unsigned int port_num, unsigned int reg, unsigned int *value);
 int mii_mgr_write(unsigned int port_num, unsigned int reg, unsigned int value);
-int mii_mgr_c45_read(unsigned int port_num, unsigned int dev, unsigned int reg, int *value);
+int mii_mgr_c45_read(unsigned int port_num, unsigned int dev, unsigned int reg, unsigned int *value);
 int mii_mgr_c45_write(unsigned int port_num, unsigned int dev, unsigned int reg, unsigned int value);
 
 /*phy setting*/
@@ -73,7 +74,7 @@ void table_del_vid(int argc, char *argv[]);
 void table_clear(void);
 
 /*vlan table*/
-void vlan_dump(void);
+void vlan_dump(int argc, char *argv[]);
 void vlan_clear(int argc, char *argv[]);
 void vlan_set(int argc, char *argv[]);
 
@@ -99,7 +100,7 @@ void doMirrorEn(int argc, char *argv[]);
 
 /*rate control*/
 void rate_control(int argc, char *argv[]);
-int ingress_rate_set(int on_off, int port, int bw);
+int ingress_rate_set(int on_off, unsigned int port, unsigned int bw);
 int egress_rate_set(int on_off, int port, int bw);
 
 /*QoS*/
@@ -127,7 +128,11 @@ void pfc_get_rx_counter(int argc, char *argv[]);
 void pfc_get_tx_counter(int argc, char *argv[]);
 
 /*switch reset*/
-void switch_reset(int argc, char *argv[]);
+int switch_reset(int argc, char *argv[]);
+
+/* EEE(802.3az) function  */
+void eee_enable(int argc, char *argv[]);
+void eee_dump(int argc, char *argv[]);
 
 void read_mib_counters();
 void clear_mib_counters();

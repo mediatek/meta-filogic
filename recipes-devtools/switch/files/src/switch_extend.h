@@ -337,5 +337,6 @@
 						 "         2: Learning\n" \
 						 "         3: Forwarding\n"
 #define HELP_COLLISION_POOL_EN	"collision-pool enable [enable 0|1] \n"
+#define HELP_EEE_EN		"eee [enable|disable] ([port|portMap]) \n"
 
 //#endif //SQA_VERIFY

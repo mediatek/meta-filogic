@@ -3,22 +3,16 @@ SECTION = "applications"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=751419260aa954499f7abaabaa882bbe"
 
-S = "${WORKDIR}"
 
 DEPENDS = "libnl"
 
 SRC_URI = " \
-    file://COPYING \
-    file://Makefile \
-    file://switch_753x.c \
-    file://switch_extend.h \
-    file://switch_fun.c \
-    file://switch_fun.h \
-    file://switch_ioctl.c \
-    file://switch_ioctl.h \
-    file://switch_netlink.c \
-    file://switch_netlink.h \
+    file://COPYING;subdir=git/src \
+    file://src;subdir=git \
+    file://rdkb-change-bridge-name.patch \
     "
+
+S = "${WORKDIR}/git/src"
 
 CFLAGS_prepend = " \
     -D_GNU_SOURCE \
@@ -33,5 +27,5 @@ do_compile() {
 do_install() {
     install -d ${D}/usr/sbin
     install -d ${D}/lib/network
-    install -m 0755 ${WORKDIR}/switch ${D}/usr/sbin
+    install -m 0755 ${S}/switch ${D}/usr/sbin
 }

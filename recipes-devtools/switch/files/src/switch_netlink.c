@@ -91,7 +91,6 @@ static int spilt_attrs(struct nl_msg *msg, void *arg)
 	struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
 	struct mt753x_attr *val = arg;
 	char *str;
-	int data;
 
 	if (nla_parse(attrs, MT753X_ATTR_TYPE_MAX, genlmsg_attrdata(gnlh, 0),
 		      genlmsg_attrlen(gnlh, 0), NULL) < 0)
@@ -148,7 +147,8 @@ static int mt753x_request_callback(int cmd, int (*spilt)(struct nl_msg *, void *
 
 	/*Fill attaribute of netlink message by construct function*/
 	if (construct) {
-		if (construct(msg, arg) < 0) {
+		err = construct(msg, arg);
+		if (err < 0) {
 			fprintf(stderr, "attributes error\n");
 			goto nal_put_failure;
 		}
@@ -208,7 +208,7 @@ void mt753x_netlink_free(void)
 	family = NULL;
 }
 
-int mt753x_netlink_init(void)
+int mt753x_netlink_init(const char *name)
 {
 	int ret;
 
@@ -234,8 +234,11 @@ int mt753x_netlink_init(void)
 		goto err;
 	}
 
+	if (name == NULL)
+		return -EINVAL;
+
 	/*Look up generic netlik family by "mt753x" in the provided cache*/
-	family = genl_ctrl_search_by_name(cache, MT753X_GENL_NAME);
+	family = genl_ctrl_search_by_name(cache, name);
 	if (!family) {
 		//fprintf(stderr,"switch(mt753x) API not be prepared\n");
 		goto err;
@@ -267,10 +270,11 @@ static int mt753x_request(struct mt753x_attr *arg, int cmd)
 	return 0;
 }
 
-static int phy_operate_netlink(char op, struct mt753x_attr *arg, int port_num,
-					int phy_dev, int offset, int *value)
+static int phy_operate_netlink(char op, struct mt753x_attr *arg,
+			       unsigned int port_num, unsigned int phy_dev,
+			       unsigned int offset, unsigned int *value)
 {
-	int ret;
+	int ret = 0;
 	struct mt753x_attr *attr = arg;
 
 	attr->port_num = port_num;
@@ -298,7 +302,8 @@ static int phy_operate_netlink(char op, struct mt753x_attr *arg, int port_num,
 	return ret;
 }
 
-int reg_read_netlink(struct mt753x_attr *arg, int offset, int *value)
+int reg_read_netlink(struct mt753x_attr *arg, unsigned int offset,
+		     unsigned int *value)
 {
 	int ret;
 
@@ -306,7 +311,8 @@ int reg_read_netlink(struct mt753x_attr *arg, int offset, int *value)
 	return ret;
 }
 
-int reg_write_netlink(struct mt753x_attr *arg, int offset, int value)
+int reg_write_netlink(struct mt753x_attr *arg, unsigned int offset,
+		      unsigned int value)
 {
 	int ret;
 
@@ -314,7 +320,8 @@ int reg_write_netlink(struct mt753x_attr *arg, int offset, int value)
 	return ret;
 }
 
-int phy_cl22_read_netlink(struct mt753x_attr *arg, int port_num, int phy_addr, int *value)
+int phy_cl22_read_netlink(struct mt753x_attr *arg, unsigned int port_num,
+			  unsigned int phy_addr, unsigned int *value)
 {
 	int ret;
 
@@ -322,7 +329,8 @@ int phy_cl22_read_netlink(struct mt753x_attr *arg, int port_num, int phy_addr, i
 	return ret;
 }
 
-int phy_cl22_write_netlink(struct mt753x_attr *arg, int port_num, int phy_addr, int value)
+int phy_cl22_write_netlink(struct mt753x_attr *arg, unsigned int port_num,
+			   unsigned int phy_addr, unsigned int value)
 {
 	int ret;
 
@@ -330,8 +338,9 @@ int phy_cl22_write_netlink(struct mt753x_attr *arg, int port_num, int phy_addr, 
 	return ret;
 }
 
-int phy_cl45_read_netlink(struct mt753x_attr *arg, int port_num, int phy_dev,
-			 int phy_addr, int *value)
+int phy_cl45_read_netlink(struct mt753x_attr *arg, unsigned int port_num,
+			  unsigned int phy_dev, unsigned int phy_addr,
+			  unsigned int *value)
 {
 	int ret;
 
@@ -339,8 +348,9 @@ int phy_cl45_read_netlink(struct mt753x_attr *arg, int port_num, int phy_dev,
 	return ret;
 }
 
-int phy_cl45_write_netlink(struct mt753x_attr *arg, int port_num, int phy_dev,
-			  int phy_addr, int value)
+int phy_cl45_write_netlink(struct mt753x_attr *arg, unsigned int port_num,
+			   unsigned int phy_dev, unsigned int phy_addr,
+			   unsigned int value)
 {
 	int ret;
 
@@ -351,10 +361,9 @@ int phy_cl45_write_netlink(struct mt753x_attr *arg, int port_num, int phy_dev,
 void dump_extend_phy_reg(struct mt753x_attr *arg, int port_no, int from,
 			int to, int is_local, int page_no)
 {
-	int ret;
-        int i = 0;
-        int temp = 0;
+        unsigned int temp = 0;
         int r31 = 0;
+        int i = 0;
 
         if (is_local == 0) {
             printf("\n\nGlobal Register Page %d\n",page_no);
