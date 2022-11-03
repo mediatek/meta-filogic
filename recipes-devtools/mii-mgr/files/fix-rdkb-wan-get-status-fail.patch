@@ -1,0 +1,11 @@
+--- ../mii_mgr.c.bak	2022-11-03 15:21:40.446210000 +0800
++++ ../mii_mgr.c	2022-11-03 15:23:20.435803359 +0800
+@@ -118,7 +118,7 @@
+ 				is_priv = 0;
+ 				break;
+ 			case 'i':
+-				strncpy(ifname, optarg, 5);
++				strncpy(ifname, optarg, IFNAMSIZ);
+ 				ifname[IFNAMSIZ - 1] = '\0';
+ 				break;	
+ 			case 'p':
