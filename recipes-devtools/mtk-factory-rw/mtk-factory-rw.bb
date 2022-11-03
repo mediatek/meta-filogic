@@ -11,6 +11,7 @@ SRC_URI = " \
     file://mtk_factory_rw.sh \
     file://init-MacAddr.sh \
     file://init-MacAddr.service \
+    file://fix-rdkb-get-board-name-issue.patch \
     "
 
 SYSTEMD_PACKAGES = "${PN}"

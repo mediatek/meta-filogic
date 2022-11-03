@@ -27,7 +27,7 @@ factory_mtd=/dev/$(grep -i ''${factory_name}'' /proc/mtd | cut -c 1-4)
 lan_mac_offset=0x2A
 wan_mac_offset=0x24
 
-case `cat /proc/device-tree/model` in
+case `cat /tmp/sysinfo/board_name` in
 	*7621*ax*)
 		# 256k - 12 byte
 		lan_mac_offset=0x3FFF4
@@ -46,6 +46,12 @@ case `cat /proc/device-tree/model` in
 		lan_mac_offset=0x1F800
 		wan_mac_offset=0x1F806
 		;;
+	*7988*)
+		#1024k - 18 byte
+		lan2_mac_offset=0xFFFEE
+		lan_mac_offset=0xFFFF4
+		wan_mac_offset=0xFFFFA
+		;;
 	*)
 		lan_mac_offset=0x2A
 		wan_mac_offset=0x24
@@ -59,7 +65,7 @@ Get_offset_data()
 	local length=$1
 	local offset=$2
 
-	hexdump -v -n ${length} -s ${offset} -e ''`expr ${length} - 1`'/1 "%02x:" "%02x "' ${factory_mtd}
+	hexdump -v -n ${length} -s ${offset} -e ''`expr ${length} - 1`'/1 "%02x-" "%02x "' ${factory_mtd}
 }
 
 overwrite_data=
@@ -99,6 +105,9 @@ GetMac()
 	if [ "$1" == "lan" ]; then
 		#read lan mac
 		Get_offset_data 6 ${lan_mac_offset}
+	elif [ "$1" == "lan2" ]; then
+		#read lan2 mac
+		Get_offset_data 6 ${lan2_mac_offset}
 	elif [ "$1" == "wan" ]; then
 		#read wan mac
 		Get_offset_data 6 ${wan_mac_offset}
@@ -121,6 +130,10 @@ SetMac()
 		#write lan mac
 		Set_offset_data 6 ${lan_mac_offset} $@
 
+	elif [ "$1" == "lan2" ]; then
+		#write lan2 mac
+		Set_offset_data 6 ${lan2_mac_offset} $@
+
 	elif [ "$1" == "wan" ]; then
 		#write wan mac
 		Set_offset_data 6 ${wan_mac_offset} $@
@@ -135,7 +148,7 @@ SetMac()
 # 2. Set/Get the offset data: mtk_factory -r/-w length offset /data
 # 3. Overwrite from offset1 to offset2 by length byte : mtk_factory -o length from to
 if [ "$1" == "-r" ]; then
-	if [ "$2" == "lan" -o "$2" == "wan" ]; then
+	if [ "$2" == "lan" -o "$2" == "lan2" -o "$2" == "wan" ]; then
 		GetMac $2
 	elif [ "$2" -eq "$2" ]; then
 		Get_offset_data $2 $3
@@ -145,7 +158,7 @@ if [ "$1" == "-r" ]; then
 		exit 1
 	fi
 elif [ "$1" == "-w" ]; then
-	if [ "$2" == "lan" -o "$2" == "wan" ]; then
+	if [ "$2" == "lan"  -o "$2" == "lan2" -o "$2" == "wan" ]; then
 		SetMac $2 $@
 	else
 		Set_offset_data $2 $3 $@

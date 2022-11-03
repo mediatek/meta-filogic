@@ -1,0 +1,20 @@
+--- ../mtk_factory_rw.sh.bak	2022-11-03 17:09:43.001641800 +0800
++++ ../mtk_factory_rw.sh	2022-11-03 17:26:01.636647400 +0800
+@@ -27,7 +27,7 @@
+ lan_mac_offset=0x2A
+ wan_mac_offset=0x24
+ 
+-case `cat /tmp/sysinfo/board_name` in
++case `cat /proc/device-tree/model` in
+ 	*7621*ax*)
+ 		# 256k - 12 byte
+ 		lan_mac_offset=0x3FFF4
+@@ -65,7 +65,7 @@
+ 	local length=$1
+ 	local offset=$2
+ 
+-	hexdump -v -n ${length} -s ${offset} -e ''`expr ${length} - 1`'/1 "%02x-" "%02x "' ${factory_mtd}
++	hexdump -v -n ${length} -s ${offset} -e ''`expr ${length} - 1`'/1 "%02x:" "%02x "' ${factory_mtd}
+ }
+ 
+ overwrite_data=
