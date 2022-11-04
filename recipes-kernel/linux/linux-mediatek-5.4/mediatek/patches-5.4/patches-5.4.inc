@@ -64,6 +64,7 @@ SRC_URI_append = " \
     file://0931-pwm-add-mt7981-support.patch \
     file://0932-add-pwm-feature-in-mt7988-project.patch \
     file://0950-add-pmic-config.patch \
+    file://0950-pwm-mediatek-add-longer-period-support.patch \
     file://0960-watchdog-add-mt7986-assert.patch \
     file://0990-gsw-rtl8367s-mt7622-support.patch \
     file://0991-dt-bindings-PCI-Mediatek-Update-PCIe-binding.patch \

@@ -64,12 +64,6 @@ do_install_prepend () {
 do_install_append() {
     # Module
     cat ${D}/usr/include/linux-mac80211/Module.symvers >> ${TMPDIR}/work-shared/${MACHINE}/kernel-build-artifacts/Module.symvers
-    install -d ${D}/lib/modules/${KERNEL_VERSION}/updates/compat/
-    install -d ${D}/lib/modules/${KERNEL_VERSION}/updates/net/wireless
-    install -d ${D}/lib/modules/${KERNEL_VERSION}/updates/net/mac80211
-    install -m 0644 ${B}/compat/compat.ko ${D}/lib/modules/${KERNEL_VERSION}/updates/compat/
-    install -m 0644 ${B}/net/wireless/cfg80211.ko ${D}/lib/modules/${KERNEL_VERSION}/updates/net/wireless/
-    install -m 0644 ${B}/net/mac80211/mac80211.ko ${D}/lib/modules/${KERNEL_VERSION}/updates/net/mac80211/
 }
 
 PROVIDES += "kernel-module-compat"
