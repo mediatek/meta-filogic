@@ -111,6 +111,7 @@ SRC_URI_append = " \
     file://748-add-netlink-support-for-dsa.patch \
     file://749-net-dsa-support-mt7988.patch \
     file://750-add-mdio-bus-for-gphy-calibration.patch \
+    file://751-net-phy-aquantia-add-firmware-download.patch \
     file://8000-PATCH-1-4-tphy-support-type-switch-by-pericfg.patch \
     file://8001-PATCH-2-4-dt-bindings-phy-Add-PHY_TYPE_DP-definition.patch \
     file://8002-PATCH-3-4-dt-bindings-phy-Add-PHY_TYPE_XPCS-definition.patch \
