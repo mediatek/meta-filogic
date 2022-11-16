@@ -1,0 +1,72 @@
+From 1430e7a7a3d5ae7693d6fa8e795524ee4c78c0ef Mon Sep 17 00:00:00 2001
+From: Shayne Chen <shayne.chen@mediatek.com>
+Date: Mon, 7 Nov 2022 23:05:51 +0800
+Subject: [PATCH] mt76: add internal wed_tiny header file
+
+To prevent build fail of WED related parts.
+
+Change-Id: I907cae30e0775337a0c670010b450be15b510e18
+---
+ mt76.h     |  4 ++++
+ wed_tiny.h | 31 +++++++++++++++++++++++++++++++
+ 2 files changed, 35 insertions(+)
+ create mode 100644 wed_tiny.h
+
+diff --git a/mt76.h b/mt76.h
+index a3cf0d95..5edb986b 100755
+--- a/mt76.h
++++ b/mt76.h
+@@ -13,7 +13,11 @@
+ #include <linux/leds.h>
+ #include <linux/usb.h>
+ #include <linux/average.h>
++#ifdef CONFIG_NET_MEDIATEK_SOC_WED
+ #include <linux/soc/mediatek/mtk_wed.h>
++#else
++#include "wed_tiny.h"
++#endif
+ #include <net/mac80211.h>
+ #include "util.h"
+ #include "testmode.h"
+diff --git a/wed_tiny.h b/wed_tiny.h
+new file mode 100644
+index 00000000..91c98e7d
+--- /dev/null
++++ b/wed_tiny.h
+@@ -0,0 +1,33 @@
++#ifndef __WED_TINY_H
++#define __WED_TINY_H
++
++#include <linux/pci.h>
++
++struct mtk_wed_device {
++};
++
++static inline int
++mtk_wed_device_attach(struct mtk_wed_device *dev)
++{
++        int ret = -ENODEV;
++        return ret;
++}
++
++static inline bool mtk_wed_device_active(struct mtk_wed_device *dev)
++{
++        return false;
++}
++#define mtk_wed_device_detach(_dev) do {} while (0)
++#define mtk_wed_device_start(_dev, _mask) do {} while (0)
++#define mtk_wed_device_stop(_dev, _reset) do {} while (0)
++#define mtk_wed_device_tx_ring_setup(_dev, _ring, _regs, _reset) -ENODEV
++#define mtk_wed_device_txfree_ring_setup(_dev, _ring, _regs) -ENODEV
++#define mtk_wed_device_rx_ring_setup(_dev, _ring, _regs, _reset) -ENODEV
++#define mtk_wed_device_reg_read(_dev, _reg) 0
++#define mtk_wed_device_reg_write(_dev, _reg, _val) do {} while (0)
++#define mtk_wed_device_irq_get(_dev, _mask) 0
++#define mtk_wed_device_irq_set_mask(_dev, _mask) do {} while (0)
++#define mtk_wed_device_dma_reset(_dev) do {} while (0)
++#define mtk_wed_device_ppe_check(_dev, _hash)  do {} while (0)
++
++#endif
+-- 
+2.25.1
+

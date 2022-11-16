@@ -70,13 +70,15 @@ do_patch_prepend () {
 
 do_filogic_patches() {
     cd ${S}
+    DISTRO_FlowBlock_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','flow_offload','true','false',d)}"
         if [ ! -e patch_applied ]; then
             patch -p1 < ${WORKDIR}/001-rdkb-eth-mtk-change-ifname-for.patch
             patch -p1 < ${WORKDIR}/003-rdkb-mtd-kernel-ubi-relayout.patch
             patch -p1 < ${WORKDIR}/0600-net-phylink-propagate-resolved-link-config-via-mac_l.patch
             patch -p1 < ${WORKDIR}/9010-iwconfig-wireless-rate-fix.patch
-
-	    for i in ${WORKDIR}/mediatek/flow_patch/*.patch; do patch -p1 < $i; done
+            if [ $DISTRO_FlowBlock_ENABLED = 'true' ]; then
+                for i in ${WORKDIR}/mediatek/flow_patch/*.patch; do patch -p1 < $i; done
+            fi
             touch patch_applied
         fi
 }

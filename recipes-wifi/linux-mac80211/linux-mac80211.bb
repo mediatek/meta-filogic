@@ -24,6 +24,9 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches/subsys:"
 require files/patches/build/build.inc
 require files/patches/subsys/subsys.inc
 
+SRC_URI_remove = "${@bb.utils.contains('DISTRO_FEATURES', 'flow_offload', '', 'file://908-mac80211-mtk-mask-kernel-version-limitation-and-fill-for.patch', d)}"
+SRC_URI_remove = "${@bb.utils.contains('DISTRO_FEATURES', 'flow_offload', '', 'file://909-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-idx.patch', d)}"
+
 S = "${WORKDIR}/backports-${PV}-1"
 
 do_filogic_patches() {
