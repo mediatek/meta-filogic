@@ -3,19 +3,15 @@ SRC_URI_append = " \
     file://0001-mt76-mt7915-rework-testmode-init-registers.patch \
     file://0002-mt76-mt7915-rework-rx-testmode-stats.patch \
     file://0003-mt76-mt7915-drop-undefined-action-frame.patch \
-    file://0004-mt76-connac-update-nss-calculation-in-txs.patch \
-    file://0005-mt76-mt7915-fix-mt7915_mcu_set_chan_info.patch \
     file://100-Revert-of-net-pass-the-dst-buffer-to-of_get_mac_addr.patch \
-    file://100-aggregation-definitions.patch \
     file://1001-mt76-mt7915-add-mtk-internal-debug-tools-for-mt76.patch \
     file://1002-mt76-mt7915-csi-implement-csi-support.patch \
     file://1003-mt76-mt7915-air-monitor-support.patch \
     file://1004-mt76-mt7915-add-support-for-muru_onoff-via-debugfs.patch \
     file://1005-mt76-certification-patches.patch \
-    file://1006-mt76-mt7915-add-L0.5-system-error-recovery-support.patch \
-    file://1007-mt76-mt7915-add-support-for-runtime-set-in-band-disc.patch \
-    file://1008-mt76-mt7915-add-mt76-vendor-muru-onoff-command.patch \
-    file://1009-mt76-mt7915-add-fw_version-dump.patch \
+    file://1006-mt76-mt7915-add-support-for-runtime-set-in-band-disc.patch \
+    file://1007-mt76-mt7915-add-mt76-vendor-muru-onoff-command.patch \
+    file://1008-mt76-mt7915-add-fw_version-dump.patch \
     file://1111-mt76-testmode-additional-supports.patch \
     file://1112-mt76-testmode-add-pre-cal-support.patch \
     file://1113-mt76-testmode-add-iBF-command-mode-support.patch \
@@ -44,4 +40,5 @@ SRC_URI_append = " \
     file://3008-mt76-mt7915-update-mt7916-trinfo-when-hw-path-enable.patch \
     file://3009-mt76-mt7915-find-rx-token-by-physical-address.patch \
     file://3010-mt76-mt7915-drop-scatter-and-gather-frame.patch \
+    file://3011-mt76-HW-ATF-support-for-mt7986.patch \
     "
