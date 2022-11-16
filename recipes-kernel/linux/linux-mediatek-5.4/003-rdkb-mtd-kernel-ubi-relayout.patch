@@ -24,3 +24,29 @@ index 4cc7961..924f8cc 100644
  			};
  		};
  	};
+diff --git a/arch/arm64/boot/dts/mediatek/mt7988a-dsa-10g-spim-nand.dts b/arch/arm64/boot/dts/mediatek/mt7988a-dsa-10g-spim-nand.dts
+index 69f9f2e..495325b 100644
+--- a/arch/arm64/boot/dts/mediatek/mt7988a-dsa-10g-spim-nand.dts
++++ b/arch/arm64/boot/dts/mediatek/mt7988a-dsa-10g-spim-nand.dts
+@@ -60,7 +60,7 @@
+ 
+ 			partition@780000 {
+ 				label = "ubi";
+-				reg = <0x780000 0x4000000>;
++				reg = <0x780000 0xF880000>;
+ 			};
+ 		};
+ 	};
+diff --git a/arch/arm64/boot/dts/mediatek/mt7988a-gsw-10g-spim-nand.dts b/arch/arm64/boot/dts/mediatek/mt7988a-gsw-10g-spim-nand.dts
+index 3153b89..256eac5 100644
+--- a/arch/arm64/boot/dts/mediatek/mt7988a-gsw-10g-spim-nand.dts
++++ b/arch/arm64/boot/dts/mediatek/mt7988a-gsw-10g-spim-nand.dts
+@@ -68,7 +68,7 @@
+ 
+ 			partition@780000 {
+ 				label = "ubi";
+-				reg = <0x780000 0x4000000>;
++				reg = <0x780000 0xF880000>;
+ 			};
+ 		};
+ 	};
