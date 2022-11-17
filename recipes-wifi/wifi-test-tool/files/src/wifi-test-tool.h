@@ -46,12 +46,15 @@ typedef struct {
 
 typedef struct {
     wifi_radio_param *radio_info;   // for multiple vap
+    bool sta_mode;
     int radio_index;
     int ap_index;
+    int sta_index;
     char ssid[33];
     int wpa;
     char password[64];
     wifi_vap_security_t security;
+    int mac_offset;
 } wifi_ap_param;
 
 struct params

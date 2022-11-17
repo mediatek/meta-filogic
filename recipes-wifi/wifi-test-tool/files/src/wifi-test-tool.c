@@ -5,6 +5,17 @@
 #include <uci.h>
 #include "wifi-test-tool.h"
 
+static int mac_addr_aton(unsigned char *mac_addr, char *arg)
+{
+    sscanf(arg, "%02hhx:%02hhx:%02hhx:%02hhx:%02hhx:%02hhx", &mac_addr[0], &mac_addr[1], &mac_addr[2], &mac_addr[3], &mac_addr[4], &mac_addr[5]);
+    return 0;
+}
+
+static void mac_addr_ntoa(char *mac_addr, unsigned char *arg)
+{
+    snprintf(mac_addr, 20, "%02hhx:%02hhx:%02hhx:%02hhx:%02hhx:%02hhx", arg[0], arg[1],arg[2],arg[3],arg[4],arg[5]);
+    return;
+}
 
 static int _syscmd(char *cmd, char *retBuf, int retBufSize)
 {
@@ -145,17 +156,17 @@ void set_disable(wifi_radio_param *radio_param, char *disable)
         radio_param->disabled = FALSE;
 }
 
-void set_radionum(wifi_ap_param *ap_param, char *radio_name)
+void set_radionum(wifi_ap_param *ap_param, char *phy_name)
 {
-    int radio_num;
-    char *ptr = radio_name;
+    int radio_num = 0;
+    char *ptr = phy_name;
     int phyId = 0;
 
     while (*ptr) {
         if (isdigit(*ptr)) {
-            radio_num = strtoul(ptr, NULL, 10);
-            phyId = phy_index_to_radio(radio_num);
-            ap_param->radio_index = phyId;
+            phyId = strtoul(ptr, NULL, 10);
+            radio_num = phy_index_to_radio(phyId);
+            ap_param->radio_index = radio_num;
             break;
         }
         ptr++;
@@ -221,31 +232,27 @@ void set_key(wifi_ap_param *ap_param, char *key)
     strncpy(ap_param->security.u.key.key, key, 64);
 }
 
-int set_ap_bssid(int radio_index, int offset, mac_address_t *bssid)
+int set_interface_bssid(int phy_index, int offset, mac_address_t *bssid)
 {
     FILE *f;
     char mac_file[64] = {0};
     char mac_address[20] = {0};
-    char *tmp = NULL;
 
-    sprintf(mac_file, "/sys/class/net/wlan%d/address", radio_index);
+    sprintf(mac_file, "/sys/class/net/wlan%d/address", phy_index);
     f = fopen(mac_file, "r");
     if (f == NULL)
         return -1;
     fgets(mac_address, 20, f);
     fclose(f);
 
-    sscanf(mac_address, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx", &(*bssid)[0], &(*bssid)[1], &(*bssid)[2], &(*bssid)[3], &(*bssid)[4], &(*bssid)[5]);
-    (*bssid)[0] += (offset + 1)*2;
+    mac_addr_aton(&(*bssid)[0], mac_address);
+    (*bssid)[0] += offset*2;
     return 0;
 }
 
 void set_radio_param(wifi_radio_param radio_parameter)
 {
-    BOOL enable;
-    BOOL current;
     int ret = 0;
-    struct params param;
     wifi_radio_operationParam_t operationParam = {0};
 
     if(radio_parameter.radio_index == -1)
@@ -341,6 +348,7 @@ void set_ap_param(wifi_ap_param ap_param , wifi_vap_info_map_t *map)
 {
     int ret = 0;
     int vap_index_in_map = 0;
+    int phy_index = 0;
     wifi_vap_info_t vap_info = {0};
     BOOL radio_enable = FALSE;
 
@@ -365,9 +373,10 @@ void set_ap_param(wifi_ap_param ap_param , wifi_vap_info_map_t *map)
 
     vap_info = map->vap_array[vap_index_in_map];
     vap_info.u.bss_info.enabled = TRUE;
-    if (set_ap_bssid(vap_info.radio_index, vap_index_in_map, &vap_info.u.bss_info.bssid) == -1) {
+    phy_index = radio_index_to_phy(vap_info.radio_index);
+    if (set_interface_bssid(phy_index, ap_param.mac_offset, &vap_info.u.bss_info.bssid) == -1) {
         fprintf(stderr, "Get mac address failed.\n");
-        return -1;
+        return;
     }
 
     // SSID
@@ -385,6 +394,60 @@ void set_ap_param(wifi_ap_param ap_param , wifi_vap_info_map_t *map)
     map->vap_array[vap_index_in_map] = vap_info;
 }
 
+void set_sta_param(wifi_ap_param sta_param)
+{
+    wifi_sta_network_t *sta = NULL;
+    mac_address_t sta_mac = {0};
+    char sta_mac_str[20] = {0};
+    char key_mgmt[16] = {0};
+    char pairwise[16] = {0};
+    int phy_index = 0;
+
+    sta = calloc(1, sizeof(wifi_sta_network_t));
+
+    phy_index = radio_index_to_phy(sta_param.radio_index);
+    set_interface_bssid(phy_index, sta_param.mac_offset, &sta_mac);
+    mac_addr_ntoa(sta_mac_str, sta_mac);
+    snprintf(sta->ssid, 31, "%s", sta_param.ssid);
+    sta->ssid[31] = '\0';
+    snprintf(sta->psk, 64, "%s", sta_param.password);
+
+    if (sta_param.security.mode == wifi_security_mode_none)
+        strcpy(key_mgmt, "NONE");
+    else if (sta_param.security.mode == wifi_security_mode_wpa3_personal)
+        strcpy(key_mgmt, "SAE");
+    else
+        strcpy(key_mgmt, "WPA-PSK");
+    snprintf(sta->key_mgmt, 64, "%s", key_mgmt);
+
+    if (sta_param.security.encr == wifi_encryption_aes)
+        strcpy(pairwise, "CCMP");
+    else if (sta_param.security.encr == wifi_encryption_tkip)
+        strcpy(pairwise, "TKIP");
+    else
+        strcpy(pairwise, "CCMP TKIP");
+    snprintf(sta->pairwise, 64, "%s", pairwise);
+
+    if (strlen(sta_param.security.u.key.key) > 0)
+        strncpy(sta->psk, sta_param.security.u.key.key, 127);
+    sta->psk[127] = '\0';
+    sta->psk_len = strlen(sta->psk);
+
+    wifi_createSTAInterface(sta_param.sta_index, sta_mac_str);
+
+    if (wifi_setSTANetworks(sta_param.sta_index, &sta, 1, FALSE) == RETURN_ERR) {
+        fprintf(stderr, "Write to sta %d config file failed\n", sta_param.sta_index);
+        free(sta);
+        return;
+    }
+    free(sta);
+
+    if (wifi_setSTAEnabled(sta_param.sta_index, TRUE) == RETURN_ERR) {
+        fprintf(stderr, "Enable station failed\n");
+        return;
+    }
+}
+
 int apply_uci_config ()
 {
     struct uci_context *uci_ctx = uci_alloc_context();
@@ -395,6 +458,7 @@ int apply_uci_config ()
     int max_radio_num = 0;
     BOOL parsing_radio = FALSE;
     int apCount[3] = {0};
+    int staCount[3] = {0};
     wifi_vap_info_map_t vap_map[3] = {0};
     int ret = 0;
     int i = 0;
@@ -458,11 +522,20 @@ int apply_uci_config ()
                 // parsing iface
                 if (strcmp(op->e.name, "device") == 0){
                     set_radionum(&ap_param, op->v.string);
-                    if (ap_param.radio_index != -1){
+                }else if (strcmp(op->e.name, "mode") == 0){
+                    ap_param.mac_offset = staCount[ap_param.radio_index] + apCount[ap_param.radio_index];
+                    if (strncmp(op->v.string, "sta", 3) == 0) {
+                        ap_param.sta_mode = TRUE;
+                        ap_param.sta_index = ap_param.radio_index + staCount[ap_param.radio_index]*max_radio_num;
+                        staCount[ap_param.radio_index] ++ ;
+                        fprintf(stderr, "\n----- Start parsing sta %d config. -----\n", ap_param.sta_index);
+                    } else if (strncmp(op->v.string, "ap", 2) == 0) {
+                        ap_param.sta_mode = FALSE;
                         ap_param.ap_index = ap_param.radio_index + apCount[ap_param.radio_index]*max_radio_num;
-                        fprintf(stderr, "\n----- Start parsing ap %d config. -----\n", ap_param.ap_index);
                         apCount[ap_param.radio_index] ++ ;
-                    }   
+                        fprintf(stderr, "\n----- Start parsing ap %d config. -----\n", ap_param.ap_index);
+                    }
+                    ap_param.mac_offset = staCount[ap_param.radio_index] + apCount[ap_param.radio_index];
                 }else if (strcmp(op->e.name, "ssid") == 0){
                     set_ssid(&ap_param, op->v.string);
                 }else if (strcmp(op->e.name, "encryption") == 0){
@@ -476,9 +549,12 @@ int apply_uci_config ()
         }
         if (parsing_radio == TRUE)
             set_radio_param(radio_param);
+        else if (ap_param.sta_mode == TRUE)
+            set_sta_param(ap_param);
         else
             set_ap_param(ap_param, &vap_map[ap_param.radio_index]);
     }
+    fprintf(stderr, "\n----- Start setting Vaps. -----\n");
 
     for (i = 0; i < max_radio_num ;i++ ){
         ret = wifi_createVAP(i, &vap_map[i]);
