@@ -66,7 +66,6 @@ SRC_URI_append = " \
     file://99910-hostapd-mtk-hostapd-add-support-for-runtime-set-in-band-discove.patch \
     file://99911-hostapd-mtk-Add-mtk_vendor.h.patch \
     file://99912-hostapd-mtk-Support-new-hostapd-configuration-edcca_enable-and-.patch \
-    file://99913-hostapd-mtk-Add-hostapd-command-handler-for-SET_EDCCA-GET_EDCCA.patch \
     file://99914-hostapd-mtk-Add-hostapd-HEMU-SET-GET-control.patch \
     file://99915-hostapd-mtk-Add-three-wire-PTA-ctrl-hostapd-vendor-command.patch \
     file://99916-hostapd-mtk-Add-hostapd-iBF-control.patch \
