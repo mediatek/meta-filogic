@@ -49,7 +49,6 @@ SRC_URI_append = " \
     file://782-net-next-1-of-net-pass-the-dst-buffer-to-of_get_mac_address.patch \
     file://783-sync-nl80211.patch \
     file://800-mac80211-mask-nested-A-MSDU-support-for-mesh.patch \
-    file://900-mac80211-mtk-export-del-all-station-for-ampdu-amsdu-on-off-function.patch \
     file://901-mac80211-mtk-check-twt-responder-when-setu-twt.patch \
     file://902-nl80211-mtk-internal-extend-CAC-time-for-weather-radar-c.patch \
     file://903-mac80211-mtk-it-s-invalid-case-when-frag_threshold-is-gr.patch \

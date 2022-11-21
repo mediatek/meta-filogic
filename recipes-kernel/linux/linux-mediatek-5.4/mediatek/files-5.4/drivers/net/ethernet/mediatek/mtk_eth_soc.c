@@ -30,6 +30,12 @@
 #include "mtk_hnat/nf_hnat_mtk.h"
 #endif
 
+#if defined(CONFIG_XFRM_OFFLOAD)
+#include <crypto/sha.h>
+#include <net/xfrm.h>
+#include "mtk_ipsec.h"
+#endif
+
 static int mtk_msg_level = -1;
 atomic_t reset_lock = ATOMIC_INIT(0);
 atomic_t force = ATOMIC_INIT(0);
@@ -61,10 +67,12 @@ static const struct mtk_ethtool_stats {
 };
 
 static const char * const mtk_clks_source_name[] = {
-	"ethif", "sgmiitop", "esw", "gp0", "gp1", "gp2", "fe", "trgpll",
+	"ethif", "sgmiitop", "esw", "gp0", "gp1", "gp2", "gp3",
+	"xgp1", "xgp2", "xgp3", "crypto", "fe", "trgpll",
 	"sgmii_tx250m", "sgmii_rx250m", "sgmii_cdr_ref", "sgmii_cdr_fb",
 	"sgmii2_tx250m", "sgmii2_rx250m", "sgmii2_cdr_ref", "sgmii2_cdr_fb",
 	"sgmii_ck", "eth2pll", "wocpu0","wocpu1",
+	"usxgmii0_sel", "usxgmii1_sel", "sgm0_sel", "sgm1_sel",
 };
 
 void mtk_w32(struct mtk_eth *eth, u32 val, unsigned reg)
@@ -4301,6 +4309,9 @@ static int mtk_probe(struct platform_device *pdev)
 				       mtk_napi_rx, MTK_NAPI_WEIGHT);
 	}
 
+#if defined(CONFIG_XFRM_OFFLOAD)
+	mtk_ipsec_offload_init(eth);
+#endif
 	mtketh_debugfs_init(eth);
 	debug_proc_init(eth);
 
