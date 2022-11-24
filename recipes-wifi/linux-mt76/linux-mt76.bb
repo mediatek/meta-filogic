@@ -123,6 +123,10 @@ do_install_append () {
     install -m 644 ${WORKDIR}/src/firmware/mt7916_wa.bin ${D}${base_libdir}/firmware/mediatek/
     install -m 644 ${WORKDIR}/src/firmware/mt7916_wm.bin ${D}${base_libdir}/firmware/mediatek/
     install -m 644 ${WORKDIR}/src/firmware/mt7916_eeprom.bin ${D}${base_libdir}/firmware/mediatek/
+}
+
+do_install_append_mt7986 () {
+    install -d ${D}/${base_libdir}/firmware/mediatek/
 
     install -m 644 ${WORKDIR}/src/firmware/mt7986_rom_patch.bin ${D}${base_libdir}/firmware/mediatek/
     install -m 644 ${WORKDIR}/src/firmware/mt7986_rom_patch_mt7975.bin ${D}${base_libdir}/firmware/mediatek/
@@ -136,6 +140,7 @@ do_install_append () {
     install -m 644 ${WORKDIR}/src/firmware/mt7986_wo_0.bin ${D}${base_libdir}/firmware/mediatek/
     install -m 644 ${WORKDIR}/src/firmware/mt7986_wo_1.bin ${D}${base_libdir}/firmware/mediatek/
 }
+
 FILES_${PN} += "${base_libdir}/firmware/mediatek/*"
 
 # Make linux-mt76 depend on all of the split-out packages.
