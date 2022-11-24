@@ -549,13 +549,12 @@
 			  0x30000000 0x00 0x00200000>,
 			 <0x82000000 0x00 0x30200000 0x00
 			  0x30200000 0x00 0x07e00000>;
-		status = "disabled";
-
-		clocks = <&topckgen CK_TOP_PEXTP_P0_SEL>,
+		clocks = <&infracfg_ao CK_INFRA_PCIE_PIPE_P0>,
 			 <&infracfg_ao CK_INFRA_PCIE_GFMUX_TL_P0>,
-			 <&infracfg_ao CK_INFRA_PCIE_PIPE_P0>,
-			 <&infracfg_ao CK_INFRA_133M_PCIE_CK_P0>,
-			 <&infracfg_ao CK_INFRA_PCIE_PERI_26M_CK_P0>;
+			 <&infracfg_ao CK_INFRA_PCIE_PERI_26M_CK_P0>,
+			 <&infracfg_ao CK_INFRA_133M_PCIE_CK_P0>;
+		clock-names = "pl_250m", "tl_26m", "peri_26m", "top_133m";
+		status = "disabled";
 
 		#interrupt-cells = <1>;
 		interrupt-map-mask = <0 0 0 0x7>;
@@ -585,13 +584,12 @@
 			  0x38000000 0x00 0x00200000>,
 			 <0x82000000 0x00 0x38200000 0x00
 			  0x38200000 0x00 0x07e00000>;
-		status = "disabled";
-
-		clocks = <&topckgen CK_TOP_PEXTP_P1_SEL>,
+		clocks = <&infracfg_ao CK_INFRA_PCIE_PIPE_P1>,
 			 <&infracfg_ao CK_INFRA_PCIE_GFMUX_TL_P1>,
-			 <&infracfg_ao CK_INFRA_PCIE_PIPE_P1>,
-			 <&infracfg_ao CK_INFRA_133M_PCIE_CK_P1>,
-			 <&infracfg_ao CK_INFRA_PCIE_PERI_26M_CK_P1>;
+			 <&infracfg_ao CK_INFRA_PCIE_PERI_26M_CK_P1>,
+			 <&infracfg_ao CK_INFRA_133M_PCIE_CK_P1>;
+		clock-names = "pl_250m", "tl_26m", "peri_26m", "top_133m";
+		status = "disabled";
 
 		#interrupt-cells = <1>;
 		interrupt-map-mask = <0 0 0 0x7>;
@@ -621,14 +619,12 @@
 			  0x20000000 0x00 0x00200000>,
 			 <0x82000000 0x00 0x20200000 0x00
 			  0x20200000 0x00 0x07e00000>;
-		status = "disabled";
-
-		clocks = <&topckgen CK_TOP_PEXTP_P2_SEL>,
+		clocks = <&infracfg_ao CK_INFRA_PCIE_PIPE_P2>,
 			 <&infracfg_ao CK_INFRA_PCIE_GFMUX_TL_P2>,
-			 <&infracfg_ao CK_INFRA_PCIE_PIPE_P2>,
-			 <&infracfg_ao CK_INFRA_133M_PCIE_CK_P2>,
 			 <&infracfg_ao CK_INFRA_PCIE_PERI_26M_CK_P2>,
-			 <&infracfg_ao CK_INFRA_PCIE_PERI_26M_CK_P3>;
+			 <&infracfg_ao CK_INFRA_133M_PCIE_CK_P2>;
+		clock-names = "pl_250m", "tl_26m", "peri_26m", "top_133m";
+		status = "disabled";
 
 		phys = <&xphyu3port0 PHY_TYPE_PCIE>;
 		phy-names = "pcie-phy";
@@ -661,13 +657,12 @@
 			  0x28000000 0x00 0x00200000>,
 			 <0x82000000 0x00 0x28200000 0x00
 			  0x28200000 0x00 0x07e00000>;
-		status = "disabled";
-
-		clocks = <&topckgen CK_TOP_PEXTP_P3_SEL>,
+		clocks = <&infracfg_ao CK_INFRA_PCIE_PIPE_P3>,
 			 <&infracfg_ao CK_INFRA_PCIE_GFMUX_TL_P3>,
-			 <&infracfg_ao CK_INFRA_PCIE_PIPE_P3>,
-			 <&infracfg_ao CK_INFRA_133M_PCIE_CK_P3>,
-			 <&infracfg_ao CK_INFRA_PCIE_PERI_26M_CK_P3>;
+			 <&infracfg_ao CK_INFRA_PCIE_PERI_26M_CK_P3>,
+			 <&infracfg_ao CK_INFRA_133M_PCIE_CK_P3>;
+		clock-names = "pl_250m", "tl_26m", "peri_26m", "top_133m";
+		status = "disabled";
 
 		#interrupt-cells = <1>;
 		interrupt-map-mask = <0 0 0 0x7>;
@@ -961,11 +956,11 @@
 		interrupts = <GIC_SPI 173 IRQ_TYPE_LEVEL_HIGH>;
 		phys = <&xphyu2port0 PHY_TYPE_USB2>,
 		       <&xphyu3port0 PHY_TYPE_USB3>;
-		clocks = <&system_clk>,
-			 <&system_clk>,
-			 <&system_clk>,
-			 <&system_clk>,
-			 <&system_clk>;
+		clocks = <&infracfg_ao CK_INFRA_USB_SYS>,
+			 <&infracfg_ao CK_INFRA_USB_XHCI>,
+			 <&infracfg_ao CK_INFRA_USB_REF>,
+			 <&infracfg_ao CK_INFRA_66M_USB_HCK>,
+			 <&infracfg_ao CK_INFRA_133M_USB_HCK>;
 		clock-names = "sys_ck",
 			      "xhci_ck",
 			      "ref_ck",
@@ -987,7 +982,7 @@
 
 		xphyu2port0: usb-phy@11e10000 {
 			reg = <0 0x11e10000 0 0x400>;
-			clocks = <&system_clk>;
+			clocks = <&infracfg_ao CK_INFRA_USB_UTMI>;
 			clock-names = "ref";
 			#phy-cells = <1>;
 			status = "okay";
@@ -995,7 +990,7 @@
 
 		xphyu3port0: usb-phy@11e13000 {
 			reg = <0 0x11e13400 0 0x500>;
-			clocks = <&system_clk>;
+			clocks = <&infracfg_ao CK_INFRA_USB_PIPE>;
 			clock-names = "ref";
 			#phy-cells = <1>;
 			mediatek,syscon-type = <&topmisc 0x218 0>;
@@ -1012,11 +1007,11 @@
 		interrupts = <GIC_SPI 172 IRQ_TYPE_LEVEL_HIGH>;
 		phys = <&tphyu2port0 PHY_TYPE_USB2>,
 		       <&tphyu3port0 PHY_TYPE_USB3>;
-		clocks = <&system_clk>,
-			 <&system_clk>,
-			 <&system_clk>,
-			 <&system_clk>,
-			 <&system_clk>;
+		clocks = <&infracfg_ao CK_INFRA_USB_SYS_CK_P1>,
+			 <&infracfg_ao CK_INFRA_USB_XHCI_CK_P1>,
+			 <&infracfg_ao CK_INFRA_USB_CK_P1>,
+			 <&infracfg_ao CK_INFRA_66M_USB_HCK_CK_P1>,
+			 <&infracfg_ao CK_INFRA_133M_USB_HCK_CK_P1>;
 		clock-names = "sys_ck",
 			      "xhci_ck",
 			      "ref_ck",
@@ -1037,7 +1032,7 @@
 
 		tphyu2port0: usb-phy@11c50000 {
 			reg = <0 0x11c50000 0 0x700>;
-			clocks = <&system_clk>;
+			clocks = <&infracfg_ao CK_INFRA_USB_UTMI_CK_P1>;
 			clock-names = "ref";
 			#phy-cells = <1>;
 			status = "okay";
@@ -1045,7 +1040,7 @@
 
 		tphyu3port0: usb-phy@11c50700 {
 			reg = <0 0x11c50700 0 0x900>;
-			clocks = <&system_clk>;
+			clocks = <&infracfg_ao CK_INFRA_USB_PIPE_CK_P1>;
 			clock-names = "ref";
 			#phy-cells = <1>;
 			mediatek,usb3-pll-ssc-delta;
