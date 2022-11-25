@@ -55,7 +55,7 @@ typedef struct {
     char password[64];
     wifi_vap_security_t security;
     int mac_offset;
-} wifi_ap_param;
+} wifi_intf_param;
 
 struct params
 {

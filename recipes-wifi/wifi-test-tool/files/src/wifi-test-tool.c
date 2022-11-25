@@ -156,7 +156,7 @@ void set_disable(wifi_radio_param *radio_param, char *disable)
         radio_param->disabled = FALSE;
 }
 
-void set_radionum(wifi_ap_param *ap_param, char *phy_name)
+void set_radionum(wifi_intf_param *intf_param, char *phy_name)
 {
     int radio_num = 0;
     char *ptr = phy_name;
@@ -166,70 +166,70 @@ void set_radionum(wifi_ap_param *ap_param, char *phy_name)
         if (isdigit(*ptr)) {
             phyId = strtoul(ptr, NULL, 10);
             radio_num = phy_index_to_radio(phyId);
-            ap_param->radio_index = radio_num;
+            intf_param->radio_index = radio_num;
             break;
         }
         ptr++;
     }
 }
 
-void set_ssid(wifi_ap_param *ap_param, char *ssid)
+void set_ssid(wifi_intf_param *intf_param, char *ssid)
 {
-    strncpy(ap_param->ssid, ssid, 32);
+    strncpy(intf_param->ssid, ssid, 32);
 }
 
-void set_encryption(wifi_ap_param *ap_param, char *encryption_mode)
+void set_encryption(wifi_intf_param *intf_param, char *encryption_mode)
 {
     if (strcmp(encryption_mode, "none") == 0) {
-        ap_param->security.mode = wifi_security_mode_none;
-        ap_param->security.encr = wifi_encryption_none;
+        intf_param->security.mode = wifi_security_mode_none;
+        intf_param->security.encr = wifi_encryption_none;
     }else if(strncmp(encryption_mode, "psk2", 4) == 0){
-        ap_param->security.mode = wifi_security_mode_wpa2_personal;
+        intf_param->security.mode = wifi_security_mode_wpa2_personal;
     }else if(strncmp(encryption_mode, "psk-",4) == 0){
-       ap_param->security.mode = wifi_security_mode_wpa_wpa2_personal;
+       intf_param->security.mode = wifi_security_mode_wpa_wpa2_personal;
     }else if(strncmp(encryption_mode, "psk",3) == 0){
-        ap_param->security.mode = wifi_security_mode_wpa_personal;
+        intf_param->security.mode = wifi_security_mode_wpa_personal;
     }else if(strncmp(encryption_mode, "wpa2",4) == 0){
-        ap_param->security.mode = wifi_security_mode_wpa2_enterprise;
+        intf_param->security.mode = wifi_security_mode_wpa2_enterprise;
     }else if(strncmp(encryption_mode, "wpa-",4) == 0){
-        ap_param->security.mode = wifi_security_mode_wpa_wpa2_enterprise;
+        intf_param->security.mode = wifi_security_mode_wpa_wpa2_enterprise;
     }else if(strcmp(encryption_mode, "sae") == 0){
-        ap_param->security.mode = wifi_security_mode_wpa3_personal;
+        intf_param->security.mode = wifi_security_mode_wpa3_personal;
     }else if(strcmp(encryption_mode, "wpa3") == 0){
-        ap_param->security.mode = wifi_security_mode_wpa3_enterprise;
+        intf_param->security.mode = wifi_security_mode_wpa3_enterprise;
     }else if(strcmp(encryption_mode, "sae-mixed") == 0){
-        ap_param->security.mode = wifi_security_mode_wpa3_transition;
+        intf_param->security.mode = wifi_security_mode_wpa3_transition;
     }
 
     if(strstr(encryption_mode, "tkip") && (strstr(encryption_mode, "ccmp") || strstr(encryption_mode, "aes") )){
-        ap_param->security.encr = wifi_encryption_aes_tkip;
+        intf_param->security.encr = wifi_encryption_aes_tkip;
     }else if (strstr(encryption_mode, "tkip")){
-        ap_param->security.encr = wifi_encryption_tkip;
+        intf_param->security.encr = wifi_encryption_tkip;
     }else{
-        ap_param->security.encr = wifi_encryption_aes;
+        intf_param->security.encr = wifi_encryption_aes;
     }
 
     if(!strcmp(encryption_mode, "wpa3") || !strcmp(encryption_mode, "sae")){
-        ap_param->security.mfp = wifi_mfp_cfg_required;
+        intf_param->security.mfp = wifi_mfp_cfg_required;
     }else if (!strcmp(encryption_mode, "sae-mixed")){
-        ap_param->security.mfp = wifi_mfp_cfg_optional;
+        intf_param->security.mfp = wifi_mfp_cfg_optional;
     }else{
-        ap_param->security.mfp = wifi_mfp_cfg_disabled;
+        intf_param->security.mfp = wifi_mfp_cfg_disabled;
     }
 
     if (!strcmp(encryption_mode, "sae")){
-        ap_param->security.u.key.type = wifi_security_key_type_sae;
+        intf_param->security.u.key.type = wifi_security_key_type_sae;
     }else if (!strcmp(encryption_mode, "sae-mixed")){
-        ap_param->security.u.key.type = wifi_security_key_type_psk_sae;
+        intf_param->security.u.key.type = wifi_security_key_type_psk_sae;
     }else{
-        ap_param->security.u.key.type = wifi_security_key_type_psk;
+        intf_param->security.u.key.type = wifi_security_key_type_psk;
     }
 
 }
 
-void set_key(wifi_ap_param *ap_param, char *key)
+void set_key(wifi_intf_param *intf_param, char *key)
 {
-    strncpy(ap_param->security.u.key.key, key, 64);
+    strncpy(intf_param->security.u.key.key, key, 64);
 }
 
 int set_interface_bssid(int phy_index, int offset, mac_address_t *bssid)
@@ -344,7 +344,7 @@ void set_radio_param(wifi_radio_param radio_parameter)
 
 }
 
-void set_ap_param(wifi_ap_param ap_param , wifi_vap_info_map_t *map)
+void set_ap_param(wifi_intf_param ap_param , wifi_vap_info_map_t *map)
 {
     int ret = 0;
     int vap_index_in_map = 0;
@@ -394,7 +394,7 @@ void set_ap_param(wifi_ap_param ap_param , wifi_vap_info_map_t *map)
     map->vap_array[vap_index_in_map] = vap_info;
 }
 
-void set_sta_param(wifi_ap_param sta_param)
+void set_sta_param(wifi_intf_param sta_param)
 {
     wifi_sta_network_t *sta = NULL;
     mac_address_t sta_mac = {0};
@@ -483,10 +483,10 @@ int apply_uci_config ()
         struct uci_section *s = uci_to_section(e);
         struct uci_element *option = NULL;
         wifi_radio_param radio_param = {0};
-        wifi_ap_param ap_param = {0};
+        wifi_intf_param intf_param = {0};
         int phyId = 0;
         radio_param.radio_index = -1;
-        ap_param.ap_index = -1;
+        intf_param.ap_index = -1;
 
         if (strcmp(s->type, "wifi-device") == 0) {
             sscanf(s->e.name, "radio%d", &phyId);
@@ -521,27 +521,27 @@ int apply_uci_config ()
             } else {        
                 // parsing iface
                 if (strcmp(op->e.name, "device") == 0){
-                    set_radionum(&ap_param, op->v.string);
+                    set_radionum(&intf_param, op->v.string);
                 }else if (strcmp(op->e.name, "mode") == 0){
-                    ap_param.mac_offset = staCount[ap_param.radio_index] + apCount[ap_param.radio_index];
+                    intf_param.mac_offset = staCount[intf_param.radio_index] + apCount[intf_param.radio_index];
                     if (strncmp(op->v.string, "sta", 3) == 0) {
-                        ap_param.sta_mode = TRUE;
-                        ap_param.sta_index = ap_param.radio_index + staCount[ap_param.radio_index]*max_radio_num;
-                        staCount[ap_param.radio_index] ++ ;
-                        fprintf(stderr, "\n----- Start parsing sta %d config. -----\n", ap_param.sta_index);
+                        intf_param.sta_mode = TRUE;
+                        intf_param.sta_index = intf_param.radio_index + staCount[intf_param.radio_index]*max_radio_num;
+                        staCount[intf_param.radio_index] ++ ;
+                        fprintf(stderr, "\n----- Start parsing sta %d config. -----\n", intf_param.sta_index);
                     } else if (strncmp(op->v.string, "ap", 2) == 0) {
-                        ap_param.sta_mode = FALSE;
-                        ap_param.ap_index = ap_param.radio_index + apCount[ap_param.radio_index]*max_radio_num;
-                        apCount[ap_param.radio_index] ++ ;
-                        fprintf(stderr, "\n----- Start parsing ap %d config. -----\n", ap_param.ap_index);
+                        intf_param.sta_mode = FALSE;
+                        intf_param.ap_index = intf_param.radio_index + apCount[intf_param.radio_index]*max_radio_num;
+                        apCount[intf_param.radio_index] ++ ;
+                        fprintf(stderr, "\n----- Start parsing ap %d config. -----\n", intf_param.ap_index);
                     }
-                    ap_param.mac_offset = staCount[ap_param.radio_index] + apCount[ap_param.radio_index];
+                    intf_param.mac_offset = staCount[intf_param.radio_index] + apCount[intf_param.radio_index];
                 }else if (strcmp(op->e.name, "ssid") == 0){
-                    set_ssid(&ap_param, op->v.string);
+                    set_ssid(&intf_param, op->v.string);
                 }else if (strcmp(op->e.name, "encryption") == 0){
-                    set_encryption(&ap_param, op->v.string);
+                    set_encryption(&intf_param, op->v.string);
                 }else if (strcmp(op->e.name, "key") == 0){
-                    set_key(&ap_param, op->v.string);
+                    set_key(&intf_param, op->v.string);
                 }else{
                     fprintf(stderr, "[%s %s not set!]\n", op->e.name, op->v.string);
                 }    
@@ -549,10 +549,10 @@ int apply_uci_config ()
         }
         if (parsing_radio == TRUE)
             set_radio_param(radio_param);
-        else if (ap_param.sta_mode == TRUE)
-            set_sta_param(ap_param);
+        else if (intf_param.sta_mode == TRUE)
+            set_sta_param(intf_param);
         else
-            set_ap_param(ap_param, &vap_map[ap_param.radio_index]);
+            set_ap_param(intf_param, &vap_map[intf_param.radio_index]);
     }
     fprintf(stderr, "\n----- Start setting Vaps. -----\n");
 
