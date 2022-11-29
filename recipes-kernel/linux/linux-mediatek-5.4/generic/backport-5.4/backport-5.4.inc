@@ -198,6 +198,7 @@ SRC_URI_append = " \
     file://610-v5.18-netfilter-flowtable-add-check_dst-in-packet-path.patch \
     file://610-v5.9-net-bridge-clear-bridge-s-private-skb-space-on-xmit.patch \
     file://700-v5.5-net-core-allow-fast-GRO-for-skbs-with-Ethernet-heade.patch \
+    file://701-v5.7-net-dsa-Implement-flow-dissection-for-tag_brcm.c.patch \
     file://716-v5.5-net-sfp-move-fwnode-parsing-into-sfp-bus-layer.patch \
     file://717-v5.5-net-sfp-rework-upstream-interface.patch \
     file://718-v5.5-net-sfp-fix-sfp_bus_put-kernel-documentation.patch \

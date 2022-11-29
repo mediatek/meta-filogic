@@ -49,18 +49,18 @@ SRC_URI_append = " \
     file://782-net-next-1-of-net-pass-the-dst-buffer-to-of_get_mac_address.patch \
     file://783-sync-nl80211.patch \
     file://800-mac80211-mask-nested-A-MSDU-support-for-mesh.patch \
-    file://901-mac80211-mtk-check-twt-responder-when-setu-twt.patch \
-    file://902-nl80211-mtk-internal-extend-CAC-time-for-weather-radar-c.patch \
-    file://903-mac80211-mtk-it-s-invalid-case-when-frag_threshold-is-gr.patch \
-    file://904-mac80211-mtk-correct-legacy-rates-check-in-ieee80211_cal.patch \
-    file://905-mac80211-mtk-airtime_flags-depends-on-NL80211_EXT_FEATUR.patch \
-    file://906-mac80211-mtk-add-support-for-runtime-set-inband-discovery.patch \
-    file://907-mac80211-mtk-add-s1g-category-to-_ieee80211_is_robust_mg.patch \
-    file://908-mac80211-mtk-mask-kernel-version-limitation-and-fill-for.patch \
-    file://909-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-idx.patch \
-    file://910-mac80211-mtk-make-4addr-null-frames-using-min_rate-.patch \
-    file://911-mac80211-mtk-remove-timerout-handle-for-ax210-iot-issue.patch \
-    file://912-cfg80211-mtk-implement-DFS-status-show-cac-and-nop-skip-.patch \
-    file://913-mac80211-mtk-Set-TWT-Information-Frame-Disabled-bit-as-1.patch \
-    file://914-mac80211-mtk-fix-the-issue-of-AP-and-STA-starting-on-DFS.patch \
+    file://900-mac80211-mtk-do-not-setup-twt-when-twt-responder-is-.patch \
+    file://901-nl80211-mtk-extend-CAC-time-for-weather-radar-channe.patch \
+    file://902-mac80211-mtk-it-s-invalid-case-when-frag_threshold-i.patch \
+    file://903-mac80211-mtk-correct-legacy-rates-check-in-ieee80211.patch \
+    file://904-mac80211-mtk-airtime_flags-depends-on-NL80211_EXT_FE.patch \
+    file://905-mac80211-mtk-add-support-for-runtime-set-inband-disc.patch \
+    file://906-mac80211-mtk-add-s1g-category-to-_ieee80211_is_robus.patch \
+    file://907-mac80211-mtk-mask-kernel-version-limitation-and-fill.patch \
+    file://908-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-id.patch \
+    file://909-mac80211-mtk-make-4addr-null-frames-using-min_rate-f.patch \
+    file://910-mac80211-mtk-remove-timerout-handle-for-ax210-iot-is.patch \
+    file://911-cfg80211-mtk-implement-DFS-status-show-cac-and-nop-s.patch \
+    file://912-mac80211-mtk-Set-TWT-Information-Frame-Disabled-bit-.patch \
+    file://913-mac80211-mtk-fix-the-issue-of-AP-and-STA-starting-on.patch \
     "

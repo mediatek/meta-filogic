@@ -31,13 +31,12 @@ SRC_URI_append = " \
     file://1127-mt76-support-on-off-SW-ACI-through-debugfs.patch \
     file://3001-mt76-add-wed-tx-support.patch \
     file://3002-mt76-mt7915-add-wed-tx-wds-support-on-mt7986.patch \
-    file://3003-mt76-add-wed-rx-support.patch \
+    file://3003-mt76-add-wed-rx-copy-skb.patch \
     file://3004-mt76-add-fill-receive-path-to-report-wed-idx.patch \
-    file://3005-mt76-add-ser-spport-when-wed-on.patch \
-    file://3006-mt76-mt7915-add-statistic-for-H-W-Rx-Path.patch \
-    file://3007-mt76-mt7915-enable-red-per-band-token-drop-for-HW-Pa.patch \
-    file://3008-mt76-mt7915-update-mt7916-trinfo-when-hw-path-enable.patch \
-    file://3009-mt76-mt7915-find-rx-token-by-physical-address.patch \
-    file://3010-mt76-mt7915-drop-scatter-and-gather-frame.patch \
-    file://3011-mt76-HW-ATF-support-for-mt7986.patch \
+    file://3005-mt76-mt7915-add-ser-support-when-wed-on.patch \
+    file://3006-mt76-mt7915-enable-red-per-band-token-drop-for-HW-Pa.patch \
+    file://3007-mt76-mt7915-update-mt7916-trinfo-when-hw-path-enable.patch \
+    file://3008-mt76-mt7915-find-rx-token-by-physical-address.patch \
+    file://3009-mt76-mt7915-drop-scatter-and-gather-frame.patch \
+    file://3010-mt76-HW-ATF-support-for-mt7986.patch \
     "
