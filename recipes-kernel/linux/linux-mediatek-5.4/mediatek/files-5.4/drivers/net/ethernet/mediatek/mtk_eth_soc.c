@@ -1143,7 +1143,8 @@ static int mtk_init_fq_dma(struct mtk_eth *eth)
 	if (unlikely(dma_mapping_error(eth->dev, dma_addr)))
 		return -ENOMEM;
 
-	phy_ring_tail = eth->phy_scratch_ring + soc->txrx.txd_size * (cnt - 1);
+	phy_ring_tail = eth->phy_scratch_ring +
+			(dma_addr_t)soc->txrx.txd_size * (cnt - 1);
 
 	for (i = 0; i < cnt; i++) {
 		struct mtk_tx_dma_v2 *txd;
@@ -1738,7 +1739,7 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
 	while (done < budget) {
 		struct net_device *netdev = NULL;
 		unsigned int pktlen;
-		dma_addr_t dma_addr;
+		dma_addr_t dma_addr = 0;
 		int mac = 0;
 
 		if (eth->hwlro)
@@ -2126,7 +2127,8 @@ static int mtk_tx_alloc(struct mtk_eth *eth)
 					       &ring->phys, GFP_KERNEL);
 	else {
 		ring->dma =  eth->scratch_ring + MTK_DMA_SIZE * sz;
-		ring->phys = eth->phy_scratch_ring + MTK_DMA_SIZE * sz;
+		ring->phys = eth->phy_scratch_ring +
+			     MTK_DMA_SIZE * (dma_addr_t)sz;
 	}
 
 	if (!ring->dma)
@@ -3068,6 +3070,15 @@ void mtk_gdm_config(struct mtk_eth *eth, u32 config)
 	}
 }
 
+void mtk_set_pse_drop(u32 config)
+{
+	struct mtk_eth *eth = g_eth;
+
+	if (eth)
+		mtk_w32(eth, config, PSE_PPE0_DROP);
+}
+EXPORT_SYMBOL(mtk_set_pse_drop);
+
 static int mtk_open(struct net_device *dev)
 {
 	struct mtk_mac *mac = netdev_priv(dev);
@@ -3396,15 +3407,14 @@ static int mtk_hw_init(struct mtk_eth *eth, u32 type)
 		MTK_FE_INT_RFIFO_OV | MTK_FE_INT_RFIFO_UF, MTK_FE_INT_ENABLE);
 
 	if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V3)) {
-		/* PSE dummy page mechanism */
-		mtk_w32(eth, PSE_DUMMY_WORK_GDM(1) | PSE_DUMMY_WORK_GDM(2) |
-			PSE_DUMMY_WORK_GDM(3) | DUMMY_PAGE_THR, PSE_DUMY_REQ);
-
 		/* PSE should not drop port1, port8 and port9 packets */
 		mtk_w32(eth, 0x00000302, PSE_NO_DROP_CFG);
 
 		/* PSE should drop p8 and p9 packets when WDMA Rx ring full*/
 		mtk_w32(eth, 0x00000300, PSE_PPE0_DROP);
+
+		/* PSE free buffer drop threshold */
+		mtk_w32(eth, 0x00600009, PSE_IQ_REV(8));
 
 		/* GDM and CDM Threshold */
 		mtk_w32(eth, 0x00000707, MTK_CDMW0_THRES);
@@ -4027,8 +4037,13 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
 					         "ethernet:fixed link", mac);
 			}
 
-			if (!of_property_read_string(to_of_node(fixed_node), "label", &label))
-				strcpy(phylink_priv->label, label);
+			if (!of_property_read_string(to_of_node(fixed_node),
+						     "label", &label)) {
+				if (strlen(label) < 16)
+					strcpy(phylink_priv->label, label);
+				else
+					dev_err(eth->dev, "insufficient space for label!\n");
+			}
 
 			phy_np = of_parse_phandle(to_of_node(fixed_node), "phy-handle", 0);
 			if (phy_np) {
