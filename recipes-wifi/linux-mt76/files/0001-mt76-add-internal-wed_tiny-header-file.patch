@@ -33,7 +33,7 @@ new file mode 100644
 index 00000000..91c98e7d
 --- /dev/null
 +++ b/wed_tiny.h
-@@ -0,0 +1,33 @@
+@@ -0,0 +1,41 @@
 +#ifndef __WED_TINY_H
 +#define __WED_TINY_H
 +
@@ -53,6 +53,13 @@ index 00000000..91c98e7d
 +{
 +        return false;
 +}
++
++static inline bool
++mtk_wed_get_rx_capa(struct mtk_wed_device *dev)
++{
++	return false;
++}
++
 +#define mtk_wed_device_detach(_dev) do {} while (0)
 +#define mtk_wed_device_start(_dev, _mask) do {} while (0)
 +#define mtk_wed_device_stop(_dev, _reset) do {} while (0)
@@ -64,9 +71,7 @@ index 00000000..91c98e7d
 +#define mtk_wed_device_irq_get(_dev, _mask) 0
 +#define mtk_wed_device_irq_set_mask(_dev, _mask) do {} while (0)
 +#define mtk_wed_device_dma_reset(_dev) do {} while (0)
-+#define mtk_wed_device_ppe_check(_dev, _hash)  do {} while (0)
++#define mtk_wed_device_ppe_check(_dev, _skb, _reason, _hash) do {} while (0)
++#define mtk_wed_device_update_msg(_dev, _id, _msg, _len) -ENODEV
 +
 +#endif
--- 
-2.25.1
-
