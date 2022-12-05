@@ -272,6 +272,9 @@ SRC_URI_append = " \
     file://818-v5.8-i2c-pxa-remove-some-unnecessary-debug.patch \
     file://820-v5.8-i2c-pxa-use-master-abort-for-device-probes.patch \
     file://821-v5.8-i2c-pxa-implement-generic-i2c-bus-recovery.patch \
+    file://822-v6.2-0001-nvmem-u-boot-env-fix-crc32_data_offset-on-redundant-.patch \
+    file://822-v6.2-0002-nvmem-u-boot-env-align-endianness-of-crc32-values.patch \
+    file://822-v6.2-0003-nvmem-u-boot-env-add-Broadcom-format-support.patch \
     file://825-v5.8-spi-rb4xx-null-pointer-bug-fix.patch \
     file://826-v5.8-spi-rb4xx-update-driver-to-be-device-tree-aware.patch \
     file://827-v5.16-spi-add-power-control-when-set_cs.patch \

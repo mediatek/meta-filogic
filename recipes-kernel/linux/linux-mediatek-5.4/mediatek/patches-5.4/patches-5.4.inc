@@ -36,6 +36,7 @@ SRC_URI_append = " \
     file://0402-sound-add-mt7986-driver.patch \
     file://0490-mtd-spinand-winbond-Support-for-W25MxxGV-W25NxxKV-series.patch \
     file://0491-mtd-spinand-macronix-suppress-mx35lf1ge4ab-warning-log.patch \
+    file://0495-mtd-spinand-winbond-Support-for-W25N01KV.patch \
     file://0500-v5.6-crypto-backport-inside-secure.patch \
     file://0501-crypto-add-eip97-inside-secure-support.patch \
     file://0502-dts-mt7623-eip97-inside-secure-support.patch \
@@ -90,6 +91,7 @@ SRC_URI_append = " \
     file://413-mtd-spinand-gigadevice-Add-support-for-GD5FxGQxUExxG-GD5FxGQxUExxH-and-GD5FxGMxUExxG-series.patch \
     file://414-mtd-spinand-fix-gigadevice-read-dummy.patch \
     file://415-mtd-spinand-fix-F50L1G41LB-ecc-check.patch \
+    file://492-mtd-tests-fix-pagetest-load.patch \
     file://500-auxadc-add-auxadc-32k-clk.patch \
     file://6001-mtk-thermal-add-lvts-support.patch \
     file://7000-fix-race-inside-napi-enable.patch \
@@ -112,6 +114,7 @@ SRC_URI_append = " \
     file://749-net-dsa-support-mt7988.patch \
     file://750-add-mdio-bus-for-gphy-calibration.patch \
     file://751-net-phy-aquantia-add-firmware-download.patch \
+    file://752-net-dsa-phy-coverity-scan.patch \
     file://8000-PATCH-1-4-tphy-support-type-switch-by-pericfg.patch \
     file://8001-PATCH-2-4-dt-bindings-phy-Add-PHY_TYPE_DP-definition.patch \
     file://8002-PATCH-3-4-dt-bindings-phy-Add-PHY_TYPE_XPCS-definition.patch \
