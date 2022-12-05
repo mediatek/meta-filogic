@@ -6,14 +6,14 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 inherit module
 
-PV = "5.15.74"
+PV = "5.15.81"
 
 SRC_URI = " \
     https://cdn.kernel.org/pub/linux/kernel/projects/backports/stable/v${PV}/backports-${PV}-1.tar.xz \
     file://config \
     file://0001-rdkb-fix_build_issue-mac80211-without_depmod.patch;apply=no \
     "
-SRC_URI[sha256sum] = "98098d0cab24cc76a04db738dc746a0c8d38d180398805481224f141cca06423"
+SRC_URI[sha256sum] = "5227d3c35ccebacfaee6b8180b3a87b9910f3c94ee768ebc5c0fef3c86b6146d"
 
 DEPENDS += "virtual/kernel"
 DEPENDS += "bison-native coreutils-native flex-native"
