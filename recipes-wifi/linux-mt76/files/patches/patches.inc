@@ -1,42 +1,42 @@
 #patch patches (come from openwrt/lede/target/linux/mediatek)
 SRC_URI_append = " \
-    file://0001-mt76-mt7915-rework-testmode-init-registers.patch \
-    file://0002-mt76-mt7915-rework-rx-testmode-stats.patch \
-    file://0003-mt76-mt7915-drop-undefined-action-frame.patch \
+    file://0000-mt76-sync-to-master-lastest-commit.patch \
     file://100-Revert-of-net-pass-the-dst-buffer-to-of_get_mac_addr.patch \
     file://1001-mt76-mt7915-add-mtk-internal-debug-tools-for-mt76.patch \
     file://1002-mt76-mt7915-csi-implement-csi-support.patch \
     file://1003-mt76-mt7915-air-monitor-support.patch \
     file://1004-mt76-mt7915-add-support-for-muru_onoff-via-debugfs.patch \
-    file://1005-mt76-certification-patches.patch \
+    file://1005-mt76-mt7915-certification-patches.patch \
     file://1006-mt76-mt7915-add-support-for-runtime-set-in-band-disc.patch \
     file://1007-mt76-mt7915-add-mt76-vendor-muru-onoff-command.patch \
-    file://1008-mt76-mt7915-add-fw_version-dump.patch \
-    file://1111-mt76-testmode-additional-supports.patch \
-    file://1112-mt76-testmode-add-pre-cal-support.patch \
-    file://1113-mt76-testmode-add-iBF-command-mode-support.patch \
-    file://1114-mt76-testmode-add-ZWDFS-test-mode-support.patch \
-    file://1115-mt76-mt7915-init-rssi-in-WTBL-when-add-station.patch \
-    file://1116-mt76-mt7915-reduce-TWT-SP-sent-to-FW-for-cert.patch \
-    file://1117-mt76-airtime-fairness-feature-off-in-mac80211.patch \
-    file://1118-mt76-mt7915-add-mt7986-and-mt7916-pre-calibration.patch \
-    file://1119-mt76-mt7915-add-phy-capability-vendor-command.patch \
-    file://1120-mt76-mt7915-add-vendor-subcmd-EDCCA-ctrl.patch \
-    file://1121-mt76-mt7915-implement-bin-file-mode.patch \
-    file://1122-mt76-mt7915-initialize-wcid.patch \
-    file://1123-mt76-HEMU-Add-dump-support.patch \
-    file://1124-mt76-mt7915-add-vendor-subcmd-three-wire-PTA-ctrl.patch \
-    file://1125-mt76-add-ibf-control-vendor-cmd.patch \
-    file://1126-mt76-mt7915-add-E3-re-bonding-for-low-yield-rate-iss.patch \
-    file://1127-mt76-support-on-off-SW-ACI-through-debugfs.patch \
-    file://3001-mt76-add-wed-tx-support.patch \
-    file://3002-mt76-mt7915-add-wed-tx-wds-support-on-mt7986.patch \
-    file://3003-mt76-add-wed-rx-copy-skb.patch \
-    file://3004-mt76-add-fill-receive-path-to-report-wed-idx.patch \
-    file://3005-mt76-mt7915-add-ser-support-when-wed-on.patch \
-    file://3006-mt76-mt7915-enable-red-per-band-token-drop-for-HW-Pa.patch \
-    file://3007-mt76-mt7915-update-mt7916-trinfo-when-hw-path-enable.patch \
-    file://3008-mt76-mt7915-find-rx-token-by-physical-address.patch \
-    file://3009-mt76-mt7915-drop-scatter-and-gather-frame.patch \
-    file://3010-mt76-HW-ATF-support-for-mt7986.patch \
+    file://1008-mt76-mt7915-drop-undefined-action-frame.patch \
+    file://1009-mt76-mt7915-add-fw_version-dump.patch \
+    file://1111-mt76-mt7915-rework-testmode-init-registers.patch \
+    file://1112-mt76-testmode-additional-supports.patch \
+    file://1113-mt76-testmode-add-pre-cal-support.patch \
+    file://1114-mt76-testmode-add-iBF-command-mode-support.patch \
+    file://1115-mt76-testmode-add-ZWDFS-test-mode-support.patch \
+    file://1116-mt76-mt7915-init-rssi-in-WTBL-when-add-station.patch \
+    file://1117-mt76-mt7915-reduce-TWT-SP-sent-to-FW-for-cert.patch \
+    file://1118-mt76-connac-airtime-fairness-feature-off-in-mac80211.patch \
+    file://1119-mt76-mt7915-add-mt7986-and-mt7916-pre-calibration.patch \
+    file://1120-mt76-mt7915-add-phy-capability-vendor-command.patch \
+    file://1121-mt76-mt7915-add-vendor-subcmd-EDCCA-ctrl-enable-thre.patch \
+    file://1122-mt76-mt7915-implement-bin-file-mode.patch \
+    file://1123-mt76-mt7915-initialize-wcid.patch \
+    file://1124-mt76-mt7915-Add-hemu-dump-support.patch \
+    file://1125-mt76-mt7915-add-vendor-subcmd-three-wire-PTA-ctrl.patch \
+    file://1126-mt76-mt7915-add-ibf-control-vendor-cmd.patch \
+    file://1127-mt76-mt7915-add-E3-re-bonding-for-low-yield-rate-iss.patch \
+    file://1128-mt76-mt7915-support-on-off-SW-ACI-through-debugfs.patch \
+    file://3001-mt76-mt7915-wed-add-wed-tx-support.patch \
+    file://3002-mt76-mt7915-wed-add-wed-tx-wds-support-on-mt7986.patch \
+    file://3003-mt76-connac-wed-add-wed-rx-copy-skb.patch \
+    file://3004-mt76-mt7915-wed-add-fill-receive-path-to-report-wed-.patch \
+    file://3005-mt76-mt7915-wed-add-ser-support-when-wed-on.patch \
+    file://3006-mt76-mt7915-wed-enable-red-per-band-token-drop-for-H.patch \
+    file://3007-mt76-mt7915-wed-update-mt7916-trinfo-when-hw-path-en.patch \
+    file://3008-mt76-mt7915-wed-find-rx-token-by-physical-address.patch \
+    file://3009-mt76-mt7915-wed-drop-scatter-and-gather-frame.patch \
+    file://3010-mt76-mt7915-wed-HW-ATF-support-for-mt7986.patch \
     "
