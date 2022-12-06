@@ -3,7 +3,9 @@
 create_hostapdConf() {
 	devidx=0
 	phyidx=0
-
+	old_path=""
+	pcie7915count=0
+    
 	for _dev in /sys/class/ieee80211/*; do
 		[ -e "$_dev" ] || continue
 
@@ -15,6 +17,17 @@ create_hostapdConf() {
         NEW_MAC=$(echo 0x$MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+2, $2, $3, $4 ,$5, $6}')
         chip="$(cat /sys/class/ieee80211/"$dev"/device/device)"
 
+        if [ $chip == "0x7915" ]; then
+            path="$(realpath /sys/class/ieee80211/"$dev"/device | cut -d/ -f4-)"
+            if [ -n "$path" ]; then
+                if [ "$path" == "$old_path" ] || [ "$old_path" == "" ]; then
+                    pcie7915count="1"
+                else
+                    pcie7915count="2"    
+                fi
+            fi
+            old_path=$path
+        fi
         if [ "$(uci get wireless.radio${phyidx}.disabled)" == "1" ]; then
             phyidx=$(($phyidx + 1))
 			continue
@@ -48,6 +61,10 @@ create_hostapdConf() {
             else
                 cp -f /etc/hostapd-5G.conf /nvram/hostapd"$devidx".conf
             fi                 
+        fi
+
+        if [ "$pcie7915count" == "2" ]; then
+            cp -f /etc/hostapd-2G.conf /nvram/hostapd"$devidx".conf        
         fi
 
         if [ "$band" == "6g" ]; then
