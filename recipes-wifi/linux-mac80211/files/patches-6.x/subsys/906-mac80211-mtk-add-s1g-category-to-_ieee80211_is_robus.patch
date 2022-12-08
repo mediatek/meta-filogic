@@ -1,0 +1,26 @@
+From ae2162e1fe69af7ecc0c0ab5e8c2411ed2d5e77b Mon Sep 17 00:00:00 2001
+From: Peter Chiu <chui-hao.chiu@mediatek.com>
+Date: Wed, 8 Jun 2022 10:26:39 +0800
+Subject: [PATCH 906/911] mac80211: mtk: add s1g category to
+ _ieee80211_is_robust_mgmt_frame
+
+Unprotected S1G with code 22 is not robust mgmt frame.
+---
+ include/linux/ieee80211.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/include/linux/ieee80211.h b/include/linux/ieee80211.h
+index 00ed7c1..59de3dc 100644
+--- a/include/linux/ieee80211.h
++++ b/include/linux/ieee80211.h
+@@ -3700,6 +3700,7 @@ static inline bool _ieee80211_is_robust_mgmt_frame(struct ieee80211_hdr *hdr)
+ 			*category != WLAN_CATEGORY_SELF_PROTECTED &&
+ 			*category != WLAN_CATEGORY_UNPROT_DMG &&
+ 			*category != WLAN_CATEGORY_VHT &&
++			*category != WLAN_CATEGORY_S1G &&
+ 			*category != WLAN_CATEGORY_VENDOR_SPECIFIC;
+ 	}
+ 
+-- 
+2.36.1
+

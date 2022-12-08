@@ -5,9 +5,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=c188eeeb69c0a05d0545816f1458a0c9"
 
 inherit module
 
-PV = "1.0"
-
-require mt76.inc
+require mt76_${PV}.inc
 SRC_URI = " \
     git://git@github.com/openwrt/mt76.git;protocol=https \
     file://COPYING;subdir=git \
@@ -22,10 +20,9 @@ SRC_URI += " \
 DEPENDS += "virtual/kernel"
 DEPENDS += "linux-mac80211"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches:"
+FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches-${PV}:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/src:"
 
-#require files/patches/patches.inc
 SRC_URI += "file://*.patch;apply=no"
 
 S = "${WORKDIR}/git"
