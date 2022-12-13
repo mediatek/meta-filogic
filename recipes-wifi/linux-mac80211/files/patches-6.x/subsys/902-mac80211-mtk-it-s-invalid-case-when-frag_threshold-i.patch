@@ -1,7 +1,7 @@
-From 0bc1d2e42f5424d5f784d89a9e65cb9cac494269 Mon Sep 17 00:00:00 2001
+From e66fda08e681b11aa6a10bd7fd750d210cb22745 Mon Sep 17 00:00:00 2001
 From: Bo Jiao <Bo.Jiao@mediatek.com>
 Date: Fri, 1 Apr 2022 09:15:21 +0800
-Subject: [PATCH 902/911] mac80211: mtk: it's invalid case when frag_threshold
+Subject: [PATCH 902/908] mac80211: mtk: it's invalid case when frag_threshold
  is greater than 2346
 
 Signed-off-by: Bo Jiao <Bo.Jiao@mediatek.com>
@@ -10,10 +10,10 @@ Signed-off-by: Bo Jiao <Bo.Jiao@mediatek.com>
  1 file changed, 3 insertions(+)
 
 diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index 3c6c1df..1292634 100644
+index d3b03ab..aa04e11 100644
 --- a/net/wireless/nl80211.c
 +++ b/net/wireless/nl80211.c
-@@ -3495,6 +3495,9 @@ static int nl80211_set_wiphy(struct sk_buff *skb, struct genl_info *info)
+@@ -3615,6 +3615,9 @@ static int nl80211_set_wiphy(struct sk_buff *skb, struct genl_info *info)
  			goto out;
  		}
  
@@ -24,5 +24,5 @@ index 3c6c1df..1292634 100644
  			/*
  			 * Fragments (apart from the last one) are required to
 -- 
-2.36.1
+2.18.0
 

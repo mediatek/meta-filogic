@@ -1,7 +1,7 @@
-From fbe3cb1d42673c431f0f933620d0a1ec86a41113 Mon Sep 17 00:00:00 2001
+From 7b24c04be43656f0d305473119ba534a5720bc47 Mon Sep 17 00:00:00 2001
 From: Shayne Chen <shayne.chen@mediatek.com>
 Date: Tue, 29 Mar 2022 16:06:30 +0800
-Subject: [PATCH 901/911] nl80211: mtk: extend CAC time for weather radar
+Subject: [PATCH 901/908] nl80211: mtk: extend CAC time for weather radar
  channels
 
 Signed-off-by: Shayne Chen <shayne.chen@mediatek.com>
@@ -10,10 +10,10 @@ Signed-off-by: Shayne Chen <shayne.chen@mediatek.com>
  1 file changed, 7 insertions(+)
 
 diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index bc6b5ac..3c6c1df 100644
+index 84bf9e8..d3b03ab 100644
 --- a/net/wireless/nl80211.c
 +++ b/net/wireless/nl80211.c
-@@ -9354,6 +9354,13 @@ static int nl80211_start_radar_detection(struct sk_buff *skb,
+@@ -9807,6 +9807,13 @@ static int nl80211_start_radar_detection(struct sk_buff *skb,
  	if (WARN_ON(!cac_time_ms))
  		cac_time_ms = IEEE80211_DFS_MIN_CAC_TIME_MS;
  
@@ -26,7 +26,7 @@ index bc6b5ac..3c6c1df 100644
 +
  	err = rdev_start_radar_detection(rdev, dev, &chandef, cac_time_ms);
  	if (!err) {
- 		wdev->chandef = chandef;
+ 		wdev->links[0].ap.chandef = chandef;
 -- 
-2.36.1
+2.18.0
 

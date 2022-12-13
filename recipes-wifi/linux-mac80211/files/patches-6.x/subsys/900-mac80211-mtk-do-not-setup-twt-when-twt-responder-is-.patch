@@ -1,7 +1,7 @@
-From 78275901240835e58b0f883065061f90c7fba310 Mon Sep 17 00:00:00 2001
+From ad3c58a67fd28755ae75ac995ae404eb5c6c21b0 Mon Sep 17 00:00:00 2001
 From: Peter Chiu <chui-hao.chiu@mediatek.com>
 Date: Tue, 18 Jan 2022 20:29:44 +0800
-Subject: [PATCH 900/911] mac80211: mtk: do not setup twt when twt responder is
+Subject: [PATCH 900/908] mac80211: mtk: do not setup twt when twt responder is
  false
 
 ---
@@ -9,10 +9,10 @@ Subject: [PATCH 900/911] mac80211: mtk: do not setup twt when twt responder is
  1 file changed, 3 insertions(+)
 
 diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
-index b991151..eb16838 100644
+index ba21e7c..02a0387 100644
 --- a/net/mac80211/rx.c
 +++ b/net/mac80211/rx.c
-@@ -3283,6 +3283,9 @@ ieee80211_process_rx_twt_action(struct ieee80211_rx_data *rx)
+@@ -3298,6 +3298,9 @@ ieee80211_process_rx_twt_action(struct ieee80211_rx_data *rx)
  	if (sdata->vif.type != NL80211_IFTYPE_AP)
  		return false;
  
@@ -23,5 +23,5 @@ index b991151..eb16838 100644
  		return false;
  
 -- 
-2.36.1
+2.18.0
 
