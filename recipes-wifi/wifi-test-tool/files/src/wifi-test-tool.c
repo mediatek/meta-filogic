@@ -232,6 +232,13 @@ void set_key(wifi_intf_param *intf_param, char *key)
     strncpy(intf_param->security.u.key.key, key, 64);
 }
 
+void set_ifname(wifi_intf_param *intf_param, char *ifname)
+{
+    if (strlen(ifname) > 15)
+        return;
+    strncpy(intf_param->ifname, ifname, strlen(ifname) + 1);
+}
+
 int set_interface_bssid(int phy_index, int offset, mac_address_t *bssid)
 {
     FILE *f;
@@ -383,6 +390,12 @@ void set_ap_param(wifi_intf_param ap_param , wifi_vap_info_map_t *map)
     strncpy(vap_info.u.bss_info.ssid, ap_param.ssid, 33);
     vap_info.u.bss_info.ssid[32] = '\0';
 
+    // interface
+    if (strlen(ap_param.ifname) != 0) {
+        strncpy(vap_info.vap_name, ap_param.ifname, 16);
+        vap_info.vap_name[15] = "\0";
+    }
+
     vap_info.u.bss_info.security.mode = ap_param.security.mode;
     vap_info.u.bss_info.security.encr = ap_param.security.encr;
     vap_info.u.bss_info.security.mfp = ap_param.security.mfp;
@@ -523,7 +536,6 @@ int apply_uci_config ()
                 if (strcmp(op->e.name, "device") == 0){
                     set_radionum(&intf_param, op->v.string);
                 }else if (strcmp(op->e.name, "mode") == 0){
-                    intf_param.mac_offset = staCount[intf_param.radio_index] + apCount[intf_param.radio_index];
                     if (strncmp(op->v.string, "sta", 3) == 0) {
                         intf_param.sta_mode = TRUE;
                         intf_param.sta_index = intf_param.radio_index + staCount[intf_param.radio_index]*max_radio_num;
@@ -542,6 +554,8 @@ int apply_uci_config ()
                     set_encryption(&intf_param, op->v.string);
                 }else if (strcmp(op->e.name, "key") == 0){
                     set_key(&intf_param, op->v.string);
+                }else if (strcmp(op->e.name, "ifname") == 0){
+                    set_ifname(&intf_param, op->v.string);
                 }else{
                     fprintf(stderr, "[%s %s not set!]\n", op->e.name, op->v.string);
                 }    
