@@ -1,7 +1,5 @@
 #patch patches (come from openwrt/lede/target/linux/mediatek)
 SRC_URI_append = " \
-    file://0000-mt76-sync-to-master-lastest-commit.patch \
-    file://100-Revert-of-net-pass-the-dst-buffer-to-of_get_mac_addr.patch \
     file://1001-mt76-mt7915-add-mtk-internal-debug-tools-for-mt76.patch \
     file://1002-mt76-mt7915-csi-implement-csi-support.patch \
     file://1003-mt76-mt7915-air-monitor-support.patch \
@@ -39,4 +37,8 @@ SRC_URI_append = " \
     file://3008-mt76-mt7915-wed-find-rx-token-by-physical-address.patch \
     file://3009-mt76-mt7915-wed-drop-scatter-and-gather-frame.patch \
     file://3010-mt76-mt7915-wed-HW-ATF-support-for-mt7986.patch \
+    file://3011-mt76-mt7915-wed-add-mt7916-2-pcie-support-when-wed-o.patch \
+    file://4000-mt76-revert-get_of_mac_addr.patch \
+    file://4001-mt76-include-header-files-for-module-param.patch \
+    file://4002-mt76-revert-some-structs-of-wireless-stack.patch \
     "

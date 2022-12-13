@@ -6,10 +6,10 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 inherit module
 
-PV = "6.x"
+PV = "6.1-rc7"
 
 SRC_URI = " \
-    https://cdn.kernel.org/pub/linux/kernel/projects/backports/stable/v5.15.81/backports-5.15.81-1.tar.xz \
+    https://cdn.kernel.org/pub/linux/kernel/projects/backports/stable/v${PV}/backports-${PV}-1.tar.xz \
     file://config \
     file://0001-rdkb-fix_build_issue-mac80211-without_depmod.patch;apply=no \
     "
@@ -27,7 +27,7 @@ require files/patches-6.x/subsys/subsys.inc
 SRC_URI_remove = "${@bb.utils.contains('DISTRO_FEATURES', 'flow_offload', '', 'file://99900-mac80211-mtk-mask-kernel-version-limitation-and-fil.patch', d)}"
 SRC_URI_remove = "${@bb.utils.contains('DISTRO_FEATURES', 'flow_offload', '', 'file://99901-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-i.patch', d)}"
 
-S = "${WORKDIR}/backports-5.15.81-1"
+S = "${WORKDIR}/backports-${PV}-1"
 
 do_filogic_patches() {
     cd ${S}

@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=c188eeeb69c0a05d0545816f1458a0c9"
 
 inherit module
 
-require mt76_${PV}.inc
+require mt76.inc
 SRC_URI = " \
     git://git@github.com/openwrt/mt76.git;protocol=https \
     file://COPYING;subdir=git \
