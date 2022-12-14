@@ -27,6 +27,7 @@ SRC_URI_append = " \
     file://1126-mt76-mt7915-add-ibf-control-vendor-cmd.patch \
     file://1127-mt76-mt7915-add-E3-re-bonding-for-low-yield-rate-iss.patch \
     file://1128-mt76-mt7915-support-on-off-SW-ACI-through-debugfs.patch \
+    file://1129-mt76-mt7915-add-bf-backoff-limit-table-support.patch \
     file://3001-mt76-mt7915-wed-add-wed-tx-support.patch \
     file://3002-mt76-mt7915-wed-add-wed-tx-wds-support-on-mt7986.patch \
     file://3003-mt76-connac-wed-add-wed-rx-copy-skb.patch \

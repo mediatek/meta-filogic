@@ -12,6 +12,7 @@ SRC_URI_append = " \
     file://306-02-wifi-mac80211-add-wake_tx_queue-callback-to-drivers.patch \
     file://306-03-wifi-mac80211-Drop-support-for-TX-push-path.patch \
     file://306-04-wifi-realtek-remove-duplicated-wake_tx_queue.patch \
+    file://307-wifi-mac80211-fix-initialization-of-rx-link-and-rx-l.patch \
     file://310-mac80211-add-support-for-restricting-netdev-features.patch \
     file://400-allow-ibss-mixed.patch \
     file://500-mac80211_configure_antenna_gain.patch \
