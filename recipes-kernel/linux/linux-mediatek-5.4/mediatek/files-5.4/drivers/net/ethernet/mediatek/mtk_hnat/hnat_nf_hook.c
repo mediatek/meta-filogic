@@ -1230,15 +1230,16 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 
 				entry.ipv4_hnapt.vlan1 = hw_path->vlan_id;
 
-				if (skb->vlan_tci && FROM_GE_WAN(skb) &&
-				    IS_LAN_GRP(dev)) {
+				if (skb_vlan_tag_present(skb)) {
 					entry.bfib1.vlan_layer += 1;
 
 					if (entry.ipv4_hnapt.vlan1)
-						entry.ipv4_hnapt.vlan2 = (skb->vlan_tci & VLAN_VID_MASK);
+						entry.ipv4_hnapt.vlan2 =
+							skb->vlan_tci;
 					else
-						entry.ipv4_hnapt.vlan1 = (skb->vlan_tci & VLAN_VID_MASK);
-				}
+						entry.ipv4_hnapt.vlan1 =
+							skb->vlan_tci;
+			}
 
 				entry.ipv4_hnapt.sip = foe->ipv4_hnapt.sip;
 				entry.ipv4_hnapt.dip = foe->ipv4_hnapt.dip;
@@ -1283,14 +1284,15 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 
 			entry.ipv6_5t_route.vlan1 = hw_path->vlan_id;
 
-			if (skb->vlan_tci && FROM_GE_WAN(skb) &&
-			    IS_LAN_GRP(dev)) {
+			if (skb_vlan_tag_present(skb)) {
 				entry.bfib1.vlan_layer += 1;
 
 				if (entry.ipv6_5t_route.vlan1)
-					entry.ipv6_5t_route.vlan2 = (skb->vlan_tci & VLAN_VID_MASK);
+					entry.ipv6_5t_route.vlan2 =
+						skb->vlan_tci;
 				else
-					entry.ipv6_5t_route.vlan1 = (skb->vlan_tci & VLAN_VID_MASK);
+					entry.ipv6_5t_route.vlan1 =
+						skb->vlan_tci;
 			}
 
 			if (hnat_priv->data->per_flow_accounting)
@@ -1737,6 +1739,9 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 	    (gmac_no != NR_WHNAT_WDMA_PORT))
 		return NF_ACCEPT;
 
+	if (unlikely(!skb_mac_header_was_set(skb)))
+		return NF_ACCEPT;
+
 	if (!skb_hnat_is_hashed(skb))
 		return NF_ACCEPT;
 
@@ -1968,6 +1973,9 @@ void mtk_ppe_dev_register_hook(struct net_device *dev)
 				__func__, dev->name, i);
 			return;
 		}
+	}
+
+	for (i = 1; i < MAX_IF_NUM; i++) {
 		if (!hnat_priv->wifi_hook_if[i]) {
 			if (find_extif_from_devname(dev->name)) {
 				extif_set_dev(dev);
@@ -2111,6 +2119,9 @@ static unsigned int mtk_hnat_nf_post_routing(
 
 	if (skb_hnat_alg(skb) || unlikely(!is_magic_tag_valid(skb) ||
 					  !IS_SPACE_AVAILABLE_HEAD(skb)))
+		return 0;
+
+	if (unlikely(!skb_mac_header_was_set(skb)))
 		return 0;
 
 	if (unlikely(!skb_hnat_is_hashed(skb)))
@@ -2305,7 +2316,12 @@ static unsigned int
 mtk_pong_hqos_handler(void *priv, struct sk_buff *skb,
 		      const struct nf_hook_state *state)
 {
-	struct vlan_ethhdr *veth = (struct vlan_ethhdr *)skb_mac_header(skb);
+	struct vlan_ethhdr *veth;
+
+	if (!skb)
+		goto drop;
+
+	veth = (struct vlan_ethhdr *)skb_mac_header(skb);
 
 	if (IS_HQOS_MODE && eth_hdr(skb)->h_proto == HQOS_MAGIC_TAG) {
 		skb_hnat_entry(skb) = ntohs(veth->h_vlan_TCI) & 0x3fff;
@@ -2516,7 +2532,8 @@ int mtk_hqos_ptype_cb(struct sk_buff *skb, struct net_device *dev,
 	skb_hnat_entry(skb) = ntohs(veth->h_vlan_TCI) & 0x3fff;
 	skb_hnat_reason(skb) = HIT_BIND_FORCE_TO_CPU;
 
-	do_hnat_ge_to_ext(skb, __func__);
+	if (do_hnat_ge_to_ext(skb, __func__) == -1)
+		return 1;
 
 	return 0;
 }

@@ -199,6 +199,29 @@ SRC_URI_append = " \
     file://610-v5.9-net-bridge-clear-bridge-s-private-skb-space-on-xmit.patch \
     file://700-v5.5-net-core-allow-fast-GRO-for-skbs-with-Ethernet-heade.patch \
     file://701-v5.7-net-dsa-Implement-flow-dissection-for-tag_brcm.c.patch \
+    file://702-Revert-net-dsa-b53-Fix-valid-setting-for-MDB-entries.patch \
+    file://703-v5.5-0001-net-dsa-b53-Add-support-for-MDB.patch \
+    file://703-v5.5-0002-net-dsa-bcm_sf2-Wire-up-MDB-operations.patch \
+    file://703-v5.5-0003-net-dsa-bcm_sf2-Add-support-for-optional-reset-contr.patch \
+    file://704-v5.6-net-dsa-Get-information-about-stacked-DSA-protocol.patch \
+    file://705-v5.6-0001-net-dsa-b53-Enable-Broadcom-tags-for-531x5-539x-fami.patch \
+    file://707-v5.7-0001-net-dsa-bcm_sf2-Also-configure-Port-5-for-2Gb-sec-on.patch \
+    file://707-v5.7-0002-Revert-net-dsa-bcm_sf2-Also-configure-Port-5-for-2Gb.patch \
+    file://707-v5.7-0005-net-dsa-b53-Restore-VLAN-entries-upon-re-configurati.patch \
+    file://707-v5.7-0006-net-dsa-b53-Prevent-tagged-VLAN-on-port-7-for-7278.patch \
+    file://707-v5.7-0007-net-dsa-b53-Deny-enslaving-port-7-for-7278-into-a-br.patch \
+    file://707-v5.7-0008-net-dsa-bcm_sf2-Disable-learning-for-ASP-port.patch \
+    file://707-v5.7-0009-net-dsa-bcm_sf2-Check-earlier-for-FLOW_EXT-and-FLOW_.patch \
+    file://707-v5.7-0010-net-dsa-bcm_sf2-Move-writing-of-CFP_DATA-5-into-slic.patch \
+    file://707-v5.7-0011-net-dsa-bcm_sf2-Add-support-for-matching-VLAN-TCI.patch \
+    file://707-v5.7-0012-net-dsa-bcm_sf2-Support-specifying-VLAN-tag-egress-r.patch \
+    file://707-v5.7-0016-net-dsa-b53-Fix-valid-setting-for-MDB-entries.patch \
+    file://709-v5.8-0001-net-dsa-b53-per-port-interrupts-are-optional.patch \
+    file://709-v5.8-0002-net-dsa-b53-Rename-num_arl_entries-to-num_arl_bins.patch \
+    file://709-v5.8-0003-net-dsa-b53-Provide-number-of-ARL-buckets.patch \
+    file://709-v5.8-0004-net-dsa-b53-Bound-check-ARL-searches.patch \
+    file://709-v5.8-0005-net-dsa-b53-Remove-is_static-argument-to-b53_read_op.patch \
+    file://709-v5.8-0006-net-dsa-b53-remove-redundant-premature-assignment-to.patch \
     file://716-v5.5-net-sfp-move-fwnode-parsing-into-sfp-bus-layer.patch \
     file://717-v5.5-net-sfp-rework-upstream-interface.patch \
     file://718-v5.5-net-sfp-fix-sfp_bus_put-kernel-documentation.patch \
