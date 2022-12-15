@@ -1,5 +1,9 @@
 #patch patches (come from openwrt/lede/target/linux/mediatek)
 SRC_URI_append = " \
+    file://0001-wifi-mt76-mt7915-call-mt7915_mcu_set_thermal_throttl.patch \
+    file://0002-wifi-mt76-mt7915-rework-mt7915_mcu_set_thermal_throt.patch \
+    file://0003-wifi-mt76-mt7915-rework-mt7915_thermal_temp_store.patch \
+    file://0004-wifi-mt76-mt7915-add-error-message-in-mt7915_thermal.patch \
     file://1001-mt76-mt7915-add-mtk-internal-debug-tools-for-mt76.patch \
     file://1002-mt76-mt7915-csi-implement-csi-support.patch \
     file://1003-mt76-mt7915-air-monitor-support.patch \
@@ -28,8 +32,9 @@ SRC_URI_append = " \
     file://1127-mt76-mt7915-add-E3-re-bonding-for-low-yield-rate-iss.patch \
     file://1128-mt76-mt7915-support-on-off-SW-ACI-through-debugfs.patch \
     file://1129-mt76-mt7915-add-bf-backoff-limit-table-support.patch \
+    file://1130-mt76-mt7915-add-amsdu-set-get-ctrl.patch \
     file://3001-mt76-mt7915-wed-add-wed-tx-support.patch \
-    file://3002-mt76-mt7915-wed-add-wed-tx-wds-support-on-mt7986.patch \
+    file://3002-mt76-mt7915-wed-add-wds-support-when-wed-is-enabled.patch \
     file://3003-mt76-connac-wed-add-wed-rx-copy-skb.patch \
     file://3004-mt76-mt7915-wed-add-fill-receive-path-to-report-wed-.patch \
     file://3005-mt76-mt7915-wed-add-ser-support-when-wed-on.patch \
@@ -39,6 +44,7 @@ SRC_URI_append = " \
     file://3009-mt76-mt7915-wed-drop-scatter-and-gather-frame.patch \
     file://3010-mt76-mt7915-wed-HW-ATF-support-for-mt7986.patch \
     file://3011-mt76-mt7915-wed-add-mt7916-2-pcie-support-when-wed-o.patch \
+    file://3012-mt76-mt7915-wed-add-rxwi-for-further-in-chip-rro-dev.patch \
     file://4000-mt76-revert-get_of_mac_addr.patch \
     file://4001-mt76-include-header-files-for-module-param.patch \
     file://4002-mt76-revert-for-backports-5.15-wireless-stack.patch \

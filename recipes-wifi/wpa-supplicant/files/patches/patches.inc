@@ -63,4 +63,5 @@ SRC_URI_append = " \
     file://99907-hostapd-mtk-Add-hostapd-iBF-control.patch \
     file://99908-hostapd-mtk-Do-not-include-HE-capab-IE-if-associate.patch \
     file://99909-hostapd-mtk-Add-DFS-and-ZWDFS-support.patch \
+    file://99910-hostapd-mtk-Add-amsdu-set-get-ctrl.patch \
     "

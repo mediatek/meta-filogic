@@ -61,6 +61,8 @@ SRC_URI_append = " \
     file://909-cfg80211-mtk-implement-DFS-status-show-cac-and-nop-s.patch \
     file://910-mac80211-mtk-Set-TWT-Information-Frame-Disabled-bit-.patch \
     file://911-mac80211-mtk-fix-the-issue-of-AP-and-STA-starting-on.patch \
+    file://912-mac80211-mtk-check-the-control-channel-before-downgr.patch \
+    file://912-mac80211-mtk-fix-tx-amsdu-aggregation.patch \
     file://99900-mac80211-mtk-mask-kernel-version-limitation-and-fil.patch \
     file://99901-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-i.patch \
     "
