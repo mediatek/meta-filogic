@@ -69,16 +69,13 @@ PKG_MAKE_FLAGS = " \
     CONFIG_MAC80211_DEBUGFS=y \
     CONFIG_NL80211_TESTMODE=y \
     CONFIG_MT76_CONNAC_LIB=m \
-    CONFIG_MT7615_COMMON=m \
-    CONFIG_MT7915E=m \
-    CONFIG_MT7986_WMAC=y \
+    CONFIG_MT7996E=m \
     "
 
 NOSTDINC_FLAGS += " \
     -DCONFIG_MAC80211_MESH \
     -DCONFIG_NL80211_TESTMODE \
     -DCONFIG_MAC80211_DEBUGFS \
-    -DCONFIG_MT7986_WMAC \
     "
 
 EXTRA_OEMAKE = " \
@@ -103,8 +100,7 @@ do_install() {
     install -d ${D}/lib/modules/${KERNEL_VERSION}/updates/drivers/net/wireless/mediatek/mt76/mt7915/
     install -m 0644 ${B}/mt76.ko ${D}/lib/modules/${KERNEL_VERSION}/updates/drivers/net/wireless/mediatek/mt76/
     install -m 0644 ${B}/mt76-connac-lib.ko ${D}/lib/modules/${KERNEL_VERSION}/updates/drivers/net/wireless/mediatek/mt76/
-    install -m 0644 ${B}/mt7615/mt7615-common.ko ${D}/lib/modules/${KERNEL_VERSION}/updates/drivers/net/wireless/mediatek/mt76/mt7615/
-    install -m 0644 ${B}/mt7915/mt7915e.ko ${D}/lib/modules/${KERNEL_VERSION}/updates/drivers/net/wireless/mediatek/mt76/mt7915/
+    install -m 0644 ${B}/mt7996/mt7996e.ko ${D}/lib/modules/${KERNEL_VERSION}/updates/drivers/net/wireless/mediatek/mt76/
 }
 
 do_install_append () {
@@ -120,20 +116,17 @@ do_install_append () {
     install -m 644 ${WORKDIR}/src/firmware/mt7916_wa.bin ${D}${base_libdir}/firmware/mediatek/
     install -m 644 ${WORKDIR}/src/firmware/mt7916_wm.bin ${D}${base_libdir}/firmware/mediatek/
     install -m 644 ${WORKDIR}/src/firmware/mt7916_eeprom.bin ${D}${base_libdir}/firmware/mediatek/
+
+    install -d ${D}/${base_libdir}/firmware/mediatek/mt7996
+    install -m 644 ${WORKDIR}/src/firmware/mt7996_wa.bin ${D}${base_libdir}/firmware/mediatek/mt7996
+    install -m 644 ${WORKDIR}/src/firmware/mt7996_wm.bin ${D}${base_libdir}/firmware/mediatek/mt7996
+    install -m 644 ${WORKDIR}/src/firmware/mt7996_rom_patch.bin ${D}${base_libdir}/firmware/mediatek/mt7996
+    install -m 644 ${WORKDIR}/src/firmware/mt7996_eeprom.bin ${D}${base_libdir}/firmware/mediatek/mt7996
 }
 
-do_install_append_mt7986 () {
+do_install_append_mt7988 () {
     install -d ${D}/${base_libdir}/firmware/mediatek/
 
-    install -m 644 ${WORKDIR}/src/firmware/mt7986_rom_patch.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7986_rom_patch_mt7975.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7986_wa.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7986_wm.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7986_wm_mt7975.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7986_eeprom_mt7975_dual.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7986_eeprom_mt7976_dbdc.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7986_eeprom_mt7976.bin  ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7986_eeprom_mt7976_dual.bin ${D}${base_libdir}/firmware/mediatek/
     install -m 644 ${WORKDIR}/src/firmware/mt7986_wo_0.bin ${D}${base_libdir}/firmware/mediatek/
     install -m 644 ${WORKDIR}/src/firmware/mt7986_wo_1.bin ${D}${base_libdir}/firmware/mediatek/
 }
@@ -149,4 +142,5 @@ python populate_packages_prepend () {
 #RPROVIDES_${PN} += "kernel-module-${PN}-${KERNEL_VERSION}"
 #RPROVIDES_${PN} += "kernel-module-${PN}-connac-lib-${KERNEL_VERSION}"
 
-KERNEL_MODULE_AUTOLOAD += "mt7915e"
+#KERNEL_MODULE_AUTOLOAD += "mt7915e"
+KERNEL_MODULE_AUTOLOAD += "mt7996e"
