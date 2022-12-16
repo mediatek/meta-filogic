@@ -9,7 +9,6 @@ require mt76.inc
 SRC_URI = " \
     git://git@github.com/openwrt/mt76.git;protocol=https \
     file://COPYING;subdir=git \
-    file://0001-mt76-add-internal-wed_tiny-header-file.patch;apply=no \
     "
 SRC_URI += " \
     file://src \
@@ -23,37 +22,11 @@ DEPENDS += "linux-mac80211"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches-${PV}:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/src:"
 
-SRC_URI += "file://*.patch;apply=no"
+require files/patches-${PV}/patches.inc
+SRC_URI_append += "file://5000-mt76-add-internal-wed_tiny-header-file.patch"
 
 S = "${WORKDIR}/git"
 
-do_mtk_patches() {
-    cd ${S}
-
-    DISTRO_FlowBlock_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','flow_offload','true','false',d)}"
-    
-    if [ ! -e mtk_wifi_patch_applied ]; then
-        for i in ${WORKDIR}/*.patch
-        do
-        if [ $DISTRO_FlowBlock_ENABLED = 'true' ]; then
-            patch -p1 < $i;
-        else 
-            prefix=$(echo -n "${WORKDIR}"|wc -c)
-            patch_number_start=$(expr $prefix + 2)
-            patch_number_end=$(expr $patch_number_start + 3 )
-            patch_number=$(echo "$i" | cut -c"$patch_number_start"-"$patch_number_end")
-
-            if [ "$patch_number" -ge "3000" ]; then
-                continue;
-            else
-                patch -p1 < $i;
-            fi
-        fi
-        done
-    fi
-    touch mtk_wifi_patch_applied
-}
-addtask mtk_patches after do_patch before do_configure
 
 NOSTDINC_FLAGS = " \
     -I${B} \
