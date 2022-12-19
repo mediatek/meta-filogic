@@ -97,7 +97,7 @@ SRC_URI_append = " \
     file://7001-net-make-napi-disable-symmetric-with-enable.patch \
     file://7002-net-fix-premature-exit-from-napi-state-polling-in-napi-disable-v2.patch \
     file://730-net-ethernet-mtk_eth_soc-add-mtk-dsa-tag-rx-offload.patch \
-    file://738-mt7531-gsw-internal_phy_calibration.patch;apply=no\
+    file://738-mt7531-gsw-internal_phy_calibration.patch;apply=no \
     file://739-mt7531-gsw-port5_external_phy_init.patch;apply=no \
     file://740-add-gpy211-phy-support.patch \
     file://741-add-default-setting-to-dsa-unused-port.patch \
