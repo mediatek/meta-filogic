@@ -1,7 +1,7 @@
-From 19680b3e37b2fbee253100ff02f6aabf9c8025f6 Mon Sep 17 00:00:00 2001
+From b84df4fe11ae05b26b79293435e18503646a368d Mon Sep 17 00:00:00 2001
 From: MeiChia Chiu <meichia.chiu@mediatek.com>
 Date: Wed, 22 Jun 2022 10:53:43 +0800
-Subject: [PATCH 1007/1042] mt76: mt7915: add mt76 vendor muru onoff command
+Subject: [PATCH 1007/1009] mt76: mt7915: add mt76 vendor muru onoff command
 
 ---
  mt7915/mcu.c    |  7 +++++++
@@ -11,10 +11,10 @@ Subject: [PATCH 1007/1042] mt76: mt7915: add mt76 vendor muru onoff command
  4 files changed, 63 insertions(+)
 
 diff --git a/mt7915/mcu.c b/mt7915/mcu.c
-index 47dee76..ec306f0 100644
+index 3baed2c..7728e82 100644
 --- a/mt7915/mcu.c
 +++ b/mt7915/mcu.c
-@@ -3900,6 +3900,13 @@ void mt7915_set_wireless_vif(void *data, u8 *mac, struct ieee80211_vif *vif)
+@@ -3908,6 +3908,13 @@ void mt7915_set_wireless_vif(void *data, u8 *mac, struct ieee80211_vif *vif)
  		if (val == 0)
  			dev->dbg.muru_onoff = MUMIMO_DL_CERT | MUMIMO_DL;
  		break;

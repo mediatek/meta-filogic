@@ -4,6 +4,8 @@ SRC_URI_append = " \
     file://0002-wifi-mt76-mt7915-rework-mt7915_mcu_set_thermal_throt.patch \
     file://0003-wifi-mt76-mt7915-rework-mt7915_thermal_temp_store.patch \
     file://0004-wifi-mt76-mt7915-add-error-message-in-mt7915_thermal.patch \
+    file://0005-wifi-mt76-mt7915-set-sku-initial-value-to-zero.patch \
+    file://0006-wifi-mt76-mt7915-add-chip-id-condition-in-mt7915_che.patch \
     file://1001-mt76-mt7915-add-mtk-internal-debug-tools-for-mt76.patch \
     file://1002-mt76-mt7915-csi-implement-csi-support.patch \
     file://1003-mt76-mt7915-air-monitor-support.patch \
@@ -13,26 +15,27 @@ SRC_URI_append = " \
     file://1007-mt76-mt7915-add-mt76-vendor-muru-onoff-command.patch \
     file://1008-mt76-mt7915-drop-undefined-action-frame.patch \
     file://1009-mt76-mt7915-add-fw_version-dump.patch \
-    file://1111-mt76-mt7915-rework-testmode-init-registers.patch \
+    file://1111-mt76-testmode-rework-testmode-init-registers.patch \
     file://1112-mt76-testmode-additional-supports.patch \
     file://1113-mt76-testmode-add-pre-cal-support.patch \
     file://1114-mt76-testmode-add-iBF-command-mode-support.patch \
     file://1115-mt76-testmode-add-ZWDFS-test-mode-support.patch \
-    file://1116-mt76-mt7915-init-rssi-in-WTBL-when-add-station.patch \
-    file://1117-mt76-mt7915-reduce-TWT-SP-sent-to-FW-for-cert.patch \
-    file://1118-mt76-connac-airtime-fairness-feature-off-in-mac80211.patch \
-    file://1119-mt76-mt7915-add-mt7986-and-mt7916-pre-calibration.patch \
-    file://1120-mt76-mt7915-add-phy-capability-vendor-command.patch \
-    file://1121-mt76-mt7915-add-vendor-subcmd-EDCCA-ctrl-enable-thre.patch \
-    file://1122-mt76-mt7915-implement-bin-file-mode.patch \
-    file://1123-mt76-mt7915-initialize-wcid.patch \
-    file://1124-mt76-mt7915-Add-hemu-dump-support.patch \
-    file://1125-mt76-mt7915-add-vendor-subcmd-three-wire-PTA-ctrl.patch \
-    file://1126-mt76-mt7915-add-ibf-control-vendor-cmd.patch \
-    file://1127-mt76-mt7915-add-E3-re-bonding-for-low-yield-rate-iss.patch \
-    file://1128-mt76-mt7915-support-on-off-SW-ACI-through-debugfs.patch \
-    file://1129-mt76-mt7915-add-bf-backoff-limit-table-support.patch \
-    file://1130-mt76-mt7915-add-amsdu-set-get-ctrl.patch \
+    file://1116-mt76-testmode-add-iBF-eBF-cal-and-cert-commands-with.patch \
+    file://1117-mt76-mt7915-init-rssi-in-WTBL-when-add-station.patch \
+    file://1118-mt76-mt7915-reduce-TWT-SP-sent-to-FW-for-cert.patch \
+    file://1119-mt76-connac-airtime-fairness-feature-off-in-mac80211.patch \
+    file://1120-mt76-mt7915-add-mt7986-and-mt7916-pre-calibration.patch \
+    file://1121-mt76-mt7915-add-phy-capability-vendor-command.patch \
+    file://1122-mt76-mt7915-add-vendor-subcmd-EDCCA-ctrl-enable-thre.patch \
+    file://1123-mt76-mt7915-implement-bin-file-mode.patch \
+    file://1124-mt76-mt7915-initialize-wcid.patch \
+    file://1125-mt76-mt7915-Add-hemu-dump-support.patch \
+    file://1126-mt76-mt7915-add-vendor-subcmd-three-wire-PTA-ctrl.patch \
+    file://1127-mt76-mt7915-add-ibf-control-vendor-cmd.patch \
+    file://1128-mt76-mt7915-add-E3-re-bonding-for-low-yield-rate-iss.patch \
+    file://1129-mt76-mt7915-support-on-off-SW-ACI-through-debugfs.patch \
+    file://1130-mt76-mt7915-add-bf-backoff-limit-table-support.patch \
+    file://1131-mt76-mt7915-amsdu-set-and-get-control.patch \
     file://3001-mt76-mt7915-wed-add-wed-tx-support.patch \
     file://3002-mt76-mt7915-wed-add-wds-support-when-wed-is-enabled.patch \
     file://3003-mt76-connac-wed-add-wed-rx-copy-skb.patch \
@@ -45,7 +48,8 @@ SRC_URI_append = " \
     file://3010-mt76-mt7915-wed-HW-ATF-support-for-mt7986.patch \
     file://3011-mt76-mt7915-wed-add-mt7916-2-pcie-support-when-wed-o.patch \
     file://3012-mt76-mt7915-wed-add-rxwi-for-further-in-chip-rro-dev.patch \
-    file://4000-mt76-revert-get_of_mac_addr.patch \
-    file://4001-mt76-include-header-files-for-module-param.patch \
-    file://4002-mt76-revert-for-backports-5.15-wireless-stack.patch \
+    file://3013-mt76-mt7915-wed-fix-potential-memory-leakage.patch \
+    file://4001-mt76-revert-get_of_mac_addr.patch \
+    file://4002-mt76-include-header-files-for-module-param.patch \
+    file://4003-mt76-revert-for-backports-5.15-wireless-stack.patch \
     "

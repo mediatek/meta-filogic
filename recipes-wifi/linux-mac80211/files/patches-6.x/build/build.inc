@@ -10,4 +10,5 @@ SRC_URI_append = " \
     file://070-remove-broken-wext-select.patch \
     file://080-resv_start_op.patch \
     file://090-bcma-otp.patch \
+    file://100-backports-drop-QRTR-and-MHI.patch \
     "

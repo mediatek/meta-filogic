@@ -50,6 +50,7 @@ SRC_URI_append = " \
     file://466-Revert-mtd-spi-nor-fix-Spansion-regressions-aliased-.patch \
     file://470-mtd-spi-nor-support-limiting-4K-sectors-support-base.patch \
     file://476-mtd-spi-nor-add-eon-en25q128.patch \
+    file://477-mtd-spi-nor-add-eon-en25qx128a.patch \
     file://479-mtd-spi-nor-add-xtx-xt25f128b.patch \
     file://480-mtd-set-rootfs-to-be-root-dev.patch \
     file://481-mtd-spi-nor-rework-broken-flash-reset-support.patch \
