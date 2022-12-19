@@ -53,11 +53,7 @@ SRC_URI_remove = " \
     file://531-debloat_lzma.patch \
     "
 require ${PN}-${PV}/mediatek/patches-5.4/patches-5.4.inc
-SRC_URI_remove = " \
-    file://738-mt7531-gsw-internal_phy_calibration.patch \
-    file://739-mt7531-gsw-port5_external_phy_init.patch \
-    file://753-net-mt753x-phy-coverity-scan.patch \
-    "
+
 SRC_URI_remove_mt7986-32bit = " \
     file://401-pinctrl-add-mt7986-driver.patch \
     "
@@ -76,6 +72,9 @@ do_filogic_patches() {
             patch -p1 < ${WORKDIR}/001-rdkb-eth-mtk-change-ifname-for.patch
             patch -p1 < ${WORKDIR}/003-rdkb-mtd-kernel-ubi-relayout.patch
             patch -p1 < ${WORKDIR}/0600-net-phylink-propagate-resolved-link-config-via-mac_l.patch
+            patch -p1 < ${WORKDIR}/738-mt7531-gsw-internal_phy_calibration.patch
+            patch -p1 < ${WORKDIR}/739-mt7531-gsw-port5_external_phy_init.patch
+            patch -p1 < ${WORKDIR}/753-net-mt753x-phy-coverity-scan.patch
             patch -p1 < ${WORKDIR}/9010-iwconfig-wireless-rate-fix.patch
             if [ $DISTRO_FlowBlock_ENABLED = 'true' ]; then
                 for i in ${WORKDIR}/mediatek/flow_patch/*.patch; do patch -p1 < $i; done

@@ -97,8 +97,8 @@ SRC_URI_append = " \
     file://7001-net-make-napi-disable-symmetric-with-enable.patch \
     file://7002-net-fix-premature-exit-from-napi-state-polling-in-napi-disable-v2.patch \
     file://730-net-ethernet-mtk_eth_soc-add-mtk-dsa-tag-rx-offload.patch \
-    file://738-mt7531-gsw-internal_phy_calibration.patch \
-    file://739-mt7531-gsw-port5_external_phy_init.patch \
+    file://738-mt7531-gsw-internal_phy_calibration.patch;apply=no\
+    file://739-mt7531-gsw-port5_external_phy_init.patch;apply=no \
     file://740-add-gpy211-phy-support.patch \
     file://741-add-default-setting-to-dsa-unused-port.patch \
     file://742-net-dsa-add-MT7531-Gigabit-Ethernet-PHY-setting.patch \
@@ -114,7 +114,7 @@ SRC_URI_append = " \
     file://750-add-mdio-bus-for-gphy-calibration.patch \
     file://751-net-phy-aquantia-add-firmware-download.patch \
     file://752-net-dsa-phy-coverity-scan.patch \
-    file://753-net-mt753x-phy-coverity-scan.patch \
+    file://753-net-mt753x-phy-coverity-scan.patch;apply=no \
     file://8000-PATCH-1-4-tphy-support-type-switch-by-pericfg.patch \
     file://8001-PATCH-2-4-dt-bindings-phy-Add-PHY_TYPE_DP-definition.patch \
     file://8002-PATCH-3-4-dt-bindings-phy-Add-PHY_TYPE_XPCS-definition.patch \
