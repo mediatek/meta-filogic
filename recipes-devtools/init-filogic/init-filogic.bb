@@ -14,6 +14,9 @@ SRC_URI = " \
     file://init-Lanbridge.service \
     file://factorydefault \
     file://init-PPPQ.service \
+    file://usb-mount@.service \
+    file://usb-mount.sh \
+    file://99-local-usb-mount.rules\
     "
 
 RDEPENDS_${PN} += "bash"
@@ -22,9 +25,11 @@ SYSTEMD_PACKAGES = "${PN}"
 SYSTEMD_SERVICE_${PN} = " init-IPv6.service"
 SYSTEMD_SERVICE_${PN} += " init-Lanbridge.service"
 SYSTEMD_SERVICE_${PN} += " init-PPPQ.service"
+SYSTEMD_SERVICE_${PN} += " usb-mount@.service"
 FILES_${PN} += "{systemd_unitdir}/system/init-IPv6.service"
 FILES_${PN} += "{systemd_unitdir}/system/init-Lanbridge.service"
 FILES_${PN} += "{systemd_unitdir}/system/init-PPPQ.service"
+FILES_${PN} += "{systemd_unitdir}/system/usb-mount@.service"
 
 do_install() {
     install -d ${D}${sbindir}
@@ -35,4 +40,9 @@ do_install() {
     install -m 0644 ${S}/init-IPv6.service ${D}${systemd_unitdir}/system
     install -m 0644 ${S}/init-Lanbridge.service ${D}${systemd_unitdir}/system
     install -m 0644 ${S}/init-PPPQ.service ${D}${systemd_unitdir}/system
+    install -m 0644 ${S}/usb-mount@.service ${D}${systemd_unitdir}/system
+    install -d ${D}${sysconfdir}/udev/rules.d
+    install -m 0644 ${WORKDIR}/99-local-usb-mount.rules ${D}${sysconfdir}/udev/rules.d
+    install -d ${D}${bindir}
+    install -m 0755 ${WORKDIR}/usb-mount.sh ${D}${bindir}
 }
