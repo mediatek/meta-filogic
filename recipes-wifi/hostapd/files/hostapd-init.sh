@@ -36,12 +36,13 @@ create_hostapdConf() {
         if [ ! -f /nvram/hostapd"$devidx".conf ]; then
             touch /nvram/hostapd"$devidx".conf
         else
-            iw dev wlan$phyidx interface add wifi$devidx type __ap
-            touch /tmp/hostapd-acl$devidx
-            touch /tmp/hostapd$devidx.psk
-            touch /tmp/hostapd-deny$devidx
+            ifname="$(cat /nvram/hostapd"$devidx".conf | grep ^interface= | cut -d '=' -f2 | tr -d '\n')"
+            iw phy phy$phyidx interface add $ifname type __ap
+            touch /nvram/hostapd-acl$devidx
+            touch /nvram/hostapd$devidx.psk
+            touch /nvram/hostapd-deny$devidx
             touch /tmp/$dev-wifi$devidx
-            hostapd_cli -i global raw ADD bss_config=$dev:/nvram/hostapd"$devidx".conf 
+            hostapd_cli -i global raw ADD bss_config=$dev:/nvram/hostapd"$devidx".conf && echo -e $ifname=1 >> /nvram/vap-status
             devidx=$(($devidx + 1))
             phyidx=$(($phyidx + 1))
 			continue
@@ -73,19 +74,18 @@ create_hostapdConf() {
 
 	    sed -i "/^interface=.*/c\interface=wifi$devidx" /nvram/hostapd"$devidx".conf
         sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd"$devidx".conf
-        echo "wpa_psk_file=/tmp/hostapd$devidx.psk" >> /nvram/hostapd"$devidx".conf
-        iw dev wlan$phyidx interface add wifi$devidx type __ap
-        touch /tmp/hostapd-acl$devidx
-        touch /tmp/hostapd$devidx.psk
-        touch /tmp/hostapd-deny$devidx
+        echo "wpa_psk_file=/nvram/hostapd$devidx.psk" >> /nvram/hostapd"$devidx".conf
+        iw phy phy$phyidx interface add wifi$devidx type __ap
+        touch /nvram/hostapd-acl$devidx
+        touch /nvram/hostapd$devidx.psk
+        touch /nvram/hostapd-deny$devidx
         touch /tmp/$dev-wifi$devidx
-        hostapd_cli -i global raw ADD bss_config=$dev:/nvram/hostapd"$devidx".conf           
+        hostapd_cli -i global raw ADD bss_config=$dev:/nvram/hostapd"$devidx".conf && echo -e "wifi"$devidx"=1" >> /nvram/vap-status
         devidx=$(($devidx + 1))
         phyidx=$(($phyidx + 1))
 		
 	done
 }
-echo -e "wifi0=1\nwifi1=1\nwifi2=0\nwifi3=0\nwifi4=0\nwifi5=0\nwifi6=0\nwifi7=0" >/tmp/vap-status
 #Creating files for tracking AssociatedDevices
 touch /tmp/AllAssociated_Devices_2G.txt
 touch /tmp/AllAssociated_Devices_5G.txt
