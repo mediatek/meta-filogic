@@ -25,6 +25,9 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/src:"
 require files/patches-${PV}/patches.inc
 SRC_URI_append += "file://5000-mt76-add-internal-wed_tiny-header-file.patch"
 
+#wifi7 tmp patch
+SRC_URI_append += "file://2999-rdkb-mt76-mt7996-tmp-build-fix.patch"
+
 S = "${WORKDIR}/git"
 
 
