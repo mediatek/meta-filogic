@@ -10,6 +10,13 @@ SRC_URI_append = " \
     file://040-mesh-allow-processing-authentication-frames-in-block.patch \
     file://050-build_fix.patch \
     file://100-daemonize_fix.patch \
+    file://110-mbedtls-TLS-crypto-option-initial-port.patch \
+    file://120-mbedtls-fips186_2_prf.patch \
+    file://130-mbedtls-annotate-with-TEST_FAIL-for-hwsim-tests.patch \
+    file://140-tests-Makefile-make-run-tests-with-CONFIG_TLS.patch \
+    file://150-add-NULL-checks-encountered-during-tests-hwsim.patch \
+    file://160-dpp_pkex-EC-point-mul-w-value-prime.patch \
+    file://170-DPP-fix-memleak-of-intro.peer_key.patch \
     file://200-multicall.patch \
     file://300-noscan.patch \
     file://301-mesh-noscan.patch \
