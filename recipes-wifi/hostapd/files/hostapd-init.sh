@@ -13,8 +13,8 @@ create_hostapdConf() {
 
         band="$(uci get wireless.radio${phyidx}.band)"
         channel="$(uci get wireless.radio${phyidx}.channel)"
-        MAC="$(cat /sys/class/net/wlan${phyidx}/address)"
-        NEW_MAC=$(echo 0x$MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+2, $2, $3, $4 ,$5, $6}')
+        MAC="$(cat /sys/class/ieee80211/phy${phyidx}/macaddress)"
+#        NEW_MAC=$(echo 0x$MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+2, $2, $3, $4 ,$5, $6}')
         chip="$(cat /sys/class/ieee80211/"$dev"/device/device)"
 
         if [ $chip == "0x7915" ]; then
@@ -28,6 +28,7 @@ create_hostapdConf() {
             fi
             old_path=$path
         fi
+        iw wlan$phyidx del
         if [ "$(uci get wireless.radio${phyidx}.disabled)" == "1" ]; then
             phyidx=$(($phyidx + 1))
 			continue
@@ -73,7 +74,7 @@ create_hostapdConf() {
         fi
 
 	    sed -i "/^interface=.*/c\interface=wifi$devidx" /nvram/hostapd"$devidx".conf
-        sed -i "/^bssid=/c\bssid=$NEW_MAC" /nvram/hostapd"$devidx".conf
+        sed -i "/^bssid=/c\bssid=$MAC" /nvram/hostapd"$devidx".conf
         echo "wpa_psk_file=/nvram/hostapd$devidx.psk" >> /nvram/hostapd"$devidx".conf
         iw phy phy$phyidx interface add wifi$devidx type __ap
         touch /nvram/hostapd-acl$devidx

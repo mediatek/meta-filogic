@@ -245,7 +245,7 @@ int set_interface_bssid(int phy_index, int offset, mac_address_t *bssid)
     char mac_file[64] = {0};
     char mac_address[20] = {0};
 
-    sprintf(mac_file, "/sys/class/net/wlan%d/address", phy_index);
+    sprintf(mac_file, "/sys/class/ieee80211/phy%d/macaddress", phy_index);
     f = fopen(mac_file, "r");
     if (f == NULL)
         return -1;
@@ -536,6 +536,7 @@ int apply_uci_config ()
                 if (strcmp(op->e.name, "device") == 0){
                     set_radionum(&intf_param, op->v.string);
                 }else if (strcmp(op->e.name, "mode") == 0){
+                    intf_param.mac_offset = staCount[intf_param.radio_index] + apCount[intf_param.radio_index];
                     if (strncmp(op->v.string, "sta", 3) == 0) {
                         intf_param.sta_mode = TRUE;
                         intf_param.sta_index = intf_param.radio_index + staCount[intf_param.radio_index]*max_radio_num;
@@ -547,7 +548,6 @@ int apply_uci_config ()
                         apCount[intf_param.radio_index] ++ ;
                         fprintf(stderr, "\n----- Start parsing ap %d config. -----\n", intf_param.ap_index);
                     }
-                    intf_param.mac_offset = staCount[intf_param.radio_index] + apCount[intf_param.radio_index];
                 }else if (strcmp(op->e.name, "ssid") == 0){
                     set_ssid(&intf_param, op->v.string);
                 }else if (strcmp(op->e.name, "encryption") == 0){
