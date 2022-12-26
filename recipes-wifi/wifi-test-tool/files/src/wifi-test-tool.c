@@ -156,6 +156,16 @@ void set_disable(wifi_radio_param *radio_param, char *disable)
         radio_param->disabled = FALSE;
 }
 
+void set_rxant(wifi_radio_param *radio_param, char *mask)
+{
+    radio_param->rxantenna = strtol(mask, NULL, 16);
+}
+
+void set_txant(wifi_radio_param *radio_param, char *mask)
+{
+    radio_param->txantenna = strtol(mask, NULL, 16);
+}
+
 void set_radionum(wifi_intf_param *intf_param, char *phy_name)
 {
     int radio_num = 0;
@@ -271,6 +281,12 @@ void set_radio_param(wifi_radio_param radio_parameter)
     }
 
     fprintf(stderr, "Start setting radio\n");
+
+    if (radio_parameter.txantenna != 0 && radio_parameter.txantenna == radio_parameter.rxantenna) {
+        ret = wifi_setRadioTxChainMask(radio_parameter.radio_index, radio_parameter.txantenna);
+        if (ret != RETURN_OK)
+            fprintf(stderr, "[Set Tx Chain mask failed!!!]\n");
+    }
 
     // Get current radio setting
     ret = wifi_getRadioOperatingParameters(radio_parameter.radio_index, &operationParam);
@@ -529,6 +545,10 @@ int apply_uci_config ()
                     set_country(&radio_param, op->v.string);
                 else if (strcmp(op->e.name, "noscan") == 0)
                     set_noscan(&radio_param, op->v.string);
+                else if (strcmp(op->e.name, "rxantenna") == 0)
+                    set_rxant(&radio_param, op->v.string);
+                else if (strcmp(op->e.name, "txantenna") == 0)
+                    set_txant(&radio_param, op->v.string);
                 else
                     fprintf(stderr, "[%s %s not set!]\n", op->e.name, op->v.string);
             } else {        
