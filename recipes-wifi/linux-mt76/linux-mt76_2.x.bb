@@ -24,6 +24,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/src:"
 
 require files/patches/patches.inc
 SRC_URI_append += "file://5000-mt76-add-internal-wed_tiny-header-file.patch"
+SRC_URI_append += "file://5001-mt76-mt7915-disable-wed.patch"
 
 S = "${WORKDIR}/git"
 

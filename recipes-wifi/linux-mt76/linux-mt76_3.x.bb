@@ -25,9 +25,6 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/src:"
 require files/patches-${PV}/patches.inc
 SRC_URI_append += "file://5000-mt76-add-internal-wed_tiny-header-file.patch"
 
-#wifi7 tmp patch
-SRC_URI_append += "file://2999-rdkb-mt76-mt7996-tmp-build-fix.patch"
-
 S = "${WORKDIR}/git"
 
 
@@ -94,10 +91,7 @@ do_install_append () {
     install -m 644 ${WORKDIR}/src/firmware/mt7916_eeprom.bin ${D}${base_libdir}/firmware/mediatek/
 
     install -d ${D}/${base_libdir}/firmware/mediatek/mt7996
-    install -m 644 ${WORKDIR}/src/firmware/mt7996_wa.bin ${D}${base_libdir}/firmware/mediatek/mt7996
-    install -m 644 ${WORKDIR}/src/firmware/mt7996_wm.bin ${D}${base_libdir}/firmware/mediatek/mt7996
-    install -m 644 ${WORKDIR}/src/firmware/mt7996_rom_patch.bin ${D}${base_libdir}/firmware/mediatek/mt7996
-    install -m 644 ${WORKDIR}/src/firmware/mt7996_eeprom.bin ${D}${base_libdir}/firmware/mediatek/mt7996
+    install -m 644 ${WORKDIR}/src/firmware/mt7996/mt7996*.* ${D}${base_libdir}/firmware/mediatek/mt7996
 }
 
 do_install_append_mt7988 () {

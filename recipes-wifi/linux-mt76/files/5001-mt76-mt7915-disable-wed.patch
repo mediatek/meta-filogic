@@ -1,0 +1,24 @@
+From 1430e7a7a3d5ae7693d6fa8e795524ee4c78c0ef Mon Sep 17 00:00:00 2001
+From: Shayne Chen <shayne.chen@mediatek.com>
+Date: Mon, 7 Nov 2022 23:05:51 +0800
+Subject: [PATCH] mt76: add internal wed_tiny header file
+
+To prevent build fail of WED related parts.
+
+Change-Id: I907cae30e0775337a0c670010b450be15b510e18
+---
+diff --git a/mt7915/mmio.c b/mt7915/mmio.c
+index e30a8d4c..57c56918 100644
+--- a/mt7915/mmio.c
++++ b/mt7915/mmio.c
+@@ -11,7 +11,11 @@
+ #include "../trace.h"
+ #include "../dma.h"
+ 
++#ifdef CONFIG_NET_MEDIATEK_SOC_WED
+ static bool wed_enable = true;
++#else
++static bool wed_enable;
++#endif	
+ module_param(wed_enable, bool, 0644);
+ MODULE_PARM_DESC(wed_enable, "Enable Wireless Ethernet Dispatch support");

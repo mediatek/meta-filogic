@@ -144,18 +144,3 @@ index 00000000..91c98e7d
 +#define mtk_wed_device_update_msg(_dev, _id, _msg, _len) -ENODEV
 +
 +#endif
-diff --git a/mt7915/mmio.c b/mt7915/mmio.c
-index e30a8d4c..57c56918 100644
---- a/mt7915/mmio.c
-+++ b/mt7915/mmio.c
-@@ -11,7 +11,11 @@
- #include "../trace.h"
- #include "../dma.h"
- 
-+#ifdef CONFIG_NET_MEDIATEK_SOC_WED
- static bool wed_enable = true;
-+#else
-+static bool wed_enable;
-+#endif	
- module_param(wed_enable, bool, 0644);
- MODULE_PARM_DESC(wed_enable, "Enable Wireless Ethernet Dispatch support");

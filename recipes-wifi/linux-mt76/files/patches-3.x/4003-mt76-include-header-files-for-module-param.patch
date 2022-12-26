@@ -1,14 +1,15 @@
-From c38e6c0b746781a43faa8a7391f45f8f1110117d Mon Sep 17 00:00:00 2001
-From: Shayne Chen <shayne.chen@mediatek.com>
-Date: Tue, 13 Dec 2022 10:38:13 +0800
-Subject: [PATCH 4002/4003] mt76: include header files for module param
+From 6ca19bb406e52edaed41d8ea84f67e872df113a4 Mon Sep 17 00:00:00 2001
+From: Evelyn Tsai <evelyn.tsai@mediatek.com>
+Date: Fri, 23 Dec 2022 17:06:03 +0800
+Subject: [PATCH 4003/4003] mt76: include header files for module param
 
 ---
  mcu.c             | 1 +
  mt7615/mcu.c      | 1 +
  mt76_connac_mcu.c | 1 +
  mt7915/mcu.c      | 1 +
- 4 files changed, 4 insertions(+)
+ mt7996/mcu.c      | 1 +
+ 5 files changed, 5 insertions(+)
 
 diff --git a/mcu.c b/mcu.c
 index a8cafa3..fa4b054 100644
@@ -35,7 +36,7 @@ index 83f3030..e917d02 100644
  static bool prefer_offload_fw = true;
  module_param(prefer_offload_fw, bool, 0644);
 diff --git a/mt76_connac_mcu.c b/mt76_connac_mcu.c
-index 14ce09e..d406013 100644
+index 5a047e6..b0dcc5a 100644
 --- a/mt76_connac_mcu.c
 +++ b/mt76_connac_mcu.c
 @@ -4,6 +4,7 @@
@@ -47,7 +48,7 @@ index 14ce09e..d406013 100644
  int mt76_connac_mcu_start_firmware(struct mt76_dev *dev, u32 addr, u32 option)
  {
 diff --git a/mt7915/mcu.c b/mt7915/mcu.c
-index 387967d..88ce44f 100644
+index 35441dc..56b5a24 100644
 --- a/mt7915/mcu.c
 +++ b/mt7915/mcu.c
 @@ -6,6 +6,7 @@
@@ -58,6 +59,18 @@ index 387967d..88ce44f 100644
  
  #define fw_name(_dev, name, ...)	({			\
  	char *_fw;						\
+diff --git a/mt7996/mcu.c b/mt7996/mcu.c
+index d781c6e..37cf269 100644
+--- a/mt7996/mcu.c
++++ b/mt7996/mcu.c
+@@ -8,6 +8,7 @@
+ #include "mt7996.h"
+ #include "mcu.h"
+ #include "mac.h"
++#include <linux/moduleparam.h>
+ #include "eeprom.h"
+ 
+ struct mt7996_patch_hdr {
 -- 
 2.36.1
 
