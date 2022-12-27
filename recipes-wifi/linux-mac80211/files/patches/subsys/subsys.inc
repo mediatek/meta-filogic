@@ -65,5 +65,4 @@ SRC_URI_append = " \
     file://913-mac80211-mtk-fix-tx-amsdu-aggregation.patch \
     file://99900-mac80211-mtk-mask-kernel-version-limitation-and-fil.patch \
     file://99901-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-i.patch \
-    file://99902-mac80211-mtk-register-.ndo_setup_tc-in-wifi-net-.patch \
     "
