@@ -58,6 +58,7 @@ SRC_URI_append = " \
     file://750-qos_map_set_without_interworking.patch \
     file://751-qos_map_ignore_when_unsupported.patch \
     file://760-dynamic_own_ip.patch \
+    file://761-shared_das_port.patch \
     file://800-acs-don-t-select-indoor-channel-on-outdoor-operation.patch \
     file://990-ctrl-make-WNM_AP-functions-dependant-on-CONFIG_AP.patch \
     file://992-openssl-include-rsa.patch \
