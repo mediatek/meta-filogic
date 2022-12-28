@@ -90,6 +90,7 @@ SRC_URI_append = " \
     file://413-mtd-spinand-gigadevice-Add-support-for-GD5FxGQxUExxG-GD5FxGQxUExxH-and-GD5FxGMxUExxG-series.patch \
     file://414-mtd-spinand-fix-gigadevice-read-dummy.patch \
     file://415-mtd-spinand-fix-F50L1G41LB-ecc-check.patch \
+    file://416-mtd-spinor-support-EN25QX128A.patch \
     file://492-mtd-tests-fix-pagetest-load.patch \
     file://500-auxadc-add-auxadc-32k-clk.patch \
     file://6001-mtk-thermal-add-lvts-support.patch \
@@ -115,6 +116,7 @@ SRC_URI_append = " \
     file://751-net-phy-aquantia-add-firmware-download.patch \
     file://752-net-dsa-phy-coverity-scan.patch \
     file://753-net-mt753x-phy-coverity-scan.patch;apply=no \
+    file://754-net-phy-sfp-add-rollball-support.patch \
     file://8000-PATCH-1-4-tphy-support-type-switch-by-pericfg.patch \
     file://8001-PATCH-2-4-dt-bindings-phy-Add-PHY_TYPE_DP-definition.patch \
     file://8002-PATCH-3-4-dt-bindings-phy-Add-PHY_TYPE_XPCS-definition.patch \
