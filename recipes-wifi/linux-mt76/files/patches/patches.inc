@@ -49,6 +49,7 @@ SRC_URI_append = " \
     file://3011-mt76-mt7915-wed-add-mt7916-2-pcie-support-when-wed-o.patch \
     file://3012-mt76-mt7915-wed-add-rxwi-for-further-in-chip-rro-dev.patch \
     file://3013-mt76-mt7915-wed-fix-potential-memory-leakage.patch \
+    file://3014-mt76-mt7915-add-mt7915_net_setup_tc-to-support-wifi2.patch \
     file://4001-mt76-revert-get_of_mac_addr.patch \
     file://4002-mt76-include-header-files-for-module-param.patch \
     file://4003-mt76-revert-for-backports-5.15-wireless-stack.patch \
