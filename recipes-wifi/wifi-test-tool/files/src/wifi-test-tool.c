@@ -249,6 +249,13 @@ void set_ifname(wifi_intf_param *intf_param, char *ifname)
     strncpy(intf_param->ifname, ifname, strlen(ifname) + 1);
 }
 
+void set_wds(wifi_intf_param *intf_param, char *wds_enable)
+{
+    intf_param->wds_mode = FALSE;
+    if (strncmp(wds_enable, "1", 1) == 0)
+        intf_param->wds_mode = TRUE;
+}
+
 int set_interface_bssid(int phy_index, int offset, mac_address_t *bssid)
 {
     FILE *f;
@@ -462,7 +469,10 @@ void set_sta_param(wifi_intf_param sta_param)
     sta->psk[127] = '\0';
     sta->psk_len = strlen(sta->psk);
 
-    wifi_createSTAInterface(sta_param.sta_index, sta_mac_str);
+    if (sta_param.wds_mode == TRUE)
+        sta->flags |= WIFI_STA_NET_F_4ADDR_MULTI_AP;
+
+    wifi_createSTAInterface(sta_param.sta_index, sta_mac_str, sta_param.wds_mode);
 
     if (wifi_setSTANetworks(sta_param.sta_index, &sta, 1, FALSE) == RETURN_ERR) {
         fprintf(stderr, "Write to sta %d config file failed\n", sta_param.sta_index);
@@ -576,6 +586,8 @@ int apply_uci_config ()
                     set_key(&intf_param, op->v.string);
                 }else if (strcmp(op->e.name, "ifname") == 0){
                     set_ifname(&intf_param, op->v.string);
+                }else if (strcmp(op->e.name, "wds") == 0){
+                    set_wds(&intf_param, op->v.string);
                 }else{
                     fprintf(stderr, "[%s %s not set!]\n", op->e.name, op->v.string);
                 }    

@@ -47,6 +47,7 @@ typedef struct {
 typedef struct {
     wifi_radio_param *radio_info;   // for multiple vap
     bool sta_mode;
+    bool wds_mode;
     int radio_index;
     int ap_index;
     int sta_index;
