@@ -52,5 +52,6 @@ SRC_URI_append = " \
     file://3014-mt76-mt7915-add-mt7915_net_setup_tc-to-support-wifi2.patch \
     file://4001-mt76-revert-get_of_mac_addr.patch \
     file://4002-mt76-include-header-files-for-module-param.patch \
-    file://4003-mt76-revert-for-backports-5.15-wireless-stack.patch \
+    file://4003-mt76-revert-kernel-api-for-kernel-5.4.patch \
+    file://4004-mt76-revert-for-backports-5.15-wireless-stack.patch \
     "

@@ -31,5 +31,6 @@ SRC_URI_append = " \
     file://909-mac80211-mtk-check-the-control-channel-before-downgr.patch \
     file://910-mac80211-mtk-fix-tx-amsdu-aggregation.patch \
     file://99900-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-i.patch \
+    file://99902-mac80211-mtk-register-.ndo_setup_tc-to-support-wifi.patch \
     file://99999-mac80211-mtk-fix-build-error-on-Linux-Kernel-5.4.patch \
     "
