@@ -4,6 +4,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/generic/pending-5.4:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/generic/hack-5.4:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/mediatek/patches-5.4:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/mediatek/flow_patch:"
+FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/mediatek/nf_hnat:"
 
 KBRANCH ?= "linux-5.4.y"
 
@@ -38,7 +39,7 @@ SRC_URI_append += " \
     file://rdkb_cfg/iptables.cfg \
     file://rdkb_cfg/turris_rdkb.cfg \
     file://rdkb_cfg/openvswitch.cfg \
-    file://rdkb_cfg/mac80211.cfg \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'mt76', 'file://rdkb_cfg/mac80211.cfg', 'file://rdkb_cfg/nf_hnat.cfg', d)} \
     file://rdkb_cfg/prplmesh.cfg \
     file://rdkb_cfg/filogic_rdkb.cfg \
 "
@@ -68,6 +69,7 @@ do_patch_prepend () {
 do_filogic_patches() {
     cd ${S}
     DISTRO_FlowBlock_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','flow_offload','true','false',d)}"
+    DISTRO_logan_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','logan','true','false',d)}"
         if [ ! -e patch_applied ]; then
             patch -p1 < ${WORKDIR}/001-rdkb-eth-mtk-change-ifname-for.patch
             patch -p1 < ${WORKDIR}/003-rdkb-mtd-kernel-ubi-relayout.patch
@@ -79,8 +81,13 @@ do_filogic_patches() {
             if [ $DISTRO_FlowBlock_ENABLED = 'true' ]; then
                 for i in ${WORKDIR}/mediatek/flow_patch/*.patch; do patch -p1 < $i; done
             fi
+            if [ $DISTRO_logan_ENABLED = 'true' ]; then
+                for i in ${WORKDIR}/mediatek/nf_hnat/*.patch; do patch -p1 < $i; done
+            fi
             touch patch_applied
         fi
 }
 
 addtask filogic_patches after do_patch before do_compile
+
+KERNEL_MODULE_AUTOLOAD += "${@bb.utils.contains('DISTRO_FEATURES','logan','mtkhnat nf_flow_table_hw','',d)}"
