@@ -42,14 +42,13 @@ SRC_URI_append = " \
     file://3004-mt76-mt7915-wed-add-fill-receive-path-to-report-wed-.patch \
     file://3005-mt76-mt7915-wed-add-ser-support-when-wed-on.patch \
     file://3006-mt76-mt7915-wed-enable-red-per-band-token-drop-for-H.patch \
-    file://3007-mt76-mt7915-wed-update-mt7916-trinfo-when-hw-path-en.patch \
-    file://3008-mt76-mt7915-wed-find-rx-token-by-physical-address.patch \
-    file://3009-mt76-mt7915-wed-drop-scatter-and-gather-frame.patch \
-    file://3010-mt76-mt7915-wed-HW-ATF-support-for-mt7986.patch \
-    file://3011-mt76-mt7915-wed-add-mt7916-2-pcie-support-when-wed-o.patch \
-    file://3012-mt76-mt7915-wed-add-rxwi-for-further-in-chip-rro-dev.patch \
-    file://3013-mt76-mt7915-wed-fix-potential-memory-leakage.patch \
-    file://3014-mt76-mt7915-add-mt7915_net_setup_tc-to-support-wifi2.patch \
+    file://3007-mt76-mt7915-wed-find-rx-token-by-physical-address.patch \
+    file://3008-mt76-mt7915-wed-drop-scatter-and-gather-frame.patch \
+    file://3009-mt76-mt7915-wed-HW-ATF-support-for-mt7986.patch \
+    file://3010-mt76-mt7915-wed-add-mt7916-2-pcie-support-when-wed-o.patch \
+    file://3011-mt76-mt7915-wed-add-rxwi-for-further-in-chip-rro-dev.patch \
+    file://3012-mt76-mt7915-wed-fix-potential-memory-leakage.patch \
+    file://3013-mt76-mt7915-add-mt7915_net_setup_tc-to-support-wifi2.patch \
     file://4001-mt76-revert-get_of_mac_addr.patch \
     file://4002-mt76-include-header-files-for-module-param.patch \
     file://4003-mt76-revert-kernel-api-for-kernel-5.4.patch \
