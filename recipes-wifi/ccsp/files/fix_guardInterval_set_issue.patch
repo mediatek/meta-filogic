@@ -1,0 +1,21 @@
+diff --git a/source/TR-181/sbapi/cosa_wifi_apis.c b/source/TR-181/sbapi/cosa_wifi_apis.c
+index e20a3854..683d65c9 100644
+--- a/source/TR-181/sbapi/cosa_wifi_apis.c
++++ b/source/TR-181/sbapi/cosa_wifi_apis.c
+@@ -4860,7 +4860,15 @@ CosaDmlWiFiSetRadioPsmData
+     memset(recName, '\0', sizeof(recName));
+     memset(strValue, '\0', sizeof(strValue));
+     snprintf(recName, sizeof(recName), GuardInterval, ulInstance);
+-    snprintf(strValue, sizeof(strValue), "%d", wifiRadioOperParam->guardInterval);
++    for (int seqCounter = 0; seqCounter < ARRAY_SZ(wifiGuardIntervalMap); seqCounter++)
++    {
++        if (wifiRadioOperParam->guardInterval == wifiGuardIntervalMap[seqCounter].halGuardInterval)
++        {
++        	CcspWifiTrace(("RDK_LOG_WARN,WIFI %s  GuardInterval = %d\n",__FUNCTION__, wifiGuardIntervalMap[seqCounter].cosaGuardInterval));
++        	snprintf(strValue, sizeof(strValue), "%d", wifiGuardIntervalMap[seqCounter].cosaGuardInterval);
++        	break;
++        }
++    }
+     retPsmSet = PSM_Set_Record_Value2(bus_handle,g_Subsystem, recName, ccsp_string, strValue);
+     if (retPsmSet != CCSP_SUCCESS) {
+           wifiDbgPrintf("%s PSM_Set_Record_Value2 returned error %d while setting Guard Interval \n",__FUNCTION__, retPsmSet);
