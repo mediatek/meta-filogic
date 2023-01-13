@@ -23,5 +23,6 @@ do_install_append() {
     install -d ${D}${sbindir}
     install -m 0755 ${WORKDIR}/git/ated.sh ${D}${sbindir}/ated
     install -m 0755 ${WORKDIR}/git/iwpriv.sh ${D}${sbindir}/iwpriv
+    install -m 0755 ${WORKDIR}/git/iwpriv.sh ${D}${sbindir}/mwctl
 }
 
