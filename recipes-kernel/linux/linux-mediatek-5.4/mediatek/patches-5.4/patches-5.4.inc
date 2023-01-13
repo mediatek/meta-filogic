@@ -104,7 +104,7 @@ SRC_URI_append = " \
     file://741-add-default-setting-to-dsa-unused-port.patch \
     file://742-net-dsa-add-MT7531-Gigabit-Ethernet-PHY-setting.patch \
     file://743-add-mediatek-ge-gphy-support.patch \
-    file://744-en8801s-gphy-support.patch \
+    file://744-en8811h-2p5gphy-support.patch \
     file://745-en8801sc-gphy-support.patch \
     file://745-mdiobus-add-c45.patch \
     file://746-add-mediatek-2p5ge-phy-support.patch \
