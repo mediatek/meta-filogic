@@ -1,6 +1,5 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
-SRC_URI += "file://sta-network.patch;apply=no \
-		file://add_undefined_dfs_function.patch;apply=no \
+SRC_URI += "file://*.patch;apply=no \
 	"
 
 #This is workaround for missing do_patch when RDK uses external sources
@@ -9,6 +8,7 @@ do_filogic_patches() {
         if [ ! -e patch_applied ]; then
             patch -p1 < ${WORKDIR}/sta-network.patch
             patch -p1 < ${WORKDIR}/add_undefined_dfs_function.patch
+            patch -p1 < ${WORKDIR}/0001-Add-owe-mode.patch
             touch patch_applied
         fi
 }

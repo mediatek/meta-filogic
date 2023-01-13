@@ -66,8 +66,7 @@ int phy_index_to_radio(int phyIndex)
         return RETURN_ERR;
     }
     sscanf(buf, "wifi%d", &radioIndex);
-    fprintf(stderr, "%s:  radio index = %d \n", __func__, radioIndex);
-    return radioIndex;      
+    return radioIndex;
 }
 
 void set_channel(wifi_radio_param *radio_param, char *channel)
@@ -209,6 +208,8 @@ void set_encryption(wifi_intf_param *intf_param, char *encryption_mode)
         intf_param->security.mode = wifi_security_mode_wpa3_enterprise;
     }else if(strcmp(encryption_mode, "sae-mixed") == 0){
         intf_param->security.mode = wifi_security_mode_wpa3_transition;
+    }else if(strcmp(encryption_mode, "owe") == 0){
+        intf_param->security.mode = wifi_security_mode_owe;
     }
 
     if(strstr(encryption_mode, "tkip") && (strstr(encryption_mode, "ccmp") || strstr(encryption_mode, "aes") )){
@@ -219,7 +220,7 @@ void set_encryption(wifi_intf_param *intf_param, char *encryption_mode)
         intf_param->security.encr = wifi_encryption_aes;
     }
 
-    if(!strcmp(encryption_mode, "wpa3") || !strcmp(encryption_mode, "sae")){
+    if(!strcmp(encryption_mode, "wpa3") || !strcmp(encryption_mode, "sae") || !strcmp(encryption_mode, "owe")){
         intf_param->security.mfp = wifi_mfp_cfg_required;
     }else if (!strcmp(encryption_mode, "sae-mixed")){
         intf_param->security.mfp = wifi_mfp_cfg_optional;
@@ -452,6 +453,8 @@ void set_sta_param(wifi_intf_param sta_param)
         strcpy(key_mgmt, "NONE");
     else if (sta_param.security.mode == wifi_security_mode_wpa3_personal)
         strcpy(key_mgmt, "SAE");
+    else if (sta_param.security.mode == wifi_security_mode_owe)
+        strcpy(key_mgmt, "OWE");
     else
         strcpy(key_mgmt, "WPA-PSK");
     snprintf(sta->key_mgmt, 64, "%s", key_mgmt);
