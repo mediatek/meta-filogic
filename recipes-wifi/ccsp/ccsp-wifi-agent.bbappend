@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_append := "${THISDIR}/files:"
 
-CFLAGS_append += " -DWIFI_HAL_VERSION_3 -DCONFIG_DFS"
+CFLAGS_append += " -DWIFI_HAL_VERSION_3 -DCONFIG_DFS -D_WIFI_AX_SUPPORT_ "
 
 SRC_URI_append += " \
     file://fix_guardInterval_set_issue.patch;apply=no \
