@@ -116,7 +116,8 @@ SRC_URI_append = " \
     file://751-net-phy-aquantia-add-firmware-download.patch \
     file://752-net-dsa-phy-coverity-scan.patch \
     file://753-net-mt753x-phy-coverity-scan.patch;apply=no \
-    file://754-net-phy-sfp-add-rollball-support.patch \
+    file://754-net-phy-add-5GBASER.patch \
+    file://755-net-phy-sfp-add-rollball-support.patch \
     file://8000-PATCH-1-4-tphy-support-type-switch-by-pericfg.patch \
     file://8001-PATCH-2-4-dt-bindings-phy-Add-PHY_TYPE_DP-definition.patch \
     file://8002-PATCH-3-4-dt-bindings-phy-Add-PHY_TYPE_XPCS-definition.patch \

@@ -36,6 +36,7 @@ SRC_URI_append = " \
     file://1129-mt76-mt7915-support-on-off-SW-ACI-through-debugfs.patch \
     file://1130-mt76-mt7915-add-bf-backoff-limit-table-support.patch \
     file://1131-mt76-mt7915-amsdu-set-and-get-control.patch \
+    file://1132-mt76-mt7915-add-support-for-he-ldpc-control-fro.patch \
     file://3001-mt76-mt7915-wed-add-wed-tx-support.patch \
     file://3002-mt76-mt7915-wed-add-wds-support-when-wed-is-enabled.patch \
     file://3003-mt76-connac-wed-add-wed-rx-copy-skb.patch \
