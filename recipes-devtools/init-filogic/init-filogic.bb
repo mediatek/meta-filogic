@@ -7,16 +7,7 @@ S = "${WORKDIR}"
 inherit systemd
 
 SRC_URI = " \
-    file://COPYING \
-    file://init-IPv6.sh \
-    file://init-IPv6.service \
-    file://init-bridge.sh \
-    file://init-Lanbridge.service \
-    file://factorydefault \
-    file://init-PPPQ.service \
-    file://usb-mount@.service \
-    file://usb-mount.sh \
-    file://99-local-usb-mount.rules\
+    file://* \
     "
 
 RDEPENDS_${PN} += "bash"
@@ -36,6 +27,11 @@ do_install() {
     install -m 0755 ${WORKDIR}/init-IPv6.sh ${D}${sbindir}
     install -m 0755 ${WORKDIR}/init-bridge.sh ${D}${sbindir}
     install -m 0755 ${WORKDIR}/factorydefault ${D}${sbindir}
+    install -m 0755 ${WORKDIR}/lan_config.sh ${D}${sbindir}
+    install -m 0755 ${WORKDIR}/l2tp_config.sh ${D}${sbindir}
+    install -m 0755 ${WORKDIR}/pppoe_config.sh ${D}${sbindir}
+    install -m 0755 ${WORKDIR}/pptp_config.sh ${D}${sbindir}
+    install -m 0755 ${WORKDIR}/staticIP_config.sh ${D}${sbindir}
     install -d ${D}${systemd_unitdir}/system/
     install -m 0644 ${S}/init-IPv6.service ${D}${systemd_unitdir}/system
     install -m 0644 ${S}/init-Lanbridge.service ${D}${systemd_unitdir}/system
