@@ -42,6 +42,7 @@ SRC_URI_append += " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'mt76', 'file://rdkb_cfg/mac80211.cfg', 'file://rdkb_cfg/nf_hnat.cfg', d)} \
     file://rdkb_cfg/prplmesh.cfg \
     file://rdkb_cfg/filogic_rdkb.cfg \
+    ${@bb.utils.contains('DISTRO_FEATURES','emmc','file://rdkb_cfg/emmc.cfg','',d)} \
 "
 require ${PN}-${PV}/generic/backport-5.4/backport-5.4.inc
 
