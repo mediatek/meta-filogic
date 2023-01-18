@@ -62,4 +62,17 @@ SRC_URI_append = " \
     file://800-acs-don-t-select-indoor-channel-on-outdoor-operation.patch \
     file://990-ctrl-make-WNM_AP-functions-dependant-on-CONFIG_AP.patch \
     file://992-openssl-include-rsa.patch \
+    file://99900-hostapd-mtk-Add-neighbor-report-and-BSS-Termination.patch \
+    file://99901-hostapd-mtk-print-sae-groups-by-hostapd-ctrl.patch \
+    file://99902-hostapd-mtk-add-support-for-runtime-set-in-band-dis.patch \
+    file://99903-hostapd-mtk-Add-mtk_vendor.h.patch \
+    file://99904-hostapd-mtk-Support-EDCCA-hostapd-configuration.patch \
+    file://99905-hostapd-mtk-Add-hostapd-HEMU-SET-GET-control.patch \
+    file://99906-hostapd-mtk-Add-three-wire-PTA-ctrl-hostapd-vendor-.patch \
+    file://99907-hostapd-mtk-Add-hostapd-iBF-control.patch \
+    file://99908-hostapd-mtk-Do-not-include-HE-capab-IE-if-associate.patch \
+    file://99909-hostapd-mtk-Add-DFS-and-ZWDFS-support.patch \
+    file://99910-hostapd-mtk-Add-amsdu-set-get-ctrl.patch \
+    file://99911-hostapd-mtk-Add-he_ldpc-configuration.patch \
+    file://99912-hostapd-mtk-Add-the-broadcast-destination-address-of.patch \
     "
