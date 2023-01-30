@@ -199,7 +199,6 @@ SRC_URI_append = " \
     file://610-v5.9-net-bridge-clear-bridge-s-private-skb-space-on-xmit.patch \
     file://700-v5.5-net-core-allow-fast-GRO-for-skbs-with-Ethernet-heade.patch \
     file://701-v5.7-net-dsa-Implement-flow-dissection-for-tag_brcm.c.patch \
-    file://702-Revert-net-dsa-b53-Fix-valid-setting-for-MDB-entries.patch \
     file://703-v5.5-0001-net-dsa-b53-Add-support-for-MDB.patch \
     file://703-v5.5-0002-net-dsa-bcm_sf2-Wire-up-MDB-operations.patch \
     file://703-v5.5-0003-net-dsa-bcm_sf2-Add-support-for-optional-reset-contr.patch \

@@ -11,6 +11,7 @@ SRC_URI_append = " \
     file://249-udp-tunnel-selection.patch \
     file://250-netfilter_depends.patch \
     file://251-sound_kconfig.patch \
+    file://252-init-Kconfig-make-ASN1-explicitly-selectable-unhide-.patch \
     file://259-regmap_dynamic.patch \
     file://260-crypto_test_dependencies.patch \
     file://260-lib-arc4-unhide.patch \
