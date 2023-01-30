@@ -1,0 +1,162 @@
+diff --git a/arch/arm64/boot/dts/mediatek/mt7988a-dsa-10g-emmc.dts b/arch/arm64/boot/dts/mediatek/mt7988a-dsa-10g-emmc.dts
+index 858021e1..1e58fd04 100644
+--- a/arch/arm64/boot/dts/mediatek/mt7988a-dsa-10g-emmc.dts
++++ b/arch/arm64/boot/dts/mediatek/mt7988a-dsa-10g-emmc.dts
+@@ -318,9 +318,9 @@
+ };
+ 
+ &hnat {
+-	mtketh-wan = "eth1";
++	mtketh-wan = "erouter0";
+ 	mtketh-lan = "lan";
+-	mtketh-lan2 = "eth2";
++	mtketh-lan2 = "eth3";
+ 	mtketh-max-gmac = <3>;
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/mediatek/mt7988a-dsa-10g-spim-nand.dts b/arch/arm64/boot/dts/mediatek/mt7988a-dsa-10g-spim-nand.dts
+index c7aa87bb..ab3dba0c 100644
+--- a/arch/arm64/boot/dts/mediatek/mt7988a-dsa-10g-spim-nand.dts
++++ b/arch/arm64/boot/dts/mediatek/mt7988a-dsa-10g-spim-nand.dts
+@@ -484,9 +484,9 @@
+ };
+ 
+ &hnat {
+-	mtketh-wan = "eth1";
++	mtketh-wan = "erouter0";
+ 	mtketh-lan = "lan";
+-	mtketh-lan2 = "eth2";
++	mtketh-lan2 = "eth3";
+ 	mtketh-max-gmac = <3>;
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/mediatek/mt7988a-dsa-e2p5g-spim-nand.dts b/arch/arm64/boot/dts/mediatek/mt7988a-dsa-e2p5g-spim-nand.dts
+index d6795eef..6a2efcda 100644
+--- a/arch/arm64/boot/dts/mediatek/mt7988a-dsa-e2p5g-spim-nand.dts
++++ b/arch/arm64/boot/dts/mediatek/mt7988a-dsa-e2p5g-spim-nand.dts
+@@ -414,9 +414,9 @@
+ };
+ 
+ &hnat {
+-	mtketh-wan = "eth1";
++	mtketh-wan = "erouter0";
+ 	mtketh-lan = "lan";
+-	mtketh-lan2 = "eth2";
++	mtketh-lan2 = "eth3";
+ 	mtketh-max-gmac = <3>;
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/mediatek/mt7988a-dsa-i2p5g-spim-nand.dts b/arch/arm64/boot/dts/mediatek/mt7988a-dsa-i2p5g-spim-nand.dts
+index f4619205..3010bfb0 100644
+--- a/arch/arm64/boot/dts/mediatek/mt7988a-dsa-i2p5g-spim-nand.dts
++++ b/arch/arm64/boot/dts/mediatek/mt7988a-dsa-i2p5g-spim-nand.dts
+@@ -327,9 +327,9 @@
+ };
+ 
+ &hnat {
+-	mtketh-wan = "eth1";
++	mtketh-wan = "erouter0";
+ 	mtketh-lan = "lan";
+-	mtketh-lan2 = "eth2";
++	mtketh-lan2 = "eth3";
+ 	mtketh-max-gmac = <3>;
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/mediatek/mt7988a-gsw-10g-spim-nand.dts b/arch/arm64/boot/dts/mediatek/mt7988a-gsw-10g-spim-nand.dts
+index 58d0733e..1ee03516 100644
+--- a/arch/arm64/boot/dts/mediatek/mt7988a-gsw-10g-spim-nand.dts
++++ b/arch/arm64/boot/dts/mediatek/mt7988a-gsw-10g-spim-nand.dts
+@@ -364,9 +364,9 @@
+ };
+ 
+ &hnat {
+-	mtketh-wan = "eth1";
+-	mtketh-lan = "eth0";
+-	mtketh-lan2 = "eth2";
++	mtketh-wan = "erouter0";
++	mtketh-lan = "eth1";
++	mtketh-lan2 = "eth3";
+ 	mtketh-max-gmac = <3>;
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/mediatek/mt7988c-dsa-10g-emmc.dts b/arch/arm64/boot/dts/mediatek/mt7988c-dsa-10g-emmc.dts
+index 30c86f15..1c6f0574 100644
+--- a/arch/arm64/boot/dts/mediatek/mt7988c-dsa-10g-emmc.dts
++++ b/arch/arm64/boot/dts/mediatek/mt7988c-dsa-10g-emmc.dts
+@@ -302,9 +302,9 @@
+ };
+ 
+ &hnat {
+-	mtketh-wan = "eth1";
++	mtketh-wan = "erouter0";
+ 	mtketh-lan = "lan";
+-	mtketh-lan2 = "eth2";
++	mtketh-lan2 = "eth3";
+ 	mtketh-max-gmac = <3>;
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/mediatek/mt7988c-dsa-10g-spim-nand.dts b/arch/arm64/boot/dts/mediatek/mt7988c-dsa-10g-spim-nand.dts
+index f4729f94..63f6ff43 100644
+--- a/arch/arm64/boot/dts/mediatek/mt7988c-dsa-10g-spim-nand.dts
++++ b/arch/arm64/boot/dts/mediatek/mt7988c-dsa-10g-spim-nand.dts
+@@ -468,9 +468,9 @@
+ };
+ 
+ &hnat {
+-	mtketh-wan = "eth1";
++	mtketh-wan = "erouter0";
+ 	mtketh-lan = "lan";
+-	mtketh-lan2 = "eth2";
++	mtketh-lan2 = "eth3";
+ 	mtketh-max-gmac = <3>;
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/mediatek/mt7988c-dsa-e2p5g-spim-nand.dts b/arch/arm64/boot/dts/mediatek/mt7988c-dsa-e2p5g-spim-nand.dts
+index 2d0a2793..6e7c47e0 100644
+--- a/arch/arm64/boot/dts/mediatek/mt7988c-dsa-e2p5g-spim-nand.dts
++++ b/arch/arm64/boot/dts/mediatek/mt7988c-dsa-e2p5g-spim-nand.dts
+@@ -398,9 +398,9 @@
+ };
+ 
+ &hnat {
+-	mtketh-wan = "eth1";
++	mtketh-wan = "erouter0";
+ 	mtketh-lan = "lan";
+-	mtketh-lan2 = "eth2";
++	mtketh-lan2 = "eth3";
+ 	mtketh-max-gmac = <3>;
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/mediatek/mt7988c-dsa-i2p5g-spim-nand.dts b/arch/arm64/boot/dts/mediatek/mt7988c-dsa-i2p5g-spim-nand.dts
+index a8e8f9a6..4c51d639 100644
+--- a/arch/arm64/boot/dts/mediatek/mt7988c-dsa-i2p5g-spim-nand.dts
++++ b/arch/arm64/boot/dts/mediatek/mt7988c-dsa-i2p5g-spim-nand.dts
+@@ -314,9 +314,9 @@
+ };
+ 
+ &hnat {
+-	mtketh-wan = "eth1";
++	mtketh-wan = "erouter0";
+ 	mtketh-lan = "lan";
+-	mtketh-lan2 = "eth2";
++	mtketh-lan2 = "eth3";
+ 	mtketh-max-gmac = <3>;
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/mediatek/mt7988c-gsw-10g-spim-nand.dts b/arch/arm64/boot/dts/mediatek/mt7988c-gsw-10g-spim-nand.dts
+index e10e1e21..f2745594 100644
+--- a/arch/arm64/boot/dts/mediatek/mt7988c-gsw-10g-spim-nand.dts
++++ b/arch/arm64/boot/dts/mediatek/mt7988c-gsw-10g-spim-nand.dts
+@@ -348,9 +348,9 @@
+ };
+ 
+ &hnat {
+-	mtketh-wan = "eth1";
+-	mtketh-lan = "eth0";
+-	mtketh-lan2 = "eth2";
++	mtketh-wan = "erouter0";
++	mtketh-lan = "eth1";
++	mtketh-lan2 = "eth3";
+ 	mtketh-max-gmac = <3>;
+ 	status = "okay";
+ };

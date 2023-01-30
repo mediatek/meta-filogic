@@ -23,6 +23,7 @@ SRC_URI = " \
     file://generic/defconfig \
     file://001-rdkb-eth-mtk-change-ifname-for.patch;apply=no \
     file://003-rdkb-mtd-kernel-ubi-relayout.patch;apply=no \
+    file://004-rdkb-hnat-bind-ifname.patch;apply=no \
     "
 SRC_URI_append_mt7988 += " \
     file://mediatek/mt7988.cfg \
@@ -85,6 +86,7 @@ do_filogic_patches() {
             if [ $DISTRO_logan_ENABLED = 'true' ]; then
                 for i in ${WORKDIR}/mediatek/nf_hnat/6*.patch; do patch -p1 < $i; done
                 for i in ${WORKDIR}/mediatek/nf_hnat/10*.patch; do patch -p1 < $i; done
+                patch -p1 < ${WORKDIR}/004-rdkb-hnat-bind-ifname.patch
             fi
             touch patch_applied
         fi
