@@ -11,4 +11,5 @@ SRC_URI_append = " \
     file://080-resv_start_op.patch \
     file://090-bcma-otp.patch \
     file://100-backports-drop-QRTR-and-MHI.patch \
+    file://110-backport_napi_build_skb.patch \
     "

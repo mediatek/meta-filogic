@@ -22,7 +22,6 @@ SRC_URI_append = " \
     file://1115-mt76-testmode-add-ZWDFS-test-mode-support.patch \
     file://1116-mt76-testmode-add-iBF-eBF-cal-and-cert-commands-with.patch \
     file://1117-mt76-mt7915-init-rssi-in-WTBL-when-add-station.patch \
-    file://1118-mt76-mt7915-reduce-TWT-SP-sent-to-FW-for-cert.patch \
     file://1119-mt76-connac-airtime-fairness-feature-off-in-mac80211.patch \
     file://1120-mt76-mt7915-add-mt7986-and-mt7916-pre-calibration.patch \
     file://1121-mt76-mt7915-add-phy-capability-vendor-command.patch \
