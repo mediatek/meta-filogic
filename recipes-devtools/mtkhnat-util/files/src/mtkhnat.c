@@ -5,17 +5,23 @@
 #include <uci.h>
 #include "mtkhnat.h"
 
-void get_qos_toggle (global_param *global)
+void get_qos_toggle (global_param *global, char *module)
 {
     char buf[64] = {0};
+    char filename [64] = {0};
     FILE *fp = NULL;
     int toggle = 0; 
-    fp = fopen("/sys/kernel/debug/mtk_ppe/qos_toggle", "r");
+
+    snprintf(filename, sizeof(filename), "/sys/kernel/debug/%s/qos_toggle", module);
+    fp = fopen(filename, "r");
+
     if(fp != NULL)
     {
         fgets(buf,sizeof(buf),fp);    
         fclose(fp);
-        sscanf(buf, "value=%d,", &toggle);
+        if(strcmp(module,"hnat")){
+            sscanf(buf, "value=%d,", &toggle);
+        }
         global->qos_toggle = toggle;
         fprintf(stderr, "%s:  qos_toggle = %d \n", __func__, global->qos_toggle);
     }else{
@@ -24,11 +30,25 @@ void get_qos_toggle (global_param *global)
 
     return; 
 }
-void set_global_param(global_param global)
+void set_global_param(global_param global, char *module)
 {
     char cmd[128] = {0};
     int i = 0 ;
+    FILE *fp = NULL;
+    char buf[64] = {0};
+    bool IS_NETSYS_V2 = false;
 
+    fp = fopen("/proc/device-tree/model", "r");
+
+    if(fp != NULL)
+    {
+        fgets(buf,sizeof(buf),fp);    
+        fclose(fp);
+        if((strstr(buf,"7986") != NULL) || (strstr(buf,"7981") != NULL) ) 
+             IS_NETSYS_V2 = true;   
+    }
+
+    fprintf(stderr, "%s:  IS_NETSYS_V2 = %d   \n", __func__, IS_NETSYS_V2);
     fprintf(stderr, "%s:  start config global param   \n", __func__);
     fprintf(stderr, "%s:  enable %d  hqos %d sch0bw %d sch1bw %d schedule %s txq_num %d \n", __func__,global.enable, global.hqos, global.sch0_bw,global.sch1_bw, global.scheduling,global.txq_num);
     snprintf(cmd, sizeof(cmd), "echo 0 > /proc/sys/net/bridge/bridge-nf-call-arptables");
@@ -41,50 +61,60 @@ void set_global_param(global_param global)
     system(cmd);
 
     if(!global.enable){
-        snprintf(cmd, sizeof(cmd), "echo 0 %s %d > /sys/kernel/debug/mtk_ppe/qdma_sch0", global.scheduling, global.sch0_bw);
+        snprintf(cmd, sizeof(cmd), "echo 0 %s %d > /sys/kernel/debug/%s/qdma_sch0", global.scheduling, global.sch0_bw, module);
         system(cmd);
-        snprintf(cmd, sizeof(cmd), "echo 0 %s %d > /sys/kernel/debug/mtk_ppe/qdma_sch1", global.scheduling, global.sch1_bw);
+        snprintf(cmd, sizeof(cmd), "echo 0 %s %d > /sys/kernel/debug/%s/qdma_sch1", global.scheduling, global.sch1_bw, module);
         system(cmd);
-        snprintf(cmd, sizeof(cmd), "echo 0 0 0 0 0 0 4 > /sys/kernel/debug/mtk_ppe/qdma_txq0");
+        snprintf(cmd, sizeof(cmd), "echo 0 0 0 0 0 0 4 > /sys/kernel/debug/%s/qdma_txq0", module);
         system(cmd);
 
         for (i=1; i < global.txq_num; i++ ){
-            snprintf(cmd, sizeof(cmd), "echo 0 0 0 0 0 0 0 > /sys/kernel/debug/mtk_ppe/qdma_txq%d", i);
+            snprintf(cmd, sizeof(cmd), "echo 0 0 0 0 0 0 0 > /sys/kernel/debug/%s/qdma_txq%d",module, i);
             system(cmd);  
         }
-        snprintf(cmd, sizeof(cmd), "echo %d > /sys/kernel/debug/mtk_ppe/qos_toggle", global.qos_toggle);
-        system(cmd);
+        if(strstr(module, "hnat") == NULL) {
+            snprintf(cmd, sizeof(cmd), "echo %d > /sys/kernel/debug/%s/qos_toggle", global.qos_toggle, module);
+            system(cmd);
+        }
         return;
     }
 
     if(!global.hqos){
-        snprintf(cmd, sizeof(cmd), "echo 0 %s %d > /sys/kernel/debug/mtk_ppe/qdma_sch0", global.scheduling, global.sch0_bw);
+        snprintf(cmd, sizeof(cmd), "echo 0 %s %d > /sys/kernel/debug/%s/qdma_sch0", global.scheduling, global.sch0_bw, module);
         system(cmd);
-        snprintf(cmd, sizeof(cmd), "echo 0 %s %d > /sys/kernel/debug/mtk_ppe/qdma_sch1", global.scheduling, global.sch1_bw);
+        snprintf(cmd, sizeof(cmd), "echo 0 %s %d > /sys/kernel/debug/%s/qdma_sch1", global.scheduling, global.sch1_bw, module);
         system(cmd);
 
         for (i=0; i < global.txq_num; i++ ){
 
-            if(i <= ((global.txq_num/2) - 1))
-                snprintf(cmd, sizeof(cmd), "echo 0 0 0 0 0 0 4 > /sys/kernel/debug/mtk_ppe/qdma_txq%d", i);
+            if((i <= ((global.txq_num/2) - 1)) || (!IS_NETSYS_V2))
+                snprintf(cmd, sizeof(cmd), "echo 0 0 0 0 0 0 4 > /sys/kernel/debug/%s/qdma_txq%d", module, i);
             else
-                snprintf(cmd, sizeof(cmd), "echo 1 0 0 0 0 0 4 > /sys/kernel/debug/mtk_ppe/qdma_txq%d", i);
+                snprintf(cmd, sizeof(cmd), "echo 1 0 0 0 0 0 4 > /sys/kernel/debug/%s/qdma_txq%d", module, i);
 
             system(cmd);
         }
-        snprintf(cmd, sizeof(cmd), "echo %d > /sys/kernel/debug/mtk_ppe/qos_toggle", global.qos_toggle);
-        system(cmd);
+        if(strstr(module, "hnat") == NULL) {
+            snprintf(cmd, sizeof(cmd), "echo %d > /sys/kernel/debug/%s/qos_toggle", global.qos_toggle, module);
+            system(cmd);
+        }
         return;
     }
 
-    snprintf(cmd, sizeof(cmd), "echo 1 %s %d > /sys/kernel/debug/mtk_ppe/qdma_sch0", global.scheduling, global.sch0_bw);
+    snprintf(cmd, sizeof(cmd), "echo 1 %s %d > /sys/kernel/debug/%s/qdma_sch0", global.scheduling, global.sch0_bw, module);
     system(cmd);
-    snprintf(cmd, sizeof(cmd), "echo 1 %s %d > /sys/kernel/debug/mtk_ppe/qdma_sch1", global.scheduling, global.sch1_bw);
+    snprintf(cmd, sizeof(cmd), "echo 1 %s %d > /sys/kernel/debug/%s/qdma_sch1", global.scheduling, global.sch1_bw, module);
     system(cmd);
+
+
+    snprintf(cmd, sizeof(cmd), "echo 1 > /proc/sys/net/bridge/bridge-nf-call-iptables");
+    system(cmd);
+    snprintf(cmd, sizeof(cmd), "echo 1 > /proc/sys/net/bridge/bridge-nf-call-ip6tables");
+    system(cmd);     
 
     return;
 }
-void set_queue_param(queue_param queue, global_param global)
+void set_queue_param(queue_param queue, global_param global, char *module)
 {
     char cmd[128] = {0};
     int queue_minebl = 1;
@@ -114,9 +144,9 @@ void set_queue_param(queue_param queue, global_param global)
     sch1_maxrate = (global.sch1_bw * queue.maxrate)/100;
 
     if(queue.id <= ((global.txq_num/2) - 1))
-        snprintf(cmd, sizeof(cmd), "echo 0 %d %d %d %d %d %d > /sys/kernel/debug/mtk_ppe/qdma_txq%d", queue_minebl, sch0_minrate, queue_maxebl, sch0_maxrate, queue.weight, queue.resv, queue.id);
+        snprintf(cmd, sizeof(cmd), "echo 0 %d %d %d %d %d %d > /sys/kernel/debug/%s/qdma_txq%d", queue_minebl, sch0_minrate, queue_maxebl, sch0_maxrate, queue.weight, queue.resv, module, queue.id);
     else
-        snprintf(cmd, sizeof(cmd), "echo 1 %d %d %d %d %d %d > /sys/kernel/debug/mtk_ppe/qdma_txq%d", queue_minebl, sch1_minrate, queue_maxebl, sch1_maxrate, queue.weight, queue.resv, queue.id);
+        snprintf(cmd, sizeof(cmd), "echo 1 %d %d %d %d %d %d > /sys/kernel/debug/%s/qdma_txq%d", queue_minebl, sch1_minrate, queue_maxebl, sch1_maxrate, queue.weight, queue.resv, module, queue.id);
 
     system(cmd);
 
@@ -126,10 +156,14 @@ int apply_uci_config ()
     struct uci_context *uci_ctx = uci_alloc_context();
     struct uci_package *uci_pkg = NULL;
     struct uci_element *e;
-    // struct uci_section *s;
+
     const char cfg_name[] = "mtkhnat";
     bool parsing_global = false;
     global_param global = {0};
+    FILE *fp = NULL;
+    char module [8] = "hnat";
+    char filename [64] = {0};
+    char cmd[128] = {0};
 
     if (uci_load(uci_ctx, cfg_name, &uci_pkg) != UCI_OK) {
         uci_free_context(uci_ctx);
@@ -137,7 +171,21 @@ int apply_uci_config ()
         return -1;
     }
 
-    get_qos_toggle (&global);
+    snprintf(filename, sizeof(filename), "/sys/kernel/debug/%s/qos_toggle", module);
+
+    fp = fopen(filename, "r");
+    if(fp != NULL)
+    {
+        fclose(fp);
+        snprintf(cmd, sizeof(cmd), "echo 0 > /proc/sys/net/bridge/bridge-nf-call-iptables");
+        system(cmd);
+        snprintf(cmd, sizeof(cmd), "echo 0 > /proc/sys/net/bridge/bridge-nf-call-ip6tables");
+        system(cmd);
+    }else{
+        strcpy(module,"mtk_ppe");
+    }
+    fprintf(stderr, "%s:  module = %s \n", __func__, module);
+    get_qos_toggle (&global, &module);
 
     uci_foreach_element(&uci_pkg->sections, e) {
 
@@ -189,11 +237,11 @@ int apply_uci_config ()
             }
         }
         if (parsing_global == true){
-            set_global_param(global);
+            set_global_param(global, module);
             if(!global.enable || !global.hqos)
                 return 0;
         }else{
-            set_queue_param(queue, global);
+            set_queue_param(queue, global, module);
         }    
     }
 

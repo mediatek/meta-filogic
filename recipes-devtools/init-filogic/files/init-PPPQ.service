@@ -1,11 +1,11 @@
 [Unit]
 Description=Init PPPQ 
 DefaultDependencies=no
-after=CcspPandMSsp.service
+After=CcspPandMSsp.service
 
 [Service]
 Type=oneshot
-ExecStart=/bin/bash -c "/bin/echo 2 > /sys/kernel/debug/mtk_ppe/qos_toggle"
+ExecStart=/bin/sh /usr/sbin/init-PPPQ.sh
 RemainAfterExit=yes
 
 [Install]
