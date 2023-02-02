@@ -75,4 +75,5 @@ SRC_URI_append = " \
     file://99910-hostapd-mtk-Add-amsdu-set-get-ctrl.patch \
     file://99911-hostapd-mtk-Add-he_ldpc-configuration.patch \
     file://99912-hostapd-mtk-Add-the-broadcast-destination-address-of.patch \
+    file://99913-hostapd-mtk-Add-vendor-command-attribute-for-RTS-BW-.patch \
     "
