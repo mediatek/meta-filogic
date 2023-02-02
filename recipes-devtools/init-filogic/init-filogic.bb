@@ -32,6 +32,7 @@ do_install() {
     install -m 0755 ${WORKDIR}/pppoe_config.sh ${D}${sbindir}
     install -m 0755 ${WORKDIR}/pptp_config.sh ${D}${sbindir}
     install -m 0755 ${WORKDIR}/staticIP_config.sh ${D}${sbindir}
+    install -m 0755 ${WORKDIR}/init-PPPQ.sh ${D}${sbindir}
     install -d ${D}${systemd_unitdir}/system/
     install -m 0644 ${S}/init-IPv6.service ${D}${systemd_unitdir}/system
     install -m 0644 ${S}/init-Lanbridge.service ${D}${systemd_unitdir}/system
