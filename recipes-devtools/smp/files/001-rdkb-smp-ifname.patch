@@ -1,0 +1,44 @@
+diff --git a/smp-mt76.sh b/smp-mt76.sh
+index b71c90a..d43ebe8 100755
+--- a/smp-mt76.sh
++++ b/smp-mt76.sh
+@@ -5,7 +5,8 @@ CPU_LIST=`cat /proc/interrupts | sed -n '1p'`
+ NUM_OF_CPU=0; for i in $CPU_LIST; do NUM_OF_CPU=`expr $NUM_OF_CPU + 1`; done;
+ DEFAULT_RPS=0
+ 
+-. /lib/functions.sh
++#. /lib/functions.sh
++board_name=`cat /proc/device-tree/model`
+ 
+ RPS_IF_LIST=""
+ NUM_WIFI_CARD=0
+@@ -22,9 +23,9 @@ get_if_info()
+ 	NET_IF_LIST=`ls /sys/class/net`
+ 	for vif in $NET_IF_LIST;
+ 	do
+-		if [[ "$vif" == "eth"* ]] ||  \
++		if [[ "$vif" == "eth"* ]] || [[ "$vif" == "erouter"* ]] || \
+ 		[[ "$vif" == "lan"* ]] || [[ "$vif" == "wan"* ]] || \
+-		[[ "$vif" == "wlan"* ]] || [[ "$vif" == "phy"* ]]; then
++		[[ "$vif" == "wlan"* ]] || [[ "$vif" == "wifi"* ]]; then
+ 			RPS_IF_LIST="$RPS_IF_LIST $vif"
+ 		fi
+ 	done;
+@@ -122,7 +123,7 @@ MT7988()
+ 
+ 	for vif in $NET_IF_LIST;
+ 	do
+-		if [[ "$vif" == "wlan"* ]] || [[ "$vif" == "phy"* ]]; then
++		if [[ "$vif" == "wlan"* ]] || [[ "$vif" == "wifi"* ]]; then
+ 			WIFI_IF_LIST="$WIFI_IF_LIST $vif"
+ 		fi
+ 	done;
+@@ -325,7 +326,7 @@ MT7622()
+ 
+ setup_model()
+ {
+-	board=$(board_name)
++	board=$board_name
+ 	num_of_wifi=$NUM_WIFI_CARD
+ 
+ 	if [[ $board == *"7988"* ]]; then
