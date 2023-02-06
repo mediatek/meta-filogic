@@ -42,6 +42,8 @@ typedef struct {
     int log_level;
     char hostapd_options[64];
     char noscan[2];
+    unsigned int rtsThreshold;
+    BOOL ht_coex;
 } wifi_radio_param;
 
 typedef struct {
@@ -57,6 +59,7 @@ typedef struct {
     wifi_vap_security_t security;
     int mac_offset;
     char ifname[16];
+    bool hidden;
 } wifi_intf_param;
 
 struct params

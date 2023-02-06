@@ -165,6 +165,16 @@ void set_txant(wifi_radio_param *radio_param, char *mask)
     radio_param->txantenna = strtol(mask, NULL, 16);
 }
 
+void set_htcoex(wifi_radio_param *radio_param, char *ht_coex)
+{
+    radio_param->ht_coex = strtol(ht_coex, NULL, 10);
+}
+
+void set_rts(wifi_radio_param *radio_param, char *rts)
+{
+    radio_param->rtsThreshold = strtol(rts, NULL, 10);
+}
+
 void set_radionum(wifi_intf_param *intf_param, char *phy_name)
 {
     int radio_num = 0;
@@ -257,6 +267,11 @@ void set_wds(wifi_intf_param *intf_param, char *wds_enable)
         intf_param->wds_mode = TRUE;
 }
 
+void set_hidden(wifi_intf_param *intf_param, char *hidden)
+{
+    intf_param->hidden = strtol(hidden, NULL, 10);
+}
+
 int set_interface_bssid(int phy_index, int offset, mac_address_t *bssid)
 {
     FILE *f;
@@ -345,6 +360,13 @@ void set_radio_param(wifi_radio_param radio_parameter)
 
     operationParam.variant = mode;
 
+    // rtsThreshold, zero means not set
+    if ((radio_parameter.rtsThreshold < 65535) && radio_parameter.rtsThreshold)
+        operationParam.rtsThreshold = radio_parameter.rtsThreshold;
+
+    //ht_coex
+    operationParam.obssCoex = radio_parameter.ht_coex;
+
     // apply setting
     ret = wifi_setRadioOperatingParameters(radio_parameter.radio_index, &operationParam);
     if (ret != RETURN_OK)
@@ -425,7 +447,9 @@ void set_ap_param(wifi_intf_param ap_param , wifi_vap_info_map_t *map)
     vap_info.u.bss_info.security.mfp = ap_param.security.mfp;
     vap_info.u.bss_info.security.u.key.type = ap_param.security.u.key.type;
     strncpy(vap_info.u.bss_info.security.u.key.key, ap_param.security.u.key.key, 64);
-    
+
+    // hidden
+    vap_info.u.bss_info.showSsid = (ap_param.hidden ? 0 : 1);
 
     // Replace the setting with uci config
     map->vap_array[vap_index_in_map] = vap_info;
@@ -562,6 +586,10 @@ int apply_uci_config ()
                     set_rxant(&radio_param, op->v.string);
                 else if (strcmp(op->e.name, "txantenna") == 0)
                     set_txant(&radio_param, op->v.string);
+                else if (strcmp(op->e.name, "ht_coex") == 0)
+                    set_htcoex(&radio_param, op->v.string);
+                else if (strcmp(op->e.name, "rts") == 0)
+                    set_rts(&radio_param, op->v.string);
                 else
                     fprintf(stderr, "[%s %s not set!]\n", op->e.name, op->v.string);
             } else {        
@@ -591,6 +619,8 @@ int apply_uci_config ()
                     set_ifname(&intf_param, op->v.string);
                 }else if (strcmp(op->e.name, "wds") == 0){
                     set_wds(&intf_param, op->v.string);
+                }else if (strcmp(op->e.name, "hidden") == 0){
+                    set_hidden(&intf_param, op->v.string);
                 }else{
                     fprintf(stderr, "[%s %s not set!]\n", op->e.name, op->v.string);
                 }    
