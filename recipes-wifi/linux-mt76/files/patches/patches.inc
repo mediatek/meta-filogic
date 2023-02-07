@@ -1,13 +1,6 @@
 #patch patches (come from openwrt/lede/target/linux/mediatek)
 SRC_URI_append = " \
-    file://0001-wifi-mt76-mt7915-call-mt7915_mcu_set_thermal_throttl.patch \
-    file://0002-wifi-mt76-mt7915-rework-mt7915_mcu_set_thermal_throt.patch \
-    file://0003-wifi-mt76-mt7915-rework-mt7915_thermal_temp_store.patch \
-    file://0004-wifi-mt76-mt7915-add-error-message-in-mt7915_thermal.patch \
-    file://0005-wifi-mt76-mt7915-set-sku-initial-value-to-zero.patch \
-    file://0006-wifi-mt76-mt7915-add-chip-id-condition-in-mt7915_che.patch \
-    file://0007-wifi-mt76-mt7915-rework-mt7915_thermal_init.patch \
-    file://0008-wifi-mt76-mt7915-remove-BW160-and-BW80-80-support.patch \
+    file://0001-wifi-mt76-mt7915-rework-mt7915_thermal_init.patch \
     file://1001-mt76-mt7915-add-mtk-internal-debug-tools-for-mt76.patch \
     file://1002-mt76-mt7915-csi-implement-csi-support.patch \
     file://1003-mt76-mt7915-air-monitor-support.patch \
@@ -24,38 +17,36 @@ SRC_URI_append = " \
     file://1115-mt76-testmode-add-ZWDFS-test-mode-support.patch \
     file://1116-mt76-testmode-add-iBF-eBF-cal-and-cert-commands-with.patch \
     file://1117-mt76-mt7915-init-rssi-in-WTBL-when-add-station.patch \
-    file://1119-mt76-connac-airtime-fairness-feature-off-in-mac80211.patch \
-    file://1120-mt76-mt7915-add-mt7986-and-mt7916-pre-calibration.patch \
-    file://1121-mt76-mt7915-add-phy-capability-vendor-command.patch \
-    file://1122-mt76-mt7915-add-vendor-subcmd-EDCCA-ctrl-enable-thre.patch \
-    file://1123-mt76-mt7915-implement-bin-file-mode.patch \
-    file://1124-mt76-mt7915-initialize-wcid.patch \
-    file://1125-mt76-mt7915-Add-hemu-dump-support.patch \
-    file://1126-mt76-mt7915-add-vendor-subcmd-three-wire-PTA-ctrl.patch \
-    file://1127-mt76-mt7915-add-ibf-control-vendor-cmd.patch \
-    file://1128-mt76-mt7915-add-E3-re-bonding-for-low-yield-rate-iss.patch \
-    file://1129-mt76-mt7915-support-on-off-SW-ACI-through-debugfs.patch \
-    file://1130-mt76-mt7915-add-bf-backoff-limit-table-support.patch \
-    file://1131-mt76-mt7915-amsdu-set-and-get-control.patch \
-    file://1132-mt76-mt7915-add-support-for-he-ldpc-control-fro.patch \
-    file://1133-mt76-mt7915-Add-vendor-command-attribute-for-RTS-BW-.patch \
-    file://1134-mt76-mt7915-Allow-AP-to-change-channel-width-for-40M.patch \
+    file://1118-mt76-connac-airtime-fairness-feature-off-in-mac80211.patch \
+    file://1119-mt76-mt7915-add-mt7986-and-mt7916-pre-calibration.patch \
+    file://1120-mt76-mt7915-add-phy-capability-vendor-command.patch \
+    file://1121-mt76-mt7915-add-vendor-subcmd-EDCCA-ctrl-enable-thre.patch \
+    file://1122-mt76-mt7915-implement-bin-file-mode.patch \
+    file://1123-mt76-mt7915-initialize-wcid.patch \
+    file://1124-mt76-mt7915-Add-hemu-dump-support.patch \
+    file://1125-mt76-mt7915-add-vendor-subcmd-three-wire-PTA-ctrl.patch \
+    file://1126-mt76-mt7915-add-ibf-control-vendor-cmd.patch \
+    file://1127-mt76-mt7915-add-E3-re-bonding-for-low-yield-rate-iss.patch \
+    file://1128-mt76-mt7915-support-on-off-SW-ACI-through-debugfs.patch \
+    file://1129-mt76-mt7915-add-bf-backoff-limit-table-support.patch \
+    file://1130-mt76-mt7915-amsdu-set-and-get-control.patch \
+    file://1131-wifi-mt76-mt7915-add-support-for-he-ldpc-control-fro.patch \
+    file://1132-mt76-mt7915-Add-vendor-command-attribute-for-RTS-BW-.patch \
+    file://1133-mt76-mt7915-Allow-AP-to-change-channel-width-for-40M.patch \
     file://3001-mt76-mt7915-wed-add-wed-tx-support.patch \
     file://3002-mt76-mt7915-wed-add-wds-support-when-wed-is-enabled.patch \
-    file://3003-mt76-connac-wed-add-wed-rx-copy-skb.patch \
-    file://3004-mt76-mt7915-wed-add-fill-receive-path-to-report-wed-.patch \
-    file://3005-mt76-mt7915-wed-add-ser-support-when-wed-on.patch \
-    file://3006-mt76-mt7915-wed-enable-red-per-band-token-drop-for-H.patch \
-    file://3007-mt76-mt7915-wed-find-rx-token-by-physical-address.patch \
-    file://3008-mt76-mt7915-wed-drop-scatter-and-gather-frame.patch \
-    file://3009-mt76-mt7915-wed-HW-ATF-support-for-mt7986.patch \
-    file://3010-mt76-mt7915-wed-add-mt7916-2-pcie-support-when-wed-o.patch \
-    file://3011-mt76-mt7915-wed-add-rxwi-for-further-in-chip-rro-dev.patch \
-    file://3012-mt76-mt7915-wed-fix-potential-memory-leakage.patch \
-    file://3013-mt76-mt7915-add-mt7915_net_setup_tc-to-support-wifi2.patch \
-    file://3014-mt76-mt7915-drop-the-wrong-judgment-condition-to-sup.patch \
+    file://3003-mt76-mt7915-wed-add-fill-receive-path-to-report-wed-.patch \
+    file://3004-mt76-mt7915-wed-find-rx-token-by-physical-address.patch \
+    file://3005-mt76-mt7915-wed-drop-scatter-and-gather-frame.patch \
+    file://3006-mt76-mt7915-wed-HW-ATF-support-for-mt7986.patch \
+    file://3007-mt76-mt7915-wed-add-mt7916-2-pcie-support-when-wed-o.patch \
+    file://3008-mt76-mt7915-wed-add-rxwi-for-further-in-chip-rro.patch \
+    file://3009-mt76-mt7915-add-mt7915_net_setup_tc-to-support-wifi2.patch \
+    file://3010-mt76-connac-wed-add-wed-rx-copy-skb-and-revert-page_.patch \
     file://4001-mt76-revert-get_of_mac_addr.patch \
     file://4002-mt76-include-header-files-for-module-param.patch \
     file://4003-mt76-revert-kernel-api-for-kernel-5.4.patch \
     file://4004-mt76-revert-for-backports-5.15-wireless-stack.patch \
+    file://4005-wifi-mt76-revert-EHT-definitions.patch \
+    file://4006-wifi-mt76-revert-ser-patches.patch \
     "
