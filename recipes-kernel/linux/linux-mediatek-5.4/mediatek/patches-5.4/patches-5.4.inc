@@ -60,6 +60,7 @@ SRC_URI_append = " \
     file://0900-bt-mtk-serial-fix.patch \
     file://0900-i2c-busses-add-mt7986-support.patch \
     file://0901-i2c-busses-add-mt7981-support.patch \
+    file://0920-kernel-MT7988-fix-spi-dma-unmap.patch \
     file://0930-pwm-add-mt7986-support.patch \
     file://0931-pwm-add-mt7981-support.patch \
     file://0932-add-pwm-feature-in-mt7988-project.patch \
