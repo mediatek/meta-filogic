@@ -1,7 +1,7 @@
-SUMMARY = "MTK eFuse driver"
-SECTION = "Drivers"
-LICENSE = "CLOSED"
-#LIC_FILES_CHKSUM = "file://COPYING;md5=751419260aa954499f7abaabaa882bbe"
+SUMMARY = " a collection of userspace utilities for the ksmbd kernel server"
+SECTION = "Applications"
+LICENSE = "GPLv2"
+LIC_FILES_CHKSUM = "file://COPYING;md5=751419260aa954499f7abaabaa882bbe"
 
 inherit autotools pkgconfig systemd
 
@@ -11,6 +11,7 @@ SRC_URI = " \
     git://git@github.com/cifsd-team/ksmbd-tools.git;protocol=https;tag=${PV} \
     file://smb.conf \
     file://ksmbd.service \
+    file://COPYING;subdir=git \
     "
 
 

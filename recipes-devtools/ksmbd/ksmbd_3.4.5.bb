@@ -1,7 +1,7 @@
-SUMMARY = "MTK eFuse driver"
+SUMMARY = "a linux kernel server which implements SMB3 protocol in kernel space for sharing files over network"
 SECTION = "Drivers"
-LICENSE = "CLOSED"
-#LIC_FILES_CHKSUM = "file://COPYING;md5=751419260aa954499f7abaabaa882bbe"
+LICENSE = "GPLv2"
+LIC_FILES_CHKSUM = "file://COPYING;md5=751419260aa954499f7abaabaa882bbe"
 
 inherit module
 
@@ -9,9 +9,8 @@ DEPENDS = "virtual/kernel"
 
 SRC_URI = " \
     git://git@github.com/cifsd-team/ksmbd.git;protocol=https;tag=${PV} \
+    file://COPYING;subdir=git \
     "
-
-#SRC_URI[sha256sum] = "d742992692dbe164060d2a0ea668895ed2b86252f10427db3d3a002df44c445b"
 
 S = "${WORKDIR}/git"
 
