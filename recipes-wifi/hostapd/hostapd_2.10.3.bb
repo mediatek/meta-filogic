@@ -16,9 +16,9 @@ SRCREV ?= "b704dc72ef824dfdd96674b90179b274d1d38105"
 SRC_URI = " \
     git://w1.fi/hostap.git;protocol=https;branch=main \
     file://hostapd-full.config \
-    file://hostapd-2G.conf \
-    file://hostapd-5G.conf \
-    file://hostapd-6G.conf \
+    file://hostapd-2G-EHT.conf \
+    file://hostapd-5G-EHT.conf \
+    file://hostapd-6G-EHT.conf \
     file://hostapd-5G-7915.conf \
     file://hostapd-5G-7916.conf \
     file://hostapd.service \
@@ -90,9 +90,9 @@ do_install() {
          install -d ${D}${sbindir} ${D}${sysconfdir} ${D}${systemd_unitdir}/system/ ${D}${base_libdir}/rdk
          install -m 0755 ${B}/hostapd ${D}${sbindir}
          install -m 0755 ${B}/hostapd_cli ${D}${sbindir}
-         install -m 0644 ${WORKDIR}/hostapd-2G.conf ${D}${sysconfdir}
-         install -m 0644 ${WORKDIR}/hostapd-5G.conf ${D}${sysconfdir}
-         install -m 0644 ${WORKDIR}/hostapd-6G.conf ${D}${sysconfdir}
+         install -m 0644 ${WORKDIR}/hostapd-2G-EHT.conf ${D}${sysconfdir}/hostapd-2G.conf
+         install -m 0644 ${WORKDIR}/hostapd-5G-EHT.conf ${D}${sysconfdir}/hostapd-5G.conf
+         install -m 0644 ${WORKDIR}/hostapd-6G-EHT.conf ${D}${sysconfdir}/hostapd-6G.conf
          install -m 0644 ${WORKDIR}/hostapd-5G-7915.conf ${D}${sysconfdir}
          install -m 0644 ${WORKDIR}/hostapd-5G-7916.conf ${D}${sysconfdir}
          install -m 0644 ${WORKDIR}/hostapd.service ${D}${systemd_unitdir}/system
@@ -103,9 +103,9 @@ do_install() {
 
 FILES_${PN} += " \
                 ${systemd_unitdir}/system/hostapd.service \
-                ${sysconfdir}/hostapd-2G.conf \
-                ${sysconfdir}/hostapd-5G.conf \
-                ${sysconfdir}/hostapd-6G.conf \
+                ${sysconfdir}/hostapd-2G-EHT.conf \
+                ${sysconfdir}/hostapd-5G-EHT.conf \
+                ${sysconfdir}/hostapd-6G-EHT.conf \
                 ${sysconfdir}/hostapd-5G-7915.conf \
                 ${sysconfdir}/hostapd-5G-7916.conf \
                 ${base_libdir}/rdk/hostapd-init.sh \
