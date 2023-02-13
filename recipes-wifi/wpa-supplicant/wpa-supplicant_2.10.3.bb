@@ -82,6 +82,7 @@ do_configure_append () {
 	echo "CONFIG_WEP=y" >> wpa_supplicant/.config
 	echo "CONFIG_AP=y" >> wpa_supplicant/.config
 	echo "CONFIG_MESH=y" >> wpa_supplicant/.config
+	echo "CONFIG_IEEE80211BE=y" >> ${B}/.config
 }
 
 do_compile () {

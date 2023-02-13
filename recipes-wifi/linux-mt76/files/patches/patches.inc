@@ -42,7 +42,12 @@ SRC_URI_append = " \
     file://3007-mt76-mt7915-wed-add-mt7916-2-pcie-support-when-wed-o.patch \
     file://3008-mt76-mt7915-wed-add-rxwi-for-further-in-chip-rro.patch \
     file://3009-mt76-mt7915-add-mt7915_net_setup_tc-to-support-wifi2.patch \
-    file://3010-mt76-connac-wed-add-wed-rx-copy-skb-and-revert-page_.patch \
+    file://3010-wifi-mt76-mt7915-add-wa-command-to-get-tx-msdu-count.patch \
+    file://3011-wifi-mt76-get-tx-count-and-tx-failed-from-mcu-comman.patch \
+    file://3012-wifi-mt76-mt7915-enable-PPDU-TxS-to-host-when-wed-en.patch \
+    file://3013-wifi-mt76-mt7915-get-tx-retries-from-tx-free-done-ev.patch \
+    file://3014-wifi-mt76-update-debugfs-knob-for-reset-counter-and-.patch \
+    file://3015-mt76-connac-wed-add-wed-rx-copy-skb-and-revert-page_.patch \
     file://4001-mt76-revert-get_of_mac_addr.patch \
     file://4002-mt76-include-header-files-for-module-param.patch \
     file://4003-mt76-revert-kernel-api-for-kernel-5.4.patch \

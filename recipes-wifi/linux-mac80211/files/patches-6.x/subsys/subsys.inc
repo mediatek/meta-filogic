@@ -33,4 +33,6 @@ SRC_URI_append = " \
     file://99900-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-i.patch \
     file://99902-mac80211-mtk-register-.ndo_setup_tc-to-support-wifi.patch \
     file://99999-mac80211-mtk-fix-build-error-on-Linux-Kernel-5.4.patch \
+    file://9999901-mac80211-mtk-add-rate-duration-for-EHT-rate.patch \
+    file://9999902-mac80211-mtk-add-EHT-BA1024-support.patch \
     "
