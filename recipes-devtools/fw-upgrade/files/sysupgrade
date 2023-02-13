@@ -4,7 +4,7 @@
 COMMAND=/lib/upgrade/do_stage2
 
 
-RAMFS_COPY_BIN='fw_printenv fw_setenv'
+RAMFS_COPY_BIN='mkfs.f2fs blkid blockdev dmsetup fw_printenv fw_setenv'
 RAMFS_COPY_DATA="/etc/fw_env.config /var/lock/fw_printenv.lock"
 RAM_ROOT=/tmp/root                                                              
 

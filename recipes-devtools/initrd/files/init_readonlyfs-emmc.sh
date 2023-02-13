@@ -23,28 +23,43 @@ $MOUNT -n -t tmpfs tmpfs -o rw,nosuid,nodev,noexec,noatime /rdklogs
 
 [ -z "$CONSOLE" ] && CONSOLE="/dev/console"
 mkdir -p /mnt
+dual_boot=$(cat /sys/module/boot_param/parameters/dual_boot 2>/dev/null)
 
-rootfs_size=$(df | grep /dev/root |  awk '{print $2}')
-root_dev=$(blkid -t "PARTLABEL=rootfs" -o device)
-loop_dev="$(losetup -f)"
+if [ x"${dual_boot}" = xY ]; then
+	data_dev=$(blkid -t "PARTLABEL=rootfs_data" -o device)
 
-rootfs_length=$(($rootfs_size*1024))
+	mkfs.f2fs -q -l rootfs_data $data_dev
 
-rootfs_data_offset=$(((rootfs_length+ROOTDEV_OVERLAY_ALIGN-1)&~(ROOTDEV_OVERLAY_ALIGN-1)))
+	$MOUNT -n -t f2fs $data_dev -o rw,noatime /overlay
+	
+	if [ -f "/overlay/upper/reset-default" ]; then
+		echo "Proceed with reset to default"
+		$UMOUNT /overlay
+		mkfs.f2fs -q -f -l rootfs_data $data_dev
+		$MOUNT -n -t f2fs $data_dev -o rw,noatime /overlay
+	fi
+else
+	rootfs_size=$(df | grep /dev/root |  awk '{print $2}')
+	root_dev=$(blkid -t "PARTLABEL=rootfs" -o device)
+	loop_dev="$(losetup -f)"
 
-losetup -o $rootfs_data_offset $loop_dev $root_dev
+	rootfs_length=$(($rootfs_size*1024))
 
-mkfs.f2fs -q -l rootfs_data $loop_dev
+	rootfs_data_offset=$(((rootfs_length+ROOTDEV_OVERLAY_ALIGN-1)&~(ROOTDEV_OVERLAY_ALIGN-1)))
 
-$MOUNT -n -t f2fs $loop_dev -o rw,noatime /overlay
+	losetup -o $rootfs_data_offset $loop_dev $root_dev
 
-if [ -f "/overlay/upper/reset-default" ]; then
-	echo "Proceed with reset to default"
-	$UMOUNT /overlay
-	mkfs.f2fs -q -f -l rootfs_data $loop_dev
+	mkfs.f2fs -q -l rootfs_data $loop_dev
+
 	$MOUNT -n -t f2fs $loop_dev -o rw,noatime /overlay
-fi
 
+	if [ -f "/overlay/upper/reset-default" ]; then
+		echo "Proceed with reset to default"
+		$UMOUNT /overlay
+		mkfs.f2fs -q -f -l rootfs_data $loop_dev
+		$MOUNT -n -t f2fs $loop_dev -o rw,noatime /overlay
+	fi
+fi
 [ ! -d  "/overlay/upper" ] && mkdir /overlay/upper
 [ ! -d  "/overlay/work" ] && mkdir /overlay/work
 

@@ -1,6 +1,7 @@
 
 board_name=`cat /proc/device-tree/compatible`
 . /lib/upgrade/nand.sh
+. /lib/upgrade/mmc.sh
 
 platform_do_upgrade() {
 	local board=$board_name
