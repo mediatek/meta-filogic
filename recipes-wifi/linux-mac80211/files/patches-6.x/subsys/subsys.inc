@@ -15,10 +15,15 @@ SRC_URI_append = " \
     file://307-wifi-mac80211-fix-initialization-of-rx-link-and-rx-l.patch \
     file://308-wifi-mac80211-fix-MLO-AP_VLAN-check.patch \
     file://310-mac80211-add-support-for-restricting-netdev-features.patch \
+    file://311-wifi-mac80211-fix-and-simplify-unencrypted-drop-chec.patch \
+    file://312-wifi-cfg80211-move-A-MSDU-check-in-ieee80211_data_to.patch \
+    file://313-wifi-cfg80211-factor-out-bridge-tunnel-RFC1042-heade.patch \
+    file://314-wifi-mac80211-remove-mesh-forwarding-congestion-chec.patch \
+    file://315-wifi-mac80211-fix-receiving-A-MSDU-frames-on-mesh-in.patch \
+    file://316-wifi-mac80211-add-a-workaround-for-receiving-non-sta.patch \
     file://400-allow-ibss-mixed.patch \
     file://500-mac80211_configure_antenna_gain.patch \
     file://782-net-next-1-of-net-pass-the-dst-buffer-to-of_get_mac_address.patch \
-    file://800-mac80211-mask-nested-A-MSDU-support-for-mesh.patch \
     file://900-mac80211-mtk-do-not-setup-twt-when-twt-responder-is-.patch \
     file://901-nl80211-mtk-extend-CAC-time-for-weather-radar-channe.patch \
     file://902-mac80211-mtk-it-s-invalid-case-when-frag_threshold-i.patch \
