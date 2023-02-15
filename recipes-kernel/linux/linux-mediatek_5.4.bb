@@ -60,6 +60,12 @@ require ${PN}-${PV}/mediatek/patches-5.4/patches-5.4.inc
 SRC_URI_remove_mt7986-32bit = " \
     file://401-pinctrl-add-mt7986-driver.patch \
     "
+SRC_URI_append_secureboot += " \
+    file://0404-mtdsplit-dm-verity.patch;apply=no \
+    file://0800-dm-verity-redo-hash-for-safexel-sha256.patch;apply=no \
+    file://0801-dm-support-get-device-by-part-uuid-and-label.patch;apply=no \
+    file://0802-dm-expose-create-parameter-to-sysfs.patch;apply=no \
+"    
 require linux-mediatek.inc
 
 do_patch_prepend () {
@@ -72,6 +78,7 @@ do_filogic_patches() {
     cd ${S}
     DISTRO_FlowBlock_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','flow_offload','true','false',d)}"
     DISTRO_logan_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','logan','true','false',d)}"
+    DISTRO_secure_boot_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','secure_boot','true','false',d)}"
         if [ ! -e patch_applied ]; then
             patch -p1 < ${WORKDIR}/001-rdkb-eth-mtk-change-ifname-for.patch
             patch -p1 < ${WORKDIR}/003-rdkb-mtd-kernel-ubi-relayout.patch
@@ -80,6 +87,12 @@ do_filogic_patches() {
             patch -p1 < ${WORKDIR}/739-mt7531-gsw-port5_external_phy_init.patch
             patch -p1 < ${WORKDIR}/753-net-mt753x-phy-coverity-scan.patch
             patch -p1 < ${WORKDIR}/9010-iwconfig-wireless-rate-fix.patch
+            if [ $DISTRO_secure_boot_ENABLED = 'true' ]; then
+                patch -p1 < ${WORKDIR}/0404-mtdsplit-dm-verity.patch
+                patch -p1 < ${WORKDIR}/0800-dm-verity-redo-hash-for-safexel-sha256.patch
+                patch -p1 < ${WORKDIR}/0801-dm-support-get-device-by-part-uuid-and-label.patch
+                patch -p1 < ${WORKDIR}/0802-dm-expose-create-parameter-to-sysfs.patch
+            fi
             if [ $DISTRO_FlowBlock_ENABLED = 'true' ]; then
                 for i in ${WORKDIR}/mediatek/flow_patch/*.patch; do patch -p1 < $i; done
             fi
