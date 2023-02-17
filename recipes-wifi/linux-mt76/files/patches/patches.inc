@@ -53,5 +53,4 @@ SRC_URI_append = " \
     file://4003-mt76-revert-kernel-api-for-kernel-5.4.patch \
     file://4004-mt76-revert-for-backports-5.15-wireless-stack.patch \
     file://4005-wifi-mt76-revert-EHT-definitions.patch \
-    file://4006-wifi-mt76-revert-ser-patches.patch \
     "

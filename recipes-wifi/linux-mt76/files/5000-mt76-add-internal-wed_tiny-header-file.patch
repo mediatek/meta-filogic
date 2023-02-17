@@ -131,7 +131,7 @@ index 00000000..91c98e7d
 +
 +#define mtk_wed_device_detach(_dev) do {} while (0)
 +#define mtk_wed_device_start(_dev, _mask) do {} while (0)
-+#define mtk_wed_device_stop(_dev, _reset) do {} while (0)
++#define mtk_wed_device_stop(_dev) do {} while (0)
 +#define mtk_wed_device_tx_ring_setup(_dev, _ring, _regs, _reset) -ENODEV
 +#define mtk_wed_device_txfree_ring_setup(_dev, _ring, _regs) -ENODEV
 +#define mtk_wed_device_rx_ring_setup(_dev, _ring, _regs, _reset) -ENODEV

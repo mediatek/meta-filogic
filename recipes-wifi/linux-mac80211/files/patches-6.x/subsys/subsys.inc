@@ -24,20 +24,22 @@ SRC_URI_append = " \
     file://400-allow-ibss-mixed.patch \
     file://500-mac80211_configure_antenna_gain.patch \
     file://782-net-next-1-of-net-pass-the-dst-buffer-to-of_get_mac_address.patch \
-    file://900-mac80211-mtk-do-not-setup-twt-when-twt-responder-is-.patch \
-    file://901-nl80211-mtk-extend-CAC-time-for-weather-radar-channe.patch \
-    file://902-mac80211-mtk-it-s-invalid-case-when-frag_threshold-i.patch \
-    file://903-mac80211-mtk-airtime_flags-depends-on-NL80211_EXT_FE.patch \
-    file://904-mac80211-mtk-add-support-for-runtime-set-inband-disc.patch \
-    file://905-mac80211-mtk-remove-timerout-handle-for-ax210-iot-is.patch \
-    file://906-cfg80211-mtk-implement-DFS-status-show-cac-and-nop-s.patch \
-    file://907-mac80211-mtk-Set-TWT-Information-Frame-Disabled-bit-.patch \
-    file://908-mac80211-mtk-fix-the-issue-of-AP-and-STA-starting-on.patch \
-    file://909-mac80211-mtk-check-the-control-channel-before-downgr.patch \
-    file://910-mac80211-mtk-fix-tx-amsdu-aggregation.patch \
-    file://99900-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-i.patch \
-    file://99902-mac80211-mtk-register-.ndo_setup_tc-to-support-wifi.patch \
-    file://99999-mac80211-mtk-fix-build-error-on-Linux-Kernel-5.4.patch \
-    file://9999901-mac80211-mtk-add-rate-duration-for-EHT-rate.patch \
-    file://9999902-mac80211-mtk-add-EHT-BA1024-support.patch \
+    file://mtk-0001-mac80211-support-minimal-EHT-rate-reporting-on-RX.patch \
+    file://mtk-0002-wifi-mac80211-make-rate-u32-in-sta_set_rate_info_rx.patch \
+    file://mtk-0003-mac80211-mtk-do-not-setup-twt-when-twt-responder-is-.patch \
+    file://mtk-0004-nl80211-mtk-extend-CAC-time-for-weather-radar-channe.patch \
+    file://mtk-0005-mac80211-mtk-it-s-invalid-case-when-frag_threshold-i.patch \
+    file://mtk-0006-mac80211-mtk-airtime_flags-depends-on-NL80211_EXT_FE.patch \
+    file://mtk-0007-mac80211-mtk-add-support-for-runtime-set-inband-disc.patch \
+    file://mtk-0008-mac80211-mtk-remove-timerout-handle-for-ax210-iot-is.patch \
+    file://mtk-0009-cfg80211-mtk-implement-DFS-status-show-cac-and-nop-s.patch \
+    file://mtk-0010-mac80211-mtk-Set-TWT-Information-Frame-Disabled-bit-.patch \
+    file://mtk-0011-mac80211-mtk-fix-the-issue-of-AP-and-STA-starting-on.patch \
+    file://mtk-0012-mac80211-mtk-check-the-control-channel-before-downgr.patch \
+    file://mtk-0013-mac80211-mtk-fix-tx-amsdu-aggregation.patch \
+    file://mtk-0014-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-id.patch \
+    file://mtk-0015-mac80211-mtk-register-.ndo_setup_tc-to-support-wifi2.patch \
+    file://mtk-0016-mac80211-mtk-fix-build-error-on-Linux-Kernel-5.4.patch \
+    file://mtk-0100-mac80211-mtk-add-EHT-BA1024-support.patch \
+    file://mtk-0101-mac80211-mtk-add-rate-duration-for-EHT-rate.patch \
     "
