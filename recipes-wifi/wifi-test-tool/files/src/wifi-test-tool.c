@@ -237,15 +237,6 @@ void set_encryption(wifi_intf_param *intf_param, char *encryption_mode)
     }else{
         intf_param->security.mfp = wifi_mfp_cfg_disabled;
     }
-
-    if (!strcmp(encryption_mode, "sae")){
-        intf_param->security.u.key.type = wifi_security_key_type_sae;
-    }else if (!strcmp(encryption_mode, "sae-mixed")){
-        intf_param->security.u.key.type = wifi_security_key_type_psk_sae;
-    }else{
-        intf_param->security.u.key.type = wifi_security_key_type_psk;
-    }
-
 }
 
 void set_key(wifi_intf_param *intf_param, char *key)
@@ -402,6 +393,7 @@ void set_ap_param(wifi_intf_param ap_param , wifi_vap_info_map_t *map)
     int ret = 0;
     int vap_index_in_map = 0;
     int phy_index = 0;
+    int key_len = 0;
     wifi_vap_info_t vap_info = {0};
     BOOL radio_enable = FALSE;
 
@@ -440,6 +432,18 @@ void set_ap_param(wifi_intf_param ap_param , wifi_vap_info_map_t *map)
     if (strlen(ap_param.ifname) != 0) {
         strncpy(vap_info.vap_name, ap_param.ifname, 16);
         vap_info.vap_name[15] = "\0";
+    }
+
+    // Security
+    if (ap_param.security.mode == wifi_security_mode_wpa3_personal || ap_param.security.mode == wifi_security_mode_wpa3_transition){
+        // OpenWrt script only set psk, here we choose to set both psk and sae.
+        ap_param.security.u.key.type = wifi_security_key_type_psk_sae;
+    } else {
+        key_len = strlen(ap_param.security.u.key.key);
+        if (key_len == 64)
+            ap_param.security.u.key.type = wifi_security_key_type_psk;
+        else if (key_len >= 8 && key_len < 64)
+            ap_param.security.u.key.type = wifi_security_key_type_pass;
     }
 
     vap_info.u.bss_info.security.mode = ap_param.security.mode;
