@@ -13,8 +13,10 @@ create_hostapdConf() {
 
         band="$(uci get wireless.radio${phyidx}.band)"
         channel="$(uci get wireless.radio${phyidx}.channel)"
-        MAC="$(cat /sys/class/ieee80211/phy${phyidx}/macaddress)"
-#        NEW_MAC=$(echo 0x$MAC| awk -F: '{printf "%02x:%s:%s:%s:%s:%s", strtonum($1)+2, $2, $3, $4 ,$5, $6}')
+        # Use random MAC to prevent use the same MAC address
+        rand="$(hexdump -C /dev/urandom | head -n 1 | awk '{printf ""$3":"$4""}' &)"
+        killall hexdump
+        MAC="00:0${devidx}:12:34:${rand}"
         chip="$(cat /sys/class/ieee80211/"$dev"/device/device)"
 
         if [ $chip == "0x7915" ]; then
@@ -28,7 +30,7 @@ create_hostapdConf() {
             fi
             old_path=$path
         fi
-        iw wlan$phyidx del
+        iw wlan$phyidx del > /dev/null
         if [ "$(uci get wireless.radio${phyidx}.disabled)" == "1" ]; then
             phyidx=$(($phyidx + 1))
 			continue
@@ -38,7 +40,7 @@ create_hostapdConf() {
             touch /nvram/hostapd"$devidx".conf
         else
             ifname="$(cat /nvram/hostapd"$devidx".conf | grep ^interface= | cut -d '=' -f2 | tr -d '\n')"
-            iw phy phy$phyidx interface add $ifname type __ap
+            iw phy phy$phyidx interface add $ifname type __ap > /dev/null
             touch /nvram/hostapd-acl$devidx
             touch /nvram/hostapd$devidx.psk
             touch /nvram/hostapd-deny$devidx
@@ -76,7 +78,7 @@ create_hostapdConf() {
 	    sed -i "/^interface=.*/c\interface=wifi$devidx" /nvram/hostapd"$devidx".conf
         sed -i "/^bssid=/c\bssid=$MAC" /nvram/hostapd"$devidx".conf
         echo "wpa_psk_file=/nvram/hostapd$devidx.psk" >> /nvram/hostapd"$devidx".conf
-        iw phy phy$phyidx interface add wifi$devidx type __ap
+        iw phy phy$phyidx interface add wifi$devidx type __ap > /dev/null
         touch /nvram/hostapd-acl$devidx
         touch /nvram/hostapd$devidx.psk
         touch /nvram/hostapd-deny$devidx
