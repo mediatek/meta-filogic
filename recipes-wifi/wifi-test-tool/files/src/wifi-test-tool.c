@@ -406,7 +406,7 @@ void set_ap_param(wifi_intf_param ap_param , wifi_vap_info_map_t *map)
 
 
     // get the index of the map
-    for (int i = 0; i < map->num_vaps; i++) {
+    for (int i = 0; i < MAX_NUM_VAP_PER_RADIO; i++) {
         if (map->vap_array[i].vap_index == ap_param.ap_index) {
             vap_index_in_map = i;
             break;
@@ -414,7 +414,7 @@ void set_ap_param(wifi_intf_param ap_param , wifi_vap_info_map_t *map)
     }
 
 
-    fprintf(stderr, "Start setting ap\n");
+    fprintf(stderr, "Start setting ap vap_index_in_map=%d\n", vap_index_in_map);
 
     vap_info = map->vap_array[vap_index_in_map];
     vap_info.u.bss_info.enabled = TRUE;
@@ -531,7 +531,7 @@ int apply_uci_config ()
     int staCount[3] = {0};
     wifi_vap_info_map_t vap_map[3] = {0};
     int ret = 0;
-    int i = 0;
+    int i = 0, j = 0;
 
     wifi_getMaxRadioNumber(&max_radio_num);
     fprintf(stderr, "max radio number: %d\n", max_radio_num);
@@ -539,8 +539,10 @@ int apply_uci_config ()
         ret = wifi_getRadioVapInfoMap(i, &vap_map[i]);
         if (ret != RETURN_OK) {     // if failed, we set assume this vap as the first vap.
             fprintf(stderr, "[Get vap map failed!!!]\n");
-            vap_map[i].num_vaps = MAX_NUM_VAP_PER_RADIO;
         } 
+
+        /*reset radio's ap number, ap number ++ by uci config */
+        vap_map[i].num_vaps = 0;
     }
     if (uci_load(uci_ctx, cfg_name, &uci_pkg) != UCI_OK) {
         uci_free_context(uci_ctx);
@@ -630,16 +632,40 @@ int apply_uci_config ()
                 }    
             }
         }
-        if (parsing_radio == TRUE)
+        if (parsing_radio == TRUE) {
+            char cmd[32] = {0};
+            char buf[32] = {0};
             set_radio_param(radio_param);
+
+            /* sleep 3 to wait ifconfig up state update, workaround to avoid
+               disable ap interface fail. */
+            sprintf(cmd, "sleep 5");
+            _syscmd(cmd, buf, sizeof(buf));
+        }
         else if (intf_param.sta_mode == TRUE)
             set_sta_param(intf_param);
-        else
+        else {
             set_ap_param(intf_param, &vap_map[intf_param.radio_index]);
+            vap_map[intf_param.radio_index].num_vaps++;
+        }
     }
+
+	/* disable all interface, re-enable by UCI configuration */
+
+	fprintf(stderr, "\n----- Disable all interfaces. -----\n");
+
+	for (i = 0; i < max_radio_num; i++ ){
+		for(j = MAX_NUM_VAP_PER_RADIO - 1; j >= 0 ; j--) {
+			ret = wifi_setApEnable(i*max_radio_num+j, FALSE);
+			if (ret != RETURN_OK)
+				fprintf(stderr, "[disable ap %d failed!!!]\n", i*max_radio_num+j);
+		}
+	}
     fprintf(stderr, "\n----- Start setting Vaps. -----\n");
 
-    for (i = 0; i < max_radio_num ;i++ ){
+	for (i = 0; i < max_radio_num ;i++ ){
+
+        fprintf(stderr, "\n  create Vap radio:%d num_vaps=%d.\n", i, vap_map[i].num_vaps);
         ret = wifi_createVAP(i, &vap_map[i]);
         if (ret != RETURN_OK)
             fprintf(stderr, "[Apply vap setting failed!!!]\n");
