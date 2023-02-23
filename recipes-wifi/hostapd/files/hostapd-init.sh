@@ -45,7 +45,7 @@ create_hostapdConf() {
             touch /nvram/hostapd$devidx.psk
             touch /nvram/hostapd-deny$devidx
             touch /tmp/$dev-wifi$devidx
-            hostapd_cli -i global raw ADD bss_config=$dev:/nvram/hostapd"$devidx".conf && echo -e $ifname=1 >> /nvram/vap-status
+            hostapd_cli -i global raw ADD bss_config=$dev:/nvram/hostapd"$devidx".conf
             devidx=$(($devidx + 1))
             phyidx=$(($phyidx + 1))
 			continue
