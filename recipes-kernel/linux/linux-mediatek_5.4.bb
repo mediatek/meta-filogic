@@ -8,8 +8,8 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/mediatek/nf_hnat:"
 
 KBRANCH ?= "linux-5.4.y"
 
-LINUX_VERSION ?= "5.4.230"
-SRCREV_machine ?= "90245959a5b936ee013266e5d1e6a508ed69274e"
+LINUX_VERSION ?= "5.4.231"
+SRCREV_machine ?= "59342376e8f0c704299dc7a2c14fed07ffb962e2"
 KMETA = "kernel-meta"
 SRCREV_meta ?= "feeb59687bc0f054af837a5061f8d413ec7c93e9"
 
