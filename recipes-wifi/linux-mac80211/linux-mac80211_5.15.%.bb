@@ -24,9 +24,9 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches/subsys:"
 require files/patches/build/build.inc
 require files/patches/subsys/subsys.inc
 
-SRC_URI_remove = "${@bb.utils.contains('DISTRO_FEATURES', 'flow_offload', '', 'file://99900-mac80211-mtk-mask-kernel-version-limitation-and-fil.patch', d)}"
-SRC_URI_remove = "${@bb.utils.contains('DISTRO_FEATURES', 'flow_offload', '', 'file://99901-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-i.patch', d)}"
-SRC_URI_remove = "${@bb.utils.contains('DISTRO_FEATURES', 'flow_offload', '', 'file://99902-mac80211-mtk-register-.ndo_setup_tc-to-support-wifi2.patch', d)}"
+SRC_URI_remove = "${@bb.utils.contains('DISTRO_FEATURES', 'flow_offload', '', 'file://mtk-9900-mac80211-mtk-mask-kernel-version-limitation-and-fil.patch', d)}"
+SRC_URI_remove = "${@bb.utils.contains('DISTRO_FEATURES', 'flow_offload', '', 'file://mtk-9901-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-i.patch', d)}"
+SRC_URI_remove = "${@bb.utils.contains('DISTRO_FEATURES', 'flow_offload', '', 'file://mtk-9902-mac80211-mtk-register-.ndo_setup_tc-to-support-wifi2.patch', d)}"
 
 S = "${WORKDIR}/backports-${PV}-1"
 

@@ -21,6 +21,11 @@ SRC_URI_append = " \
     file://314-wifi-mac80211-remove-mesh-forwarding-congestion-chec.patch \
     file://315-wifi-mac80211-fix-receiving-A-MSDU-frames-on-mesh-in.patch \
     file://316-wifi-mac80211-add-a-workaround-for-receiving-non-sta.patch \
+    file://317-wifi-mac80211-fix-qos-on-mesh-interfaces.patch \
+    file://318-wifi-mac80211-fix-race-in-mesh-sequence-number-assig.patch \
+    file://319-wifi-mac80211-mesh-fast-xmit-support.patch \
+    file://320-wifi-mac80211-use-mesh-header-cache-to-speed-up-mesh.patch \
+    file://321-mac80211-fix-mesh-forwarding.patch \
     file://400-allow-ibss-mixed.patch \
     file://500-mac80211_configure_antenna_gain.patch \
     file://782-net-next-1-of-net-pass-the-dst-buffer-to-of_get_mac_address.patch \
