@@ -67,7 +67,7 @@ SRC_URI_append = " \
     file://mtk-0003-hostapd-mtk-add-support-for-runtime-set-in-band-disc.patch \
     file://mtk-0004-hostapd-mtk-Add-mtk_vendor.h.patch \
     file://mtk-0005-hostapd-mtk-Support-EDCCA-hostapd-configuration.patch \
-    file://mtk-0006-hostapd-mtk-Add-hostapd-HEMU-SET-GET-control.patch \
+    file://mtk-0006-hostapd-mtk-Add-hostapd-MU-SET-GET-control.patch \
     file://mtk-0007-hostapd-mtk-Add-three-wire-PTA-ctrl-hostapd-vendor-c.patch \
     file://mtk-0008-hostapd-mtk-Add-hostapd-iBF-control.patch \
     file://mtk-0009-hostapd-mtk-Do-not-include-HE-capab-IE-if-associated.patch \

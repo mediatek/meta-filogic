@@ -23,7 +23,7 @@ SRC_URI_append = " \
     file://1121-mt76-mt7915-add-vendor-subcmd-EDCCA-ctrl-enable-thre.patch \
     file://1122-mt76-mt7915-implement-bin-file-mode.patch \
     file://1123-mt76-mt7915-initialize-wcid.patch \
-    file://1124-mt76-mt7915-Add-hemu-dump-support.patch \
+    file://1124-mt76-mt7915-Add-mu-dump-support.patch \
     file://1125-mt76-mt7915-add-vendor-subcmd-three-wire-PTA-ctrl.patch \
     file://1126-mt76-mt7915-add-ibf-control-vendor-cmd.patch \
     file://1127-mt76-mt7915-add-E3-re-bonding-for-low-yield-rate-iss.patch \
