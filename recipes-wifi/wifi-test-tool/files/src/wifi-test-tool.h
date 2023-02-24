@@ -23,6 +23,7 @@ typedef struct {
     char band[8];
     char htmode[16];
     int bandwidth;
+    int eht_320_conf;
     int pure_mode;
     int chanbw;
     char ht_capab[8];

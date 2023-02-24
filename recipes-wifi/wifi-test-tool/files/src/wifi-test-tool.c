@@ -125,10 +125,11 @@ void set_htmode(wifi_radio_param *radio_param, char *htmode)
     // HT40     -> 11NGHT40PLUS
     // VHT40+   -> 11ACVHT40PLUS
     // HE80     -> 11AXHE80
-    if (strstr(htmode, "+") != NULL) {
+    // EHT320-1 -> 11BEEHT320-1
+    if (strstr(htmode, "40+") != NULL) {
         strncpy(tmp, htmode, strlen(htmode) - 1);
         strcat(tmp, "PLUS");
-    } else if (strstr(htmode, "-") != NULL) {
+    } else if (strstr(htmode, "40-") != NULL) {
         strncpy(tmp, htmode, strlen(htmode) - 1);
         strcat(tmp, "MINUS");
     } else 
@@ -137,6 +138,14 @@ void set_htmode(wifi_radio_param *radio_param, char *htmode)
 
     if (strstr(htmode, "VHT") != NULL) {
         snprintf(radio_param->htmode, sizeof(radio_param->htmode), "11AC%s", tmp);
+    } else if (strstr(htmode, "EHT") != NULL) {
+        snprintf(radio_param->htmode, sizeof(radio_param->htmode), "11BE%s", tmp);
+        if (strstr(htmode, "320-1") != NULL)
+            radio_param->eht_320_conf = 1;
+        else if (strstr(htmode, "320") != NULL)     // EHT320 or EHT320-2
+            radio_param->eht_320_conf = 2;
+        else
+            radio_param->eht_320_conf = 0;
     } else if (strstr(htmode, "HT") != NULL && strstr(htmode, "NO") == NULL) {
         snprintf(radio_param->htmode, sizeof(radio_param->htmode), "11NG%s", tmp);
     } else if (strstr(htmode, "HE") != NULL) {
@@ -355,7 +364,7 @@ void set_radio_param(wifi_radio_param radio_parameter)
     operationParam.autoChannelEnabled = radio_parameter.auto_channel;
     operationParam.channel = radio_parameter.channel;
 
-    //bandwidth
+    // bandwidth
     if (radio_parameter.bandwidth == 20){
         operationParam.channelWidth = WIFI_CHANNELBANDWIDTH_20MHZ;
     }else if (radio_parameter.bandwidth == 40){
@@ -364,6 +373,13 @@ void set_radio_param(wifi_radio_param radio_parameter)
         operationParam.channelWidth = WIFI_CHANNELBANDWIDTH_80MHZ;
     }else if (radio_parameter.bandwidth == 160){
         operationParam.channelWidth = WIFI_CHANNELBANDWIDTH_160MHZ;
+    }else if (radio_parameter.bandwidth == 320){
+        if ((radio_parameter.eht_320_conf == 1 || radio_parameter.channel <= 29) && radio_parameter.channel < 193)
+            operationParam.channelWidth = WIFI_CHANNELBANDWIDTH_320_1MHZ;
+        else if (radio_parameter.eht_320_conf == 2 || radio_parameter.channel >= 193)
+            operationParam.channelWidth = WIFI_CHANNELBANDWIDTH_320_2MHZ;
+        else
+            fprintf(stderr, "[Set EHT 320 bandwidth error with conf %d!!!]\n", radio_parameter.eht_320_conf);
     }
 
     // htmode
@@ -372,25 +388,30 @@ void set_radio_param(wifi_radio_param radio_parameter)
         mode |= WIFI_80211_VARIANT_B | WIFI_80211_VARIANT_G;
         if (strcmp(radio_parameter.htmode, "NOHT") == 0 || strcmp(radio_parameter.htmode, "NONE") == 0)
             strcpy(radio_parameter.htmode, "11G");
-
-        if (strstr(radio_parameter.htmode, "HE") != NULL)
+        else if (strstr(radio_parameter.htmode, "HE") != NULL)
             mode |= WIFI_80211_VARIANT_N | WIFI_80211_VARIANT_AX;
+        else if (strstr(radio_parameter.htmode, "EHT") != NULL)
+            mode |= WIFI_80211_VARIANT_N | WIFI_80211_VARIANT_AX | WIFI_80211_VARIANT_BE;
+        else if (strstr(radio_parameter.htmode, "HT") != NULL)
+            mode |= WIFI_80211_VARIANT_N;
 
     } else if (strcmp(radio_parameter.band, "5g") == 0) {
         mode |= WIFI_80211_VARIANT_A;
         if (strcmp(radio_parameter.htmode, "NOHT") == 0 || strcmp(radio_parameter.htmode, "NONE") == 0) 
             strcpy(radio_parameter.htmode, "11A");
-
-        if (strstr(radio_parameter.htmode, "HE") != NULL)
+        else if (strstr(radio_parameter.htmode, "VHT") != NULL)
+            mode |= WIFI_80211_VARIANT_N | WIFI_80211_VARIANT_AC;
+        else if (strstr(radio_parameter.htmode, "HE") != NULL)
             mode |= WIFI_80211_VARIANT_N | WIFI_80211_VARIANT_AC | WIFI_80211_VARIANT_AX;
-    }else if (strcmp(radio_parameter.band, "6g") == 0) {
-        mode |= WIFI_80211_VARIANT_A | WIFI_80211_VARIANT_N | WIFI_80211_VARIANT_AC | WIFI_80211_VARIANT_AX;;
-    }    
-
-    if (strstr(radio_parameter.htmode, "VHT") != NULL)
-        mode |= WIFI_80211_VARIANT_N | WIFI_80211_VARIANT_AC;
-    else if (strstr(radio_parameter.htmode, "HT") != NULL && strstr(radio_parameter.htmode, "NO") == NULL)
-        mode |= WIFI_80211_VARIANT_N;
+        else if (strstr(radio_parameter.htmode, "EHT") != NULL)
+            mode |= WIFI_80211_VARIANT_N | WIFI_80211_VARIANT_AC | WIFI_80211_VARIANT_AX | WIFI_80211_VARIANT_BE;
+        else if (strstr(radio_parameter.htmode, "HT") != NULL)
+            mode |= WIFI_80211_VARIANT_N;
+    } else if (strcmp(radio_parameter.band, "6g") == 0) {
+        mode |= WIFI_80211_VARIANT_AX;
+        if (strstr(radio_parameter.htmode, "EHT") != NULL)
+            mode |= WIFI_80211_VARIANT_BE;
+    }
 
     operationParam.variant = mode;
 

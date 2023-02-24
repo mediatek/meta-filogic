@@ -23,7 +23,7 @@ SRC_URI = " \
     file://hostapd-5G-7916.conf \
     file://hostapd.service \
     file://hostapd-init.sh \
-    file://mac80211.sh \
+    file://mac80211-EHT.sh \
     file://init-uci-config.service \
     file://src \
     file://001-rdkb-remove-ubus-support.patch;apply=no \
@@ -98,7 +98,7 @@ do_install() {
          install -m 0644 ${WORKDIR}/hostapd.service ${D}${systemd_unitdir}/system
          install -m 0755 ${WORKDIR}/hostapd-init.sh ${D}${base_libdir}/rdk
          install -m 0644 ${WORKDIR}/init-uci-config.service ${D}${systemd_unitdir}/system
-         install -m 0755 ${WORKDIR}/mac80211.sh ${D}${sbindir}
+         install -m 0755 ${WORKDIR}/mac80211-EHT.sh ${D}${sbindir}/mac80211.sh
 }
 
 FILES_${PN} += " \
