@@ -165,6 +165,49 @@ void set_txant(wifi_radio_param *radio_param, char *mask)
     radio_param->txantenna = strtol(mask, NULL, 16);
 }
 
+void set_igmpsn_enable(wifi_intf_param *intf_param, char *enable)
+{
+    if (strcmp(enable, "1") == 0)
+        intf_param->igmpsn_enable = TRUE;
+    else
+        intf_param->igmpsn_enable = FALSE;
+}
+
+void set_wps_state(wifi_intf_param *intf_param, char *enable)
+{
+    if (strcmp(enable, "1") == 0)
+        intf_param->wps_state = TRUE;
+    else
+        intf_param->wps_state = FALSE;
+}
+
+void set_wps_cancel(wifi_intf_param *intf_param, char *enable)
+{
+    if (strcmp(enable, "1") == 0)
+        intf_param->wps_cancel = TRUE;
+    else
+        intf_param->wps_cancel = FALSE;
+}
+
+void set_wps_pushbutton(wifi_intf_param *intf_param, char *enable)
+{
+    if (strcmp(enable, "1") == 0)
+        intf_param->wps_pushbutton = TRUE;
+    else
+        intf_param->wps_pushbutton = FALSE;
+}
+
+
+void set_macfilter(wifi_intf_param *intf_param, char *macfilter)
+{
+    strncpy(intf_param->macfilter, macfilter, 10);
+}
+
+void set_maclist(wifi_intf_param *intf_param, char *maclist)
+{
+    strncpy(intf_param->maclist, maclist, 512);
+}
+
 void set_htcoex(wifi_radio_param *radio_param, char *ht_coex)
 {
     radio_param->ht_coex = strtol(ht_coex, NULL, 10);
@@ -455,6 +498,66 @@ void set_ap_param(wifi_intf_param ap_param , wifi_vap_info_map_t *map)
     // hidden
     vap_info.u.bss_info.showSsid = (ap_param.hidden ? 0 : 1);
 
+    // igmpsn_enable
+    vap_info.u.bss_info.mcast2ucast = ap_param.igmpsn_enable;
+    fprintf(stderr, "Set igmpsn_enable: %d \n", ap_param.igmpsn_enable);
+
+    // wps_state
+    fprintf(stderr, "Set wps_state: %d \n", ap_param.wps_state);
+    ret = wifi_setApWpsEnable(ap_param.ap_index, ap_param.wps_state);
+    if (ret != RETURN_OK)
+        fprintf(stderr, "[Set wps_state failed!!!]\n");
+    ret = 0;
+
+    // wps_cancel
+    fprintf(stderr, "Set wps_cancel: %d \n", ap_param.wps_cancel);
+    if (ap_param.wps_cancel){
+        ret = wifi_cancelApWPS(ap_param.ap_index);
+        if (ret != RETURN_OK)
+            fprintf(stderr, "[Set wps_cancel failed!!!]\n");
+        ret = 0;
+        }
+
+    // wps_pushbutton
+    fprintf(stderr, "Set wps_pushbutton: %d \n", ap_param.wps_pushbutton);
+    if (ap_param.wps_pushbutton){
+        ret = wifi_setApWpsButtonPush(ap_param.ap_index);
+        if (ret != RETURN_OK)
+            fprintf(stderr, "[Set wps_pushbutton failed!!!]\n");
+        ret = 0;
+        }
+
+    // macfilter
+    if ((strcmp(ap_param.macfilter, "disable") == 0)  || (strcmp(ap_param.macfilter, "\0") == 0) )
+        vap_info.u.bss_info.mac_filter_enable = false;
+    else if (strcmp(ap_param.macfilter, "deny") == 0){
+        vap_info.u.bss_info.mac_filter_enable = true;
+        vap_info.u.bss_info.mac_filter_mode = wifi_mac_filter_mode_black_list;
+        }
+    else if (strcmp(ap_param.macfilter, "allow") == 0){
+        vap_info.u.bss_info.mac_filter_enable = true;
+        vap_info.u.bss_info.mac_filter_mode = wifi_mac_filter_mode_white_list;
+        }
+    else
+        fprintf(stderr, "The macfilter tpye: %s  is invalid!!!\n", ap_param.macfilter);
+    fprintf(stderr, "Set macfilter: %s \n", ap_param.macfilter);
+
+    // maclist
+    if ((strcmp(ap_param.macfilter, "\0") == 0)){
+        ret = wifi_delApAclDevices(ap_param.ap_index);
+        if (ret != RETURN_OK)
+            fprintf(stderr, "[Del all maclist failed!!!]\n");
+        ret = 0;
+        }
+    else{
+        ret = wifi_addApAclDevice(ap_param.ap_index, ap_param.maclist);
+        if (ret != RETURN_OK)
+            fprintf(stderr, "[Add maclist failed!!!]\n");
+        ret = 0;
+        }
+    fprintf(stderr, "Set maclist: %s \n", ap_param.maclist);
+
+    ret = 0;
     // Replace the setting with uci config
     map->vap_array[vap_index_in_map] = vap_info;
 }
@@ -516,6 +619,73 @@ void set_sta_param(wifi_intf_param sta_param)
         fprintf(stderr, "Enable station failed\n");
         return;
     }
+}
+
+void show_ap_param(wifi_intf_param ap_param , wifi_vap_info_map_t *map)
+{
+    int ret = 0;
+    int vap_index_in_map = 0;
+    int phy_index = 0;
+    wifi_vap_info_t vap_info = {0};
+    BOOL radio_enable = FALSE;
+    BOOL wps_state = FALSE;
+    UINT buf_size = 1024;
+    char macArray[1024] = "";
+
+    if(ap_param.radio_index == -1)
+        return;
+
+    wifi_getRadioEnable(ap_param.radio_index, &radio_enable);
+    if (radio_enable == FALSE)
+        return;
+
+
+    // get the index of the map
+    for (int i = 0; i < map->num_vaps; i++) {
+        if (map->vap_array[i].vap_index == ap_param.ap_index) {
+            vap_index_in_map = i;
+            break;
+        }
+    }
+
+    vap_info = map->vap_array[vap_index_in_map];
+    vap_info.u.bss_info.enabled = TRUE;
+    phy_index = radio_index_to_phy(vap_info.radio_index);
+
+    // SSID
+    printf("wifi%d ssid: %s\n", ap_param.ap_index, vap_info.u.bss_info.ssid);
+
+    // igmpsn_enable
+    printf("wifi%d igmpsn_enable: %d\n", ap_param.ap_index, vap_info.u.bss_info.mcast2ucast);
+
+    // wps_state
+    ret = wifi_getApWpsEnable(ap_param.ap_index, &wps_state);
+    if (ret != RETURN_OK)
+        fprintf(stderr, "[Set wps_state failed!!!]\n");
+    else
+        printf("wifi%d wps_state: %d\n", ap_param.ap_index, wps_state);
+    ret = 0;
+
+    // macfilter
+    if (vap_info.u.bss_info.mac_filter_enable == FALSE)
+        printf("wifi%d macfilter: disable\n", ap_param.ap_index);
+    else if (vap_info.u.bss_info.mac_filter_mode = wifi_mac_filter_mode_white_list)
+        printf("wifi%d macfilter: allow\n", ap_param.ap_index);
+    else if (vap_info.u.bss_info.mac_filter_mode = wifi_mac_filter_mode_black_list)
+        printf("wifi%d macfilter: deny\n", ap_param.ap_index);
+
+    printf("daisy      wifi%d macfilter: %d\n", ap_param.ap_index, vap_info.u.bss_info.mac_filter_enable);
+    printf("daisy      wifi%d macfilter: %d\n", ap_param.ap_index, vap_info.u.bss_info.mac_filter_mode);
+
+    // maclist
+    printf("wifi%d maclist: \n", ap_param.ap_index);
+    ret = wifi_getApAclDevices(ap_param.ap_index, macArray, buf_size);
+    if (ret != RETURN_OK)
+        fprintf(stderr, "[Get maclist failed!!!]\n");
+    else
+        printf("%s \n", macArray);
+    ret = 0;
+
 }
 
 int apply_uci_config ()
@@ -627,9 +797,21 @@ int apply_uci_config ()
                     set_wds(&intf_param, op->v.string);
                 }else if (strcmp(op->e.name, "hidden") == 0){
                     set_hidden(&intf_param, op->v.string);
+                }else if (strcmp(op->e.name, "igmpsn_enable") == 0){
+                    set_igmpsn_enable(&intf_param, op->v.string);
+                }else if (strcmp(op->e.name, "wps_state") == 0){
+                    set_wps_state(&intf_param, op->v.string);
+                }else if (strcmp(op->e.name, "wps_cancel") == 0){
+                    set_wps_cancel(&intf_param, op->v.string);
+                }else if (strcmp(op->e.name, "wps_pushbutton") == 0){
+                    set_wps_pushbutton(&intf_param, op->v.string);
+                }else if (strcmp(op->e.name, "macfilter") == 0){
+                    set_macfilter(&intf_param, op->v.string);
+                }else if (strcmp(op->e.name, "maclist") == 0){
+                    set_maclist(&intf_param, op->v.string);
                 }else{
                     fprintf(stderr, "[%s %s not set!]\n", op->e.name, op->v.string);
-                }    
+                }
             }
         }
         if (parsing_radio == TRUE) {
@@ -670,18 +852,114 @@ int apply_uci_config ()
         if (ret != RETURN_OK)
             fprintf(stderr, "[Apply vap setting failed!!!]\n");
     }
-    
+
     uci_unload(uci_ctx, uci_pkg);
     uci_free_context(uci_ctx);
     return RETURN_OK;
 }
 
+int dump_wifi_status ()
+{
+
+    struct uci_context *uci_ctx = uci_alloc_context();
+    struct uci_package *uci_pkg = NULL;
+    struct uci_element *e;
+    // struct uci_section *s;
+    const char cfg_name[] = "wireless";
+    int max_radio_num = 0;
+    BOOL parsing_radio = FALSE;
+    int apCount[3] = {0};
+    int staCount[3] = {0};
+    wifi_vap_info_map_t vap_map[3] = {0};
+    int ret = 0;
+    int i = 0;
+
+    wifi_getMaxRadioNumber(&max_radio_num);
+    fprintf(stderr, "max radio number: %d\n", max_radio_num);
+    for (i = 0; i < max_radio_num ;i++ ){
+        ret = wifi_getRadioVapInfoMap(i, &vap_map[i]);
+        if (ret != RETURN_OK) {     // if failed, we set assume this vap as the first vap.
+            fprintf(stderr, "[Get vap map failed!!!]\n");
+            vap_map[i].num_vaps = MAX_NUM_VAP_PER_RADIO;
+        }
+    }
+    if (uci_load(uci_ctx, cfg_name, &uci_pkg) != UCI_OK) {
+        uci_free_context(uci_ctx);
+        fprintf(stderr, "%s: load uci failed.\n", __func__);
+        return RETURN_ERR;
+    }
+
+    uci_foreach_element(&uci_pkg->sections, e) {
+
+        struct uci_section *s = uci_to_section(e);
+        struct uci_element *option = NULL;
+        wifi_radio_param radio_param = {0};
+        wifi_intf_param intf_param = {0};
+        int phyId = 0;
+        radio_param.radio_index = -1;
+        intf_param.ap_index = -1;
+
+        if (strcmp(s->type, "wifi-device") == 0) {
+            sscanf(s->e.name, "radio%d", &phyId);
+            radio_param.radio_index = phy_index_to_radio(phyId);
+            parsing_radio = TRUE;
+            fprintf(stderr, "\n----- Start show radio %d config. -----\n", radio_param.radio_index);
+        } else if (strcmp(s->type, "wifi-iface") == 0) {
+            parsing_radio = FALSE;
+        }
+
+        uci_foreach_element(&s->options, option) {
+
+            struct uci_option *op = uci_to_option(option);
+            if (parsing_radio == TRUE) {
+                // transform the type from input string and store the value in radio_param.
+            } else {        
+                // parsing iface
+                if (strcmp(op->e.name, "device") == 0){
+                    set_radionum(&intf_param, op->v.string);
+                }else if (strcmp(op->e.name, "mode") == 0){
+                    intf_param.mac_offset = staCount[intf_param.radio_index] + apCount[intf_param.radio_index];
+                    if (strncmp(op->v.string, "sta", 3) == 0) {
+                        intf_param.sta_mode = TRUE;
+                        intf_param.sta_index = intf_param.radio_index + staCount[intf_param.radio_index]*max_radio_num;
+                        staCount[intf_param.radio_index] ++ ;
+                        fprintf(stderr, "\n----- Start show sta %d config. -----\n", intf_param.sta_index);
+                    } else if (strncmp(op->v.string, "ap", 2) == 0) {
+                        intf_param.sta_mode = FALSE;
+                        intf_param.ap_index = intf_param.radio_index + apCount[intf_param.radio_index]*max_radio_num;
+                        apCount[intf_param.radio_index] ++ ;
+                        fprintf(stderr, "\n----- Start show ap %d config. -----\n", intf_param.ap_index);
+                    }
+                }
+            }
+        }
+        if (parsing_radio == TRUE)
+            printf("show radio params: \n");
+           // show_radio_param(radio_param);
+        else if (intf_param.sta_mode == TRUE)
+            printf("show sta params: \n");
+          //  show_sta_param(intf_param);
+        else{
+            printf("show ap params: \n");
+            show_ap_param(intf_param, &vap_map[intf_param.radio_index]);
+            }
+    }
+
+    uci_unload(uci_ctx, uci_pkg);
+    uci_free_context(uci_ctx);
+    return RETURN_OK;
+
+}
+
 int main(int argc, char **argv)
 {
-    if (argc != 2 || strcmp(argv[1], "reload") != 0) {
-        fprintf(stderr, "Usage: wifi reload.\nThis tool is only for RDKB MSP/SQC test.\n");
+    if (argc != 2 || (strcmp(argv[1], "reload") != 0 && strcmp(argv[1], "dump") != 0) ){
+        fprintf(stderr, "Usage: wifi reload/wifi dump.\nThis tool is only for RDKB MSP/SQC test.\n");
         return -1;
     }
-    apply_uci_config();
+    if (strcmp(argv[1], "reload") == 0)
+        apply_uci_config();
+    else if (strcmp(argv[1], "dump") == 0)
+        dump_wifi_status();
     return 0;
 }
