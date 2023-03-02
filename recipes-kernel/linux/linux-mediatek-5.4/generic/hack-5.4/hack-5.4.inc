@@ -34,6 +34,7 @@ SRC_URI_append = " \
     file://711-net-dsa-mv88e6xxx-disable-ATU-violation.patch \
     file://721-phy_packets.patch \
     file://773-bgmac-add-srab-switch.patch \
+    file://800-leds-leds-bcm63138-read-default-trigger-from-OF.patch \
     file://901-debloat_sock_diag.patch \
     file://902-debloat_proc.patch \
     file://904-debloat_dma_buf.patch \
