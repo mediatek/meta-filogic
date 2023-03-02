@@ -71,11 +71,15 @@ SRC_URI_append = " \
     file://mtk-0007-hostapd-mtk-Add-three-wire-PTA-ctrl-hostapd-vendor-c.patch \
     file://mtk-0008-hostapd-mtk-Add-hostapd-iBF-control.patch \
     file://mtk-0009-hostapd-mtk-Do-not-include-HE-capab-IE-if-associated.patch \
-    file://mtk-0010-hostapd-mtk-Add-DFS-and-ZWDFS-support.patch \
-    file://mtk-0011-hostapd-mtk-Add-amsdu-set-get-ctrl.patch \
-    file://mtk-0012-hostapd-mtk-Add-he_ldpc-configuration.patch \
-    file://mtk-0013-hostapd-mtk-Add-the-broadcast-destination-address-of.patch \
-    file://mtk-0014-hostapd-mtk-Add-vendor-command-attribute-for-RTS-BW-.patch \
-    file://mtk-0015-hostapd-mtk-6G-band-does-not-require-DFS.patch \
+    file://mtk-0010-hostapd-mtk-Add-DFS-detection-mode.patch \
+    file://mtk-0011-hostapd-mtk-Add-DFS-offchan-channel-switch.patch \
+    file://mtk-0012-hostapd-mtk-Add-amsdu-set-get-ctrl.patch \
+    file://mtk-0013-hostapd-mtk-Add-he_ldpc-configuration.patch \
+    file://mtk-0014-hostapd-mtk-Add-the-broadcast-destination-address-of.patch \
+    file://mtk-0015-hostapd-mtk-Add-vendor-command-attribute-for-RTS-BW-.patch \
+    file://mtk-0016-hostapd-mtk-6G-band-does-not-require-DFS.patch \
+    file://mtk-0017-hostapd-mtk-Fix-sending-wrong-VHT-operation-IE-in-CS.patch \
+    file://mtk-0018-hostapd-mtk-Add-sta-assisted-DFS-state-update-mechan.patch \
+    file://mtk-0019-hostapd-mtk-Fix-auto-ht-issue-when-switching-to-DFS-.patch \
     file://mtk-0100-hostapd-mtk-update-eht-operation-elem.patch \
     "

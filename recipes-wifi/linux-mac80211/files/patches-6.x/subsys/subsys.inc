@@ -26,6 +26,7 @@ SRC_URI_append = " \
     file://319-wifi-mac80211-mesh-fast-xmit-support.patch \
     file://320-wifi-mac80211-use-mesh-header-cache-to-speed-up-mesh.patch \
     file://321-mac80211-fix-mesh-forwarding.patch \
+    file://322-wifi-mac80211-fix-mesh-path-discovery-based-on-unica.patch \
     file://400-allow-ibss-mixed.patch \
     file://500-mac80211_configure_antenna_gain.patch \
     file://782-net-next-1-of-net-pass-the-dst-buffer-to-of_get_mac_address.patch \
