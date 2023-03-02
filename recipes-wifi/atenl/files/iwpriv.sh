@@ -1128,6 +1128,7 @@ if [ "${cmd_type}" = "set" ]; then
 	    else
                 do_cmd "mt76-vendor $*"
                 skip=1
+	    fi        
             ;;
         "ATE")
             do_ate_work ${param}

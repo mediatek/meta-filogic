@@ -4,7 +4,7 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=751419260aa954499f7abaabaa882bbe"
 
 DEPENDS += "libnl-tiny"
-RDEPENDS_${PN} += "busybox"
+RDEPENDS_${PN} += "bash"
 inherit pkgconfig cmake
 
 SRC_URI = " \
@@ -12,12 +12,22 @@ SRC_URI = " \
     file://src;subdir=git \
     file://ated.sh;subdir=git \
     file://iwpriv.sh;subdir=git \
+    file://001-RDKB-ash-to-bash.patch;apply=no \
     "
 
 S = "${WORKDIR}/git/src"
 
 CFLAGS_append = " -I=${includedir}/libnl-tiny "
 
+do_mtk_patches() {
+	cd ${S}/../
+    
+	if [ ! -e mtk_wifi_patch_applied ]; then
+        patch -p1 < ${WORKDIR}/001-RDKB-ash-to-bash.patch
+	fi
+	touch mtk_wifi_patch_applied
+}
+addtask mtk_patches after do_patch before do_configure
 
 do_install_append() {
     install -d ${D}${sbindir}

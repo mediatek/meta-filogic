@@ -1,0 +1,20 @@
+diff --git a/ated.sh b/ated.sh
+index e989e446..c15867a8 100644
+--- a/ated.sh
++++ b/ated.sh
+@@ -1,4 +1,4 @@
+-#!/bin/ash
++#!/bin/bash
+ # This script is used for wrapping atenl daemon to ated
+ # 0 is normal mode, 1 is used for doing specific commands such as "sync eeprom all"
+ 
+diff --git a/iwpriv.sh b/iwpriv.sh
+index 8b0d76fd..9f75bae9 100644
+--- a/iwpriv.sh
++++ b/iwpriv.sh
+@@ -1,4 +1,4 @@
+-#!/bin/ash
++#!/bin/bash
+ 
+ interface=$1    # phy0/phy1/ra0
+ cmd_type=$2     # set/show/e2p/mac/dump
