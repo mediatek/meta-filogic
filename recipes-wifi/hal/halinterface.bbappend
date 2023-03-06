@@ -9,9 +9,7 @@ do_filogic_patches() {
             patch -p1 < ${WORKDIR}/sta-network.patch
             patch -p1 < ${WORKDIR}/add_undefined_dfs_function.patch
             patch -p1 < ${WORKDIR}/0001-Add-owe-mode.patch
-            if ${@bb.utils.contains('DISTRO_FEATURES','wifi_eht','true','false',d)}; then
-                patch -p1 < ${WORKDIR}/0002-Add-EHT-support.patch
-            fi
+            patch -p1 < ${WORKDIR}/0002-Add-EHT-support.patch
             touch patch_applied
         fi
 }
