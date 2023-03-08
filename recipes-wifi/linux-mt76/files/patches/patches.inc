@@ -1,6 +1,5 @@
 #patch patches (come from openwrt/lede/target/linux/mediatek)
 SRC_URI_append = " \
-    file://0001-wifi-mt76-mt7915-rework-mt7915_thermal_init.patch \
     file://1001-mt76-mt7915-add-mtk-internal-debug-tools-for-mt76.patch \
     file://1002-mt76-mt7915-csi-implement-csi-support.patch \
     file://1003-mt76-mt7915-air-monitor-support.patch \
@@ -32,22 +31,20 @@ SRC_URI_append = " \
     file://1130-mt76-mt7915-amsdu-set-and-get-control.patch \
     file://1131-wifi-mt76-mt7915-add-support-for-he-ldpc-control-fro.patch \
     file://1132-mt76-mt7915-Add-vendor-command-attribute-for-RTS-BW-.patch \
-    file://1133-mt76-mt7915-Allow-AP-to-change-channel-width-for-40M.patch \
+    file://1134-mt76-mt7915-add-vendor-cmd-to-get-available-color-bi.patch \
     file://3001-mt76-mt7915-wed-add-wed-tx-support.patch \
     file://3002-mt76-mt7915-wed-add-wds-support-when-wed-is-enabled.patch \
     file://3003-mt76-mt7915-wed-add-fill-receive-path-to-report-wed-.patch \
     file://3004-mt76-mt7915-wed-find-rx-token-by-physical-address.patch \
-    file://3005-mt76-mt7915-wed-drop-scatter-and-gather-frame.patch \
-    file://3006-mt76-mt7915-wed-HW-ATF-support-for-mt7986.patch \
-    file://3007-mt76-mt7915-wed-add-mt7916-2-pcie-support-when-wed-o.patch \
-    file://3008-mt76-mt7915-wed-add-rxwi-for-further-in-chip-rro.patch \
-    file://3009-mt76-mt7915-add-mt7915_net_setup_tc-to-support-wifi2.patch \
-    file://3010-wifi-mt76-mt7915-add-wa-command-to-get-tx-msdu-count.patch \
-    file://3011-wifi-mt76-get-tx-count-and-tx-failed-from-mcu-comman.patch \
-    file://3012-wifi-mt76-mt7915-enable-PPDU-TxS-to-host-when-wed-en.patch \
-    file://3013-wifi-mt76-mt7915-get-tx-retries-from-tx-free-done-ev.patch \
-    file://3014-wifi-mt76-update-debugfs-knob-for-reset-counter-and-.patch \
-    file://3015-mt76-connac-wed-add-wed-rx-copy-skb-and-revert-page_.patch \
+    file://3005-mt76-mt7915-wed-HW-ATF-support-for-mt7986.patch \
+    file://3006-mt76-mt7915-wed-add-rxwi-for-further-in-chip-rro.patch \
+    file://3007-mt76-mt7915-add-mt7915_net_setup_tc-to-support-wifi2.patch \
+    file://3008-wifi-mt76-mt7915-add-wa-command-to-get-tx-msdu-count.patch \
+    file://3009-wifi-mt76-get-tx-count-and-tx-failed-from-mcu-comman.patch \
+    file://3010-wifi-mt76-mt7915-enable-PPDU-TxS-to-host-when-wed-en.patch \
+    file://3011-wifi-mt76-mt7915-get-tx-retries-from-tx-free-done-ev.patch \
+    file://3012-wifi-mt76-update-debugfs-knob-for-reset-counter-and-.patch \
+    file://3013-mt76-connac-wed-add-wed-rx-copy-skb-and-revert-page_.patch \
     file://4001-mt76-revert-get_of_mac_addr.patch \
     file://4002-mt76-include-header-files-for-module-param.patch \
     file://4003-mt76-revert-kernel-api-for-kernel-5.4.patch \

@@ -78,8 +78,11 @@ SRC_URI_append = " \
     file://mtk-0014-hostapd-mtk-Add-the-broadcast-destination-address-of.patch \
     file://mtk-0015-hostapd-mtk-Add-vendor-command-attribute-for-RTS-BW-.patch \
     file://mtk-0016-hostapd-mtk-6G-band-does-not-require-DFS.patch \
+    file://mtk-0016-hostapd-mtk-Add-available-color-bitmap.patch \
     file://mtk-0017-hostapd-mtk-Fix-sending-wrong-VHT-operation-IE-in-CS.patch \
     file://mtk-0018-hostapd-mtk-Add-sta-assisted-DFS-state-update-mechan.patch \
     file://mtk-0019-hostapd-mtk-Fix-auto-ht-issue-when-switching-to-DFS-.patch \
+    file://mtk-0020-hostapd-mtk-Mark-DFS-channel-as-available-for-CSA.patch \
+    file://mtk-0020-hostapd-mtk-add-11v_mbss-and-ema-support.patch \
     file://mtk-0100-hostapd-mtk-update-eht-operation-elem.patch \
     "

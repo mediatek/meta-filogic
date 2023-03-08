@@ -27,6 +27,10 @@ SRC_URI_append = " \
     file://320-wifi-mac80211-use-mesh-header-cache-to-speed-up-mesh.patch \
     file://321-mac80211-fix-mesh-forwarding.patch \
     file://322-wifi-mac80211-fix-mesh-path-discovery-based-on-unica.patch \
+    file://323-wifi-mac80211-Add-VHT-MU-MIMO-related-flags-in-ieee8.patch \
+    file://324-wifi-mac80211-Add-HE-MU-MIMO-related-flags-in-ieee80.patch \
+    file://325-wifi-mac80211-introduce-ieee80211_refresh_tx_agg_ses.patch \
+    file://326-wifi-mac80211-add-mesh-fast-rx-support.patch \
     file://400-allow-ibss-mixed.patch \
     file://500-mac80211_configure_antenna_gain.patch \
     file://782-net-next-1-of-net-pass-the-dst-buffer-to-of_get_mac_address.patch \
@@ -37,15 +41,13 @@ SRC_URI_append = " \
     file://mtk-0005-mac80211-mtk-it-s-invalid-case-when-frag_threshold-i.patch \
     file://mtk-0006-mac80211-mtk-airtime_flags-depends-on-NL80211_EXT_FE.patch \
     file://mtk-0007-mac80211-mtk-add-support-for-runtime-set-inband-disc.patch \
-    file://mtk-0008-mac80211-mtk-remove-timerout-handle-for-ax210-iot-is.patch \
     file://mtk-0009-cfg80211-mtk-implement-DFS-status-show-cac-and-nop-s.patch \
     file://mtk-0010-mac80211-mtk-Set-TWT-Information-Frame-Disabled-bit-.patch \
-    file://mtk-0011-mac80211-mtk-fix-the-issue-of-AP-and-STA-starting-on.patch \
-    file://mtk-0012-mac80211-mtk-check-the-control-channel-before-downgr.patch \
-    file://mtk-0013-mac80211-mtk-fix-tx-amsdu-aggregation.patch \
-    file://mtk-0014-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-id.patch \
-    file://mtk-0015-mac80211-mtk-register-.ndo_setup_tc-to-support-wifi2.patch \
-    file://mtk-0016-mac80211-mtk-fix-build-error-on-Linux-Kernel-5.4.patch \
+    file://mtk-0011-mac80211-mtk-check-the-control-channel-before-downgr.patch \
+    file://mtk-0012-mac80211-mtk-fix-tx-amsdu-aggregation.patch \
+    file://mtk-0013-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-id.patch \
+    file://mtk-0014-mac80211-mtk-register-.ndo_setup_tc-to-support-wifi2.patch \
+    file://mtk-0015-mac80211-mtk-fix-build-error-on-Linux-Kernel-5.4.patch \
     file://mtk-0100-mac80211-mtk-add-EHT-BA1024-support.patch \
     file://mtk-0101-mac80211-mtk-add-rate-duration-for-EHT-rate.patch \
     "
