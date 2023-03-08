@@ -1,0 +1,9 @@
+--- a/include/libnfnetlink/linux_nfnetlink.h.bak	2023-03-07 17:16:35.972965700 +0800
++++ b/include/libnfnetlink/linux_nfnetlink.h	2023-03-07 17:50:33.115953207 +0800
+@@ -49,5 +49,6 @@
+ #define NFNL_SUBSYS_OSF			5
+ #define NFNL_SUBSYS_IPSET		6
+ #define NFNL_SUBSYS_COUNT		7
++#define NFNL_SUBSYS_FLOWTABLE		12
+ 
+ #endif	/* _NFNETLINK_H */
