@@ -836,14 +836,7 @@ int apply_uci_config ()
             }
         }
         if (parsing_radio == TRUE) {
-            char cmd[32] = {0};
-            char buf[32] = {0};
             set_radio_param(radio_param);
-
-            /* sleep 3 to wait ifconfig up state update, workaround to avoid
-               disable ap interface fail. */
-            sprintf(cmd, "sleep 5");
-            _syscmd(cmd, buf, sizeof(buf));
         }
         else if (intf_param.sta_mode == TRUE)
             set_sta_param(intf_param);
@@ -858,10 +851,12 @@ int apply_uci_config ()
 	fprintf(stderr, "\n----- Disable all interfaces. -----\n");
 
 	for (i = 0; i < max_radio_num; i++ ){
-		for(j = MAX_NUM_VAP_PER_RADIO - 1; j >= 0 ; j--) {
-			ret = wifi_setApEnable(i*max_radio_num+j, FALSE);
+		for(j = max_radio_num*(MAX_NUM_VAP_PER_RADIO-1) + i; j >= 0; j -= max_radio_num) {
+			ret = wifi_setApEnable(j, FALSE);
 			if (ret != RETURN_OK)
-				fprintf(stderr, "[disable ap %d failed!!!]\n", i*max_radio_num+j);
+				fprintf(stderr, "[disable ap %d failed!!!]\n", j);
+			else
+				fprintf(stderr, "[disable ap %d success.]\n", j);
 		}
 	}
     fprintf(stderr, "\n----- Start setting Vaps. -----\n");
