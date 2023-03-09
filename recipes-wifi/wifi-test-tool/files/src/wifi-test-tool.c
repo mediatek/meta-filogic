@@ -564,14 +564,20 @@ void set_ap_param(wifi_intf_param ap_param , wifi_vap_info_map_t *map)
     fprintf(stderr, "Set macfilter: %s \n", ap_param.macfilter);
 
     // maclist
-    if ((strcmp(ap_param.macfilter, "\0") == 0)){
+    if ((strlen(ap_param.macfilter) == 0)){
         ret = wifi_delApAclDevices(ap_param.ap_index);
         if (ret != RETURN_OK)
             fprintf(stderr, "[Del all maclist failed!!!]\n");
         ret = 0;
         }
-    else{
+    else if (strcmp(ap_param.macfilter, "allow") == 0) {
         ret = wifi_addApAclDevice(ap_param.ap_index, ap_param.maclist);
+        if (ret != RETURN_OK)
+            fprintf(stderr, "[Add maclist failed!!!]\n");
+        ret = 0;
+        }
+    else if (strcmp(ap_param.macfilter, "deny") == 0) {
+        ret = wifi_addApDenyAclDevice(ap_param.ap_index, ap_param.maclist);
         if (ret != RETURN_OK)
             fprintf(stderr, "[Add maclist failed!!!]\n");
         ret = 0;
@@ -645,11 +651,13 @@ void set_sta_param(wifi_intf_param sta_param)
 void show_ap_param(wifi_intf_param ap_param , wifi_vap_info_map_t *map)
 {
     int ret = 0;
+    int filter_mode = 0;
     int vap_index_in_map = 0;
     int phy_index = 0;
     wifi_vap_info_t vap_info = {0};
     BOOL radio_enable = FALSE;
     BOOL wps_state = FALSE;
+    BOOL igmpsn_state = FALSE;
     UINT buf_size = 1024;
     char macArray[1024] = "";
 
@@ -676,36 +684,56 @@ void show_ap_param(wifi_intf_param ap_param , wifi_vap_info_map_t *map)
     // SSID
     printf("wifi%d ssid: %s\n", ap_param.ap_index, vap_info.u.bss_info.ssid);
 
-    // igmpsn_enable
-    printf("wifi%d igmpsn_enable: %d\n", ap_param.ap_index, vap_info.u.bss_info.mcast2ucast);
+    // igmpsn_enableS
+    ret = wifi_getRadioIGMPSnoopingEnable(ap_param.radio_index, &igmpsn_state);
+    if (ret != RETURN_OK)
+        fprintf(stderr, "[Get igmpsn_state failed!!!]\n");
+    else
+        printf("wifi%d igmpsn_state: %d\n", ap_param.ap_index, igmpsn_state);
+    ret = 0;
 
     // wps_state
     ret = wifi_getApWpsEnable(ap_param.ap_index, &wps_state);
     if (ret != RETURN_OK)
-        fprintf(stderr, "[Set wps_state failed!!!]\n");
+        fprintf(stderr, "[Get wps_state failed!!!]\n");
     else
         printf("wifi%d wps_state: %d\n", ap_param.ap_index, wps_state);
     ret = 0;
 
     // macfilter
-    if (vap_info.u.bss_info.mac_filter_enable == FALSE)
-        printf("wifi%d macfilter: disable\n", ap_param.ap_index);
-    else if (vap_info.u.bss_info.mac_filter_mode = wifi_mac_filter_mode_white_list)
-        printf("wifi%d macfilter: allow\n", ap_param.ap_index);
-    else if (vap_info.u.bss_info.mac_filter_mode = wifi_mac_filter_mode_black_list)
-        printf("wifi%d macfilter: deny\n", ap_param.ap_index);
-
-    printf("daisy      wifi%d macfilter: %d\n", ap_param.ap_index, vap_info.u.bss_info.mac_filter_enable);
-    printf("daisy      wifi%d macfilter: %d\n", ap_param.ap_index, vap_info.u.bss_info.mac_filter_mode);
+    ret = wifi_getApMacAddressControlMode(ap_param.ap_index, &filter_mode);
+    if (ret != RETURN_OK)
+        fprintf(stderr, "[Get macfilter failed!!!]\n");
+    else{
+        if (filter_mode == 0)
+            printf("wifi%d macfilter: disable\n", ap_param.ap_index);
+        else if (filter_mode == 1)
+            printf("wifi%d macfilter: allow\n", ap_param.ap_index);
+        else if (filter_mode == 2)
+            printf("wifi%d macfilter: deny\n", ap_param.ap_index);
+        }
+    ret = 0;
 
     // maclist
     printf("wifi%d maclist: \n", ap_param.ap_index);
-    ret = wifi_getApAclDevices(ap_param.ap_index, macArray, buf_size);
-    if (ret != RETURN_OK)
-        fprintf(stderr, "[Get maclist failed!!!]\n");
-    else
-        printf("%s \n", macArray);
-    ret = 0;
+    if (filter_mode == 0)
+        printf("wifi%d macfilter is disable\n", ap_param.ap_index);
+    else if (filter_mode == 1){
+        ret = wifi_getApAclDevices(ap_param.ap_index, macArray, buf_size);
+        if (ret != RETURN_OK)
+            fprintf(stderr, "[Get maclist failed!!!]\n");
+        else
+            printf("%s \n", macArray);
+        ret = 0;
+        }
+    else if (filter_mode == 2){
+        ret = wifi_getApDenyAclDevices(ap_param.ap_index, macArray, buf_size);
+        if (ret != RETURN_OK)
+            fprintf(stderr, "[Get maclist failed!!!]\n");
+        else
+            printf("%s \n", macArray);
+        ret = 0;
+        }
 
 }
 
