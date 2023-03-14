@@ -62,10 +62,10 @@ SRC_URI_append = " \
     file://mtk-0011-mac80211-mtk-Set-TWT-Information-Frame-Disabled-bit-.patch \
     file://mtk-0012-mac80211-mtk-check-the-control-channel-before-downgr.patch \
     file://mtk-0013-mac80211-mtk-fix-tx-amsdu-aggregation.patch \
-    file://mtk-0014--mac80211-mtk-track-obss-color-bitmap.patch \
     file://mtk-0014-mac80211-mtk-add-sta-assisted-DFS-state-update-mecha.patch \
-    file://mtk-0015-mac80211-mtk-aging-color-bitmap.patch \
     file://mtk-0015-nl80211-mtk-Mark-DFS-channel-as-available-for-CSA.patch \
+    file://mtk-0016-mac80211-mtk-track-obss-color-bitmap.patch \
+    file://mtk-0017-mac80211-mtk-aging-color-bitmap.patch \
     file://mtk-9900-mac80211-mtk-mask-kernel-version-limitation-and-fil.patch \
     file://mtk-9901-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-i.patch \
     file://mtk-9902-mac80211-mtk-register-.ndo_setup_tc-to-support-wifi2.patch \
