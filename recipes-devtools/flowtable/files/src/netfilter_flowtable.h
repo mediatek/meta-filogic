@@ -15,7 +15,7 @@ struct flow_tuple {
 	unsigned short int dport;
 };
 
-enum ft_msg_types{
+enum ft_msg_types {
 	FT_MSG_DEL,
 	FT_MSG_ADD,	//not support now
 	FT_MSG_FLUSH,
@@ -57,7 +57,7 @@ enum ftattr_l4proto {
 };
 #define FTA_PROTO_MAX (__FTA_PROTO_MAX - 1)
 
-struct ftnl_handle* ftnl_open(void);
+struct ftnl_handle *ftnl_open(void);
 void ftnl_close(struct ftnl_handle *h);
 int ftnl_flush_table(struct ftnl_handle *h);
 int ftnl_del_flow(struct ftnl_handle *h, struct flow_tuple *tuple);

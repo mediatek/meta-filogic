@@ -17,7 +17,7 @@ static void attr_dump(struct nfattr *attr)
 	printf("\n");
 }
 
-struct ftnl_handle* ftnl_open(void)
+struct ftnl_handle *ftnl_open(void)
 {
 	struct ftnl_handle *h = NULL;
 
@@ -50,24 +50,30 @@ void ftnl_close(struct ftnl_handle *h)
 	free(h);
 }
 
-static void build_tuple(struct nlmsghdr *nlh,size_t size, struct flow_tuple *tuple)
+static void build_tuple(struct nlmsghdr *nlh, size_t size,
+			struct flow_tuple *tuple)
 {
 	struct nfattr *nest_tuple, *nest_ip, *nest_proto;
 
 	nest_tuple = nfnl_nest(nlh, size, FTA_TUPLE);
 
 	nest_ip = nfnl_nest(nlh, size, FTA_TUPLE_IP);
-	nfnl_addattr_l(nlh, size, FTA_IP_V4_SRC, &tuple->sip4, sizeof(uint32_t));
-	nfnl_addattr_l(nlh, size, FTA_IP_V4_DST, &tuple->dip4, sizeof(uint32_t));
+	nfnl_addattr_l(nlh, size, FTA_IP_V4_SRC,
+		       &tuple->sip4, sizeof(uint32_t));
+	nfnl_addattr_l(nlh, size, FTA_IP_V4_DST,
+		       &tuple->dip4, sizeof(uint32_t));
 	nfnl_nest_end(nlh, nest_ip);
 
 	nest_proto = nfnl_nest(nlh, size, FTA_TUPLE_PROTO);
-	nfnl_addattr_l(nlh, size, FTA_PROTO_NUM, &tuple->proto, sizeof(uint8_t));
-	nfnl_addattr_l(nlh, size, FTA_PROTO_SPORT, &tuple->sport, sizeof(uint16_t));
-	nfnl_addattr_l(nlh, size, FTA_PROTO_DPORT, &tuple->dport, sizeof(uint16_t));
+	nfnl_addattr_l(nlh, size, FTA_PROTO_NUM,
+		       &tuple->proto, sizeof(uint8_t));
+	nfnl_addattr_l(nlh, size, FTA_PROTO_SPORT,
+		       &tuple->sport, sizeof(uint16_t));
+	nfnl_addattr_l(nlh, size, FTA_PROTO_DPORT,
+		       &tuple->dport, sizeof(uint16_t));
 	nfnl_nest_end(nlh, nest_proto);
 
-	nfnl_nest_end(nlh,nest_tuple);
+	nfnl_nest_end(nlh, nest_tuple);
 //	attr_dump(nest_tuple);
 }
 
