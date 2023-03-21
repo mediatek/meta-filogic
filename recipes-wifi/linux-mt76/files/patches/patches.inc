@@ -1,5 +1,6 @@
 #patch patches (come from openwrt/lede/target/linux/mediatek)
 SRC_URI_append = " \
+    file://0001-mt76-mt7915-fix-background-radar-event-being-blocked.patch \
     file://1001-mt76-mt7915-add-mtk-internal-debug-tools-for-mt76.patch \
     file://1002-mt76-mt7915-csi-implement-csi-support.patch \
     file://1003-mt76-mt7915-air-monitor-support.patch \

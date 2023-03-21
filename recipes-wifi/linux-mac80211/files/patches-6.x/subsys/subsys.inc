@@ -8,27 +8,27 @@ SRC_URI_append = " \
     file://303-mac80211-minstrel_ht-reduce-fluctuations-in-rate-pro.patch \
     file://304-mac80211-minstrel_ht-rework-rate-downgrade-code-and-.patch \
     file://305-mac80211-increase-quantum-for-airtime-scheduler.patch \
-    file://306-01-wifi-mac80211-add-internal-handler-for-wake_tx_queue.patch \
-    file://306-02-wifi-mac80211-add-wake_tx_queue-callback-to-drivers.patch \
-    file://306-03-wifi-mac80211-Drop-support-for-TX-push-path.patch \
-    file://306-04-wifi-realtek-remove-duplicated-wake_tx_queue.patch \
-    file://307-wifi-mac80211-fix-initialization-of-rx-link-and-rx-l.patch \
-    file://308-wifi-mac80211-fix-MLO-AP_VLAN-check.patch \
-    file://310-mac80211-add-support-for-restricting-netdev-features.patch \
-    file://311-wifi-mac80211-fix-and-simplify-unencrypted-drop-chec.patch \
-    file://312-wifi-cfg80211-move-A-MSDU-check-in-ieee80211_data_to.patch \
-    file://313-wifi-cfg80211-factor-out-bridge-tunnel-RFC1042-heade.patch \
-    file://314-wifi-mac80211-remove-mesh-forwarding-congestion-chec.patch \
-    file://315-wifi-mac80211-fix-receiving-A-MSDU-frames-on-mesh-in.patch \
-    file://316-wifi-mac80211-add-a-workaround-for-receiving-non-sta.patch \
+    file://306-01-v6.2-wifi-mac80211-add-internal-handler-for-wake_tx_queue.patch \
+    file://306-02-v6.2-wifi-mac80211-add-wake_tx_queue-callback-to-drivers.patch \
+    file://306-03-v6.2-wifi-mac80211-Drop-support-for-TX-push-path.patch \
+    file://306-04-v6.2-wifi-realtek-remove-duplicated-wake_tx_queue.patch \
+    file://307-v6.2-wifi-mac80211-fix-initialization-of-rx-link-and-rx-l.patch \
+    file://308-v6.2-wifi-mac80211-fix-MLO-AP_VLAN-check.patch \
+    file://310-v6.2-mac80211-add-support-for-restricting-netdev-features.patch \
+    file://311-v6.2-wifi-mac80211-fix-and-simplify-unencrypted-drop-chec.patch \
+    file://312-v6.3-wifi-cfg80211-move-A-MSDU-check-in-ieee80211_data_to.patch \
+    file://313-v6.3-wifi-cfg80211-factor-out-bridge-tunnel-RFC1042-heade.patch \
+    file://314-v6.3-wifi-mac80211-remove-mesh-forwarding-congestion-chec.patch \
+    file://315-v6.3-wifi-mac80211-fix-receiving-A-MSDU-frames-on-mesh-in.patch \
+    file://316-v6.3-wifi-mac80211-add-a-workaround-for-receiving-non-sta.patch \
     file://317-wifi-mac80211-fix-qos-on-mesh-interfaces.patch \
     file://318-wifi-mac80211-fix-race-in-mesh-sequence-number-assig.patch \
     file://319-wifi-mac80211-mesh-fast-xmit-support.patch \
     file://320-wifi-mac80211-use-mesh-header-cache-to-speed-up-mesh.patch \
     file://321-mac80211-fix-mesh-forwarding.patch \
     file://322-wifi-mac80211-fix-mesh-path-discovery-based-on-unica.patch \
-    file://323-wifi-mac80211-Add-VHT-MU-MIMO-related-flags-in-ieee8.patch \
-    file://324-wifi-mac80211-Add-HE-MU-MIMO-related-flags-in-ieee80.patch \
+    file://323-v6.3-wifi-mac80211-Add-VHT-MU-MIMO-related-flags-in-ieee8.patch \
+    file://324-v6.3-wifi-mac80211-Add-HE-MU-MIMO-related-flags-in-ieee80.patch \
     file://325-wifi-mac80211-introduce-ieee80211_refresh_tx_agg_ses.patch \
     file://326-wifi-mac80211-add-mesh-fast-rx-support.patch \
     file://400-allow-ibss-mixed.patch \
