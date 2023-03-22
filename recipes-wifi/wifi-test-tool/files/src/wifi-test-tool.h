@@ -62,7 +62,7 @@ typedef struct {
     char ifname[16];
     bool hidden;
     bool igmpsn_enable;
-    bool wps_state;
+    int wps_state;
     bool wps_cancel;
     bool wps_pushbutton;
     char macfilter[10];
