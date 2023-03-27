@@ -145,4 +145,5 @@ SRC_URI_append = " \
     file://9017-drivers-mtd-spinand-Add-calibration-support-for-spinand.patch \
     file://9018-drivers-mtd-spi-nor-Add-calibration-support-for-spi-nor.patch \
     file://9019-drivers-char-tpm-Add-calibration-example-for-SPI-TPM-module.patch \
+    file://9102-spi-update-driver.patch \
     "
