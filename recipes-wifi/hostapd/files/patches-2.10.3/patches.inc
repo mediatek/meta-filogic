@@ -82,7 +82,9 @@ SRC_URI_append = " \
     file://mtk-0018-hostapd-mtk-Add-sta-assisted-DFS-state-update-mechan.patch \
     file://mtk-0019-hostapd-mtk-Fix-auto-ht-issue-when-switching-to-DFS-.patch \
     file://mtk-0020-hostapd-mtk-Mark-DFS-channel-as-available-for-CSA.patch \
-    file://mtk-0021-hostapd-mtk-add-11v_mbss-and-ema-support.patch \
+    file://mtk-0021-hostapd-mtk-add-11v_mbss-and-ema-support-for-hostapd.patch \
     file://mtk-0022-hostapd-mtk-Add-available-color-bitmap.patch \
+    file://mtk-0023-hostapd-mtk-Add-channel-information-for-hostapd-relo.patch \
+    file://mtk-0024-hostapd-mtk-Fix-ZWDFS-issue-in-BW-160.patch \
     file://mtk-0100-hostapd-mtk-update-eht-operation-elem.patch \
     "

@@ -31,6 +31,9 @@ SRC_URI_append = " \
     file://324-v6.3-wifi-mac80211-Add-HE-MU-MIMO-related-flags-in-ieee80.patch \
     file://325-wifi-mac80211-introduce-ieee80211_refresh_tx_agg_ses.patch \
     file://326-wifi-mac80211-add-mesh-fast-rx-support.patch \
+    file://327-wifi-mac80211-add-support-for-letting-drivers-regist.patch \
+    file://328-wifi-mac80211-fix-invalid-drv_sta_pre_rcu_remove-cal.patch \
+    file://329-wifi-mac80211-fix-receiving-mesh-packets-in-forwardi.patch \
     file://400-allow-ibss-mixed.patch \
     file://500-mac80211_configure_antenna_gain.patch \
     file://782-net-next-1-of-net-pass-the-dst-buffer-to-of_get_mac_address.patch \
@@ -46,10 +49,10 @@ SRC_URI_append = " \
     file://mtk-0011-mac80211-mtk-check-the-control-channel-before-downgr.patch \
     file://mtk-0012-mac80211-mtk-fix-tx-amsdu-aggregation.patch \
     file://mtk-0013-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-id.patch \
-    file://mtk-0014-mac80211-mtk-register-.ndo_setup_tc-to-support-wifi2.patch \
-    file://mtk-0015-mac80211-mtk-fix-build-error-on-Linux-Kernel-5.4.patch \
-    file://mtk-0016-mac80211-mtk-track-obss-color-bitmap.patch \
-    file://mtk-0017-mac80211-mtk-aging-color-bitmap.patch \
+    file://mtk-0014-mac80211-mtk-fix-build-error-on-Linux-Kernel-5.4.patch \
+    file://mtk-0015-mac80211-mtk-track-obss-color-bitmap.patch \
+    file://mtk-0016-mac80211-mtk-aging-color-bitmap.patch \
     file://mtk-0100-mac80211-mtk-add-EHT-BA1024-support.patch \
     file://mtk-0101-mac80211-mtk-add-rate-duration-for-EHT-rate.patch \
+    file://mtk-0103-mac80211-mtk-add-send-bar-on-addbarsp_handle.patch \
     "
