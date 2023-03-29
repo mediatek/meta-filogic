@@ -40,7 +40,7 @@ SRC_URI_append = " \
     file://3004-mt76-mt7915-wed-find-rx-token-by-physical-address.patch \
     file://3005-mt76-mt7915-wed-HW-ATF-support-for-mt7986.patch \
     file://3006-mt76-mt7915-wed-add-rxwi-for-further-in-chip-rro.patch \
-    file://3007-mt76-mt7915-add-mt7915_net_setup_tc-to-support-wifi2.patch \
+    file://3007-mt76-mt7915-wed-add-mt7915_net_setup_tc-to-support-w.patch \
     file://3008-wifi-mt76-mt7915-add-wa-command-to-get-tx-msdu-count.patch \
     file://3009-wifi-mt76-get-tx-count-and-tx-failed-from-mcu-comman.patch \
     file://3010-wifi-mt76-mt7915-enable-PPDU-TxS-to-host-when-wed-en.patch \

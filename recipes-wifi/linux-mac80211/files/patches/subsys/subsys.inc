@@ -68,5 +68,5 @@ SRC_URI_append = " \
     file://mtk-0017-mac80211-mtk-aging-color-bitmap.patch \
     file://mtk-9900-mac80211-mtk-mask-kernel-version-limitation-and-fil.patch \
     file://mtk-9901-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-i.patch \
-    file://mtk-9902-mac80211-mtk-register-.ndo_setup_tc-to-support-wifi2.patch \
+    file://mtk-9902-mac80211-mtk-add-support-for-letting-drivers-registe.patch \
     "

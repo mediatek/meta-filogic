@@ -85,6 +85,7 @@ SRC_URI_append = " \
     file://mtk-0021-hostapd-mtk-add-11v_mbss-and-ema-support-for-hostapd.patch \
     file://mtk-0022-hostapd-mtk-Add-available-color-bitmap.patch \
     file://mtk-0023-hostapd-mtk-Add-channel-information-for-hostapd-relo.patch \
+    file://mtk-0024-hostapd-mtk-Add-support-for-masking-EHT-capabilities.patch \
     file://mtk-0024-hostapd-mtk-Fix-ZWDFS-issue-in-BW-160.patch \
     file://mtk-0100-hostapd-mtk-update-eht-operation-elem.patch \
     "
