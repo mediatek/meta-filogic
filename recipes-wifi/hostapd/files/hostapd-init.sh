@@ -5,8 +5,10 @@ create_hostapdConf() {
 	phyidx=0
 	old_path=""
 	pcie7915count=0
-    
-	for _dev in /sys/class/ieee80211/*; do
+        vap_per_radio=8
+        radio_num="$(iw list | grep Wiphy | wc -l)"
+
+        for _dev in /sys/class/ieee80211/*; do
 		[ -e "$_dev" ] || continue
 
 		dev="${_dev##*/}"
@@ -30,8 +32,23 @@ create_hostapdConf() {
             fi
             old_path=$path
         fi
-        iw wlan$phyidx del > /dev/null
-        if [ "$(uci get wireless.radio${phyidx}.disabled)" == "1" ]; then
+
+        if [ -e /sys/class/net/wlan$phyidx ]; then
+            iw wlan$phyidx del > /dev/null
+        elif [ -e /sys/class/net/wifi$phyidx ]; then
+            for((i=0;i<$vap_per_radio;i++)); do
+                ifidx=$(($phyidx+$i*$radio_num))
+                ifname="$(cat /nvram/hostapd"$ifidx".conf | grep ^interface= | cut -d '=' -f2 | tr -d '\n')"
+                if [ -n $ifname ]; then
+                    hostapd_cli -i global raw REMOVE wifi$ifidx > /dev/null
+                    if [ $i -eq 0 ]; then
+                        iw wifi$ifidx del > /dev/null
+                    fi
+                fi
+            done
+        fi
+
+	if [ "$(uci get wireless.radio${phyidx}.disabled)" == "1" ]; then
             phyidx=$(($phyidx + 1))
 			continue
         fi
@@ -39,16 +56,25 @@ create_hostapdConf() {
         if [ ! -f /nvram/hostapd"$devidx".conf ]; then
             touch /nvram/hostapd"$devidx".conf
         else
-            ifname="$(cat /nvram/hostapd"$devidx".conf | grep ^interface= | cut -d '=' -f2 | tr -d '\n')"
-            iw phy phy$phyidx interface add $ifname type __ap > /dev/null
-            touch /nvram/hostapd-acl$devidx
-            touch /nvram/hostapd$devidx.psk
-            touch /nvram/hostapd-deny$devidx
-            touch /tmp/$dev-wifi$devidx
-            hostapd_cli -i global raw ADD bss_config=$dev:/nvram/hostapd"$devidx".conf
+            for((i=0;i<$vap_per_radio;i++)); do
+                ifidx=$(($phyidx+$i*$radio_num))
+                ifname="$(cat /nvram/hostapd"$ifidx".conf | grep ^interface= | cut -d '=' -f2 | tr -d '\n')"
+                vapstat="$(cat /nvram/vap-status | grep wifi"$ifidx"= | cut -d'=' -f2)"
+                if [ -n $ifname ] && [ $vapstat -eq "1" ]; then
+                    if [ $i = 0 ]; then
+                        ## first interface in this phy
+                        iw phy phy$phyidx interface add $ifname type __ap > /dev/null
+                    fi
+                    touch /nvram/hostapd-acl$ifidx
+                    touch /nvram/hostapd$ifidx.psk
+                    touch /nvram/hostapd-deny$ifidx
+                    touch /tmp/$dev-wifi$ifidx
+                    hostapd_cli -i global raw ADD bss_config=$dev:/nvram/hostapd"$ifidx".conf
+		fi
+	    done
             devidx=$(($devidx + 1))
             phyidx=$(($phyidx + 1))
-			continue
+            continue
         fi
 
 
