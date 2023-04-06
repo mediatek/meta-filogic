@@ -105,7 +105,6 @@ SRC_URI_append = " \
     file://740-add-gpy211-phy-support.patch \
     file://741-add-default-setting-to-dsa-unused-port.patch \
     file://742-net-dsa-add-MT7531-Gigabit-Ethernet-PHY-setting.patch \
-    file://743-add-mediatek-ge-gphy-support.patch \
     file://744-en8811h-2p5gphy-support.patch \
     file://745-en8801sc-gphy-support.patch \
     file://745-mdiobus-add-c45.patch \
@@ -120,6 +119,7 @@ SRC_URI_append = " \
     file://753-net-mt753x-phy-coverity-scan.patch;apply=no \
     file://754-net-phy-add-5GBASER.patch \
     file://755-net-phy-sfp-add-rollball-support.patch \
+    file://756-net-phy-mediatek-ge-add-mt798x-support.patch \
     file://8000-PATCH-1-4-tphy-support-type-switch-by-pericfg.patch \
     file://8001-PATCH-2-4-dt-bindings-phy-Add-PHY_TYPE_DP-definition.patch \
     file://8002-PATCH-3-4-dt-bindings-phy-Add-PHY_TYPE_XPCS-definition.patch \
