@@ -1,5 +1,7 @@
 #patch patches (come from openwrt/lede/target/linux/mediatek)
 SRC_URI_append = " \
+    file://0000-wifi-mt76-api_update.patch \
+    file://0000-wifi-mt76-ignore-key-disable-commands.patch \
     file://0001-wifi-mt76-mt7996-add-eht-rx-rate-support.patch \
     file://0002-wifi-mt76-mt7996-let-non-bufferable-MMPDUs-use-corre.patch \
     file://0003-wifi-mt76-mt7996-fix-pointer-calculation-in-ie-count.patch \
@@ -25,11 +27,11 @@ SRC_URI_append = " \
     file://0023-wifi-mt76-mt7996-fill-txwi-by-SW-temporarily.patch \
     file://0024-wifi-mt76-mt7996-update-wmm-queue-mapping.patch \
     file://0025-wifi-mt76-mt7996-enable-IDS-debug-log.patch \
-    file://0026-mt76-testmode-add-atenl-support-in-mt7996.patch \
-    file://0027-mt76-testmode-add-basic-testmode-support.patch \
-    file://0028-mt76-testmode-add-chainmask-hacking-for-eagle-band-2.patch \
-    file://0029-mt76-revert-page-pool-changes.patch \
-    file://0999-mt76-mt7996-for-build-pass.patch \
-    file://1000-mt76-mt7996-add-debug-tool.patch \
-    file://1001-mt76-mt7996-add-txpower-support.patch \
+    file://0026-wifi-mt76-testmode-add-atenl-support-in-mt7996.patch \
+    file://0027-wifi-mt76-testmode-add-basic-testmode-support.patch \
+    file://0028-wifi-mt76-testmode-add-chainmask-hacking-for-eagle-b.patch \
+    file://0029-wifi-mt76-mt7996-set-SUPPORTS_VHT_EXT_NSS_BW-in-mt79.patch \
+    file://0999-wifi-mt76-mt7996-for-build-pass.patch \
+    file://1000-wifi-mt76-mt7996-add-debug-tool.patch \
+    file://1001-wifi-mt76-mt7996-add-txpower-support.patch \
     "

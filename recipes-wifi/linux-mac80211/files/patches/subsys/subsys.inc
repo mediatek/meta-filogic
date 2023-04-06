@@ -43,6 +43,11 @@ SRC_URI_append = " \
     file://345-v6.1-wifi-mac80211-do-not-drop-packets-smaller-than-the-L.patch \
     file://346-v6.0-wifi-mac80211-fix-mesh-airtime-link-metric-estimatin.patch \
     file://347-wifi-mac80211-introduce-ieee80211_refresh_tx_agg_ses.patch \
+    file://348-wifi-ieee80211-correctly-mark-FTM-frames-non-buffera.patch \
+    file://349-wifi-mac80211-flush-queues-on-STA-removal.patch \
+    file://350-wifi-iwlwifi-mvm-support-flush-on-AP-interfaces.patch \
+    file://351-wifi-mac80211-add-flush_sta-method.patch \
+    file://352-wifi-iwlwifi-mvm-support-new-flush_sta-method.patch \
     file://363-v5.19-bss-color-collision.patch \
     file://364-mac80211-add-support-for-restricting-netdev-features.patch \
     file://400-allow-ibss-mixed.patch \

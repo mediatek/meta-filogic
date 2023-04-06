@@ -1,0 +1,26 @@
+From 576d54b4dce61e33ad31b8d8266548972ea13049 Mon Sep 17 00:00:00 2001
+From: StanleyYP Wang <StanleyYP.Wang@mediatek.com>
+Date: Thu, 9 Mar 2023 18:45:04 +0800
+Subject: [PATCH 28/29] wifi: mt76: testmode: add chainmask hacking for eagle
+ band 2 4T5R
+
+Signed-off-by: StanleyYP Wang <StanleyYP.Wang@mediatek.com>
+---
+ mt7996/testmode.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/mt7996/testmode.c b/mt7996/testmode.c
+index 5dbbb78..1721251 100644
+--- a/mt7996/testmode.c
++++ b/mt7996/testmode.c
+@@ -446,6 +446,7 @@ mt7996_tm_set_params(struct mt76_phy *mphy, struct nlattr **tb,
+ 		return 0;
+ 
+ 	chainmask = chainmask >> dev->chainshift[band_idx];
++	chainmask = 0x1f;	/* hacking for eagle band2 4T5R */
+ 	if (td->tx_antenna_mask > chainmask)
+ 		return -EINVAL;
+ 
+-- 
+2.18.0
+

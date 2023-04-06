@@ -34,6 +34,11 @@ SRC_URI_append = " \
     file://327-wifi-mac80211-add-support-for-letting-drivers-regist.patch \
     file://328-wifi-mac80211-fix-invalid-drv_sta_pre_rcu_remove-cal.patch \
     file://329-wifi-mac80211-fix-receiving-mesh-packets-in-forwardi.patch \
+    file://330-wifi-ieee80211-correctly-mark-FTM-frames-non-buffera.patch \
+    file://331-wifi-mac80211-flush-queues-on-STA-removal.patch \
+    file://332-wifi-iwlwifi-mvm-support-flush-on-AP-interfaces.patch \
+    file://333-wifi-mac80211-add-flush_sta-method.patch \
+    file://334-wifi-iwlwifi-mvm-support-new-flush_sta-method.patch \
     file://400-allow-ibss-mixed.patch \
     file://500-mac80211_configure_antenna_gain.patch \
     file://782-net-next-1-of-net-pass-the-dst-buffer-to-of_get_mac_address.patch \
@@ -44,14 +49,14 @@ SRC_URI_append = " \
     file://mtk-0005-mac80211-mtk-it-s-invalid-case-when-frag_threshold-i.patch \
     file://mtk-0006-mac80211-mtk-airtime_flags-depends-on-NL80211_EXT_FE.patch \
     file://mtk-0007-mac80211-mtk-add-support-for-runtime-set-inband-disc.patch \
-    file://mtk-0009-cfg80211-mtk-implement-DFS-status-show-cac-and-nop-s.patch \
-    file://mtk-0010-mac80211-mtk-Set-TWT-Information-Frame-Disabled-bit-.patch \
-    file://mtk-0011-mac80211-mtk-check-the-control-channel-before-downgr.patch \
-    file://mtk-0012-mac80211-mtk-fix-tx-amsdu-aggregation.patch \
-    file://mtk-0013-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-id.patch \
-    file://mtk-0014-mac80211-mtk-fix-build-error-on-Linux-Kernel-5.4.patch \
-    file://mtk-0015-mac80211-mtk-track-obss-color-bitmap.patch \
-    file://mtk-0016-mac80211-mtk-aging-color-bitmap.patch \
+    file://mtk-0008-cfg80211-mtk-implement-DFS-status-show-cac-and-nop-s.patch \
+    file://mtk-0009-mac80211-mtk-Set-TWT-Information-Frame-Disabled-bit-.patch \
+    file://mtk-0010-mac80211-mtk-check-the-control-channel-before-downgr.patch \
+    file://mtk-0011-mac80211-mtk-fix-tx-amsdu-aggregation.patch \
+    file://mtk-0012-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-id.patch \
+    file://mtk-0013-mac80211-mtk-fix-build-error-on-Linux-Kernel-5.4.patch \
+    file://mtk-0014-mac80211-mtk-track-obss-color-bitmap.patch \
+    file://mtk-0015-mac80211-mtk-ageout-color-bitmap.patch \
     file://mtk-0100-mac80211-mtk-add-EHT-BA1024-support.patch \
     file://mtk-0101-mac80211-mtk-add-rate-duration-for-EHT-rate.patch \
     file://mtk-0103-mac80211-mtk-add-send-bar-on-addbarsp_handle.patch \
