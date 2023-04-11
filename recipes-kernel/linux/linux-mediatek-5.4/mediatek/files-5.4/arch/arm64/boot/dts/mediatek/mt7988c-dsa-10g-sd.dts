@@ -97,6 +97,13 @@
 		};
 	};
 
+	gbe_led0_pins: gbe-pins {
+		mux {
+			function = "led";
+			groups = "gbe_led0";
+		};
+	};
+
 	pcie0_pins: pcie0-pins {
 		mux {
 			function = "pcie";
@@ -247,6 +254,8 @@
 				compatible = "mediatek,dsa-slave-mdio";
 				#address-cells = <1>;
 				#size-cells = <0>;
+				pinctrl-names = "default";
+				pinctrl-0 = <&gbe_led0_pins>;
 
 				sphy0: switch_phy0@0 {
 					compatible = "ethernet-phy-id03a2.9481";

@@ -228,6 +228,13 @@
 };
 
 &pio {
+	gbe_led0_pins: gbe-pins {
+		mux {
+			function = "led";
+			groups = "gbe_led0";
+		};
+	};
+
 	i2c0_pins: i2c0-pins-g0 {
 		mux {
 			function = "i2c";
@@ -370,6 +377,8 @@
 	mdio1: mdio-bus {
 		#address-cells = <1>;
 		#size-cells = <0>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&gbe_led0_pins>;
 
 		gsw_phy0: ethernet-phy@0 {
 			compatible = "ethernet-phy-id03a2.9481";
