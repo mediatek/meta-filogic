@@ -87,4 +87,5 @@ SRC_URI_append = " \
     file://mtk-0023-hostapd-mtk-Add-channel-information-for-hostapd-relo.patch \
     file://mtk-0024-hostapd-mtk-Add-support-for-masking-EHT-capabilities.patch \
     file://mtk-0025-hostapd-mtk-Fix-ZWDFS-issue-in-BW-160.patch \
+    file://mtk-0026-hostapd-mtk-Add-vendor-for-CAPI-certification-comman.patch \
     "

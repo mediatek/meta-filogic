@@ -37,6 +37,7 @@ SRC_URI_append = " \
     file://1030-wifi-mt76-mt7915-Add-vendor-command-attribute-for-RT.patch \
     file://1031-wifi-mt76-mt7915-add-vendor-cmd-to-get-available-col.patch \
     file://110-wifi-mt76-ignore-key-disable-commands.patch \
+    file://1135-mt76-mt7915-disable-SW-ACI-by-default.patch \
     file://3000-wifi-mt76-mt7915-wed-add-wed-tx-support.patch \
     file://3001-wifi-mt76-mt7915-wed-add-wds-support-when-wed-is-ena.patch \
     file://3002-wifi-mt76-mt7915-wed-add-fill-receive-path-to-report.patch \
