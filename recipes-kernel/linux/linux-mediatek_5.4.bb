@@ -45,6 +45,11 @@ SRC_URI_append += " \
     file://rdkb_cfg/filogic_rdkb.cfg \
     ${@bb.utils.contains('DISTRO_FEATURES','emmc','file://rdkb_cfg/emmc.cfg','',d)} \
 "
+
+SRC_URI_append_mt7986 += " \
+    ${@bb.utils.contains('DISTRO_FEATURES','flow_offload','file://rdkb_cfg/bridge_netfilter.cfg','',d)} \
+"
+
 require ${PN}-${PV}/generic/backport-5.4/backport-5.4.inc
 
 require ${PN}-${PV}/generic/pending-5.4/pending-5.4.inc
