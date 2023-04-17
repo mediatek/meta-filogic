@@ -175,6 +175,7 @@ SRC_URI_append = " \
     file://417-v6.2-0002-mtd-core-try-to-find-OF-node-for-every-MTD-partition.patch \
     file://420-v6.2-mtd-parsers-add-TP-Link-SafeLoader-partitions-table-.patch \
     file://430-mtd-spinand-macronix-Add-support-for-MX31LF1GE4BC.patch \
+    file://430-v6.3-ubi-Fix-failure-attaching-when-vid_hdr-offset-equals.patch \
     file://431-mtd-spinand-macronix-Add-support-for-MX31UF1GE4BC.patch \
     file://432-mtd-spinand-macronix-Add-support-for-MX35LFxGE4AD.patch \
     file://433-mtd-spinand-macronix-Add-support-for-MX35LFxG24AD.patch \
