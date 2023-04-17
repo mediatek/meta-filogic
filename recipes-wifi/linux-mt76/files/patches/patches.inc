@@ -2,6 +2,9 @@
 SRC_URI_append = " \
     file://0001-wifi-mt76-mt7915-fix-background-radar-event-being-bl.patch \
     file://0002-wifi-mt76-mt7915-Update-beacon-size-limitation-for-1.patch \
+    file://0003-wifi-mt76-mt7915-disable-wfdma-tx-rx-during-SER-reco.patch \
+    file://0004-wifi-mt76-mt7915-fix-the-beamformer-issue.patch \
+    file://0005-wifi-mt76-fix-incorrect-HE-TX-GI-report.patch \
     file://0999-wifi-mt76-mt7915-build-pass-for-Linux-Kernel-5.4-fix.patch \
     file://100-api_update.patch \
     file://1000-wifi-mt76-mt7915-add-mtk-internal-debug-tools-for-mt.patch \
@@ -36,8 +39,8 @@ SRC_URI_append = " \
     file://1029-wifi-mt76-mt7915-add-support-for-he-ldpc-control-fro.patch \
     file://1030-wifi-mt76-mt7915-Add-vendor-command-attribute-for-RT.patch \
     file://1031-wifi-mt76-mt7915-add-vendor-cmd-to-get-available-col.patch \
+    file://1032-wifi-mt76-mt7915-disable-SW-ACI-by-default.patch \
     file://110-wifi-mt76-ignore-key-disable-commands.patch \
-    file://1135-mt76-mt7915-disable-SW-ACI-by-default.patch \
     file://3000-wifi-mt76-mt7915-wed-add-wed-tx-support.patch \
     file://3001-wifi-mt76-mt7915-wed-add-wds-support-when-wed-is-ena.patch \
     file://3002-wifi-mt76-mt7915-wed-add-fill-receive-path-to-report.patch \
@@ -50,6 +53,7 @@ SRC_URI_append = " \
     file://3009-wifi-mt76-mt7915-enable-PPDU-TxS-to-host-when-wed-en.patch \
     file://3010-wifi-mt76-mt7915-get-tx-retries-from-tx-free-done-ev.patch \
     file://3011-wifi-mt76-update-debugfs-knob-for-reset-counter-and-.patch \
-    file://3012-wifi-mt76-connac-wed-add-wed-rx-copy-skb.patch \
+    file://3012-wifi-mt76-mt7915-add-ctxd-support-for-mt7916.patch \
+    file://3013-wifi-mt76-connac-wed-add-wed-rx-copy-skb.patch \
     file://9999-mt76-revert-for-backports-5.15-wireless-stack.patch \
     "

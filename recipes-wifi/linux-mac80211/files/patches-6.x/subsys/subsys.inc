@@ -57,6 +57,7 @@ SRC_URI_append = " \
     file://mtk-0013-mac80211-mtk-fix-build-error-on-Linux-Kernel-5.4.patch \
     file://mtk-0014-mac80211-mtk-track-obss-color-bitmap.patch \
     file://mtk-0015-mac80211-mtk-ageout-color-bitmap.patch \
+    file://mtk-0016-mac80211-mtk-update-max_bssid_indicator-based-on-rea.patch \
     file://mtk-0100-mac80211-mtk-add-EHT-BA1024-support.patch \
     file://mtk-0101-mac80211-mtk-add-rate-duration-for-EHT-rate.patch \
     file://mtk-0103-mac80211-mtk-add-send-bar-on-addbarsp_handle.patch \
