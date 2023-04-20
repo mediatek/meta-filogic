@@ -60,7 +60,7 @@ create_hostapdConf() {
                 ifidx=$(($phyidx+$i*$radio_num))
                 ifname="$(cat /nvram/hostapd"$ifidx".conf | grep ^interface= | cut -d '=' -f2 | tr -d '\n')"
                 vapstat="$(cat /nvram/vap-status | grep wifi"$ifidx"= | cut -d'=' -f2)"
-                if [ -n $ifname ] && [ $vapstat -eq "1" ]; then
+                if [ -n $ifname ] && [[ $vapstat -eq "1" ]]; then
                     if [ $i = 0 ]; then
                         ## first interface in this phy
                         iw phy phy$phyidx interface add $ifname type __ap > /dev/null
