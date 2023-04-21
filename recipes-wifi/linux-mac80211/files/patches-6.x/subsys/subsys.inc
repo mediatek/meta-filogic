@@ -12,8 +12,6 @@ SRC_URI_append = " \
     file://306-02-v6.2-wifi-mac80211-add-wake_tx_queue-callback-to-drivers.patch \
     file://306-03-v6.2-wifi-mac80211-Drop-support-for-TX-push-path.patch \
     file://306-04-v6.2-wifi-realtek-remove-duplicated-wake_tx_queue.patch \
-    file://307-v6.2-wifi-mac80211-fix-initialization-of-rx-link-and-rx-l.patch \
-    file://308-v6.2-wifi-mac80211-fix-MLO-AP_VLAN-check.patch \
     file://310-v6.2-mac80211-add-support-for-restricting-netdev-features.patch \
     file://311-v6.2-wifi-mac80211-fix-and-simplify-unencrypted-drop-chec.patch \
     file://312-v6.3-wifi-cfg80211-move-A-MSDU-check-in-ieee80211_data_to.patch \
@@ -21,7 +19,6 @@ SRC_URI_append = " \
     file://314-v6.3-wifi-mac80211-remove-mesh-forwarding-congestion-chec.patch \
     file://315-v6.3-wifi-mac80211-fix-receiving-A-MSDU-frames-on-mesh-in.patch \
     file://316-v6.3-wifi-mac80211-add-a-workaround-for-receiving-non-sta.patch \
-    file://317-wifi-mac80211-fix-qos-on-mesh-interfaces.patch \
     file://318-wifi-mac80211-fix-race-in-mesh-sequence-number-assig.patch \
     file://319-wifi-mac80211-mesh-fast-xmit-support.patch \
     file://320-wifi-mac80211-use-mesh-header-cache-to-speed-up-mesh.patch \
@@ -32,32 +29,39 @@ SRC_URI_append = " \
     file://325-wifi-mac80211-introduce-ieee80211_refresh_tx_agg_ses.patch \
     file://326-wifi-mac80211-add-mesh-fast-rx-support.patch \
     file://327-wifi-mac80211-add-support-for-letting-drivers-regist.patch \
-    file://328-wifi-mac80211-fix-invalid-drv_sta_pre_rcu_remove-cal.patch \
     file://329-wifi-mac80211-fix-receiving-mesh-packets-in-forwardi.patch \
     file://330-wifi-ieee80211-correctly-mark-FTM-frames-non-buffera.patch \
     file://331-wifi-mac80211-flush-queues-on-STA-removal.patch \
     file://332-wifi-iwlwifi-mvm-support-flush-on-AP-interfaces.patch \
     file://333-wifi-mac80211-add-flush_sta-method.patch \
     file://334-wifi-iwlwifi-mvm-support-new-flush_sta-method.patch \
+    file://335-wifi-mac80211-add-LDPC-related-flags-in-ieee80211_bs.patch \
     file://400-allow-ibss-mixed.patch \
     file://500-mac80211_configure_antenna_gain.patch \
     file://782-net-next-1-of-net-pass-the-dst-buffer-to-of_get_mac_address.patch \
-    file://mtk-0001-mac80211-support-minimal-EHT-rate-reporting-on-RX.patch \
-    file://mtk-0002-wifi-mac80211-make-rate-u32-in-sta_set_rate_info_rx.patch \
-    file://mtk-0003-mac80211-mtk-do-not-setup-twt-when-twt-responder-is-.patch \
-    file://mtk-0004-nl80211-mtk-extend-CAC-time-for-weather-radar-channe.patch \
-    file://mtk-0005-mac80211-mtk-it-s-invalid-case-when-frag_threshold-i.patch \
-    file://mtk-0006-mac80211-mtk-airtime_flags-depends-on-NL80211_EXT_FE.patch \
-    file://mtk-0007-mac80211-mtk-add-support-for-runtime-set-inband-disc.patch \
-    file://mtk-0008-cfg80211-mtk-implement-DFS-status-show-cac-and-nop-s.patch \
-    file://mtk-0009-mac80211-mtk-Set-TWT-Information-Frame-Disabled-bit-.patch \
-    file://mtk-0010-mac80211-mtk-check-the-control-channel-before-downgr.patch \
-    file://mtk-0011-mac80211-mtk-fix-tx-amsdu-aggregation.patch \
-    file://mtk-0012-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-id.patch \
-    file://mtk-0013-mac80211-mtk-fix-build-error-on-Linux-Kernel-5.4.patch \
-    file://mtk-0014-mac80211-mtk-track-obss-color-bitmap.patch \
-    file://mtk-0015-mac80211-mtk-ageout-color-bitmap.patch \
-    file://mtk-0016-mac80211-mtk-update-max_bssid_indicator-based-on-rea.patch \
+    file://bp-0001-Revert-mac80211_configure_antenna_gain.patch \
+    file://bp-0002-mac80211-support-minimal-EHT-rate-reporting-on-RX.patch \
+    file://bp-0003-cfg80211-Update-Transition-Disable-policy-during-por.patch \
+    file://bp-0004-wifi-mac80211-mlme-handle-EHT-channel-puncturing.patch \
+    file://bp-0005-wifi-cfg80211-move-puncturing-bitmap-validation-from.patch \
+    file://bp-0006-wifi-nl80211-validate-and-configure-puncturing-bitma.patch \
+    file://bp-0007-wifi-cfg80211-include-puncturing-bitmap-in-channel-s.patch \
+    file://bp-0008-wifi-mac80211-configure-puncturing-bitmap.patch \
+    file://bp-0009-wifi-mac80211-add-EHT-MU-MIMO-related-flags-in-ieee8.patch \
+    file://mtk-0001-mac80211-mtk-do-not-setup-twt-when-twt-responder-is-.patch \
+    file://mtk-0002-nl80211-mtk-extend-CAC-time-for-weather-radar-channe.patch \
+    file://mtk-0003-mac80211-mtk-it-s-invalid-case-when-frag_threshold-i.patch \
+    file://mtk-0004-mac80211-mtk-airtime_flags-depends-on-NL80211_EXT_FE.patch \
+    file://mtk-0005-mac80211-mtk-add-support-for-runtime-set-inband-disc.patch \
+    file://mtk-0006-cfg80211-mtk-implement-DFS-status-show-cac-and-nop-s.patch \
+    file://mtk-0007-mac80211-mtk-Set-TWT-Information-Frame-Disabled-bit-.patch \
+    file://mtk-0008-mac80211-mtk-check-the-control-channel-before-downgr.patch \
+    file://mtk-0009-mac80211-mtk-fix-tx-amsdu-aggregation.patch \
+    file://mtk-0010-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-id.patch \
+    file://mtk-0011-mac80211-mtk-fix-build-error-on-Linux-Kernel-5.4.patch \
+    file://mtk-0012-mac80211-mtk-track-obss-color-bitmap.patch \
+    file://mtk-0013-mac80211-mtk-ageout-color-bitmap.patch \
+    file://mtk-0014-mac80211-mtk-update-max_bssid_indicator-based-on-rea.patch \
     file://mtk-0100-mac80211-mtk-add-EHT-BA1024-support.patch \
     file://mtk-0101-mac80211-mtk-add-rate-duration-for-EHT-rate.patch \
     file://mtk-0103-mac80211-mtk-add-send-bar-on-addbarsp_handle.patch \

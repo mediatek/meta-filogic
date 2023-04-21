@@ -6,14 +6,14 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 inherit module
 
-PV = "6.1-rc8"
+PV = "6.1.24"
 
 SRC_URI = " \
     http://mirror2.openwrt.org/sources/backports-${PV}.tar.xz \
     file://config \
     file://0001-rdkb-fix_build_issue-mac80211-without_depmod.patch;apply=no \
     "
-SRC_URI[sha256sum] = "7f3d96c2573183cd79d6a3ebe5e1b7b73c19d1326d443c85b69c4181f14e6e2b"
+SRC_URI[sha256sum] = "5d39aca7e34c33cb9b3e366117b2e86841b7bdd37933679d6b1e61be6b150648"
 
 DEPENDS += "virtual/kernel"
 DEPENDS += "bison-native coreutils-native flex-native"

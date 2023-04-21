@@ -97,8 +97,9 @@ do_install_append () {
 do_install_append_mt7988 () {
     install -d ${D}/${base_libdir}/firmware/mediatek/
 
-    install -m 644 ${WORKDIR}/src/firmware/mt7986_wo_0.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7986_wo_1.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${WORKDIR}/src/firmware/mtk_wo_0.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${WORKDIR}/src/firmware/mtk_wo_1.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${WORKDIR}/src/firmware/mtk_wo_2.bin ${D}${base_libdir}/firmware/mediatek/
 }
 
 FILES_${PN} += "${base_libdir}/firmware/mediatek/*"
