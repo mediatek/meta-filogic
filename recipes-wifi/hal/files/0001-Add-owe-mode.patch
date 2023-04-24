@@ -17,7 +17,7 @@ index 9eebe10..15c24f9 100644
      wifi_security_mode_wpa3_transition = 0x00000400,
 -    wifi_security_mode_wpa3_enterprise = 0x00000800
 +    wifi_security_mode_wpa3_enterprise = 0x00000800,
-+    wifi_security_mode_owe = 0x00001000
++    wifi_security_mode_enhanced_open = 0x00001000
  } wifi_security_modes_t;
  
  typedef struct {

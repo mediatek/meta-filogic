@@ -268,7 +268,7 @@ void set_encryption(wifi_intf_param *intf_param, char *encryption_mode)
     }else if(strcmp(encryption_mode, "sae-mixed") == 0){
         intf_param->security.mode = wifi_security_mode_wpa3_transition;
     }else if(strcmp(encryption_mode, "owe") == 0){
-        intf_param->security.mode = wifi_security_mode_owe;
+        intf_param->security.mode = wifi_security_mode_enhanced_open;
     }
 
     if(strstr(encryption_mode, "tkip") && (strstr(encryption_mode, "ccmp") || strstr(encryption_mode, "aes") )){
@@ -493,7 +493,7 @@ void set_ap_param(wifi_intf_param ap_param , wifi_vap_info_map_t *map)
     // interface
     if (strlen(ap_param.ifname) != 0) {
         strncpy(vap_info.vap_name, ap_param.ifname, 16);
-        vap_info.vap_name[15] = "\0";
+        vap_info.vap_name[15] = '\0';
     }
 
     // Security
@@ -604,7 +604,7 @@ void set_sta_param(wifi_intf_param sta_param)
         strcpy(key_mgmt, "NONE");
     else if (sta_param.security.mode == wifi_security_mode_wpa3_personal)
         strcpy(key_mgmt, "SAE");
-    else if (sta_param.security.mode == wifi_security_mode_owe)
+    else if (sta_param.security.mode == wifi_security_mode_enhanced_open)
         strcpy(key_mgmt, "OWE");
     else
         strcpy(key_mgmt, "WPA-PSK");
