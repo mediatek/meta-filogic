@@ -68,7 +68,9 @@ create_hostapdConf() {
                     touch /nvram/hostapd-acl$ifidx
                     touch /nvram/hostapd$ifidx.psk
                     touch /nvram/hostapd-deny$ifidx
-                    touch /tmp/$dev-wifi$ifidx
+                    if [ $phyidx = $ifidx ]; then
+                        touch /tmp/$dev-wifi$ifidx
+                    fi
                     hostapd_cli -i global raw ADD bss_config=$dev:/nvram/hostapd"$ifidx".conf
 		fi
 	    done
