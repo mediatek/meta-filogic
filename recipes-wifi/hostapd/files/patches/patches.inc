@@ -88,5 +88,6 @@ SRC_URI_append = " \
     file://mtk-0024-hostapd-mtk-Add-support-for-masking-EHT-capabilities.patch \
     file://mtk-0025-hostapd-mtk-Fix-ZWDFS-issue-in-BW-160.patch \
     file://mtk-0026-hostapd-mtk-Add-vendor-for-CAPI-certification-comman.patch \
+    file://mtk-0027-hostapd-mtk-Add-support-for-air-monitor-from-vendor-NL.patch \
     file://mtk-0027-hostapd-mtk-Fix-scan-result-updating-issue.patch \
     "
