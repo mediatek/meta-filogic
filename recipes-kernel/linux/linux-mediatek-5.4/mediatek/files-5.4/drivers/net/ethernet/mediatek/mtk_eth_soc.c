@@ -1096,7 +1096,7 @@ static int mtk_mdc_init(struct mtk_eth *eth)
 {
 	struct device_node *mii_np;
 	int max_clk = 2500000, divider;
-	int ret;
+	int ret = 0;
 	u32 val;
 
 	mii_np = of_get_child_by_name(eth->dev->of_node, "mdio-bus");
@@ -3959,8 +3959,20 @@ static void mtk_pending_work(struct work_struct *work)
 				eth->netdev[i]);
 		}
 		rtnl_unlock();
-		if (!wait_for_completion_timeout(&wait_ser_done, 3000))
+		if (!wait_for_completion_timeout(&wait_ser_done, 3000)) {
+			if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V3) &&
+				(mtk_stop_fail)) {
+				pr_info("send MTK_FE_START_RESET stop\n");
+				rtnl_lock();
+				call_netdevice_notifiers(MTK_FE_START_RESET,
+					eth->netdev[i]);
+				rtnl_unlock();
+				if (!wait_for_completion_timeout(&wait_ser_done,
+					3000))
+					pr_warn("wait for MTK_FE_START_RESET\n");
+				}
 			pr_warn("wait for MTK_FE_START_RESET\n");
+		}
 		rtnl_lock();
 		break;
 	}
