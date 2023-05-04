@@ -224,6 +224,14 @@ void set_rts(wifi_radio_param *radio_param, char *rts)
     radio_param->rtsThreshold = strtol(rts, NULL, 10);
 }
 
+void set_background_radar(wifi_radio_param *radio_param, char *enable)
+{
+    if (strcmp(enable, "1") == 0)
+        radio_param->background_radar = TRUE;
+    else
+        radio_param->background_radar = FALSE;
+}
+
 void set_radionum(wifi_intf_param *intf_param, char *phy_name)
 {
     int radio_num = 0;
@@ -447,6 +455,13 @@ void set_radio_param(wifi_radio_param radio_parameter)
     }
     ret = 0;
 
+    // background_radar (Zero-Wait DFS)
+    fprintf(stderr, "Set background_radar(Zero-Wait DFS): %d\n", radio_parameter.background_radar);
+    ret = wifi_setZeroDFSState(radio_parameter.radio_index, radio_parameter.background_radar, TRUE);
+    if (ret != RETURN_OK)
+        fprintf(stderr, "[Set background_radar failed!!!]\n");
+    ret = 0;
+
 }
 
 void set_ap_param(wifi_intf_param ap_param , wifi_vap_info_map_t *map)
@@ -641,6 +656,85 @@ void set_sta_param(wifi_intf_param sta_param)
     }
 }
 
+void show_radio_param(wifi_radio_param radio_parameter)
+{
+    int ret = 0;
+    BOOL radio_enable = FALSE;
+    BOOL auto_channel_state = FALSE;
+    BOOL DFS_state = FALSE;
+    BOOL ZeroDFS_state = FALSE;
+    BOOL precac_state = FALSE;
+    BOOL AMSDU_state = FALSE;
+    BOOL Wmm_state = FALSE;
+    char RadioRates[128] = "";
+    UINT array_size = 128;
+    wifi_channelStats_t channelStats_array[128] = {0};
+
+    // radio
+    if(radio_parameter.radio_index == -1)
+        return;
+
+    wifi_getRadioEnable(radio_parameter.radio_index, &radio_enable);
+    if (radio_enable == FALSE)
+        return;
+
+    // RadioRates
+    ret = wifi_getRadioOperationalDataTransmitRates(radio_parameter.radio_index, RadioRates);
+    if (ret != RETURN_OK)
+        fprintf(stderr, "[Get Radio Operational Data Transmit Rates failed!!!]\n");
+    else
+        printf("radio%d Operational Data Transmit Rates: %s\n", radio_parameter.radio_index, RadioRates);
+    ret = 0;
+
+    // DFS
+    ret = wifi_getRadioDfsEnable(radio_parameter.radio_index, &DFS_state);
+    if (ret != RETURN_OK)
+        fprintf(stderr, "[Get Radio DFS state failed!!!]\n");
+    else
+        printf("radio%d DFS state: %d\n", radio_parameter.radio_index, DFS_state);
+    ret = 0;
+
+    ret = wifi_getZeroDFSState(radio_parameter.radio_index, &ZeroDFS_state, &precac_state);
+    if (ret != RETURN_OK)
+        fprintf(stderr, "[Get Radio ZeroDFS state failed!!!]\n");
+    else
+        printf("radio%d ZeroDFS state: %d, precac_state:%d\n", radio_parameter.radio_index, ZeroDFS_state, precac_state);
+    ret = 0;
+
+    // AMSDU
+    ret = wifi_getRadioAMSDUEnable(radio_parameter.radio_index, &AMSDU_state);
+    if (ret != RETURN_OK)
+        fprintf(stderr, "[Get Radio AMSDU state failed!!!]\n");
+    else
+        printf("radio%d AMSDU state: %d\n", radio_parameter.radio_index, AMSDU_state);
+    ret = 0;
+
+    // Wmm
+    ret = wifi_getApWmmUapsdEnable(radio_parameter.radio_index, &Wmm_state);
+    if (ret != RETURN_OK)
+        fprintf(stderr, "[Get Radio Wmm state failed!!!]\n");
+    else
+        printf("radio%d Wmm state: %d\n", radio_parameter.radio_index, Wmm_state);
+    ret = 0;
+
+    // channel
+    ret = wifi_getRadioChannelStats(radio_parameter.radio_index, channelStats_array, array_size);
+    if (ret != RETURN_OK)
+        fprintf(stderr, "[Get igmpsn_state failed!!!]\n");
+    else
+        printf("radio%d ch_number: %d\n", radio_parameter.radio_index, channelStats_array[0].ch_number);
+    ret = 0;
+
+    // auto_channel_state
+    ret = wifi_getRadioAutoChannelEnable(radio_parameter.radio_index, &auto_channel_state);
+    if (ret != RETURN_OK)
+        fprintf(stderr, "[Get auto_channel_state failed!!!]\n");
+    else
+        printf("radio%d auto_channel_state: %d\n", radio_parameter.radio_index, auto_channel_state);
+    ret = 0;
+
+}
+
 void show_ap_param(wifi_intf_param ap_param , wifi_vap_info_map_t *map)
 {
     int ret = 0;
@@ -653,6 +747,9 @@ void show_ap_param(wifi_intf_param ap_param , wifi_vap_info_map_t *map)
     BOOL igmpsn_state = FALSE;
     UINT buf_size = 1024;
     char macArray[1024] = "";
+    char RadiusIP[64] = "";
+    char RadiusSecret[64] = "";
+    UINT RadiusPort = 0;
 
     if(ap_param.radio_index == -1)
         return;
@@ -676,6 +773,17 @@ void show_ap_param(wifi_intf_param ap_param , wifi_vap_info_map_t *map)
 
     // SSID
     printf("wifi%d ssid: %s\n", ap_param.ap_index, vap_info.u.bss_info.ssid);
+
+    // SecurityRadiusServer
+    ret = wifi_getApSecurityRadiusServer(ap_param.radio_index, RadiusIP, &RadiusPort, RadiusSecret);
+    if (ret != RETURN_OK)
+        fprintf(stderr, "[Get Security Radius Server failed!!!]\n");
+    else{
+        printf("wifi%d Security Radius Server IP: %s\n", ap_param.ap_index, RadiusIP);
+        printf("wifi%d Security Radius Server Port: %d\n", ap_param.ap_index, RadiusPort);
+        printf("wifi%d Security Radius Server Secret: %s\n", ap_param.ap_index, RadiusSecret);
+    }
+    ret = 0;
 
     // igmpsn_enable
     ret = wifi_getRadioIGMPSnoopingEnable(ap_param.radio_index, &igmpsn_state);
@@ -808,9 +916,11 @@ int apply_uci_config ()
                     set_htcoex(&radio_param, op->v.string);
                 else if (strcmp(op->e.name, "rts") == 0)
                     set_rts(&radio_param, op->v.string);
+                else if (strcmp(op->e.name, "background_radar") == 0)
+                    set_background_radar(&radio_param, op->v.string);
                 else
                     fprintf(stderr, "[%s %s not set!]\n", op->e.name, op->v.string);
-            } else {        
+            } else {
                 // parsing iface
                 if (strcmp(op->e.name, "device") == 0){
                     set_radionum(&intf_param, op->v.string);
@@ -1030,9 +1140,10 @@ int dump_wifi_status ()
                 }
             }
         }
-        if (parsing_radio == TRUE)
+        if (parsing_radio == TRUE){
             printf("show radio params: \n");
-           // show_radio_param(radio_param);
+            show_radio_param(radio_param);
+        }
         else if (intf_param.sta_mode == TRUE)
             printf("show sta params: \n");
           //  show_sta_param(intf_param);

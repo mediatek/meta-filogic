@@ -45,6 +45,7 @@ typedef struct {
     char noscan[2];
     unsigned int rtsThreshold;
     BOOL ht_coex;
+    BOOL background_radar;
 } wifi_radio_param;
 
 typedef struct {
