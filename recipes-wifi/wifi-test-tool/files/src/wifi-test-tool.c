@@ -440,15 +440,17 @@ void set_radio_param(wifi_radio_param radio_parameter)
     ret = 0;
 
     // hwmode
-    fprintf(stderr, "Set hwmode: %s\n", radio_parameter.hwmode);
-    ret = wifi_setRadioHwMode(radio_parameter.radio_index, radio_parameter.hwmode);
-    if (ret != RETURN_OK)
-        fprintf(stderr, "[Set hwmode failed!!!]\n");
+    if (strlen(radio_parameter.hwmode) > 0) {
+        fprintf(stderr, "Set hwmode: %s\n", radio_parameter.hwmode);
+        ret = wifi_setRadioHwMode(radio_parameter.radio_index, radio_parameter.hwmode);
+        if (ret != RETURN_OK)
+            fprintf(stderr, "[Set hwmode failed!!!]\n");
+    }
     ret = 0;
 
     // noscan
-    fprintf(stderr, "Set noscan: %s \n", radio_parameter.noscan);
-    if(strlen(radio_parameter.noscan)){
+    if(strlen(radio_parameter.noscan) > 0) {
+        fprintf(stderr, "Set noscan: %s \n", radio_parameter.noscan);
         ret = wifi_setNoscan(radio_parameter.radio_index, radio_parameter.noscan);
         if (ret != RETURN_OK)
             fprintf(stderr, "[Set noscan failed!!!]\n");
@@ -535,16 +537,6 @@ void set_ap_param(wifi_intf_param ap_param , wifi_vap_info_map_t *map)
     // igmpsn_enable
     vap_info.u.bss_info.mcast2ucast = ap_param.igmpsn_enable;
     fprintf(stderr, "Set igmpsn_enable: %d \n", ap_param.igmpsn_enable);
-
-    // wps_state
-    fprintf(stderr, "Set wps_state: %d \n", ap_param.wps_state);
-    if (ap_param.wps_state == 2)
-        ret = wifi_setApWpsEnable(ap_param.ap_index, 1);
-    else
-        ret = wifi_setApWpsEnable(ap_param.ap_index, 0);
-    if (ret != RETURN_OK)
-        fprintf(stderr, "[Set wps_state failed!!!]\n");
-    ret = 0;
 
     // macfilter
     fprintf(stderr, "Set macfilter: %s \n", ap_param.macfilter);
@@ -918,6 +910,8 @@ int apply_uci_config ()
                     set_rts(&radio_param, op->v.string);
                 else if (strcmp(op->e.name, "background_radar") == 0)
                     set_background_radar(&radio_param, op->v.string);
+                else if (strcmp(op->e.name, "type") == 0 || strcmp(op->e.name, "path") == 0)
+                    continue;
                 else
                     fprintf(stderr, "[%s %s not set!]\n", op->e.name, op->v.string);
             } else {
@@ -951,12 +945,12 @@ int apply_uci_config ()
                     set_hidden(&intf_param, op->v.string);
                 }else if (strcmp(op->e.name, "igmpsn_enable") == 0){
                     set_igmpsn_enable(&intf_param, op->v.string);
-                }else if (strcmp(op->e.name, "wps_state") == 0){
-                    set_wps_state(&intf_param, op->v.string);
                 }else if (strcmp(op->e.name, "macfilter") == 0){
                     set_macfilter(&intf_param, op->v.string);
                 }else if (strcmp(op->e.name, "maclist") == 0){
                     set_maclist(&intf_param, op->v.string);
+                }else if (strcmp(op->e.name, "wps_state") == 0){
+                    continue;
                 }else{
                     fprintf(stderr, "[%s %s not set!]\n", op->e.name, op->v.string);
                 }
@@ -1032,6 +1026,8 @@ int apply_uci_config ()
                             apCount[intf_param.radio_index] ++ ;
                             fprintf(stderr, "\n----- Start parsing ap %d config. -----\n", intf_param.ap_index);
                         }
+                    }else if (strcmp(op->e.name, "wps_state") == 0){
+                        set_wps_state(&intf_param, op->v.string);
                     }else if (strcmp(op->e.name, "wps_cancel") == 0){
                         set_wps_cancel(&intf_param, op->v.string);
                     }else if (strcmp(op->e.name, "wps_pushbutton") == 0){
@@ -1040,9 +1036,19 @@ int apply_uci_config ()
                 }
             }
 
+            // wps_state
+            fprintf(stderr, "Set wps_state: %d \n", intf_param.wps_state);
+            if (intf_param.wps_state == 2)
+                ret = wifi_setApWpsEnable(intf_param.ap_index, 1);
+            else
+                ret = wifi_setApWpsEnable(intf_param.ap_index, 0);
+            if (ret != RETURN_OK)
+                fprintf(stderr, "[Set wps_state failed!!!]\n");
+            ret = 0;
+
             // wps_cancel
-            fprintf(stderr, "Set wps_cancel: %d \n", intf_param.wps_cancel);
             if (intf_param.wps_cancel){
+                fprintf(stderr, "Set wps_cancel: %d \n", intf_param.wps_cancel);
                 ret = wifi_cancelApWPS(intf_param.ap_index);
                 if (ret != RETURN_OK)
                     fprintf(stderr, "[Set wps_cancel failed!!!]\n");
@@ -1050,8 +1056,8 @@ int apply_uci_config ()
             }
 
             // wps_pushbutton
-            fprintf(stderr, "Set wps_pushbutton: %d \n", intf_param.wps_pushbutton);
             if (intf_param.wps_pushbutton){
+                fprintf(stderr, "Set wps_pushbutton: %d \n", intf_param.wps_pushbutton);
                 ret = wifi_setApWpsButtonPush(intf_param.ap_index);
                 if (ret != RETURN_OK)
                     fprintf(stderr, "[Set wps_pushbutton failed!!!]\n");
