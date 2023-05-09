@@ -127,22 +127,6 @@ index 2d0a2793..6e7c47e0 100644
  	mtketh-max-gmac = <3>;
  	status = "okay";
  };
-diff --git a/arch/arm64/boot/dts/mediatek/mt7988c-dsa-i2p5g-spim-nand.dts b/arch/arm64/boot/dts/mediatek/mt7988c-dsa-i2p5g-spim-nand.dts
-index a8e8f9a6..4c51d639 100644
---- a/arch/arm64/boot/dts/mediatek/mt7988c-dsa-i2p5g-spim-nand.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt7988c-dsa-i2p5g-spim-nand.dts
-@@ -314,9 +314,9 @@
- };
- 
- &hnat {
--	mtketh-wan = "eth1";
-+	mtketh-wan = "erouter0";
- 	mtketh-lan = "lan";
--	mtketh-lan2 = "eth2";
-+	mtketh-lan2 = "eth3";
- 	mtketh-max-gmac = <3>;
- 	status = "okay";
- };
 diff --git a/arch/arm64/boot/dts/mediatek/mt7988c-gsw-10g-spim-nand.dts b/arch/arm64/boot/dts/mediatek/mt7988c-gsw-10g-spim-nand.dts
 index e10e1e21..f2745594 100644
 --- a/arch/arm64/boot/dts/mediatek/mt7988c-gsw-10g-spim-nand.dts
