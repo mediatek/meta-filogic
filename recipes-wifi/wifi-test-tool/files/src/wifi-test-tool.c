@@ -187,14 +187,6 @@ void set_wps_state(wifi_intf_param *intf_param, char *wps_state)
     intf_param->wps_state = strtol(wps_state, NULL, 10);
 }
 
-void set_wps_cancel(wifi_intf_param *intf_param, char *enable)
-{
-    if (strcmp(enable, "1") == 0)
-        intf_param->wps_cancel = TRUE;
-    else
-        intf_param->wps_cancel = FALSE;
-}
-
 void set_wps_pushbutton(wifi_intf_param *intf_param, char *enable)
 {
     if (strcmp(enable, "1") == 0)
@@ -538,16 +530,27 @@ void set_ap_param(wifi_intf_param ap_param , wifi_vap_info_map_t *map)
     vap_info.u.bss_info.mcast2ucast = ap_param.igmpsn_enable;
     fprintf(stderr, "Set igmpsn_enable: %d \n", ap_param.igmpsn_enable);
 
+    // wps_state
+    fprintf(stderr, "Set wps_state: %d \n", ap_param.wps_state);
+    if (ap_param.wps_state == 2)
+        vap_info.u.bss_info.wps.enable = TRUE;
+    else
+        vap_info.u.bss_info.wps.enable = FALSE;
+
+    // wps_pushbutton
+    if (ap_param.wps_pushbutton)
+        vap_info.u.bss_info.wps.methods |= WIFI_ONBOARDINGMETHODS_PUSHBUTTON;
+
     // macfilter
     fprintf(stderr, "Set macfilter: %s \n", ap_param.macfilter);
     if ((strcmp(ap_param.macfilter, "disable") == 0)  || (strcmp(ap_param.macfilter, "\0") == 0) )
-        vap_info.u.bss_info.mac_filter_enable = false;
+        vap_info.u.bss_info.mac_filter_enable = FALSE;
     else if (strcmp(ap_param.macfilter, "deny") == 0){
-        vap_info.u.bss_info.mac_filter_enable = true;
+        vap_info.u.bss_info.mac_filter_enable = TRUE;
         vap_info.u.bss_info.mac_filter_mode = wifi_mac_filter_mode_black_list;
         }
     else if (strcmp(ap_param.macfilter, "allow") == 0){
-        vap_info.u.bss_info.mac_filter_enable = true;
+        vap_info.u.bss_info.mac_filter_enable = TRUE;
         vap_info.u.bss_info.mac_filter_mode = wifi_mac_filter_mode_white_list;
         }
     else
@@ -950,7 +953,9 @@ int apply_uci_config ()
                 }else if (strcmp(op->e.name, "maclist") == 0){
                     set_maclist(&intf_param, op->v.string);
                 }else if (strcmp(op->e.name, "wps_state") == 0){
-                    continue;
+                    set_wps_state(&intf_param, op->v.string);
+                }else if (strcmp(op->e.name, "wps_pushbutton") == 0){
+                    set_wps_pushbutton(&intf_param, op->v.string);
                 }else{
                     fprintf(stderr, "[%s %s not set!]\n", op->e.name, op->v.string);
                 }
@@ -989,82 +994,6 @@ int apply_uci_config ()
         if (ret != RETURN_OK)
             fprintf(stderr, "[Apply vap setting failed!!!]\n");
     }
-
-    for (i = 0; i < 3 ;i++ ){
-        apCount[i] = 0;
-        staCount[i] = 0;
-    }
-
-    uci_foreach_element(&uci_pkg->sections, e) {
-
-        struct uci_section *s = uci_to_section(e);
-        struct uci_element *option = NULL;
-        wifi_radio_param radio_param = {0};
-        wifi_intf_param intf_param = {0};
-        int phyId = 0;
-        radio_param.radio_index = -1;
-        intf_param.ap_index = -1;
-
-        if (strcmp(s->type, "wifi-iface") == 0) {
-            uci_foreach_element(&s->options, option) {
-
-                struct uci_option *op = uci_to_option(option);
-                {
-                    // parsing iface
-                    if (strcmp(op->e.name, "device") == 0){
-                        set_radionum(&intf_param, op->v.string);
-                    }else if (strcmp(op->e.name, "mode") == 0){
-                        intf_param.mac_offset = staCount[intf_param.radio_index] + apCount[intf_param.radio_index];
-                        if (strncmp(op->v.string, "sta", 3) == 0) {
-                            intf_param.sta_mode = TRUE;
-                            intf_param.sta_index = intf_param.radio_index + staCount[intf_param.radio_index]*max_radio_num;
-                            staCount[intf_param.radio_index] ++ ;
-                            fprintf(stderr, "\n----- Start parsing sta %d config. -----\n", intf_param.sta_index);
-                        } else if (strncmp(op->v.string, "ap", 2) == 0) {
-                            intf_param.sta_mode = FALSE;
-                            intf_param.ap_index = intf_param.radio_index + apCount[intf_param.radio_index]*max_radio_num;
-                            apCount[intf_param.radio_index] ++ ;
-                            fprintf(stderr, "\n----- Start parsing ap %d config. -----\n", intf_param.ap_index);
-                        }
-                    }else if (strcmp(op->e.name, "wps_state") == 0){
-                        set_wps_state(&intf_param, op->v.string);
-                    }else if (strcmp(op->e.name, "wps_cancel") == 0){
-                        set_wps_cancel(&intf_param, op->v.string);
-                    }else if (strcmp(op->e.name, "wps_pushbutton") == 0){
-                        set_wps_pushbutton(&intf_param, op->v.string);
-                    }
-                }
-            }
-
-            // wps_state
-            fprintf(stderr, "Set wps_state: %d \n", intf_param.wps_state);
-            if (intf_param.wps_state == 2)
-                ret = wifi_setApWpsEnable(intf_param.ap_index, 1);
-            else
-                ret = wifi_setApWpsEnable(intf_param.ap_index, 0);
-            if (ret != RETURN_OK)
-                fprintf(stderr, "[Set wps_state failed!!!]\n");
-            ret = 0;
-
-            // wps_cancel
-            if (intf_param.wps_cancel){
-                fprintf(stderr, "Set wps_cancel: %d \n", intf_param.wps_cancel);
-                ret = wifi_cancelApWPS(intf_param.ap_index);
-                if (ret != RETURN_OK)
-                    fprintf(stderr, "[Set wps_cancel failed!!!]\n");
-                ret = 0;
-            }
-
-            // wps_pushbutton
-            if (intf_param.wps_pushbutton){
-                fprintf(stderr, "Set wps_pushbutton: %d \n", intf_param.wps_pushbutton);
-                ret = wifi_setApWpsButtonPush(intf_param.ap_index);
-                if (ret != RETURN_OK)
-                    fprintf(stderr, "[Set wps_pushbutton failed!!!]\n");
-                ret = 0;
-           }
-        }
-   }
 
     uci_unload(uci_ctx, uci_pkg);
     uci_free_context(uci_ctx);
