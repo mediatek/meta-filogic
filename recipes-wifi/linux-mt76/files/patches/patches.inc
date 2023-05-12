@@ -41,6 +41,7 @@ SRC_URI_append = " \
     file://1031-wifi-mt76-mt7915-add-vendor-cmd-to-get-available-col.patch \
     file://1032-wifi-mt76-mt7915-disable-SW-ACI-by-default.patch \
     file://1033-wifi-mt76-mt7915-Add-5G-UNII4-support.patch \
+    file://1034-wifi-mt76-mt7915-add-muru-user-number-debug-command.patch \
     file://110-wifi-mt76-ignore-key-disable-commands.patch \
     file://3000-wifi-mt76-mt7915-wed-add-wed-tx-support.patch \
     file://3001-wifi-mt76-mt7915-wed-add-wds-support-when-wed-is-ena.patch \

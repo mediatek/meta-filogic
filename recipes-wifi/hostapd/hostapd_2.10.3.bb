@@ -12,7 +12,7 @@ RDEPENDS_${PN} += "gawk"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches-${PV}:"
 
-SRCREV ?= "b704dc72ef824dfdd96674b90179b274d1d38105"
+SRCREV ?= "bb945b98fefc64887dffb40773a19d77585cee42"
 SRC_URI = " \
     git://w1.fi/hostap.git;protocol=https;branch=main \
     file://hostapd-full.config \

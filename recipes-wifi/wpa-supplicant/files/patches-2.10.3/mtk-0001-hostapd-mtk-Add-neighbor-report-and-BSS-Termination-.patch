@@ -1,7 +1,7 @@
-From 6e4d4d6feafd223615cddf334b6c3beb6e5191cc Mon Sep 17 00:00:00 2001
+From cb7b7459ac276c5713dae22b8fe19365c2895de1 Mon Sep 17 00:00:00 2001
 From: "howard.hsu" <howard-yh.hsu@mediatek.com>
 Date: Wed, 19 Jan 2022 19:18:07 +0800
-Subject: [PATCH 01/29] hostapd: mtk: Add neighbor report and BSS Termination
+Subject: [PATCH 01/28] hostapd: mtk: Add neighbor report and BSS Termination
  for MBO certification
 
 1. Add hostapd_neighbor_count() and hostapd_neighbor_insert_buffer ()
@@ -32,10 +32,10 @@ function will not ask to delete key as set_disassoc_timer() did.
  9 files changed, 252 insertions(+), 5 deletions(-)
 
 diff --git a/hostapd/ctrl_iface.c b/hostapd/ctrl_iface.c
-index a258492..c2a2822 100644
+index a0e4ecd..0355e8b 100644
 --- a/hostapd/ctrl_iface.c
 +++ b/hostapd/ctrl_iface.c
-@@ -1338,6 +1338,11 @@ static int hostapd_ctrl_iface_set(struct hostapd_data *hapd, char *cmd)
+@@ -1347,6 +1347,11 @@ static int hostapd_ctrl_iface_set(struct hostapd_data *hapd, char *cmd)
  #endif /* CONFIG_DPP */
  	} else if (os_strcasecmp(cmd, "setband") == 0) {
  		ret = hostapd_ctrl_iface_set_band(hapd, value);
@@ -48,7 +48,7 @@ index a258492..c2a2822 100644
  		ret = hostapd_set_iface(hapd->iconf, hapd->conf, cmd, value);
  		if (ret)
 diff --git a/src/ap/ap_config.c b/src/ap/ap_config.c
-index d7a0c7c..4a20eb4 100644
+index 2755146..9f450f6 100644
 --- a/src/ap/ap_config.c
 +++ b/src/ap/ap_config.c
 @@ -170,6 +170,7 @@ void hostapd_config_defaults_bss(struct hostapd_bss_config *bss)
@@ -60,7 +60,7 @@ index d7a0c7c..4a20eb4 100644
  
  
 diff --git a/src/ap/ap_config.h b/src/ap/ap_config.h
-index 39b26d6..a875632 100644
+index 7774360..af9bf92 100644
 --- a/src/ap/ap_config.h
 +++ b/src/ap/ap_config.h
 @@ -558,6 +558,7 @@ struct hostapd_bss_config {
@@ -72,10 +72,10 @@ index 39b26d6..a875632 100644
  	/* IEEE 802.11u - Interworking */
  	int interworking;
 diff --git a/src/ap/ctrl_iface_ap.c b/src/ap/ctrl_iface_ap.c
-index 96209ce..18bae5c 100644
+index d46de44..38fc8e4 100644
 --- a/src/ap/ctrl_iface_ap.c
 +++ b/src/ap/ctrl_iface_ap.c
-@@ -1203,6 +1203,10 @@ int hostapd_ctrl_iface_bss_tm_req(struct hostapd_data *hapd,
+@@ -1265,6 +1265,10 @@ int hostapd_ctrl_iface_bss_tm_req(struct hostapd_data *hapd,
  			wpa_printf(MSG_DEBUG, "Invalid bss_term data");
  			return -1;
  		}
@@ -86,7 +86,7 @@ index 96209ce..18bae5c 100644
  		end++;
  		WPA_PUT_LE16(&bss_term_dur[10], atoi(end));
  	}
-@@ -1229,14 +1233,25 @@ int hostapd_ctrl_iface_bss_tm_req(struct hostapd_data *hapd,
+@@ -1291,14 +1295,25 @@ int hostapd_ctrl_iface_bss_tm_req(struct hostapd_data *hapd,
  		req_mode |= WNM_BSS_TM_REQ_ESS_DISASSOC_IMMINENT;
  	}
  
@@ -115,7 +115,7 @@ index 96209ce..18bae5c 100644
  	if (pos) {
  		unsigned int mbo_reason, cell_pref, reassoc_delay;
 diff --git a/src/ap/gas_serv.c b/src/ap/gas_serv.c
-index 90f1577..5845ff8 100644
+index 4642e49..cce6df4 100644
 --- a/src/ap/gas_serv.c
 +++ b/src/ap/gas_serv.c
 @@ -19,6 +19,7 @@
@@ -183,7 +183,7 @@ index 90f1577..5845ff8 100644
  #ifdef CONFIG_FILS
  		if (info_id == ANQP_FILS_REALM_INFO &&
 diff --git a/src/ap/gas_serv.h b/src/ap/gas_serv.h
-index 1528af4..d0241f2 100644
+index 7646a98..ce492b5 100644
 --- a/src/ap/gas_serv.h
 +++ b/src/ap/gas_serv.h
 @@ -40,6 +40,8 @@
@@ -196,7 +196,7 @@ index 1528af4..d0241f2 100644
   * First 15 Hotspot 2.0 vendor specific ANQP-elements can be included in the
   * optimized bitmap.
 diff --git a/src/ap/neighbor_db.c b/src/ap/neighbor_db.c
-index 52f25eb..9254d09 100644
+index 5b276e8..1c14b32 100644
 --- a/src/ap/neighbor_db.c
 +++ b/src/ap/neighbor_db.c
 @@ -89,6 +89,38 @@ int hostapd_neighbor_show(struct hostapd_data *hapd, char *buf, size_t buflen)
@@ -348,7 +348,7 @@ index 992671b..a1ddc07 100644
 +#endif
  #endif /* NEIGHBOR_DB_H */
 diff --git a/src/ap/wnm_ap.c b/src/ap/wnm_ap.c
-index 3ea92af..4349e1d 100644
+index ba1dd2e..32ccf14 100644
 --- a/src/ap/wnm_ap.c
 +++ b/src/ap/wnm_ap.c
 @@ -20,6 +20,7 @@
@@ -402,7 +402,7 @@ index 3ea92af..4349e1d 100644
  	hapd->openwrt_stats.wnm.bss_transition_request_tx++;
  	wpa_printf(MSG_DEBUG, "WNM: Send BSS Transition Management Request to "
  		   MACSTR " dialog_token=%u req_mode=0x%x disassoc_timer=%u "
-@@ -759,6 +780,50 @@ static void set_disassoc_timer(struct hostapd_data *hapd, struct sta_info *sta,
+@@ -890,6 +911,50 @@ static void set_disassoc_timer(struct hostapd_data *hapd, struct sta_info *sta,
  }
  
  
@@ -453,15 +453,7 @@ index 3ea92af..4349e1d 100644
  int wnm_send_ess_disassoc_imminent(struct hostapd_data *hapd,
  				   struct sta_info *sta, const char *url,
  				   int disassoc_timer)
-@@ -848,6 +913,7 @@ int wnm_send_bss_tm_req(struct hostapd_data *hapd, struct sta_info *sta,
- 	    bss_term_dur) {
- 		os_memcpy(pos, bss_term_dur, 12);
- 		pos += 12;
-+		set_disable_iface_timer(hapd, sta, hapd->conf->bss_termination_tsf);
- 	}
- 
- 	if (url) {
-@@ -884,7 +950,7 @@ int wnm_send_bss_tm_req(struct hostapd_data *hapd, struct sta_info *sta,
+@@ -934,7 +999,7 @@ int wnm_send_ess_disassoc_imminent(struct hostapd_data *hapd,
  	hapd->openwrt_stats.wnm.bss_transition_request_tx++;
  	if (disassoc_timer) {
  		/* send disassociation frame after time-out */
@@ -470,6 +462,14 @@ index 3ea92af..4349e1d 100644
  	}
  
  	return 0;
+@@ -979,6 +1044,7 @@ int wnm_send_bss_tm_req(struct hostapd_data *hapd, struct sta_info *sta,
+ 	    bss_term_dur) {
+ 		os_memcpy(pos, bss_term_dur, 12);
+ 		pos += 12;
++		set_disable_iface_timer(hapd, sta, hapd->conf->bss_termination_tsf);
+ 	}
+ 
+ 	if (url) {
 -- 
 2.18.0
 

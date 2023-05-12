@@ -92,4 +92,5 @@ SRC_URI_append = " \
     file://mtk-0028-hostapd-mtk-Fix-scan-result-updating-issue.patch \
     file://mtk-0028-hostapd-mtk-avoid-setting-beacon-after-wpa_supplican.patch \
     file://mtk-0029-hostapd-mtk-Fix-setting-wrong-seg0-index-for-5G-cent.patch \
+    file://mtk-0030-hostapd-mtk-Add-muru-user-number-debug-command.patch \
     "

@@ -16,7 +16,7 @@ SRC_URI_append = " \
     file://140-tests-Makefile-make-run-tests-with-CONFIG_TLS.patch \
     file://150-add-NULL-checks-encountered-during-tests-hwsim.patch \
     file://160-dpp_pkex-EC-point-mul-w-value-prime.patch \
-    file://170-DPP-fix-memleak-of-intro.peer_key.patch \
+    file://170-wpa_supplicant-fix-compiling-without-IEEE8021X_EAPOL.patch \
     file://200-multicall.patch \
     file://300-noscan.patch \
     file://301-mesh-noscan.patch \
@@ -39,7 +39,6 @@ SRC_URI_append = " \
     file://432-missing-typedef.patch \
     file://450-scan_wait.patch;apply=no \
     file://460-wpa_supplicant-add-new-config-params-to-be-used-with.patch \
-    file://461-driver_nl80211-use-new-parameters-during-ibss-join.patch \
     file://463-add-mcast_rate-to-11s.patch \
     file://464-fix-mesh-obss-check.patch \
     file://465-hostapd-config-support-random-BSS-color.patch \
@@ -59,9 +58,7 @@ SRC_URI_append = " \
     file://751-qos_map_ignore_when_unsupported.patch \
     file://760-dynamic_own_ip.patch \
     file://761-shared_das_port.patch \
-    file://800-acs-don-t-select-indoor-channel-on-outdoor-operation.patch \
     file://990-ctrl-make-WNM_AP-functions-dependant-on-CONFIG_AP.patch \
-    file://992-openssl-include-rsa.patch \
     file://mtk-0001-hostapd-mtk-Add-neighbor-report-and-BSS-Termination-.patch \
     file://mtk-0002-hostapd-mtk-print-sae-groups-by-hostapd-ctrl.patch \
     file://mtk-0003-hostapd-mtk-add-support-for-runtime-set-in-band-disc.patch \
@@ -75,22 +72,23 @@ SRC_URI_append = " \
     file://mtk-0011-hostapd-mtk-Add-DFS-offchan-channel-switch.patch \
     file://mtk-0012-hostapd-mtk-Add-amsdu-set-get-ctrl.patch \
     file://mtk-0013-hostapd-mtk-Add-he_ldpc-configuration.patch \
-    file://mtk-0014-hostapd-mtk-Add-the-broadcast-destination-address-of.patch \
-    file://mtk-0015-hostapd-mtk-Add-vendor-command-attribute-for-RTS-BW-.patch \
-    file://mtk-0016-hostapd-mtk-6G-band-does-not-require-DFS.patch \
-    file://mtk-0017-hostapd-mtk-Fix-sending-wrong-VHT-operation-IE-in-CS.patch \
-    file://mtk-0018-hostapd-mtk-Add-sta-assisted-DFS-state-update-mechan.patch \
-    file://mtk-0019-hostapd-mtk-Fix-auto-ht-issue-when-switching-to-DFS-.patch \
-    file://mtk-0020-hostapd-mtk-Mark-DFS-channel-as-available-for-CSA.patch \
-    file://mtk-0021-hostapd-mtk-add-11v_mbss-and-ema-support-for-hostapd.patch \
-    file://mtk-0022-hostapd-mtk-Add-available-color-bitmap.patch \
-    file://mtk-0023-hostapd-mtk-Add-channel-information-for-hostapd-relo.patch \
-    file://mtk-0024-hostapd-mtk-Add-support-for-masking-EHT-capabilities.patch \
-    file://mtk-0025-hostapd-mtk-Fix-ZWDFS-issue-in-BW-160.patch \
-    file://mtk-0026-hostapd-mtk-Add-vendor-for-CAPI-certification-comman.patch \
-    file://mtk-0027-hostapd-mtk-Air-Monitor-support-in-hostapd-by-vendor.patch \
-    file://mtk-0028-hostapd-mtk-Fix-scan-result-updating-issue.patch \
-    file://mtk-0028-hostapd-mtk-avoid-setting-beacon-after-wpa_supplican.patch \
-    file://mtk-0029-hostapd-mtk-Fix-setting-wrong-seg0-index-for-5G-cent.patch \
-    file://mtk-0100-hostapd-mtk-update-eht-operation-elem.patch \
+    file://mtk-0014-hostapd-mtk-Add-vendor-command-attribute-for-RTS-BW-.patch \
+    file://mtk-0015-hostapd-mtk-6G-band-does-not-require-DFS.patch \
+    file://mtk-0016-hostapd-mtk-Fix-sending-wrong-VHT-operation-IE-in-CS.patch \
+    file://mtk-0017-hostapd-mtk-Add-sta-assisted-DFS-state-update-mechan.patch \
+    file://mtk-0018-hostapd-mtk-Fix-auto-ht-issue-when-switching-to-DFS-.patch \
+    file://mtk-0019-hostapd-mtk-Mark-DFS-channel-as-available-for-CSA.patch \
+    file://mtk-0020-hostapd-mtk-Add-available-color-bitmap.patch \
+    file://mtk-0021-hostapd-mtk-Add-channel-information-for-hostapd-relo.patch \
+    file://mtk-0022-hostapd-mtk-Fix-ZWDFS-issue-in-BW-160.patch \
+    file://mtk-0023-hostapd-mtk-Add-vendor-for-CAPI-certification-comman.patch \
+    file://mtk-0024-hostapd-mtk-Air-Monitor-support-in-hostapd-by-vendor.patch \
+    file://mtk-0025-hostapd-mtk-Fix-scan-result-updating-issue.patch \
+    file://mtk-0026-hostapd-mtk-avoid-setting-beacon-after-wpa_supplican.patch \
+    file://mtk-0027-hostapd-mtk-Fix-setting-wrong-seg0-index-for-5G-cent.patch \
+    file://mtk-0028-hostapd-mtk-Add-muru-user-number-debug-command.patch \
+    file://mtk-0100-hostapd-mtk-update-eht-operation-element.patch \
+    file://mtk-0101-hostapd-mtk-Fix-CCA-issue.patch \
+    file://mtk-0102-hostapd-mtk-Fix-unexpected-AP-beacon-state-transitio.patch \
+    file://mtk-0103-hostapd-mtk-Add-BW320-channel-switch-command.patch \
     "

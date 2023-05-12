@@ -1,7 +1,7 @@
-From 43e5bfa91c67528eb2a37071e0e4a6f32807ad8f Mon Sep 17 00:00:00 2001
+From b0a253a420b901e3f5b7b069a85a135835a702ff Mon Sep 17 00:00:00 2001
 From: StanleyYP Wang <StanleyYP.Wang@mediatek.com>
 Date: Mon, 20 Feb 2023 14:56:55 +0800
-Subject: [PATCH 11/29] hostapd: mtk: Add DFS offchan channel switch
+Subject: [PATCH 11/28] hostapd: mtk: Add DFS offchan channel switch
 
 Add DFS background chain channel switch command for testing purpose.
 This feature is implemented via hostapd_cli command.
@@ -16,10 +16,10 @@ Signed-off-by: StanleyYP Wang <StanleyYP.Wang@mediatek.com>
  3 files changed, 96 insertions(+), 16 deletions(-)
 
 diff --git a/hostapd/ctrl_iface.c b/hostapd/ctrl_iface.c
-index fcbc4ae..37a1b2a 100644
+index 5ea8934..40fb0d4 100644
 --- a/hostapd/ctrl_iface.c
 +++ b/hostapd/ctrl_iface.c
-@@ -3542,6 +3542,76 @@ hostapd_ctrl_iface_set_dfs_detect_mode(struct hostapd_data *hapd, char *value,
+@@ -3617,6 +3617,76 @@ hostapd_ctrl_iface_set_dfs_detect_mode(struct hostapd_data *hapd, char *value,
  }
  
  
@@ -96,7 +96,7 @@ index fcbc4ae..37a1b2a 100644
  static int hostapd_ctrl_iface_receive_process(struct hostapd_data *hapd,
  					      char *buf, char *reply,
  					      int reply_size,
-@@ -4104,6 +4174,8 @@ static int hostapd_ctrl_iface_receive_process(struct hostapd_data *hapd,
+@@ -4188,6 +4258,8 @@ static int hostapd_ctrl_iface_receive_process(struct hostapd_data *hapd,
  	} else if (os_strncmp(buf, "DFS_DETECT_MODE ", 16) == 0) {
  		reply_len = hostapd_ctrl_iface_set_dfs_detect_mode(hapd, buf + 16,
  								   reply, reply_size);
@@ -106,7 +106,7 @@ index fcbc4ae..37a1b2a 100644
  		os_memcpy(reply, "UNKNOWN COMMAND\n", 16);
  		reply_len = 16;
 diff --git a/src/ap/dfs.c b/src/ap/dfs.c
-index 5cb7799..1c3f678 100644
+index 644a7ea..48c5fc9 100644
 --- a/src/ap/dfs.c
 +++ b/src/ap/dfs.c
 @@ -19,13 +19,6 @@
@@ -136,7 +136,7 @@ index 5cb7799..1c3f678 100644
  {
  	struct hostapd_hw_modes *mode;
  	struct hostapd_channel_data *chan;
-@@ -299,12 +292,12 @@ static int dfs_find_channel(struct hostapd_iface *iface,
+@@ -300,12 +293,12 @@ static int dfs_find_channel(struct hostapd_iface *iface,
  }
  
  
