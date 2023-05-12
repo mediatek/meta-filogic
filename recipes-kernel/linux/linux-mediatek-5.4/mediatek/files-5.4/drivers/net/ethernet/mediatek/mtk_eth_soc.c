@@ -40,7 +40,6 @@
 static int mtk_msg_level = -1;
 atomic_t reset_lock = ATOMIC_INIT(0);
 atomic_t force = ATOMIC_INIT(0);
-atomic_t reset_pending = ATOMIC_INIT(0);
 
 module_param_named(msg_level, mtk_msg_level, int, 0);
 MODULE_PARM_DESC(msg_level, "Message level (-1=defaults,0=none,...,16=all)");
@@ -462,6 +461,28 @@ static void mtk_setup_bridge_switch(struct mtk_eth *eth)
 	mtk_w32(eth, val, MTK_GSW_CFG);
 }
 
+static bool mtk_check_gmac23_idle(struct mtk_mac *mac)
+{
+	u32 mac_fsm, gdm_fsm;
+
+	mac_fsm = mtk_r32(mac->hw, MTK_MAC_FSM(mac->id));
+
+	switch (mac->id) {
+	case MTK_GMAC2_ID:
+		gdm_fsm = mtk_r32(mac->hw, MTK_FE_GDM2_FSM);
+		break;
+	case MTK_GMAC3_ID:
+		gdm_fsm = mtk_r32(mac->hw, MTK_FE_GDM3_FSM);
+		break;
+	};
+
+	if ((mac_fsm & 0xFFFF0000) == 0x01010000 &&
+	    (gdm_fsm & 0xFFFF0000) == 0x00000000)
+		return true;
+
+	return false;
+}
+
 static void mtk_setup_eee(struct mtk_mac *mac, bool enable)
 {
 	struct mtk_eth *eth = mac->hw;
@@ -498,6 +519,34 @@ static void mtk_setup_eee(struct mtk_mac *mac, bool enable)
 	/* Only update control register when needed! */
 	if (mcr != mcr_cur)
 		mtk_w32(eth, mcr, MTK_MAC_MCR(mac->id));
+}
+
+static int mtk_get_hwver(struct mtk_eth *eth)
+{
+	struct device_node *np;
+	struct regmap *hwver;
+	u32 info = 0;
+
+	eth->hwver = MTK_HWID_V1;
+
+	np = of_parse_phandle(eth->dev->of_node, "mediatek,hwver", 0);
+	if (!np)
+		return -EINVAL;
+
+	hwver = syscon_node_to_regmap(np);
+	if (IS_ERR(hwver))
+		return PTR_ERR(hwver);
+
+	regmap_read(hwver, 0x8, &info);
+
+	if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V3))
+		eth->hwver = FIELD_GET(HWVER_BIT_NETSYS_3, info);
+	else
+		eth->hwver = FIELD_GET(HWVER_BIT_NETSYS_1_2, info);
+
+	of_node_put(np);
+
+	return 0;
 }
 
 static struct phylink_pcs *mtk_mac_select_pcs(struct phylink_config *config,
@@ -737,13 +786,11 @@ static void mtk_mac_config(struct phylink_config *config, unsigned int mode,
 		 * when swtiching XGDM to GDM. Therefore, here trigger an SER
 		 * to let GDM go back to the initial state.
 		 */
-		if (mac->type != mac_type) {
-			if (atomic_read(&reset_pending) == 0) {
+		if (mac->type != mac_type && !mtk_check_gmac23_idle(mac)) {
+			if (!test_bit(MTK_RESETTING, &mac->hw->state)) {
 				atomic_inc(&force);
 				schedule_work(&eth->pending_work);
-				atomic_inc(&reset_pending);
-			} else
-				atomic_dec(&reset_pending);
+			}
 		}
 	}
 
@@ -1037,6 +1084,7 @@ static void mtk_validate(struct phylink_config *config,
 		if (MTK_HAS_CAPS(mac->hw->soc->caps, MTK_USXGMII)) {
 			phylink_set(mask, 10000baseKR_Full);
 			phylink_set(mask, 10000baseT_Full);
+			phylink_set(mask, 10000baseCR_Full);
 			phylink_set(mask, 10000baseSR_Full);
 			phylink_set(mask, 10000baseLR_Full);
 			phylink_set(mask, 10000baseLRM_Full);
@@ -3744,6 +3792,12 @@ static int mtk_hw_init(struct mtk_eth *eth, u32 type)
 		MTK_FE_INT_RFIFO_OV | MTK_FE_INT_RFIFO_UF, MTK_FE_INT_ENABLE);
 
 	if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V3)) {
+		/* PSE dummy page mechanism */
+		if (eth->soc->caps != MT7988_CAPS || eth->hwver != MTK_HWID_V1)
+			mtk_w32(eth, PSE_DUMMY_WORK_GDM(1) |
+				PSE_DUMMY_WORK_GDM(2) |	PSE_DUMMY_WORK_GDM(3) |
+				DUMMY_PAGE_THR, PSE_DUMY_REQ);
+
 		/* PSE should not drop port1, port8 and port9 packets */
 		mtk_w32(eth, 0x00000302, PSE_NO_DROP_CFG);
 
@@ -4567,6 +4621,8 @@ static int mtk_probe(struct platform_device *pdev)
 			return -EINVAL;
 		eth->phy_scratch_ring = res->start + MTK_ETH_SRAM_OFFSET;
 	}
+
+	mtk_get_hwver(eth);
 
 	if (MTK_HAS_CAPS(eth->soc->caps, MTK_SOC_MT7628))
 		eth->ip_align = NET_IP_ALIGN;

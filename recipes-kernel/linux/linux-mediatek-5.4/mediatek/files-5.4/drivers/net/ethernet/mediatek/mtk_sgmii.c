@@ -144,6 +144,18 @@ void mtk_sgmii_reset(struct mtk_eth *eth, int id)
 	mdelay(1);
 }
 
+int mtk_sgmii_need_powerdown(struct mtk_sgmii_pcs *mpcs)
+{
+	u32 val;
+
+	/* need to power down sgmii if link down */
+	regmap_read(mpcs->regmap, SGMSYS_PCS_CONTROL_1, &val);
+	if (!(val & SGMII_LINK_STATYS))
+		return true;
+
+	return false;
+}
+
 void mtk_sgmii_setup_phya_gen1(struct mtk_sgmii_pcs *mpcs)
 {
 	if (!mpcs->regmap_pextp)
@@ -412,6 +424,17 @@ static int mtk_sgmii_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
 		sgm_mode = SGMII_IF_MODE_SGMII |
 			   SGMII_REMOTE_FAULT_DIS |
 			   SGMII_SPEED_DUPLEX_AN;
+	} else if (phylink_autoneg_inband(mode)) {
+		/* 1000base-X or HSGMII with autoneg */
+		if (interface == PHY_INTERFACE_MODE_2500BASEX)
+			return -EINVAL;
+
+		bmcr = linkmode_test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
+					 advertising) ? SGMII_AN_ENABLE : 0;
+		if (bmcr)
+			sgm_mode = SGMII_SPEED_DUPLEX_AN;
+		else
+			speed = SGMII_SPEED_1000;
 	} else {
 		/* 1000base-X or HSGMII without autoneg */
 		speed = SGMII_SPEED_1000;
@@ -419,7 +442,8 @@ static int mtk_sgmii_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
 			sgm_mode = SGMII_IF_MODE_SGMII;
 	}
 
-	if (mpcs->interface != interface) {
+	if (mpcs->interface != interface ||
+	    mtk_sgmii_need_powerdown(mpcs)) {
 		link_timer = phylink_get_link_timer_ns(interface);
 		if (link_timer < 0)
 			return link_timer;
