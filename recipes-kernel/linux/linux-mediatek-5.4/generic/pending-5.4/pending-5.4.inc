@@ -73,6 +73,7 @@ SRC_URI_append = " \
     file://610-netfilter_match_bypass_default_checks.patch \
     file://611-netfilter_match_bypass_default_table.patch \
     file://612-netfilter_match_reduce_memory_access.patch \
+    file://613-netfilter_optional_tcp_window_check.patch \
     file://620-net_sched-codel-do-not-defer-queue-length-update.patch \
     file://630-packet_socket_type.patch \
     file://655-increase_skb_pad.patch \

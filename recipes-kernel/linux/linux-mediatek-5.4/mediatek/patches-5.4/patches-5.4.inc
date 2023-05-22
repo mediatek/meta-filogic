@@ -19,7 +19,6 @@ SRC_URI_append = " \
     file://0010-dts-mt7629-rfb-fix-firmware-partition.patch \
     file://0020-dts-mt7622-enable-new-mtk-snand-for-ubi.patch \
     file://0021-dts-mt7622-remove-cooling-device.patch \
-    file://0030-introduce_read_poll_timeout_macro.patch \
     file://0100-hwnat_Kconfig_Makefile.patch \
     file://0111-mt7986-trng-add-rng-support.patch \
     file://0200-show_model_name_in_cpuinfo_on_arm64.patch \
@@ -119,7 +118,6 @@ SRC_URI_append = " \
     file://753-net-mt753x-phy-coverity-scan.patch;apply=no \
     file://754-net-phy-add-5GBASER.patch \
     file://755-net-phy-sfp-add-rollball-support.patch \
-    file://756-net-phy-mediatek-ge-add-mt798x-support.patch \
     file://757-net-phy-add-phylink-pcs-support.patch;apply=no \
     file://758-net-phy-add-phylink-pcs-decode-helper.patch \
     file://8000-PATCH-1-4-tphy-support-type-switch-by-pericfg.patch \
@@ -148,4 +146,5 @@ SRC_URI_append = " \
     file://9018-drivers-mtd-spi-nor-Add-calibration-support-for-spi-nor.patch \
     file://9019-drivers-char-tpm-Add-calibration-example-for-SPI-TPM-module.patch \
     file://9102-spi-update-driver.patch \
+    file://9103-drivers-spi-mt65xx-add-dts-buswidth-flow.patch \
     "

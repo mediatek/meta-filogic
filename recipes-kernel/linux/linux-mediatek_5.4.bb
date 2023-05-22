@@ -92,6 +92,7 @@ do_filogic_patches() {
             patch -p1 < ${WORKDIR}/739-mt7531-gsw-port5_external_phy_init.patch
             patch -p1 < ${WORKDIR}/753-net-mt753x-phy-coverity-scan.patch
             patch -p1 < ${WORKDIR}/757-net-phy-add-phylink-pcs-support.patch
+            patch -p1 < ${WORKDIR}/792-v5.9-net-phy-add-support-for-a-common-probe-between-shared-PHYs.patch
             patch -p1 < ${WORKDIR}/9010-iwconfig-wireless-rate-fix.patch
             if [ $DISTRO_secure_boot_ENABLED = 'true' ]; then
                 patch -p1 < ${WORKDIR}/0404-mtdsplit-dm-verity.patch

@@ -270,6 +270,10 @@ SRC_URI_append = " \
     file://780-net-dsa-mt7530-setup-core-clock-even-in-TRGMII-mode.patch \
     file://781-v5.18-1-net-dsa-Move-VLAN-filtering-syncing-out-of-dsa_switc.patch \
     file://781-v5.18-2-net-dsa-Avoid-cross-chip-syncing-of-VLAN-filtering.patch \
+    file://790-v5.7-iopoll-introduce-read_poll_timeout-macro.patch \
+    file://791-v5.8-net-phy-add-concept-of-shared-storage-for-PHYs.patch \
+    file://792-v5.9-net-phy-add-support-for-a-common-probe-between-shared-PHYs.patch;apply=no \
+    file://793-net-phy-backport-v5.4-mediatek-ge-and-v6.4-mediatek-ge-soc.patch \
     file://800-v5.5-iio-imu-Add-support-for-the-FXOS8700-IMU.patch \
     file://800-v5.5-scsi-core-Add-sysfs-attributes-for-VPD-pages-0h-and-.patch \
     file://801-v5.19-nvmem-core-support-passing-DT-node-in-cell-info.patch \
