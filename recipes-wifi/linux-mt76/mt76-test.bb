@@ -23,7 +23,7 @@ DEPENDS += "virtual/kernel"
 DEPENDS += "linux-mac80211"
 DEPENDS += "linux-mt76"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches:"
+FILESEXTRAPATHS_prepend := "${@bb.utils.contains('DISTRO_FEATURES','wifi_eht','${THISDIR}/files/patches-3.x:','${THISDIR}/files/patches:',d)}"
 
 
 CFLAGS_append = " -I=${includedir}/libnl-tiny "

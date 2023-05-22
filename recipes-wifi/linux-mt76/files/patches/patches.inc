@@ -5,8 +5,8 @@ SRC_URI_append = " \
     file://0003-wifi-mt76-mt7915-disable-wfdma-tx-rx-during-SER-reco.patch \
     file://0004-wifi-mt76-mt7915-fix-the-beamformer-issue.patch \
     file://0005-wifi-mt76-fix-incorrect-HE-TX-GI-report.patch \
+    file://0006-wifi-mt76-mt7915-fix-DFS-CAC-tx-emission-issue-after.patch \
     file://0999-wifi-mt76-mt7915-build-pass-for-Linux-Kernel-5.4-fix.patch \
-    file://100-api_update.patch \
     file://1000-wifi-mt76-mt7915-add-mtk-internal-debug-tools-for-mt.patch \
     file://1001-wifi-mt76-mt7915-csi-implement-csi-support.patch \
     file://1002-wifi-mt76-mt7915-air-monitor-support.patch \
@@ -36,26 +36,23 @@ SRC_URI_append = " \
     file://1026-wifi-mt76-mt7915-support-on-off-SW-ACI-through-debug.patch \
     file://1027-wifi-mt76-mt7915-add-bf-backoff-limit-table-support.patch \
     file://1028-wifi-mt76-mt7915-amsdu-set-and-get-control.patch \
-    file://1029-wifi-mt76-mt7915-add-support-for-he-ldpc-control-fro.patch \
-    file://1030-wifi-mt76-mt7915-Add-vendor-command-attribute-for-RT.patch \
-    file://1031-wifi-mt76-mt7915-add-vendor-cmd-to-get-available-col.patch \
-    file://1032-wifi-mt76-mt7915-disable-SW-ACI-by-default.patch \
-    file://1033-wifi-mt76-mt7915-Add-5G-UNII4-support.patch \
-    file://1034-wifi-mt76-mt7915-add-muru-user-number-debug-command.patch \
-    file://110-wifi-mt76-ignore-key-disable-commands.patch \
+    file://1029-wifi-mt76-mt7915-Add-vendor-command-attribute-for-RT.patch \
+    file://1030-wifi-mt76-mt7915-add-vendor-cmd-to-get-available-col.patch \
+    file://1031-wifi-mt76-mt7915-disable-SW-ACI-by-default.patch \
+    file://1032-wifi-mt76-mt7915-Add-5G-UNII4-support.patch \
+    file://1033-wifi-mt76-mt7915-add-muru-user-number-debug-command.patch \
     file://3000-wifi-mt76-mt7915-wed-add-wed-tx-support.patch \
     file://3001-wifi-mt76-mt7915-wed-add-wds-support-when-wed-is-ena.patch \
     file://3002-wifi-mt76-mt7915-wed-add-fill-receive-path-to-report.patch \
     file://3003-wifi-mt76-mt7915-wed-find-rx-token-by-physical-addre.patch \
     file://3004-wifi-mt76-mt7915-wed-HW-ATF-support-for-mt7986.patch \
     file://3005-wifi-mt76-mt7915-wed-add-rxwi-for-further-in-chip-rr.patch \
-    file://3006-wifi-mt76-mt7915-wed-add-mt7915_net_setup_tc-to-supp.patch \
-    file://3007-wifi-mt76-mt7915-add-wa-command-to-get-tx-msdu-count.patch \
-    file://3008-wifi-mt76-get-tx-count-and-tx-failed-from-mcu-comman.patch \
-    file://3009-wifi-mt76-mt7915-enable-PPDU-TxS-to-host-when-wed-en.patch \
-    file://3010-wifi-mt76-mt7915-get-tx-retries-from-tx-free-done-ev.patch \
-    file://3011-wifi-mt76-update-debugfs-knob-for-reset-counter-and-.patch \
-    file://3012-wifi-mt76-mt7915-add-ctxd-support-for-mt7916.patch \
-    file://3013-wifi-mt76-connac-wed-add-wed-rx-copy-skb.patch \
+    file://3006-wifi-mt76-mt7915-add-wa-command-to-get-tx-msdu-count.patch \
+    file://3007-wifi-mt76-get-tx-count-and-tx-failed-from-mcu-comman.patch \
+    file://3008-wifi-mt76-mt7915-enable-PPDU-TxS-to-host-when-wed-en.patch \
+    file://3009-wifi-mt76-mt7915-get-tx-retries-from-tx-free-done-ev.patch \
+    file://3010-wifi-mt76-update-debugfs-knob-for-reset-counter-and-.patch \
+    file://3011-wifi-mt76-mt7915-add-ctxd-support-for-mt7916.patch \
+    file://3012-wifi-mt76-connac-wed-add-wed-rx-copy-skb.patch \
     file://9999-mt76-revert-for-backports-5.15-wireless-stack.patch \
     "
