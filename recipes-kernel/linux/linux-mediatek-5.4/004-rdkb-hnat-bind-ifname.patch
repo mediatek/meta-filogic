@@ -79,10 +79,10 @@ index 58d0733e..1ee03516 100644
  	mtketh-max-gmac = <3>;
  	status = "okay";
  };
-diff --git a/arch/arm64/boot/dts/mediatek/mt7988c-dsa-10g-emmc.dts b/arch/arm64/boot/dts/mediatek/mt7988c-dsa-10g-emmc.dts
+diff --git a/arch/arm64/boot/dts/mediatek/mt7988d-dsa-10g-emmc.dts b/arch/arm64/boot/dts/mediatek/mt7988d-dsa-10g-emmc.dts
 index 30c86f15..1c6f0574 100644
---- a/arch/arm64/boot/dts/mediatek/mt7988c-dsa-10g-emmc.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt7988c-dsa-10g-emmc.dts
+--- a/arch/arm64/boot/dts/mediatek/mt7988d-dsa-10g-emmc.dts
++++ b/arch/arm64/boot/dts/mediatek/mt7988d-dsa-10g-emmc.dts
 @@ -302,9 +302,9 @@
  };
  
@@ -95,10 +95,10 @@ index 30c86f15..1c6f0574 100644
  	mtketh-max-gmac = <3>;
  	status = "okay";
  };
-diff --git a/arch/arm64/boot/dts/mediatek/mt7988c-dsa-10g-spim-nand.dts b/arch/arm64/boot/dts/mediatek/mt7988c-dsa-10g-spim-nand.dts
+diff --git a/arch/arm64/boot/dts/mediatek/mt7988d-dsa-10g-spim-nand.dts b/arch/arm64/boot/dts/mediatek/mt7988d-dsa-10g-spim-nand.dts
 index f4729f94..63f6ff43 100644
---- a/arch/arm64/boot/dts/mediatek/mt7988c-dsa-10g-spim-nand.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt7988c-dsa-10g-spim-nand.dts
+--- a/arch/arm64/boot/dts/mediatek/mt7988d-dsa-10g-spim-nand.dts
++++ b/arch/arm64/boot/dts/mediatek/mt7988d-dsa-10g-spim-nand.dts
 @@ -468,9 +468,9 @@
  };
  
@@ -111,10 +111,10 @@ index f4729f94..63f6ff43 100644
  	mtketh-max-gmac = <3>;
  	status = "okay";
  };
-diff --git a/arch/arm64/boot/dts/mediatek/mt7988c-dsa-e2p5g-spim-nand.dts b/arch/arm64/boot/dts/mediatek/mt7988c-dsa-e2p5g-spim-nand.dts
+diff --git a/arch/arm64/boot/dts/mediatek/mt7988d-dsa-e2p5g-spim-nand.dts b/arch/arm64/boot/dts/mediatek/mt7988d-dsa-e2p5g-spim-nand.dts
 index 2d0a2793..6e7c47e0 100644
---- a/arch/arm64/boot/dts/mediatek/mt7988c-dsa-e2p5g-spim-nand.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt7988c-dsa-e2p5g-spim-nand.dts
+--- a/arch/arm64/boot/dts/mediatek/mt7988d-dsa-e2p5g-spim-nand.dts
++++ b/arch/arm64/boot/dts/mediatek/mt7988d-dsa-e2p5g-spim-nand.dts
 @@ -398,9 +398,9 @@
  };
  
@@ -127,10 +127,10 @@ index 2d0a2793..6e7c47e0 100644
  	mtketh-max-gmac = <3>;
  	status = "okay";
  };
-diff --git a/arch/arm64/boot/dts/mediatek/mt7988c-gsw-10g-spim-nand.dts b/arch/arm64/boot/dts/mediatek/mt7988c-gsw-10g-spim-nand.dts
+diff --git a/arch/arm64/boot/dts/mediatek/mt7988d-gsw-10g-spim-nand.dts b/arch/arm64/boot/dts/mediatek/mt7988d-gsw-10g-spim-nand.dts
 index e10e1e21..f2745594 100644
---- a/arch/arm64/boot/dts/mediatek/mt7988c-gsw-10g-spim-nand.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt7988c-gsw-10g-spim-nand.dts
+--- a/arch/arm64/boot/dts/mediatek/mt7988d-gsw-10g-spim-nand.dts
++++ b/arch/arm64/boot/dts/mediatek/mt7988d-gsw-10g-spim-nand.dts
 @@ -348,9 +348,9 @@
  };
  
