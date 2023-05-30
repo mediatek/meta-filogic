@@ -8,21 +8,15 @@
 #include "mt7988.dtsi"
 
 / {
-	model = "MediaTek MT7988C GSW 10G SFP SPIM-NAND RFB";
-	compatible = "mediatek,mt7988c-gsw-10g-sfp-spim-snand",
+	model = "MediaTek MT7988D DSA external-2.5G SPIM-NAND RFB";
+	compatible = "mediatek,mt7988d-dsa-e2p5g-spim-snand",
 		     /* Reserve this for DVFS if creating new dts */
 		     "mediatek,mt7988";
 
 	chosen {
 		bootargs = "console=ttyS0,115200n1 loglevel=8  \
-			    earlycon=uart8250,mmio32,0x11000000";
-	};
-
-	gsw: gsw@0 {
-		compatible = "mediatek,mt753x";
-		mediatek,sysctrl = <&ethwarp>;
-		#address-cells = <1>;
-		#size-cells = <0>;
+			    earlycon=uart8250,mmio32,0x11000000 \
+			    pci=pcie_bus_perf";
 	};
 
 	memory {
@@ -76,14 +70,6 @@
 		compatible = "mediatek,rebb-mt7988-adie";
 		adie_id = <7976>;
 		sku_type = <3000>;
-	};
-
-	sfp_esp0: sfp@0 {
-		compatible = "sff,sfp";
-		i2c-bus = <&i2c1>;
-		mod-def0-gpios = <&pio 0 1>;
-		los-gpios = <&pio 30 0>;
-		tx-disable-gpios = <&pio 29 0>;
 	};
 };
 
@@ -257,7 +243,7 @@
 	i2c1_pins: i2c1-pins-g0 {
 		mux {
 			function = "i2c";
-			groups = "i2c1_sfp";
+			groups = "i2c1_0";
 		};
 	};
 
@@ -339,10 +325,9 @@
 	gmac2: mac@2 {
 		compatible = "mediatek,eth-mac";
 		reg = <2>;
-		mac-type = "xgdm";
-		phy-mode = "10gbase-kr";
-		managed = "in-band-status";
-		sfp = <&sfp_esp0>;
+		mac-type = "gdm";
+		phy-mode = "2500base-x";
+		phy-handle = <&phy5>;
 	};
 
 	mdio: mdio-bus {
@@ -350,81 +335,119 @@
 		#size-cells = <0>;
 
 		phy0: ethernet-phy@0 {
-			pinctrl-names = "default";
+			pinctrl-names = "i2p5gbe-led";
 			pinctrl-0 = <&i2p5gbe_led0_pins>;
 			reg = <15>;
 			compatible = "ethernet-phy-ieee802.3-c45";
 			phy-mode = "xgmii";
 		};
 
+		phy5: phy@5 {
+			compatible = "ethernet-phy-ieee802.3-c45";
+			reg = <5>;
+			reset-gpios = <&pio 3 1>;
+			reset-assert-us = <600>;
+			reset-deassert-us = <20000>;
+		};
+
+		switch@0 {
+			compatible = "mediatek,mt7988";
+			reg = <31>;
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				port@0 {
+					reg = <0>;
+					label = "lan0";
+					phy-mode = "gmii";
+					phy-handle = <&sphy0>;
+				};
+
+				port@1 {
+					reg = <1>;
+					label = "lan1";
+					phy-mode = "gmii";
+					phy-handle = <&sphy1>;
+				};
+
+				port@2 {
+					reg = <2>;
+					label = "lan2";
+					phy-mode = "gmii";
+					phy-handle = <&sphy2>;
+				};
+
+				port@3 {
+					reg = <3>;
+					label = "lan3";
+					phy-mode = "gmii";
+					phy-handle = <&sphy3>;
+				};
+
+				port@6 {
+					reg = <6>;
+					label = "cpu";
+					ethernet = <&gmac0>;
+					phy-mode = "10gbase-kr";
+
+					fixed-link {
+						speed = <10000>;
+						full-duplex;
+						pause;
+					};
+				};
+			};
+
+			mdio {
+				compatible = "mediatek,dsa-slave-mdio";
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				sphy0: switch_phy0@0 {
+					compatible = "ethernet-phy-id03a2.9481";
+					reg = <0>;
+					pinctrl-names = "gbe-led";
+					pinctrl-0 = <&gbe0_led0_pins>;
+					nvmem-cells = <&phy_calibration_p0>;
+					nvmem-cell-names = "phy-cal-data";
+				};
+
+				sphy1: switch_phy1@1 {
+					compatible = "ethernet-phy-id03a2.9481";
+					reg = <1>;
+					pinctrl-names = "gbe-led";
+					pinctrl-0 = <&gbe1_led0_pins>;
+					nvmem-cells = <&phy_calibration_p1>;
+					nvmem-cell-names = "phy-cal-data";
+				};
+
+				sphy2: switch_phy2@2 {
+					compatible = "ethernet-phy-id03a2.9481";
+					reg = <2>;
+					pinctrl-names = "gbe-led";
+					pinctrl-0 = <&gbe2_led0_pins>;
+					nvmem-cells = <&phy_calibration_p2>;
+					nvmem-cell-names = "phy-cal-data";
+				};
+
+				sphy3: switch_phy3@3 {
+					compatible = "ethernet-phy-id03a2.9481";
+					reg = <3>;
+					pinctrl-names = "gbe-led";
+					pinctrl-0 = <&gbe3_led0_pins>;
+					nvmem-cells = <&phy_calibration_p3>;
+					nvmem-cell-names = "phy-cal-data";
+				};
+			};
+		};
 	};
 };
 
 &hnat {
 	mtketh-wan = "eth1";
-	mtketh-lan = "eth0";
+	mtketh-lan = "lan";
 	mtketh-lan2 = "eth2";
 	mtketh-max-gmac = <3>;
 	status = "okay";
-};
-
-&gsw {
-	mediatek,mdio = <&mdio>;
-	mediatek,portmap = "llllw";
-	mediatek,mdio_master_pinmux = <1>;
-	interrupt-parent = <&gic>;
-	interrupts = <GIC_SPI 209 IRQ_TYPE_LEVEL_HIGH>;
-	status = "okay";
-
-	port6: port@6 {
-		compatible = "mediatek,mt753x-port";
-		mediatek,ssc-on;
-		phy-mode = "10gbase-kr";
-		reg = <6>;
-		fixed-link {
-			speed = <10000>;
-			full-duplex;
-		};
-	};
-
-	mdio1: mdio-bus {
-		#address-cells = <1>;
-		#size-cells = <0>;
-
-		gsw_phy0: ethernet-phy@0 {
-			compatible = "ethernet-phy-id03a2.9481";
-			reg = <0>;
-			pinctrl-names = "gbe-led";
-			pinctrl-0 = <&gbe0_led0_pins>;
-			nvmem-cells = <&phy_calibration_p0>;
-			nvmem-cell-names = "phy-cal-data";
-		};
-
-		gsw_phy1: ethernet-phy@1 {
-			compatible = "ethernet-phy-id03a2.9481";
-			reg = <1>;
-			pinctrl-names = "gbe-led";
-			pinctrl-0 = <&gbe1_led0_pins>;
-			nvmem-cells = <&phy_calibration_p1>;
-			nvmem-cell-names = "phy-cal-data";
-		};
-
-		gsw_phy2: ethernet-phy@2 {
-			compatible = "ethernet-phy-id03a2.9481";
-			reg = <2>;
-			pinctrl-names = "gbe-led";
-			pinctrl-0 = <&gbe2_led0_pins>;
-			nvmem-cells = <&phy_calibration_p2>;
-			nvmem-cell-names = "phy-cal-data";
-		};
-
-		gsw_phy3: ethernet-phy@3 {
-			compatible = "ethernet-phy-id03a2.9481";
-			reg = <3>;
-			pinctrl-names = "gbe-led";
-			pinctrl-0 = <&gbe3_led0_pins>;
-			nvmem-cells = <&phy_calibration_p3>;
-			nvmem-cell-names = "phy-cal-data";
-		};
-	};
 };

@@ -86,6 +86,9 @@
 #define MTK_FE_INT_RFIFO_UF	BIT(19)
 #define MTK_GDM1_AF		BIT(28)
 #define MTK_GDM2_AF		BIT(29)
+#define MTK_FE_IRQ_NUM		(4)
+#define MTK_PDMA_IRQ_NUM	(4)
+#define MTK_MAX_IRQ_NUM		(MTK_FE_IRQ_NUM + MTK_PDMA_IRQ_NUM)
 
 /* PDMA HW LRO Alter Flow Timer Register */
 #define MTK_PDMA_LRO_ALT_REFRESH_TIMER	0x1c
@@ -254,14 +257,12 @@
 /* PDMA RSS Control Registers */
 #if defined(CONFIG_MEDIATEK_NETSYS_RX_V2) || defined(CONFIG_MEDIATEK_NETSYS_V3)
 #define MTK_PDMA_RSS_GLO_CFG		(PDMA_BASE + 0x800)
-#define MTK_RX_NAPI_NUM			(2)
-#define MTK_MAX_IRQ_NUM			(4)
+#define MTK_RX_NAPI_NUM			(4)
 #else
 #define MTK_PDMA_RSS_GLO_CFG		0x2800
 #define MTK_RX_NAPI_NUM			(1)
-#define MTK_MAX_IRQ_NUM			(3)
 #endif
-#define MTK_RSS_RING1			(1)
+#define MTK_RSS_RING(x)			(x)
 #define MTK_RSS_EN			BIT(0)
 #define MTK_RSS_CFG_REQ			BIT(2)
 #define MTK_RSS_IPV6_STATIC_HASH	(0x7 << 8)
@@ -274,7 +275,7 @@
 #define MTK_RSS_INDR_TABLE_DW5		(MTK_PDMA_RSS_GLO_CFG + 0x64)
 #define MTK_RSS_INDR_TABLE_DW6		(MTK_PDMA_RSS_GLO_CFG + 0x68)
 #define MTK_RSS_INDR_TABLE_DW7		(MTK_PDMA_RSS_GLO_CFG + 0x6C)
-#define MTK_RSS_INDR_TABLE_SIZE4	0x44444444
+#define MTK_RSS_INDR_TABLE_SIZE4	0x39393939
 
 /* PDMA Global Configuration Register */
 #define MTK_PDMA_GLO_CFG	(PDMA_BASE + 0x204)
@@ -445,12 +446,13 @@
 /* QDMA Interrupt Status Register */
 #define MTK_QDMA_INT_STATUS	(QDMA_BASE + 0x218)
 #if defined(CONFIG_MEDIATEK_NETSYS_RX_V2) || defined(CONFIG_MEDIATEK_NETSYS_V3)
-#define MTK_RX_DONE_INT(ring_no)					\
+#define MTK_RX_DONE_INT(ring_no)						\
 	(MTK_HAS_CAPS(eth->soc->caps, MTK_RSS) ? (BIT(24 + (ring_no))) :	\
 	 ((ring_no) ? BIT(16 + (ring_no)) : BIT(14)))
 #else
-#define MTK_RX_DONE_INT(ring_no)		\
-	((ring_no)? BIT(24 + (ring_no)) : BIT(30))
+#define MTK_RX_DONE_INT(ring_no)						\
+	(MTK_HAS_CAPS(eth->soc->caps, MTK_RSS) ? (BIT(16 + (ring_no))) :	\
+	 ((ring_no) ? BIT(24 + (ring_no)) : BIT(30)))
 #endif
 #define MTK_RX_DONE_INT3	BIT(19)
 #define MTK_RX_DONE_INT2	BIT(18)
@@ -888,30 +890,36 @@
 /* USXGMII subsystem config registers */
 /* Register to control speed */
 #define RG_PHY_TOP_SPEED_CTRL1	0x80C
-#define RG_USXGMII_RATE_UPDATE_MODE	BIT(31)
-#define RG_MAC_CK_GATED		BIT(29)
-#define RG_IF_FORCE_EN		BIT(28)
-#define RG_RATE_ADAPT_MODE	GENMASK(10, 8)
-#define RG_RATE_ADAPT_MODE_X1	0
-#define RG_RATE_ADAPT_MODE_X2	1
-#define RG_RATE_ADAPT_MODE_X4	2
-#define RG_RATE_ADAPT_MODE_X10	3
-#define RG_RATE_ADAPT_MODE_X100	4
-#define RG_RATE_ADAPT_MODE_X5	5
-#define RG_RATE_ADAPT_MODE_X50	6
-#define RG_XFI_RX_MODE		GENMASK(6, 4)
-#define RG_XFI_RX_MODE_10G	0
-#define RG_XFI_RX_MODE_5G	1
-#define RG_XFI_TX_MODE		GENMASK(2, 0)
-#define RG_XFI_TX_MODE_10G	0
-#define RG_XFI_TX_MODE_5G	1
+#define USXGMII_RATE_UPDATE_MODE	BIT(31)
+#define USXGMII_MAC_CK_GATED	BIT(29)
+#define USXGMII_IF_FORCE_EN	BIT(28)
+#define USXGMII_RATE_ADAPT_MODE	GENMASK(10, 8)
+#define USXGMII_RATE_ADAPT_MODE_X1	0
+#define USXGMII_RATE_ADAPT_MODE_X2	1
+#define USXGMII_RATE_ADAPT_MODE_X4	2
+#define USXGMII_RATE_ADAPT_MODE_X10	3
+#define USXGMII_RATE_ADAPT_MODE_X100	4
+#define USXGMII_RATE_ADAPT_MODE_X5	5
+#define USXGMII_RATE_ADAPT_MODE_X50	6
+#define USXGMII_XFI_RX_MODE	GENMASK(6, 4)
+#define USXGMII_XFI_RX_MODE_10G	0
+#define USXGMII_XFI_RX_MODE_5G	1
+#define USXGMII_XFI_TX_MODE	GENMASK(2, 0)
+#define USXGMII_XFI_TX_MODE_10G	0
+#define USXGMII_XFI_TX_MODE_5G	1
 
 /* Register to control PCS AN */
 #define RG_PCS_AN_CTRL0		0x810
 #define USXGMII_AN_RESTART	BIT(31)
+#define USXGMII_AN_SYNC_CNT	GENMASK(30, 11)
 #define USXGMII_AN_ENABLE	BIT(0)
 
-/* Register to control PCS AN */
+#define RG_PCS_AN_CTRL2		0x818
+#define USXGMII_LINK_TIMER_IDLE_DETECT	GENMASK(29, 20)
+#define USXGMII_LINK_TIMER_COMP_ACK_DETECT	GENMASK(19, 10)
+#define USXGMII_LINK_TIMER_AN_RESTART	GENMASK(9, 0)
+
+/* Register to read PCS AN status */
 #define RG_PCS_AN_STS0		0x81C
 #define USXGMII_LPA_SPEED_MASK	GENMASK(11, 9)
 #define USXGMII_LPA_SPEED_10	0
@@ -1767,7 +1775,8 @@ struct mtk_eth {
 	struct net_device		dummy_dev;
 	struct net_device		*netdev[MTK_MAX_DEVS];
 	struct mtk_mac			*mac[MTK_MAX_DEVS];
-	int				irq[MTK_MAX_IRQ_NUM];
+	int				irq_fe[MTK_FE_IRQ_NUM];
+	int				irq_pdma[MTK_PDMA_IRQ_NUM];
 	u8				hwver;
 	u32				msg_enable;
 	unsigned long			sysclk;

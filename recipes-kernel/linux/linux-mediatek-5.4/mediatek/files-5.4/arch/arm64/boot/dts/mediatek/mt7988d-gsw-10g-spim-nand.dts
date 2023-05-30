@@ -9,8 +9,8 @@
 #include "mt7988.dtsi"
 
 / {
-	model = "MediaTek MT7988C GSW 10G SPIM-NAND RFB";
-	compatible = "mediatek,mt7988c-gsw-10g-spim-snand",
+	model = "MediaTek MT7988D GSW 10G SPIM-NAND RFB";
+	compatible = "mediatek,mt7988d-gsw-10g-spim-snand",
 		     /* Reserve this for DVFS if creating new dts */
 		     "mediatek,mt7988";
 
@@ -381,7 +381,7 @@
 		clock-frequency = <10500000>;
 
 		phy0: ethernet-phy@0 {
-			pinctrl-names = "default";
+			pinctrl-names = "i2p5gbe-led";
 			pinctrl-0 = <&i2p5gbe_led0_pins>;
 			reg = <15>;
 			compatible = "ethernet-phy-ieee802.3-c45";
@@ -394,6 +394,7 @@
 			reset-gpios = <&pio 3 1>;
 			reset-assert-us = <100000>;
 			reset-deassert-us = <221000>;
+			mdi-reversal = /bits/ 16 <1>;
 		};
 	};
 };
