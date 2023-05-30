@@ -93,4 +93,6 @@ SRC_URI_append = " \
     file://mtk-0028-hostapd-mtk-avoid-setting-beacon-after-wpa_supplican.patch \
     file://mtk-0029-hostapd-mtk-Fix-setting-wrong-seg0-index-for-5G-cent.patch \
     file://mtk-0030-hostapd-mtk-Add-muru-user-number-debug-command.patch \
+    file://mtk-0031-hostapd-mtk-Fix-CCA-issue.patch \
+    file://mtk-0032-hostapd-mtk-Fix-unexpected-AP-beacon-state-transitio.patch \
     "

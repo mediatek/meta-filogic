@@ -6,6 +6,8 @@ SRC_URI_append = " \
     file://0004-wifi-mt76-mt7915-fix-the-beamformer-issue.patch \
     file://0005-wifi-mt76-fix-incorrect-HE-TX-GI-report.patch \
     file://0006-wifi-mt76-mt7915-fix-DFS-CAC-tx-emission-issue-after.patch \
+    file://0007-wifi-mt76-mt7915-add-pc-stack-dump-for-WM-s-coredump.patch \
+    file://0008-wifi-mt76-mt7915-update-mpdu-density-in-2-5g-capabil.patch \
     file://0999-wifi-mt76-mt7915-build-pass-for-Linux-Kernel-5.4-fix.patch \
     file://1000-wifi-mt76-mt7915-add-mtk-internal-debug-tools-for-mt.patch \
     file://1001-wifi-mt76-mt7915-csi-implement-csi-support.patch \
@@ -15,7 +17,6 @@ SRC_URI_append = " \
     file://1005-wifi-mt76-mt7915-add-support-for-runtime-set-in-band.patch \
     file://1006-wifi-mt76-mt7915-add-mt76-vendor-muru-onoff-command.patch \
     file://1007-wifi-mt76-mt7915-drop-undefined-action-frame.patch \
-    file://1008-wifi-mt76-mt7915-add-fw_version-dump.patch \
     file://1009-wifi-mt76-testmode-rework-testmode-init-registers.patch \
     file://1010-wifi-mt76-testmode-additional-supports.patch \
     file://1011-wifi-mt76-testmode-add-pre-cal-support.patch \
@@ -41,6 +42,8 @@ SRC_URI_append = " \
     file://1031-wifi-mt76-mt7915-disable-SW-ACI-by-default.patch \
     file://1032-wifi-mt76-mt7915-Add-5G-UNII4-support.patch \
     file://1033-wifi-mt76-mt7915-add-muru-user-number-debug-command.patch \
+    file://1034-wifi-mt76-mt7915-add-debugfs-for-fw-coredump.patch \
+    file://1035-wifi-mt76-mt7915-remove-BW160-support.patch \
     file://3000-wifi-mt76-mt7915-wed-add-wed-tx-support.patch \
     file://3001-wifi-mt76-mt7915-wed-add-wds-support-when-wed-is-ena.patch \
     file://3002-wifi-mt76-mt7915-wed-add-fill-receive-path-to-report.patch \
