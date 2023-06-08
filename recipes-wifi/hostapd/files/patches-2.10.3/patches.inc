@@ -36,7 +36,6 @@ SRC_URI_append = " \
     file://420-indicate-features.patch \
     file://430-hostapd_cli_ifdef.patch \
     file://431-wpa_cli_ifdef.patch \
-    file://432-missing-typedef.patch \
     file://450-scan_wait.patch;apply=no \
     file://460-wpa_supplicant-add-new-config-params-to-be-used-with.patch \
     file://463-add-mcast_rate-to-11s.patch \
@@ -87,8 +86,8 @@ SRC_URI_append = " \
     file://mtk-0026-hostapd-mtk-avoid-setting-beacon-after-wpa_supplican.patch \
     file://mtk-0027-hostapd-mtk-Fix-setting-wrong-seg0-index-for-5G-cent.patch \
     file://mtk-0028-hostapd-mtk-Add-muru-user-number-debug-command.patch \
+    file://mtk-0029-hostapd-mtk-Fix-CCA-issue.patch \
+    file://mtk-0030-hostapd-mtk-Fix-unexpected-AP-beacon-state-transitio.patch \
     file://mtk-0100-hostapd-mtk-update-eht-operation-element.patch \
-    file://mtk-0101-hostapd-mtk-Fix-CCA-issue.patch \
-    file://mtk-0102-hostapd-mtk-Fix-unexpected-AP-beacon-state-transitio.patch \
     file://mtk-0103-hostapd-mtk-Add-BW320-channel-switch-command.patch \
     "

@@ -5,7 +5,6 @@ SRC_URI_append = " \
     file://002-change_allconfig.patch \
     file://003-remove_bogus_modparams.patch \
     file://012-kernel_build_check.patch \
-    file://050-lib80211_option.patch \
     file://060-no_local_ssb_bcma.patch \
     file://070-remove-broken-wext-select.patch \
     file://080-resv_start_op.patch \

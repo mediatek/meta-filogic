@@ -67,6 +67,7 @@ do_configure_append() {
     echo "CONFIG_MESH=y" >> ${B}/.config
     echo "CONFIG_WEP=y" >> ${B}/.config
     echo "CONFIG_FILS=y" >> ${B}/.config
+    echo "CONFIG_TESTING_OPTIONS=y" >> ${B}/.config
 }
 
 do_filogic_patches() {

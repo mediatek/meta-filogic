@@ -1,12 +1,12 @@
-From 39a0dd44653f12ce13af68de81bfae683669623a Mon Sep 17 00:00:00 2001
-From: Evelyn Tsai <evelyn.tsai@mediatek.com>
-Date: Thu, 11 May 2023 14:08:59 +0800
-Subject: [PATCH 101/103] hostapd: mtk: Fix CCA issue
+From c92a1e50abdad2bf3e961c9d5aa34baea81f025b Mon Sep 17 00:00:00 2001
+From: Michael Lee <michael-cy.lee@mediatek.com>
+Date: Wed, 3 May 2023 14:55:18 +0800
+Subject: [PATCH] hostapd: mtk: Fix CCA issue
 
-When receiving CCA related nl80211 command, hostapd used to work on
+When receiving CCA-related nl80211 commands, hostapd used to work on
 struct wpa_driver_nl80211_data, whose ctx always points to
-hostpad_iface->bss[0]. However, CCA command is sent on per-BSS based.
-This patch makes hostapd handle CCA related commands on per-BSS based.
+hostpad_iface->bss[0]. However, CCA commands are sent on a per-BSS based.
+This patch makes hostapd handle CCA-related commands on a per-BSS based.
 
 Signed-off-by: Michael Lee <michael-cy.lee@mediatek.com>
 ---
@@ -93,5 +93,5 @@ index 67d9ce2..bcce9f5 100644
  #endif /* CONFIG_IEEE80211AX */
  	default:
 -- 
-2.18.0
+2.25.1
 

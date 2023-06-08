@@ -1,15 +1,14 @@
-From 097b204ffed838a4bbf7649fb23310f64ace22ad Mon Sep 17 00:00:00 2001
-From: Evelyn Tsai <evelyn.tsai@mediatek.com>
-Date: Thu, 11 May 2023 14:12:44 +0800
-Subject: [PATCH 102/103] hostapd: mtk: Fix unexpected AP beacon state
- transition
+From c4d3890bbf1bd8c8ac8bfaa56fd16e2391e05181 Mon Sep 17 00:00:00 2001
+From: Michael Lee <michael-cy.lee@mediatek.com>
+Date: Wed, 3 May 2023 16:10:57 +0800
+Subject: [PATCH] hostapd: mtk: Fix unexpected AP beacon state transition
 
-When AP fails setting the beacon, it assigns bss->beacon_set to 0 no
+When AP fails to set the beacon, it assigns bss->beacon_set to 0 no
 matter what the error number is.
 However, in the case that the error number is -EBUSY, the driver might
 not free the beacon and expect a later beacon re-setting. If hostapd set
-a new beacon under this case, driver will return -EALREADY.
-This patch checks the error number after hostapd fails setting the
+a new beacon under this case, the driver will return -EALREADY.
+This patch checks the error number after hostapd fails to set the
 beacon. If the error number is -EBUSY, bss->beacon_set will not be
 assigned to 0.
 
@@ -19,7 +18,7 @@ Signed-off-by: Michael Lee <michael-cy.lee@mediatek.com>
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/src/drivers/driver_nl80211.c b/src/drivers/driver_nl80211.c
-index 8400e57..ccfc2d0 100644
+index 8400e57..5013207 100644
 --- a/src/drivers/driver_nl80211.c
 +++ b/src/drivers/driver_nl80211.c
 @@ -5126,7 +5126,8 @@ static int wpa_driver_nl80211_set_ap(void *priv,
@@ -33,5 +32,5 @@ index 8400e57..ccfc2d0 100644
  		bss->flink->beacon_set = 1;
  		nl80211_set_bss(bss, params->cts_protect, params->preamble,
 -- 
-2.18.0
+2.25.1
 
