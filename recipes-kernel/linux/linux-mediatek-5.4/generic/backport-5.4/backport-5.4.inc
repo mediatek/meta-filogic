@@ -163,9 +163,7 @@ SRC_URI_append = " \
     file://406-v5.13-0003-dt-bindings-mtd-Document-use-of-nvmem-cells-compatib.patch \
     file://407-v5.13-0001-dt-bindings-mtd-add-binding-for-Linksys-Northstar-pa.patch \
     file://407-v5.13-0002-mtd-parsers-ofpart-support-Linksys-Northstar-partiti.patch \
-    file://408-v5.7-mtd-nand-spi-rework-detect-procedure-for-different-read-id-op.patch \
     file://410-mtd-fix-calculating-partition-end-address.patch \
-    file://411-mtd-spinand-gigadevice-Support-GD5F1GQ5UExxG.patch \
     file://412-v5.19-mtd-call-of_platform_populate-for-MTD-partitions.patch \
     file://413-v6.0-mtd-next-mtd-core-introduce-of-support-for-dynamic-partitions.patch \
     file://414-v6.1-mtd-allow-getting-MTD-device-associated-with-a-speci.patch \
@@ -174,23 +172,7 @@ SRC_URI_append = " \
     file://417-v6.2-0001-mtd-core-simplify-a-bit-code-find-partition-matching.patch \
     file://417-v6.2-0002-mtd-core-try-to-find-OF-node-for-every-MTD-partition.patch \
     file://420-v6.2-mtd-parsers-add-TP-Link-SafeLoader-partitions-table-.patch \
-    file://430-mtd-spinand-macronix-Add-support-for-MX31LF1GE4BC.patch \
     file://430-v6.3-ubi-Fix-failure-attaching-when-vid_hdr-offset-equals.patch \
-    file://431-mtd-spinand-macronix-Add-support-for-MX31UF1GE4BC.patch \
-    file://432-mtd-spinand-macronix-Add-support-for-MX35LFxGE4AD.patch \
-    file://433-mtd-spinand-macronix-Add-support-for-MX35LFxG24AD.patch \
-    file://434-mtd-spinand-macronix-Add-support-for-serial-NAND-flash.patch \
-    file://435-mtd-spinand-macronix-Add-Quad-support-for-serial-NAND-flash.patch \
-    file://450-mtd-spinand-micron-Generalize-the-OOB-layout-structure-and-function-names.patch \
-    file://451-mtd-spinand-micron-Describe-the-SPI-NAND-device-MT29F2G01ABAGD.patch \
-    file://452-mtd-spinand-micron-Add-new-Micron-SPI-NAND-devices.patch \
-    file://453-mtd-spinand-micron-identify-SPI-NAND-device-with-Continuous-Read-mode.patch \
-    file://454-mtd-spinand-micron-Add-M70A-series-Micron-SPI-NAND-devices.patch \
-    file://455-mtd-spinand-micron-Add-new-Micron-SPI-NAND-devices-with-multiple-dies.patch \
-    file://456-mtd-spinand-micron-Use-more-specific-names.patch \
-    file://457-mtd-spinand-micron-Add-support-for-MT29F2G01AAAED.patch \
-    file://470-mtd-spinand-toshiba-Rename-function-name-to-change-suffix-and-prefix-8Gbit.patch \
-    file://471-mtd-spinand-toshiba-Support-for-new-Kioxia-Serial-NAND.patch \
     file://600-v5.12-net-extract-napi-poll-functionality-to-__napi_poll.patch \
     file://601-v5.12-net-implement-threaded-able-napi-poll-loop-support.patch \
     file://602-v5.12-net-add-sysfs-attribute-to-control-napi-threaded-mod.patch \
@@ -270,10 +252,6 @@ SRC_URI_append = " \
     file://780-net-dsa-mt7530-setup-core-clock-even-in-TRGMII-mode.patch \
     file://781-v5.18-1-net-dsa-Move-VLAN-filtering-syncing-out-of-dsa_switc.patch \
     file://781-v5.18-2-net-dsa-Avoid-cross-chip-syncing-of-VLAN-filtering.patch \
-    file://790-v5.7-iopoll-introduce-read_poll_timeout-macro.patch \
-    file://791-v5.8-net-phy-add-concept-of-shared-storage-for-PHYs.patch \
-    file://792-v5.9-net-phy-add-support-for-a-common-probe-between-shared-PHYs.patch;apply=no \
-    file://793-net-phy-backport-v5.4-mediatek-ge-and-v6.4-mediatek-ge-soc.patch \
     file://800-v5.5-iio-imu-Add-support-for-the-FXOS8700-IMU.patch \
     file://800-v5.5-scsi-core-Add-sysfs-attributes-for-VPD-pages-0h-and-.patch \
     file://801-v5.19-nvmem-core-support-passing-DT-node-in-cell-info.patch \
@@ -304,7 +282,6 @@ SRC_URI_append = " \
     file://822-v6.2-0003-nvmem-u-boot-env-add-Broadcom-format-support.patch \
     file://825-v5.8-spi-rb4xx-null-pointer-bug-fix.patch \
     file://826-v5.8-spi-rb4xx-update-driver-to-be-device-tree-aware.patch \
-    file://827-v5.16-spi-add-power-control-when-set_cs.patch \
     file://831-v5.13-0001-firmware-bcm47xx_nvram-rename-finding-function-and-i.patch \
     file://831-v5.13-0002-firmware-bcm47xx_nvram-add-helper-checking-for-NVRAM.patch \
     file://831-v5.13-0003-firmware-bcm47xx_nvram-extract-code-copying-NVRAM.patch \
@@ -320,5 +297,28 @@ SRC_URI_append = " \
     file://900-v5.9-0001-dt-bindings-Add-multicolor-class-dt-bindings-documen.patch \
     file://900-v5.9-0002-leds-Add-multicolor-ID-to-the-color-ID-list.patch \
     file://900-v5.9-0003-leds-add-RGB-color-option-as-that-is-different-from-.patch \
+    file://999-2310-v5.7-mtd-nand-spi-rework-detect-procedure-for-different-read-id-op.patch \
+    file://999-2311-mtd-spinand-gigadevice-Support-GD5F1GQ5UExxG.patch \
+    file://999-2312-mtd-spinand-macronix-Add-support-for-MX31LF1GE4BC.patch \
+    file://999-2313-mtd-spinand-macronix-Add-support-for-MX31UF1GE4BC.patch \
+    file://999-2314-mtd-spinand-macronix-Add-support-for-MX35LFxGE4AD.patch \
+    file://999-2315-mtd-spinand-macronix-Add-support-for-MX35LFxG24AD.patch \
+    file://999-2316-mtd-spinand-macronix-Add-support-for-serial-NAND-flash.patch \
+    file://999-2317-mtd-spinand-macronix-Add-Quad-support-for-serial-NAND-flash.patch \
+    file://999-2318-mtd-spinand-micron-Generalize-the-OOB-layout-structure-and-function-names.patch \
+    file://999-2319-mtd-spinand-micron-Describe-the-SPI-NAND-device-MT29F2G01ABAGD.patch \
+    file://999-2320-mtd-spinand-micron-Add-new-Micron-SPI-NAND-devices.patch \
+    file://999-2321-mtd-spinand-micron-identify-SPI-NAND-device-with-Continuous-Read-mode.patch \
+    file://999-2322-mtd-spinand-micron-Add-M70A-series-Micron-SPI-NAND-devices.patch \
+    file://999-2323-mtd-spinand-micron-Add-new-Micron-SPI-NAND-devices-with-multiple-dies.patch \
+    file://999-2324-mtd-spinand-micron-Use-more-specific-names.patch \
+    file://999-2325-mtd-spinand-micron-Add-support-for-MT29F2G01AAAED.patch \
+    file://999-2326-mtd-spinand-toshiba-Rename-function-name-to-change-suffix-and-prefix-8Gbit.patch \
+    file://999-2327-mtd-spinand-toshiba-Support-for-new-Kioxia-Serial-NAND.patch \
+    file://999-2360-v5.16-spi-add-power-control-when-set_cs.patch \
+    file://999-2700-v5.7-iopoll-introduce-read_poll_timeout-macro.patch \
+    file://999-2701-v5.8-net-phy-add-concept-of-shared-storage-for-PHYs.patch \
+    file://999-2702-v5.9-net-phy-add-support-for-a-common-probe-between-shared-PHYs.patch;apply=no \
+    file://999-2703-net-phy-backport-v5.4-mediatek-ge-and-v6.4-mediatek-ge-soc.patch \
     file://999-update-uapi-header-files-for-bridger.patch \
     "

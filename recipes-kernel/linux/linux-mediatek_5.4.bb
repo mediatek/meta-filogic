@@ -63,7 +63,7 @@ SRC_URI_remove = " \
 require ${PN}-${PV}/mediatek/patches-5.4/patches-5.4.inc
 
 SRC_URI_remove_mt7986-32bit = " \
-    file://401-pinctrl-add-mt7986-driver.patch \
+    file://999-2020-pinctrl-add-mt7986-driver.patch \
     "
 SRC_URI_append_secureboot += " \
     file://0404-mtdsplit-dm-verity.patch;apply=no \
@@ -88,12 +88,13 @@ do_filogic_patches() {
             patch -p1 < ${WORKDIR}/001-rdkb-eth-mtk-change-ifname-for.patch
             patch -p1 < ${WORKDIR}/003-rdkb-mtd-kernel-ubi-relayout.patch
             patch -p1 < ${WORKDIR}/0600-net-phylink-propagate-resolved-link-config-via-mac_l.patch
-            patch -p1 < ${WORKDIR}/738-mt7531-gsw-internal_phy_calibration.patch
-            patch -p1 < ${WORKDIR}/739-mt7531-gsw-port5_external_phy_init.patch
-            patch -p1 < ${WORKDIR}/753-net-mt753x-phy-coverity-scan.patch
-            patch -p1 < ${WORKDIR}/757-net-phy-add-phylink-pcs-support.patch
-            patch -p1 < ${WORKDIR}/792-v5.9-net-phy-add-support-for-a-common-probe-between-shared-PHYs.patch
-            patch -p1 < ${WORKDIR}/9010-iwconfig-wireless-rate-fix.patch
+            patch -p1 < ${WORKDIR}/999-2713-mt7531-gsw-internal_phy_calibration.patch
+            patch -p1 < ${WORKDIR}/999-2714-mt7531-gsw-port5_external_phy_init.patch
+            patch -p1 < ${WORKDIR}/999-2721-net-mt753x-phy-coverity-scan.patch
+            patch -p1 < ${WORKDIR}/999-1710-net-phy-add-phylink-pcs-support.patch
+            patch -p1 < ${WORKDIR}/999-1712-net-phy-add-phylink-rate-matching-support.patch
+            patch -p1 < ${WORKDIR}/999-2702-v5.9-net-phy-add-support-for-a-common-probe-between-shared-PHYs.patch
+            patch -p1 < ${WORKDIR}/999-2725-iwconfig-wireless-rate-fix.patch
             if [ $DISTRO_secure_boot_ENABLED = 'true' ]; then
                 patch -p1 < ${WORKDIR}/0404-mtdsplit-dm-verity.patch
                 patch -p1 < ${WORKDIR}/0800-dm-verity-redo-hash-for-safexel-sha256.patch

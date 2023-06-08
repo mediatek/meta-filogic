@@ -1,27 +1,13 @@
 #patch patches-5.4 (come from openwrt/lede/target/linux/mediatek)
 SRC_URI_append = " \
-    file://0001-clk-mtk-add-mt7986-support.patch \
-    file://0001-cpufreq-add-the-missing-platform-driver-unregister.patch \
     file://0001-v5.7-spi-make-spi-max-frequency-optional.patch \
-    file://0002-clk-mtk-add-mt7981-support.patch \
-    file://0002-cpufreq-Enable-clocks-and-regulators.patch \
     file://0002-v5.7-spi-add-support-for-mediatek-spi-nor-controller.patch \
-    file://0003-clk-mtk-add-mt7988-support.patch \
-    file://0003-cpufreq-add-mt7988a-spim-snand-support.patch \
     file://0003-switch-add-mt7531.patch \
-    file://0005-clk-mtk-add-chg-shift-control.patch \
     file://0005-dts-mt7622-add-gsw.patch \
     file://0005-dts-mt7629-add-gsw.patch \
     file://0006-dts-fix-bpi2-console.patch \
     file://0006-dts-fix-bpi64-console.patch \
-    file://0006-powerdomain-add-mt7988-support.patch \
-    file://0007-cpufreq-mtk-vbining-add-mt7988-support.patch \
     file://0010-dts-mt7629-rfb-fix-firmware-partition.patch \
-    file://0020-dts-mt7622-enable-new-mtk-snand-for-ubi.patch \
-    file://0021-dts-mt7622-remove-cooling-device.patch \
-    file://0100-hwnat_Kconfig_Makefile.patch \
-    file://0111-mt7986-trng-add-rng-support.patch \
-    file://0200-show_model_name_in_cpuinfo_on_arm64.patch \
     file://0226-phy-phy-mtk-tphy-Add-hifsys-support.patch \
     file://0227-arm-dts-Add-Unielec-U7623-DTS.patch \
     file://0301-mtd-mtk-ecc-move-mtk-ecc-header-file-to-include-mtd.patch \
@@ -29,122 +15,136 @@ SRC_URI_append = " \
     file://0307-dts-mt7629-add-snand-support.patch \
     file://0308-dts-mt7622-add-snand-support.patch \
     file://0310-dts-add-wmac-support-for-mt7622-rfb1.patch \
-    file://0322-fix-dirty-race-between-do_tmpfile.patch \
-    file://0400-sound-add-some-helpers-to-control-mtk_memif.patch \
-    file://0401-sound-refine-hw-params-and-hw-prepare.patch \
-    file://0402-sound-add-mt7986-driver.patch \
-    file://0490-mtd-spinand-winbond-Support-for-W25MxxGV-W25NxxKV-series.patch \
-    file://0491-mtd-spinand-macronix-suppress-mx35lf1ge4ab-warning-log.patch \
     file://0500-v5.6-crypto-backport-inside-secure.patch \
     file://0501-crypto-add-eip97-inside-secure-support.patch \
     file://0502-dts-mt7623-eip97-inside-secure-support.patch \
     file://0503-crypto-fix-eip97-cache-incoherent.patch \
-    file://0504-macsec-revert-async-support.patch \
-    file://0505-crypto-add-eip197-inside-secure-support.patch \
     file://0600-net-phylink-propagate-resolved-link-config-via-mac_l.patch;apply=no \
     file://0601-net-dsa-propagate-resolved-link-config-via-mac_link_.patch \
     file://0602-net-dsa-mt7530-use-resolved-link-config-in-mac_link_.patch \
     file://0603-net-dsa-mt7530-Extend-device-data-ready-for-adding-a.patch \
     file://0604-net-dsa-mt7530-Add-the-support-of-MT7531-switch.patch \
     file://0605-arm64-dts-mt7622-add-mt7531-dsa-to-bananapi-bpi-r64-board.patch \
-    file://0666-add-spimem-support-to-mtk-spi.patch \
-    file://0666-spi-mtk-nor-fix-timeout-calculation-overflow.patch \
-    file://0667-spi-mediatek-fix-timeout-for-large-data.patch \
-    file://0668-spi-mediatek-fix-dma-unmap-twice.patch \
-    file://0669-fix-SPIM-NAND-and-NOR-probing.patch \
-    file://0670-fix-SPIM-dma-buffer-not-aligned.patch \
-    file://0701-fix-mtk-nfi-driver-dependency.patch \
-    file://0801-mtk-sd-add-mt7986-support.patch \
-    file://0802-mtk-sd-Add-subsys-clock-control.patch \
     file://0900-bt-mtk-serial-fix.patch \
-    file://0900-i2c-busses-add-mt7986-support.patch \
-    file://0901-i2c-busses-add-mt7981-support.patch \
-    file://0920-kernel-MT7988-fix-spi-dma-unmap.patch \
-    file://0930-pwm-add-mt7986-support.patch \
-    file://0931-pwm-add-mt7981-support.patch \
-    file://0932-add-pwm-feature-in-mt7988-project.patch \
-    file://0950-add-pmic-config.patch \
-    file://0950-pwm-mediatek-add-longer-period-support.patch \
-    file://0960-watchdog-add-mt7986-assert.patch \
-    file://0961-dual-image-mount-rootfs.patch \
     file://0990-gsw-rtl8367s-mt7622-support.patch \
     file://0991-dt-bindings-PCI-Mediatek-Update-PCIe-binding.patch \
     file://0992-PCI-mediatek-Use-regmap-to-get-shared-pcie-cfg-base.patch \
     file://0993-arm64-dts-mediatek-Split-PCIe-node-for-MT2712-MT7622.patch \
     file://0994-ARM-dts-mediatek-Update-mt7629-PCIe-node.patch \
-    file://1001-mtkhnat-ipv6-fix-pskb-expand-head-limitation.patch \
     file://1003-dts-mt7622-rfb-change-to-ax-mtd-layout.patch \
     file://1010-pcie-mediatek-fix-clearing-interrupt-status.patch \
-    file://1015-pcie-add-pcie-gen3-upstream-driver.patch \
     file://1020-spi-nor-w25q512jv.patch \
     file://1021-ubnt-ledbar-driver.patch \
-    file://1023-kgdb-add-interrupt-control.patch \
-    file://1024-pcie-add-multi-MSI-support.patch \
-    file://1661-Add-trngv2-driver-support.patch \
-    file://1662-trng-Add-trng-support-for-mt7988.patch \
-    file://2000-misc-add-mtk-platform.patch \
-    file://400-mtd-add-mtk-snand-driver.patch \
-    file://401-pinctrl-add-mt7986-driver.patch \
-    file://401-pinctrl-enable-mt7988-pinctrl-config.patch \
-    file://402-pinctrl-add-mt7981-driver.patch \
-    file://412-mtd-spinand-gigadevice-Add-support-for-F50L1G41LB-and-GD5F1GQ5UExxG.patch \
-    file://413-mtd-spinand-gigadevice-Add-support-for-GD5FxGQxUExxG-GD5FxGQxUExxH-and-GD5FxGMxUExxG-series.patch \
-    file://414-mtd-spinand-fix-gigadevice-read-dummy.patch \
-    file://415-mtd-spinand-fix-F50L1G41LB-ecc-check.patch \
-    file://416-mtd-spinor-support-EN25QX128A.patch \
-    file://492-mtd-tests-fix-pagetest-load.patch \
-    file://500-auxadc-add-auxadc-32k-clk.patch \
-    file://6001-mtk-thermal-add-lvts-support.patch \
-    file://7000-fix-race-inside-napi-enable.patch \
-    file://7001-net-make-napi-disable-symmetric-with-enable.patch \
-    file://7002-net-fix-premature-exit-from-napi-state-polling-in-napi-disable-v2.patch \
-    file://730-net-ethernet-mtk_eth_soc-add-mtk-dsa-tag-rx-offload.patch \
-    file://738-mt7531-gsw-internal_phy_calibration.patch;apply=no \
-    file://739-mt7531-gsw-port5_external_phy_init.patch;apply=no \
-    file://740-add-gpy211-phy-support.patch \
-    file://741-add-default-setting-to-dsa-unused-port.patch \
-    file://742-net-dsa-add-MT7531-Gigabit-Ethernet-PHY-setting.patch \
-    file://744-en8811h-2p5gphy-support.patch \
-    file://745-en8801sc-gphy-support.patch \
-    file://745-mdiobus-add-c45.patch \
-    file://746-add-mediatek-2p5ge-phy-support.patch \
-    file://746-mxl-gpy-phy-support.patch \
-    file://747-net-phy-aquantia-add-AQR113C.patch \
-    file://748-add-netlink-support-for-dsa.patch \
-    file://749-net-dsa-support-mt7988.patch \
-    file://750-add-mdio-bus-for-gphy-calibration.patch \
-    file://751-net-phy-aquantia-add-firmware-download.patch \
-    file://752-net-dsa-phy-coverity-scan.patch \
-    file://753-net-mt753x-phy-coverity-scan.patch;apply=no \
-    file://754-net-phy-add-5GBASER.patch \
-    file://755-net-phy-sfp-add-rollball-support.patch \
-    file://757-net-phy-add-phylink-pcs-support.patch;apply=no \
-    file://758-net-phy-add-phylink-pcs-decode-helper.patch \
-    file://8000-PATCH-1-4-tphy-support-type-switch-by-pericfg.patch \
-    file://8001-PATCH-2-4-dt-bindings-phy-Add-PHY_TYPE_DP-definition.patch \
-    file://8002-PATCH-3-4-dt-bindings-phy-Add-PHY_TYPE_XPCS-definition.patch \
-    file://8003-PATCH-4-4-dt-bindings-phy-Add-DT-bindings-for-Xilinx-ZynqMP-PS.patch \
-    file://8004-nvmem-core-Add-functions-to-make-number-reading-easy.patch \
-    file://8005-nvmem-mtk-efuse-support-minimum-one-byte-access-stri.patch \
-    file://8006-phy-phy-mtk-tphy-add-support-efuse-setting.patch \
-    file://8007-phy-phy-mtk-tphy-Add-PCIe-2-lane-efuse-support.patch \
-    file://8008-phy-phy-mtk-tphy-add-auto-load-valid-check-mechanism.patch \
-    file://8009-tphy-one-setting-of-TTSSC-Freq-Dev-for-all-IC-cases.patch \
-    file://8010-phy-phy-mtk-xsphy-support-type-switch-by-pericfg.patch \
-    file://8011-ovs-add-multicast-to-unicast-support.patch \
-    file://9000-PATCH-1-1-xHCI-change-compliance-mode-de-emphasis-default-as-g.patch \
-    file://9001-PATCH-1-2-xHCI-MT7986-USB-2.0-USBIF-compliance-toolkit.patch \
-    file://9002-PATCH-1-1-usb-add-embedded-Host-feature-support.patch \
-    file://9009-Add-spi-runtime-PM-support.patch \
-    file://9010-iwconfig-wireless-rate-fix.patch;apply=no \
-    file://9011-Modify-tick_delay-for-spi-work-safety.patch \
-    file://9013-drivers-spi-mt65xx-Move-chip_config-to-driver-priv.patch \
-    file://9014-drivers-spi-Add-support-for-dynamic-calibration.patch \
-    file://9015-drivers-spi-mem-Add-spi-calibration-hook.patch \
-    file://9016-drivers-spi-mt65xx-Add-controller-calibration-parameter.patch \
-    file://9017-drivers-mtd-spinand-Add-calibration-support-for-spinand.patch \
-    file://9018-drivers-mtd-spi-nor-Add-calibration-support-for-spi-nor.patch \
-    file://9019-drivers-char-tpm-Add-calibration-example-for-SPI-TPM-module.patch \
-    file://9102-spi-update-driver.patch \
-    file://9103-drivers-spi-mt65xx-add-dts-buswidth-flow.patch \
+    file://999-1600-mdiobus-add-c45.patch \
+    file://999-1700-macsec-revert-async-support.patch \
+    file://999-1701-add-default-setting-to-dsa-unused-port.patch \
+    file://999-1702-net-dsa-add-MT7531-Gigabit-Ethernet-PHY-setting.patch \
+    file://999-1704-net-phy-aquantia-add-AQR113C.patch \
+    file://999-1705-add-netlink-support-for-dsa.patch \
+    file://999-1706-net-dsa-support-mt7988.patch \
+    file://999-1707-add-mdio-bus-for-gphy-calibration.patch \
+    file://999-1708-net-phy-add-5GBASER.patch \
+    file://999-1709-net-phy-sfp-add-rollball-support.patch \
+    file://999-1710-net-phy-add-phylink-pcs-support.patch;apply=no \
+    file://999-1711-net-phy-add-phylink-pcs-decode-helper.patch \
+    file://999-1712-net-phy-add-phylink-rate-matching-support.patch;apply=no \
+    file://999-2000-show_model_name_in_cpuinfo_on_arm64.patch \
+    file://999-2001-kgdb-add-interrupt-control.patch \
+    file://999-2010-clk-mtk-add-mt7986-support.patch \
+    file://999-2011-clk-mtk-add-mt7981-support.patch \
+    file://999-2012-clk-mtk-add-mt7988-support.patch \
+    file://999-2013-clk-mtk-add-chg-shift-control.patch \
+    file://999-2020-pinctrl-add-mt7986-driver.patch \
+    file://999-2021-pinctrl-enable-mt7988-pinctrl-config.patch \
+    file://999-2022-pinctrl-add-mt7981-driver.patch \
+    file://999-2040-powerdomain-add-mt7988-support.patch \
+    file://999-2050-watchdog-add-mt7986-assert.patch \
+    file://999-2100-mt7986-trng-add-rng-support.patch \
+    file://999-2101-Add-trngv2-driver-support.patch \
+    file://999-2102-trng-Add-trng-support-for-mt7988.patch \
+    file://999-2103-drivers-char-tpm-Add-calibration-example-for-SPI-TPM-module.patch \
+    file://999-2110-i2c-busses-add-mt7986-support.patch \
+    file://999-2111-i2c-busses-add-mt7981-support.patch \
+    file://999-2120-auxadc-add-auxadc-32k-clk.patch \
+    file://999-2130-pwm-add-mt7986-support.patch \
+    file://999-2131-pwm-add-mt7981-support.patch \
+    file://999-2132-add-pwm-feature-in-mt7988-project.patch \
+    file://999-2133-pwm-mediatek-add-longer-period-support.patch \
+    file://999-2140-mtk-thermal-add-lvts-support.patch \
+    file://999-2150-sound-add-some-helpers-to-control-mtk_memif.patch \
+    file://999-2151-sound-refine-hw-params-and-hw-prepare.patch \
+    file://999-2152-sound-add-mt7986-driver.patch \
+    file://999-2300-mtk-sd-add-mt7986-support.patch \
+    file://999-2301-mtk-sd-Add-subsys-clock-control.patch \
+    file://999-2330-mtd-spinand-winbond-Support-for-W25MxxGV-W25NxxKV-series.patch \
+    file://999-2331-mtd-spinand-macronix-suppress-mx35lf1ge4ab-warning-log.patch \
+    file://999-2332-mtd-add-mtk-snand-driver.patch \
+    file://999-2333-mtd-spinand-gigadevice-Add-support-for-F50L1G41LB-and-GD5F1GQ5UExxG.patch \
+    file://999-2334-mtd-spinand-gigadevice-Add-support-for-GD5FxGQxUExxG-GD5FxGQxUExxH-and-GD5FxGMxUExxG-series.patch \
+    file://999-2335-mtd-spinand-fix-gigadevice-read-dummy.patch \
+    file://999-2336-mtd-spinand-fix-F50L1G41LB-ecc-check.patch \
+    file://999-2337-mtd-spinor-support-EN25QX128A.patch \
+    file://999-2338-mtd-tests-fix-pagetest-load.patch \
+    file://999-2339-drivers-mtd-spinand-Add-calibration-support-for-spinand.patch \
+    file://999-2340-drivers-mtd-spi-nor-Add-calibration-support-for-spi-nor.patch \
+    file://999-2350-nvmem-core-Add-functions-to-make-number-reading-easy.patch \
+    file://999-2351-nvmem-mtk-efuse-support-minimum-one-byte-access-stri.patch \
+    file://999-2361-add-spimem-support-to-mtk-spi.patch \
+    file://999-2362-spi-mtk-nor-fix-timeout-calculation-overflow.patch \
+    file://999-2363-spi-mediatek-fix-timeout-for-large-data.patch \
+    file://999-2364-spi-mediatek-fix-dma-unmap-twice.patch \
+    file://999-2365-fix-SPIM-NAND-and-NOR-probing.patch \
+    file://999-2366-fix-SPIM-dma-buffer-not-aligned.patch \
+    file://999-2367-fix-mtk-nfi-driver-dependency.patch \
+    file://999-2368-kernel-MT7988-fix-spi-dma-unmap.patch \
+    file://999-2369-Add-spi-runtime-PM-support.patch \
+    file://999-2370-Modify-tick_delay-for-spi-work-safety.patch \
+    file://999-2371-drivers-spi-mt65xx-Move-chip_config-to-driver-priv.patch \
+    file://999-2372-drivers-spi-Add-support-for-dynamic-calibration.patch \
+    file://999-2373-drivers-spi-mem-Add-spi-calibration-hook.patch \
+    file://999-2374-drivers-spi-mt65xx-Add-controller-calibration-parameter.patch \
+    file://999-2375-spi-update-driver.patch \
+    file://999-2376-drivers-spi-mt65xx-add-dts-buswidth-flow.patch \
+    file://999-2380-fix-dirty-race-between-do_tmpfile.patch \
+    file://999-2500-cpufreq-add-the-missing-platform-driver-unregister.patch \
+    file://999-2501-cpufreq-Enable-clocks-and-regulators.patch \
+    file://999-2502-cpufreq-add-mt7988a-spim-snand-support.patch \
+    file://999-2503-cpufreq-mtk-vbining-add-mt7988-support.patch \
+    file://999-2530-add-pmic-config.patch \
+    file://999-2550-dual-image-mount-rootfs.patch \
+    file://999-2600-pcie-add-pcie-gen3-upstream-driver.patch \
+    file://999-2601-pcie-add-multi-MSI-support.patch \
+    file://999-2610-tphy-support-type-switch-by-pericfg.patch \
+    file://999-2611-phy-phy-mtk-tphy-add-support-efuse-setting.patch \
+    file://999-2612-phy-phy-mtk-tphy-Add-PCIe-2-lane-efuse-support.patch \
+    file://999-2613-phy-phy-mtk-tphy-add-auto-load-valid-check-mechanism.patch \
+    file://999-2614-tphy-one-setting-of-TTSSC-Freq-Dev-for-all-IC-cases.patch \
+    file://999-2615-phy-phy-mtk-xsphy-support-type-switch-by-pericfg.patch \
+    file://999-2620-xHCI-change-compliance-mode-de-emphasis-default-as-g.patch \
+    file://999-2621-xHCI-MT7986-USB-2.0-USBIF-compliance-toolkit.patch \
+    file://999-2622-usb-add-embedded-Host-feature-support.patch \
+    file://999-2704-en8811h-2p5gphy-support.patch \
+    file://999-2705-hwnat_Kconfig_Makefile.patch \
+    file://999-2706-crypto-add-eip197-inside-secure-support.patch \
+    file://999-2707-mtkhnat-ipv6-fix-pskb-expand-head-limitation.patch \
+    file://999-2709-fix-race-inside-napi-enable.patch \
+    file://999-2710-net-make-napi-disable-symmetric-with-enable.patch \
+    file://999-2711-net-fix-premature-exit-from-napi-state-polling-in-napi-disable-v2.patch \
+    file://999-2712-net-ethernet-mtk_eth_soc-add-mtk-dsa-tag-rx-offload.patch \
+    file://999-2713-mt7531-gsw-internal_phy_calibration.patch;apply=no \
+    file://999-2714-mt7531-gsw-port5_external_phy_init.patch;apply=no \
+    file://999-2715-add-gpy211-phy-support.patch \
+    file://999-2716-en8801sc-gphy-support.patch \
+    file://999-2717-add-mediatek-2p5ge-phy-support.patch \
+    file://999-2718-mxl-gpy-phy-support.patch \
+    file://999-2719-net-phy-aquantia-add-firmware-download.patch \
+    file://999-2720-net-dsa-phy-coverity-scan.patch \
+    file://999-2721-net-mt753x-phy-coverity-scan.patch;apply=no \
+    file://999-2722-dt-bindings-phy-Add-PHY_TYPE_DP-definition.patch \
+    file://999-2723-dt-bindings-phy-Add-PHY_TYPE_XPCS-definition.patch \
+    file://999-2724-dt-bindings-phy-Add-DT-bindings-for-Xilinx-ZynqMP-PS.patch \
+    file://999-2725-iwconfig-wireless-rate-fix.patch;apply=no \
+    file://999-2800-misc-add-mtk-platform.patch \
+    file://999-2900-dts-mt7622-enable-new-mtk-snand-for-ubi.patch \
+    file://999-2901-dts-mt7622-remove-cooling-device.patch \
     "

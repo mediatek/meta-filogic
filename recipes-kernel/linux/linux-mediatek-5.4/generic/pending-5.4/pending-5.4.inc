@@ -65,15 +65,12 @@ SRC_URI_append = " \
     file://496-dt-bindings-add-bindings-for-mtd-concat-devices.patch \
     file://497-mtd-mtdconcat-add-dt-driver-for-concat-devices.patch \
     file://498-mtd-mtdconcat-select-readwrite-function.patch \
-    file://499-mtd-add-nmbm-support.patch \
-    file://500-ubi-add-configurable-rootdev.patch \
     file://530-jffs2_make_lzma_available.patch \
     file://532-jffs2_eofdetect.patch \
     file://600-netfilter_conntrack_flush.patch \
     file://610-netfilter_match_bypass_default_checks.patch \
     file://611-netfilter_match_bypass_default_table.patch \
     file://612-netfilter_match_reduce_memory_access.patch \
-    file://613-netfilter_optional_tcp_window_check.patch \
     file://620-net_sched-codel-do-not-defer-queue-length-update.patch \
     file://630-packet_socket_type.patch \
     file://655-increase_skb_pad.patch \
@@ -123,4 +120,7 @@ SRC_URI_append = " \
     file://834-ledtrig-libata.patch \
     file://840-hwrng-bcm2835-set-quality-to-1000.patch \
     file://920-mangle_bootargs.patch \
+    file://999-2328-mtd-add-nmbm-support.patch \
+    file://999-2329-ubi-add-configurable-rootdev.patch \
+    file://999-2704-netfilter_optional_tcp_window_check.patch \
     "
