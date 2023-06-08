@@ -106,7 +106,7 @@ do_filogic_patches() {
             fi
             if [ $DISTRO_logan_ENABLED = 'true' ]; then
                 for i in ${WORKDIR}/mediatek/nf_hnat/6*.patch; do patch -p1 < $i; done
-                for i in ${WORKDIR}/mediatek/nf_hnat/10*.patch; do patch -p1 < $i; done
+                for i in ${WORKDIR}/mediatek/nf_hnat/9*.patch; do patch -p1 < $i; done
                 patch -p1 < ${WORKDIR}/004-rdkb-hnat-bind-ifname.patch
             fi
             touch patch_applied
