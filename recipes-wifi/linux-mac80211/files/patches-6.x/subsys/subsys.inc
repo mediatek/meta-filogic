@@ -50,7 +50,7 @@ SRC_URI_append = " \
     file://bp-0008-wifi-mac80211-configure-puncturing-bitmap.patch \
     file://bp-0009-wifi-mac80211-add-EHT-MU-MIMO-related-flags-in-ieee8.patch \
     file://mtk-0001-mac80211-mtk-do-not-setup-twt-when-twt-responder-is-.patch \
-    file://mtk-0002-nl80211-mtk-extend-CAC-time-for-weather-radar-channe.patch \
+    file://mtk-0002-cfg80211-mtk-extend-CAC-time-for-weather-radar-chann.patch \
     file://mtk-0003-mac80211-mtk-it-s-invalid-case-when-frag_threshold-i.patch \
     file://mtk-0004-mac80211-mtk-airtime_flags-depends-on-NL80211_EXT_FE.patch \
     file://mtk-0005-mac80211-mtk-add-support-for-runtime-set-inband-disc.patch \
@@ -63,6 +63,7 @@ SRC_URI_append = " \
     file://mtk-0012-mac80211-mtk-track-obss-color-bitmap.patch \
     file://mtk-0013-mac80211-mtk-ageout-color-bitmap.patch \
     file://mtk-0014-mac80211-mtk-update-max_bssid_indicator-based-on-rea.patch \
+    file://mtk-0015-mac80211-support-configurable-addba-resp-time.patch \
     file://mtk-0100-mac80211-mtk-add-EHT-BA1024-support.patch \
     file://mtk-0101-mac80211-mtk-add-rate-duration-for-EHT-rate.patch \
     file://mtk-0103-mac80211-mtk-add-send-bar-on-addbarsp_handle.patch \

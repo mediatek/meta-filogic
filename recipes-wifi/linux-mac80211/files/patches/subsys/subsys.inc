@@ -56,7 +56,7 @@ SRC_URI_append = " \
     file://783-sync-nl80211.patch \
     file://800-mac80211-mask-nested-A-MSDU-support-for-mesh.patch \
     file://mtk-0001-mac80211-mtk-do-not-setup-twt-when-twt-responder-is-.patch \
-    file://mtk-0002-nl80211-mtk-extend-CAC-time-for-weather-radar-channe.patch \
+    file://mtk-0002-cfg80211-mtk-extend-CAC-time-for-weather-radar-chann.patch \
     file://mtk-0003-mac80211-mtk-it-s-invalid-case-when-frag_threshold-i.patch \
     file://mtk-0004-mac80211-mtk-correct-legacy-rates-check-in-ieee80211.patch \
     file://mtk-0005-mac80211-mtk-airtime_flags-depends-on-NL80211_EXT_FE.patch \
@@ -72,6 +72,7 @@ SRC_URI_append = " \
     file://mtk-0015-mac80211-mtk-track-obss-color-bitmap.patch \
     file://mtk-0016-mac80211-mtk-ageout-color-bitmap.patch \
     file://mtk-0017-mac80211-mtk-update-max_bssid_indicator-based-on-rea.patch \
+    file://mtk-0018-mac80211-support-configurable-addba-resp-time.patch \
     file://mtk-9900-mac80211-mtk-mask-kernel-version-limitation-and-fill.patch \
     file://mtk-9901-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-id.patch \
     file://mtk-9902-mac80211-mtk-add-support-for-letting-drivers-registe.patch \
