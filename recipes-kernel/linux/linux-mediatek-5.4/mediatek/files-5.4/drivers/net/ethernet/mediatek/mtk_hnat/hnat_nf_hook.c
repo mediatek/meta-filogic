@@ -825,6 +825,9 @@ static unsigned int
 mtk_hnat_ipv4_nf_pre_routing(void *priv, struct sk_buff *skb,
 			     const struct nf_hook_state *state)
 {
+	struct flow_offload_hw_path hw_path = { .dev = skb->dev,
+						.virt_dev = skb->dev };
+
 	if (!skb)
 		goto drop;
 
@@ -834,6 +837,19 @@ mtk_hnat_ipv4_nf_pre_routing(void *priv, struct sk_buff *skb,
 	}
 
 	hnat_set_head_frags(state, skb, -1, hnat_set_iif);
+
+	/*
+	 * Avoid mistakenly binding of outer IP, ports in SW L2TP decap flow.
+	 * In pre-routing, if dev is virtual iface, TOPS module is not loaded,
+	 * and it's L2TP flow, then do not bind.
+	 */
+	if (skb_hnat_iface(skb) == FOE_MAGIC_GE_VIRTUAL
+	    && skb->dev->netdev_ops->ndo_flow_offload_check) {
+		skb->dev->netdev_ops->ndo_flow_offload_check(&hw_path);
+
+		if (hw_path.flags & FLOW_OFFLOAD_PATH_TNL)
+			skb_hnat_alg(skb) = 1;
+	}
 
 	pre_routing_print(skb, state->in, state->out, __func__);
 
@@ -964,10 +980,20 @@ static unsigned int hnat_ipv6_get_nexthop(struct sk_buff *skb,
 	struct neighbour *neigh = NULL;
 	struct dst_entry *dst = skb_dst(skb);
 	struct ethhdr *eth;
+	u16 eth_pppoe_hlen = ETH_HLEN + PPPOE_SES_HLEN;
 
 	if (hw_path->flags & FLOW_OFFLOAD_PATH_PPPOE) {
-		memcpy(eth_hdr(skb)->h_source, hw_path->eth_src, ETH_ALEN);
-		memcpy(eth_hdr(skb)->h_dest, hw_path->eth_dest, ETH_ALEN);
+		if (ipv6_hdr(skb)->nexthdr == NEXTHDR_IPIP) {
+			eth = (struct ethhdr *)(skb->data - eth_pppoe_hlen);
+			eth->h_proto = skb->protocol;
+			ether_addr_copy(eth->h_dest, hw_path->eth_dest);
+			ether_addr_copy(eth->h_source,  hw_path->eth_src);
+		} else {
+			eth = eth_hdr(skb);
+			memcpy(eth->h_source, hw_path->eth_src, ETH_ALEN);
+			memcpy(eth->h_dest, hw_path->eth_dest, ETH_ALEN);
+		}
+
 		return 0;
 	}
 
@@ -1150,6 +1176,20 @@ struct foe_entry ppe_fill_info_blk(struct ethhdr *eth, struct foe_entry entry,
 	return entry;
 }
 
+static struct ethhdr *get_ipv6_ipip_ethhdr(struct sk_buff *skb,
+					   struct flow_offload_hw_path *hw_path)
+{
+	struct ethhdr *eth;
+	u16 eth_pppoe_hlen = ETH_HLEN + PPPOE_SES_HLEN;
+
+	if (hw_path->flags & FLOW_OFFLOAD_PATH_PPPOE)
+		eth = (struct ethhdr *)(skb->data - eth_pppoe_hlen);
+	else
+		eth = (struct ethhdr *)(skb->data - ETH_HLEN);
+
+	return eth;
+}
+
 static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 				     const struct net_device *dev,
 				     struct foe_entry *foe,
@@ -1174,7 +1214,7 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 
 	if (ipv6_hdr(skb)->nexthdr == NEXTHDR_IPIP)
 		/* point to ethernet header for DS-Lite and MapE */
-		eth = (struct ethhdr *)(skb->data - ETH_HLEN);
+		eth = get_ipv6_ipip_ethhdr(skb, hw_path);
 	else
 		eth = eth_hdr(skb);
 
@@ -2442,6 +2482,10 @@ static unsigned int mtk_hnat_nf_post_routing(
 		return 0;
 
 	if (unlikely(!skb_hnat_is_hashed(skb)))
+		return 0;
+
+	/* Do not bind if pkt is fragmented */
+	if (ip_is_fragment(ip_hdr(skb)))
 		return 0;
 
 	if (out->netdev_ops->ndo_flow_offload_check) {

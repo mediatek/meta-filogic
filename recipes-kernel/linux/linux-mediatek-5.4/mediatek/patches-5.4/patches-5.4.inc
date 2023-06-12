@@ -39,6 +39,7 @@ SRC_URI_append = " \
     file://999-1700-macsec-revert-async-support.patch \
     file://999-1701-add-default-setting-to-dsa-unused-port.patch \
     file://999-1702-net-dsa-add-MT7531-Gigabit-Ethernet-PHY-setting.patch \
+    file://999-1703-mxl-gpy-phy-support.patch \
     file://999-1704-net-phy-aquantia-add-AQR113C.patch \
     file://999-1705-add-netlink-support-for-dsa.patch \
     file://999-1706-net-dsa-support-mt7988.patch \
@@ -136,7 +137,6 @@ SRC_URI_append = " \
     file://999-2715-add-gpy211-phy-support.patch \
     file://999-2716-en8801sc-gphy-support.patch \
     file://999-2717-add-mediatek-2p5ge-phy-support.patch \
-    file://999-2718-mxl-gpy-phy-support.patch \
     file://999-2719-net-phy-aquantia-add-firmware-download.patch \
     file://999-2720-net-dsa-phy-coverity-scan.patch \
     file://999-2721-net-mt753x-phy-coverity-scan.patch;apply=no \
