@@ -46,6 +46,8 @@ typedef struct {
     unsigned int rtsThreshold;
     BOOL ht_coex;
     BOOL background_radar;
+    UCHAR he_bss_color;
+    ULONG transmit_power;
 } wifi_radio_param;
 
 typedef struct {
