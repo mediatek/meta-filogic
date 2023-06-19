@@ -5,6 +5,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/generic/hack-5.4:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/mediatek/patches-5.4:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/mediatek/flow_patch:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/mediatek/nf_hnat:"
+FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/mediatek/wed3:"
 
 KBRANCH ?= "linux-5.4.y"
 
@@ -46,7 +47,7 @@ SRC_URI_append += " \
     ${@bb.utils.contains('DISTRO_FEATURES','emmc','file://rdkb_cfg/emmc.cfg','',d)} \
 "
 
-SRC_URI_append_mt7986 += " \
+SRC_URI_append += " \
     ${@bb.utils.contains('DISTRO_FEATURES','flow_offload','file://rdkb_cfg/bridge_netfilter.cfg','',d)} \
 "
 
@@ -113,6 +114,14 @@ do_filogic_patches() {
         fi
 }
 
+do_filogic_patches_append_mt7988() {
+    if [ ! -e wed3_patch_applied ]; then
+        if [ $DISTRO_FlowBlock_ENABLED = 'true' ]; then
+                for i in ${WORKDIR}/mediatek/wed3/*.patch; do patch -p1 < $i; done
+        fi
+        touch wed3_patch_applied
+    fi
+}
 addtask filogic_patches after do_patch before do_compile
 
 KERNEL_MODULE_AUTOLOAD += "${@bb.utils.contains('DISTRO_FEATURES','logan','mtkhnat nf_flow_table_hw','',d)}"
