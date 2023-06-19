@@ -88,6 +88,8 @@ SRC_URI_append = " \
     file://mtk-0028-hostapd-mtk-Add-muru-user-number-debug-command.patch \
     file://mtk-0029-hostapd-mtk-Fix-CCA-issue.patch \
     file://mtk-0030-hostapd-mtk-Fix-unexpected-AP-beacon-state-transitio.patch \
+    file://mtk-0032-hostapd-mtk-Add-HE-capabilities-check.patch \
     file://mtk-0100-hostapd-mtk-update-eht-operation-element.patch \
     file://mtk-0103-hostapd-mtk-Add-BW320-channel-switch-command.patch \
+    file://mtk-0104-hostapd-mtk-Add-support-for-gtk-rekeying-in-hostapd-.patch \
     "

@@ -64,7 +64,11 @@ SRC_URI_append = " \
     file://mtk-0013-mac80211-mtk-ageout-color-bitmap.patch \
     file://mtk-0014-mac80211-mtk-update-max_bssid_indicator-based-on-rea.patch \
     file://mtk-0015-mac80211-support-configurable-addba-resp-time.patch \
-    file://mtk-0100-mac80211-mtk-add-EHT-BA1024-support.patch \
-    file://mtk-0101-mac80211-mtk-add-rate-duration-for-EHT-rate.patch \
-    file://mtk-0103-mac80211-mtk-add-send-bar-on-addbarsp_handle.patch \
+    file://mtk-0016-mac80211-mtk-add-sta-assisted-DFS-state-update-mecha.patch \
+    file://mtk-0017-nl80211-mtk-Mark-DFS-channel-as-available-for-CSA.patch \
+    file://mtk-1000-mac80211-mtk-add-EHT-BA1024-support.patch \
+    file://mtk-1001-mac80211-mtk-add-rate-duration-for-EHT-rate.patch \
+    file://mtk-1002-mac80211-mtk-add-send-bar-action-when-recieve-addba-.patch \
+    file://mtk-1003-mac80211-mtk-inrease-beacon-loss-count.patch \
+    file://mtk-1004-mac80211-mtk-add-disabling-cca-when-stopping-AP.patch \
     "
