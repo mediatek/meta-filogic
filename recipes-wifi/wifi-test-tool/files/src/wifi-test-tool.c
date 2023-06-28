@@ -224,6 +224,16 @@ void set_background_radar(wifi_radio_param *radio_param, char *enable)
         radio_param->background_radar = FALSE;
 }
 
+void set_he_bss_color(wifi_radio_param *radio_param, char *he_bss_color)
+{
+    radio_param->he_bss_color = strtol(he_bss_color, NULL, 10);
+}
+
+void set_transmit_power(wifi_radio_param *radio_param, char *transmit_power)
+{
+    radio_param->transmit_power = strtoul(transmit_power, NULL, 10);
+}
+
 void set_radionum(wifi_intf_param *intf_param, char *phy_name)
 {
     int radio_num = 0;
@@ -419,6 +429,9 @@ void set_radio_param(wifi_radio_param radio_parameter)
     //ht_coex
     operationParam.obssCoex = radio_parameter.ht_coex;
 
+    // transmit_power
+    operationParam.transmitPower = radio_parameter.transmit_power;
+
     // apply setting
     ret = wifi_setRadioOperatingParameters(radio_parameter.radio_index, &operationParam);
     if (ret != RETURN_OK)
@@ -454,6 +467,14 @@ void set_radio_param(wifi_radio_param radio_parameter)
     ret = wifi_setZeroDFSState(radio_parameter.radio_index, radio_parameter.background_radar, TRUE);
     if (ret != RETURN_OK)
         fprintf(stderr, "[Set background_radar failed!!!]\n");
+    ret = 0;
+
+    // he_bss_color
+    fprintf(stderr, "Set he_bss_color: %hhu \n", radio_parameter.he_bss_color);
+    ret = wifi_setBSSColor(radio_parameter.radio_index, radio_parameter.he_bss_color);
+    if (ret != RETURN_OK)
+        fprintf(stderr, "[Set he_bss_color failed!!!]\n");
+
     ret = 0;
 
 }
@@ -913,6 +934,10 @@ int apply_uci_config ()
                     set_rts(&radio_param, op->v.string);
                 else if (strcmp(op->e.name, "background_radar") == 0)
                     set_background_radar(&radio_param, op->v.string);
+                else if (strcmp(op->e.name, "he_bss_color") == 0)
+                    set_he_bss_color(&radio_param, op->v.string);
+                else if (strcmp(op->e.name, "txpower") == 0)
+                    set_transmit_power(&radio_param, op->v.string);
                 else if (strcmp(op->e.name, "type") == 0 || strcmp(op->e.name, "path") == 0)
                     continue;
                 else
