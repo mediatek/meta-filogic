@@ -37,6 +37,7 @@ SRC_URI_append = " \
     file://0038-wifi-mt76-mt7996-fix-DFS-CAC-tx-emission-issue-after.patch \
     file://0039-wifi-mt76-mt7996-fix-bss-rate-tlv-to-sync-firmware-c.patch \
     file://0040-wifi-mt76-mt7996-fix-beamformee-ss-subfield-in-EHT-P.patch \
+    file://0041-wifi-mt76-mt7996-adjust-wfdma-setting-to-enhance-thr.patch \
     file://0999-wifi-mt76-mt7996-for-build-pass.patch \
     file://1000-wifi-mt76-mt7996-add-debug-tool.patch \
     file://1001-wifi-mt76-mt7996-add-txpower-support.patch \

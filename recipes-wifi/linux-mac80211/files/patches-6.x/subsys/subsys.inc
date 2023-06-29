@@ -37,6 +37,8 @@ SRC_URI_append = " \
     file://334-wifi-iwlwifi-mvm-support-new-flush_sta-method.patch \
     file://335-wifi-mac80211-add-LDPC-related-flags-in-ieee80211_bs.patch \
     file://336-v6.4-wifi-mac80211-generate-EMA-beacons-in-AP-mode.patch \
+    file://337-mac80211-fix-sband-iftype-data-lookup-for-AP_VLAN.patch \
+    file://340-mac80211-always-use-mac80211-loss-detection.patch \
     file://400-allow-ibss-mixed.patch \
     file://500-mac80211_configure_antenna_gain.patch \
     file://782-net-next-1-of-net-pass-the-dst-buffer-to-of_get_mac_address.patch \
