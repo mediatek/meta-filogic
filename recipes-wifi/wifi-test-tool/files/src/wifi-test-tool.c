@@ -430,7 +430,8 @@ void set_radio_param(wifi_radio_param radio_parameter)
     operationParam.obssCoex = radio_parameter.ht_coex;
 
     // transmit_power
-    operationParam.transmitPower = radio_parameter.transmit_power;
+    if (radio_parameter.transmit_power > 0)
+        operationParam.transmitPower = radio_parameter.transmit_power;
 
     // apply setting
     ret = wifi_setRadioOperatingParameters(radio_parameter.radio_index, &operationParam);
@@ -470,10 +471,12 @@ void set_radio_param(wifi_radio_param radio_parameter)
     ret = 0;
 
     // he_bss_color
-    fprintf(stderr, "Set he_bss_color: %hhu \n", radio_parameter.he_bss_color);
-    ret = wifi_setBSSColor(radio_parameter.radio_index, radio_parameter.he_bss_color);
-    if (ret != RETURN_OK)
-        fprintf(stderr, "[Set he_bss_color failed!!!]\n");
+    if (radio_parameter.he_bss_color > 0 && radio_parameter.he_bss_color < 64) {
+        fprintf(stderr, "Set he_bss_color: %hhu \n", radio_parameter.he_bss_color);
+        ret = wifi_setBSSColor(radio_parameter.radio_index, radio_parameter.he_bss_color);
+        if (ret != RETURN_OK)
+            fprintf(stderr, "[Set he_bss_color failed!!!]\n");
+    }
 
     ret = 0;
 
