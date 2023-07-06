@@ -95,10 +95,6 @@ create_hostapdConf() {
             fi                 
         fi
 
-        if [ "$pcie7915count" == "2" ]; then
-            cp -f /etc/hostapd-2G.conf /nvram/hostapd"$devidx".conf        
-        fi
-
         if [ "$band" == "6g" ]; then
             cp -f /etc/hostapd-6G.conf /nvram/hostapd"$devidx".conf
         fi
