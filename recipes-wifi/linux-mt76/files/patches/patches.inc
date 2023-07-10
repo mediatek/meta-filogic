@@ -1,6 +1,5 @@
 #patch patches (come from openwrt/lede/target/linux/mediatek)
 SRC_URI_append = " \
-    file://0000-sync-to-master-codebase.patch \
     file://0001-wifi-mt76-mt7915-Update-beacon-size-limitation-for-1.patch \
     file://0002-wifi-mt76-mt7915-fix-the-beamformer-issue.patch \
     file://0003-wifi-mt76-fix-incorrect-HE-TX-GI-report.patch \
