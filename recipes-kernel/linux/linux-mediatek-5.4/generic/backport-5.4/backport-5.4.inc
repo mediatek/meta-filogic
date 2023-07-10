@@ -172,7 +172,7 @@ SRC_URI_append = " \
     file://417-v6.2-0001-mtd-core-simplify-a-bit-code-find-partition-matching.patch \
     file://417-v6.2-0002-mtd-core-try-to-find-OF-node-for-every-MTD-partition.patch \
     file://420-v6.2-mtd-parsers-add-TP-Link-SafeLoader-partitions-table-.patch \
-    file://430-v6.3-ubi-Fix-failure-attaching-when-vid_hdr-offset-equals.patch \
+    file://430-v6.3-ubi-Fix-failure-attaching-when-vid_hdr-offset-equals.patch;apply=no \
     file://600-v5.12-net-extract-napi-poll-functionality-to-__napi_poll.patch \
     file://601-v5.12-net-implement-threaded-able-napi-poll-loop-support.patch \
     file://602-v5.12-net-add-sysfs-attribute-to-control-napi-threaded-mod.patch \
