@@ -172,7 +172,6 @@ SRC_URI_append = " \
     file://417-v6.2-0001-mtd-core-simplify-a-bit-code-find-partition-matching.patch \
     file://417-v6.2-0002-mtd-core-try-to-find-OF-node-for-every-MTD-partition.patch \
     file://420-v6.2-mtd-parsers-add-TP-Link-SafeLoader-partitions-table-.patch \
-    file://430-v6.3-ubi-Fix-failure-attaching-when-vid_hdr-offset-equals.patch;apply=no \
     file://600-v5.12-net-extract-napi-poll-functionality-to-__napi_poll.patch \
     file://601-v5.12-net-implement-threaded-able-napi-poll-loop-support.patch \
     file://602-v5.12-net-add-sysfs-attribute-to-control-napi-threaded-mod.patch \
@@ -204,6 +203,10 @@ SRC_URI_append = " \
     file://709-v5.8-0004-net-dsa-b53-Bound-check-ARL-searches.patch \
     file://709-v5.8-0005-net-dsa-b53-Remove-is_static-argument-to-b53_read_op.patch \
     file://709-v5.8-0006-net-dsa-b53-remove-redundant-premature-assignment-to.patch \
+    file://710-v5.16-0001-net-bgmac-improve-handling-PHY.patch \
+    file://710-v5.16-0002-net-bgmac-support-MDIO-described-in-DT.patch \
+    file://711-v6.3-bgmac-fix-initial-chip-reset-to-support-BCM5358.patch \
+    file://712-v6.5-net-bgmac-postpone-turning-IRQs-off-to-avoid-SoC-han.patch \
     file://716-v5.5-net-sfp-move-fwnode-parsing-into-sfp-bus-layer.patch \
     file://717-v5.5-net-sfp-rework-upstream-interface.patch \
     file://718-v5.5-net-sfp-fix-sfp_bus_put-kernel-documentation.patch \

@@ -145,6 +145,7 @@ SRC_URI_append = " \
     file://999-2723-dt-bindings-phy-Add-PHY_TYPE_XPCS-definition.patch \
     file://999-2724-dt-bindings-phy-Add-DT-bindings-for-Xilinx-ZynqMP-PS.patch \
     file://999-2725-iwconfig-wireless-rate-fix.patch;apply=no \
+    file://999-2727-net-phy-sfp-add-debug-info.patch.patch \
     file://999-2800-misc-add-mtk-platform.patch \
     file://999-2900-dts-mt7622-enable-new-mtk-snand-for-ubi.patch \
     file://999-2901-dts-mt7622-remove-cooling-device.patch \
