@@ -39,6 +39,7 @@ SRC_URI_append = " \
     file://336-v6.4-wifi-mac80211-generate-EMA-beacons-in-AP-mode.patch \
     file://337-mac80211-fix-sband-iftype-data-lookup-for-AP_VLAN.patch \
     file://338-mac80211-split-mesh-fast-tx-cache-into-local-proxied.patch \
+    file://339-wifi-cfg80211-fix-receving-mesh-packets-without-RFC1.patch \
     file://400-allow-ibss-mixed.patch \
     file://500-mac80211_configure_antenna_gain.patch \
     file://782-net-next-1-of-net-pass-the-dst-buffer-to-of_get_mac_address.patch \

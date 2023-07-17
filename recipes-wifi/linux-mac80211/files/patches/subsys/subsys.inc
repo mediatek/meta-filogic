@@ -76,4 +76,5 @@ SRC_URI_append = " \
     file://mtk-9900-mac80211-mtk-mask-kernel-version-limitation-and-fill.patch \
     file://mtk-9901-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-id.patch \
     file://mtk-9902-mac80211-mtk-add-support-for-letting-drivers-registe.patch \
+    file://mtk-9903-mac80211-add-per-bss-flag-to-support-vendors-cou.patch \
     "

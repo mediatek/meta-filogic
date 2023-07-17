@@ -7,6 +7,7 @@ SRC_URI_append = " \
     file://0005-wifi-mt76-mt7915-add-pc-stack-dump-for-WM-s-coredump.patch \
     file://0006-wifi-mt76-mt7915-update-mpdu-density-in-2-5g-capabil.patch \
     file://0007-wifi-mt76-mt7915-build-pass-for-Linux-Kernel-5.4-fix.patch \
+    file://0008-wifi-mt76-mt7915-move-temperature-margin-check-to-mt.patch \
     file://0999-wifi-mt76-mt7915-add-mtk-internal-debug-tools-for-mt.patch \
     file://1000-wifi-mt76-mt7915-csi-implement-csi-support.patch \
     file://1001-wifi-mt76-mt7915-air-monitor-support.patch \
@@ -40,6 +41,7 @@ SRC_URI_append = " \
     file://1029-wifi-mt76-mt7915-add-muru-user-number-debug-command.patch \
     file://1030-wifi-mt76-mt7915-add-debugfs-for-fw-coredump.patch \
     file://1031-wifi-mt76-mt7915-remove-BW160-support.patch \
+    file://1032-wifi-mt76-mt7915-add-txpower-info-dump-support.patch \
     file://2000-wifi-mt76-mt7915-wed-add-wed-tx-support.patch \
     file://2001-wifi-mt76-mt7915-wed-add-wds-support-when-wed-is-ena.patch \
     file://2002-wifi-mt76-mt7915-wed-add-fill-receive-path-to-report.patch \
@@ -49,5 +51,6 @@ SRC_URI_append = " \
     file://2006-wifi-mt76-add-debugfs-knob-to-show-packet-error-rate.patch \
     file://2008-wifi-mt76-mt7915-add-ctxd-support-for-mt7916.patch \
     file://2009-wifi-mt76-connac-wed-add-wed-rx-copy-skb.patch \
+    file://2010-wifi-mt76-mt7915-wed-add-per-bss-statistic-info.patch \
     file://9999-mt76-revert-for-backports-5.15-wireless-stack.patch \
     "

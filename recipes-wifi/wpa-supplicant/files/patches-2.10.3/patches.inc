@@ -16,7 +16,7 @@ SRC_URI_append = " \
     file://140-tests-Makefile-make-run-tests-with-CONFIG_TLS.patch \
     file://150-add-NULL-checks-encountered-during-tests-hwsim.patch \
     file://160-dpp_pkex-EC-point-mul-w-value-prime.patch \
-    file://170-wpa_supplicant-fix-compiling-without-IEEE8021X_EAPOL.patch \
+    file://170-hostapd-update-cfs0-and-cfs1-for-160MHz.patch \
     file://200-multicall.patch \
     file://300-noscan.patch \
     file://301-mesh-noscan.patch \
@@ -90,7 +90,8 @@ SRC_URI_append = " \
     file://mtk-0030-hostapd-mtk-Fix-unexpected-AP-beacon-state-transitio.patch \
     file://mtk-0031-hostapd-mtk-add-connac3-PHY-MURU-manual-mode-config-.patch \
     file://mtk-0032-hostapd-mtk-Add-HE-capabilities-check.patch \
-    file://mtk-0100-hostapd-mtk-update-eht-operation-element.patch \
-    file://mtk-0103-hostapd-mtk-Add-BW320-channel-switch-command.patch \
-    file://mtk-0104-hostapd-mtk-Add-support-for-gtk-rekeying-in-hostapd-.patch \
+    file://mtk-0034-hostapd-mtk-Fix-hostapd_dfs_start_cac-log.patch \
+    file://mtk-0035-hostapd-mtk-Check-the-bridge-after-ioctl-SIOCBRADDIF.patch \
+    file://mtk-1000-hostapd-mtk-update-eht-operation-element.patch \
+    file://mtk-1001-hostapd-mtk-Add-support-for-gtk-rekeying-in-hostapd-.patch \
     "

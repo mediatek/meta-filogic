@@ -95,4 +95,6 @@ SRC_URI_append = " \
     file://mtk-0030-hostapd-mtk-Add-muru-user-number-debug-command.patch \
     file://mtk-0031-hostapd-mtk-Fix-CCA-issue.patch \
     file://mtk-0032-hostapd-mtk-Fix-unexpected-AP-beacon-state-transitio.patch \
+    file://mtk-0033-hostapd-mtk-register-update_channel_utilization-agai.patch \
+    file://mtk-0034-hostapd-mtk-Fix-hostapd_dfs_start_cac-log.patch \
     "
