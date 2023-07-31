@@ -291,6 +291,9 @@
 #define MTK_PST_DRX_IDX0	BIT(16)
 #define MTK_PST_DRX_IDX_CFG(x)	(MTK_PST_DRX_IDX0 << (x))
 
+/*PDMA HW RX Index Register*/
+#define MTK_ADMA_DRX_PTR	(PDMA_BASE + 0x10C)
+
 /* PDMA Delay Interrupt Register */
 #define MTK_PDMA_DELAY_INT		(PDMA_BASE + 0x20c)
 #if defined(CONFIG_MEDIATEK_NETSYS_RX_V2) || defined(CONFIG_MEDIATEK_NETSYS_V3)
@@ -696,10 +699,19 @@
 #define MAC_MCR_FORCE_LINK_DOWN	(MAC_MCR_FORCE_MODE)
 
 /* XFI Mac control registers */
-#define MTK_XMAC_MCR(x)		(0x12000 + ((x - 1) * 0x1000))
+#define MTK_XMAC_BASE(x)	(0x12000 + ((x - 1) * 0x1000))
+#define MTK_XMAC_MCR(x)		(MTK_XMAC_BASE(x))
 #define XMAC_MCR_TRX_DISABLE	0xf
 #define XMAC_MCR_FORCE_TX_FC	BIT(5)
 #define XMAC_MCR_FORCE_RX_FC	BIT(4)
+
+/* XFI Mac logic reset registers */
+#define MTK_XMAC_LOGIC_RST(x)	(MTK_XMAC_BASE(x) + 0x10)
+#define XMAC_LOGIC_RST		BIT(0)
+
+/* XFI Mac count global control */
+#define MTK_XMAC_CNT_CTRL(x)	(MTK_XMAC_BASE(x) + 0x100)
+#define XMAC_GLB_CNTCLR		BIT(0)
 
 /* Mac EEE control registers */
 #define MTK_MAC_EEE(x)		(0x10104 + (x * 0x100))

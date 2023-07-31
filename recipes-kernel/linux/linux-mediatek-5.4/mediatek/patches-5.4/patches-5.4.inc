@@ -89,6 +89,7 @@ SRC_URI_append = " \
     file://999-2339-drivers-mtd-spinand-Add-calibration-support-for-spinand.patch \
     file://999-2340-drivers-mtd-spi-nor-Add-calibration-support-for-spi-nor.patch \
     file://999-2341-mtd-spinand-Add-support-etron.patch \
+    file://999-2342-drivers-mtd-spi-nor-Add-support-EN25QX256A-2S.patch \
     file://999-2350-nvmem-core-Add-functions-to-make-number-reading-easy.patch \
     file://999-2351-nvmem-mtk-efuse-support-minimum-one-byte-access-stri.patch \
     file://999-2361-add-spimem-support-to-mtk-spi.patch \
