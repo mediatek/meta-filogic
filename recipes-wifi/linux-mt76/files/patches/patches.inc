@@ -6,42 +6,44 @@ SRC_URI_append = " \
     file://0004-wifi-mt76-mt7915-fix-DFS-CAC-tx-emission-issue-after.patch \
     file://0005-wifi-mt76-mt7915-add-pc-stack-dump-for-WM-s-coredump.patch \
     file://0006-wifi-mt76-mt7915-update-mpdu-density-in-2-5g-capabil.patch \
-    file://0007-wifi-mt76-mt7915-build-pass-for-Linux-Kernel-5.4-fix.patch \
-    file://0008-wifi-mt76-mt7915-move-temperature-margin-check-to-mt.patch \
-    file://0999-wifi-mt76-mt7915-add-mtk-internal-debug-tools-for-mt.patch \
-    file://1000-wifi-mt76-mt7915-csi-implement-csi-support.patch \
-    file://1001-wifi-mt76-mt7915-air-monitor-support.patch \
-    file://1002-wifi-mt76-mt7915-add-support-for-muru_onoff-via.patch \
-    file://1003-wifi-mt76-mt7915-certification-patches.patch \
-    file://1004-wifi-mt76-mt7915-add-support-for-runtime-set-in-band.patch \
-    file://1005-wifi-mt76-mt7915-add-mt76-vendor-muru-onoff-command.patch \
-    file://1006-wifi-mt76-mt7915-drop-undefined-action-frame.patch \
-    file://1007-wifi-mt76-testmode-rework-testmode-init-registers.patch \
-    file://1008-wifi-mt76-testmode-additional-supports.patch \
-    file://1009-wifi-mt76-testmode-add-pre-cal-support.patch \
-    file://1010-wifi-mt76-testmode-add-iBF-command-mode-support.patch \
-    file://1011-wifi-mt76-testmode-add-ZWDFS-test-mode-support.patch \
-    file://1012-wifi-mt76-testmode-add-iBF-eBF-cal-and-cert-commands.patch \
-    file://1013-wifi-mt76-mt7915-init-rssi-in-WTBL-when-add-station.patch \
-    file://1014-wifi-mt76-connac-airtime-fairness-feature-off-in-mac.patch \
-    file://1015-wifi-mt76-mt7915-add-mt7986-and-mt7916-pre-calibrati.patch \
-    file://1016-wifi-mt76-mt7915-add-phy-capability-vendor-command.patch \
-    file://1017-wifi-mt76-mt7915-add-vendor-subcmd-EDCCA-ctrl-enable.patch \
-    file://1018-wifi-mt76-mt7915-implement-bin-file-mode.patch \
-    file://1019-wifi-mt76-mt7915-Add-mu-dump-support.patch \
-    file://1020-wifi-mt76-mt7915-add-vendor-subcmd-three-wire-PTA-ct.patch \
-    file://1021-wifi-mt76-mt7915-add-ibf-control-vendor-cmd.patch \
-    file://1022-wifi-mt76-mt7915-add-E3-re-bonding-for-low-yield-rat.patch \
-    file://1023-wifi-mt76-mt7915-support-on-off-SW-ACI-through-debug.patch \
-    file://1024-wifi-mt76-mt7915-add-bf-backoff-limit-table-support.patch \
-    file://1025-wifi-mt76-mt7915-amsdu-set-and-get-control.patch \
-    file://1026-wifi-mt76-mt7915-Add-vendor-command-attribute-for-RT.patch \
-    file://1027-wifi-mt76-mt7915-add-vendor-cmd-to-get-available-col.patch \
-    file://1028-wifi-mt76-mt7915-disable-SW-ACI-by-default.patch \
-    file://1029-wifi-mt76-mt7915-add-muru-user-number-debug-command.patch \
-    file://1030-wifi-mt76-mt7915-add-debugfs-for-fw-coredump.patch \
-    file://1031-wifi-mt76-mt7915-remove-BW160-support.patch \
-    file://1032-wifi-mt76-mt7915-add-txpower-info-dump-support.patch \
+    file://0007-wifi-mt76-mt7915-move-temperature-margin-check-to-mt.patch \
+    file://0008-wifi-mt76-mt7915-fix-tlv-length-of-mt7915_mcu_get_ch.patch \
+    file://0999-wifi-mt76-mt7915-build-pass-for-Linux-Kernel-5.4-fix.patch \
+    file://1000-wifi-mt76-mt7915-add-mtk-internal-debug-tools-for-mt.patch \
+    file://1001-wifi-mt76-mt7915-csi-implement-csi-support.patch \
+    file://1002-wifi-mt76-mt7915-air-monitor-support.patch \
+    file://1003-wifi-mt76-mt7915-add-support-for-muru_onoff-via.patch \
+    file://1004-wifi-mt76-mt7915-certification-patches.patch \
+    file://1005-wifi-mt76-mt7915-add-support-for-runtime-set-in-band.patch \
+    file://1006-wifi-mt76-mt7915-add-mt76-vendor-muru-onoff-command.patch \
+    file://1007-wifi-mt76-mt7915-drop-undefined-action-frame.patch \
+    file://1008-wifi-mt76-testmode-rework-testmode-init-registers.patch \
+    file://1009-wifi-mt76-testmode-additional-supports.patch \
+    file://1010-wifi-mt76-testmode-add-pre-cal-support.patch \
+    file://1011-wifi-mt76-testmode-add-iBF-command-mode-support.patch \
+    file://1012-wifi-mt76-testmode-add-ZWDFS-test-mode-support.patch \
+    file://1013-wifi-mt76-testmode-add-iBF-eBF-cal-and-cert-commands.patch \
+    file://1014-wifi-mt76-mt7915-init-rssi-in-WTBL-when-add-station.patch \
+    file://1015-wifi-mt76-connac-airtime-fairness-feature-off-in-mac.patch \
+    file://1016-wifi-mt76-mt7915-add-mt7986-and-mt7916-pre-calibrati.patch \
+    file://1017-wifi-mt76-mt7915-add-phy-capability-vendor-command.patch \
+    file://1018-wifi-mt76-mt7915-add-vendor-subcmd-EDCCA-ctrl-enable.patch \
+    file://1019-wifi-mt76-mt7915-implement-bin-file-mode.patch \
+    file://1020-wifi-mt76-mt7915-Add-mu-dump-support.patch \
+    file://1021-wifi-mt76-mt7915-add-vendor-subcmd-three-wire-PTA-ct.patch \
+    file://1022-wifi-mt76-mt7915-add-ibf-control-vendor-cmd.patch \
+    file://1023-wifi-mt76-mt7915-add-E3-re-bonding-for-low-yield-rat.patch \
+    file://1024-wifi-mt76-mt7915-support-on-off-SW-ACI-through-debug.patch \
+    file://1025-wifi-mt76-mt7915-add-bf-backoff-limit-table-support.patch \
+    file://1026-wifi-mt76-mt7915-amsdu-set-and-get-control.patch \
+    file://1027-wifi-mt76-mt7915-Add-vendor-command-attribute-for-RT.patch \
+    file://1028-wifi-mt76-mt7915-add-vendor-cmd-to-get-available-col.patch \
+    file://1029-wifi-mt76-mt7915-disable-SW-ACI-by-default.patch \
+    file://1030-wifi-mt76-mt7915-add-muru-user-number-debug-command.patch \
+    file://1031-wifi-mt76-mt7915-add-debugfs-for-fw-coredump.patch \
+    file://1032-wifi-mt76-mt7915-remove-BW160-support.patch \
+    file://1033-wifi-mt76-mt7915-add-txpower-info-dump-support.patch \
+    file://1034-wifi-mt76-mt7915-report-tx-and-rx-byte-to-tpt_led-wh.patch \
     file://2000-wifi-mt76-mt7915-wed-add-wed-tx-support.patch \
     file://2001-wifi-mt76-mt7915-wed-add-wds-support-when-wed-is-ena.patch \
     file://2002-wifi-mt76-mt7915-wed-add-fill-receive-path-to-report.patch \
@@ -49,8 +51,8 @@ SRC_URI_append = " \
     file://2004-wifi-mt76-mt7915-wed-HW-ATF-support-for-mt7986.patch \
     file://2005-wifi-mt76-mt7915-wed-add-rxwi-for-further-in-chip-rr.patch \
     file://2006-wifi-mt76-add-debugfs-knob-to-show-packet-error-rate.patch \
-    file://2008-wifi-mt76-mt7915-add-ctxd-support-for-mt7916.patch \
-    file://2009-wifi-mt76-connac-wed-add-wed-rx-copy-skb.patch \
-    file://2010-wifi-mt76-mt7915-wed-add-per-bss-statistic-info.patch \
+    file://2007-wifi-mt76-mt7915-add-ctxd-support-for-mt7916.patch \
+    file://2008-wifi-mt76-connac-wed-add-wed-rx-copy-skb.patch \
+    file://2009-wifi-mt76-mt7915-wed-add-per-bss-statistic-info.patch \
     file://9999-mt76-revert-for-backports-5.15-wireless-stack.patch \
     "

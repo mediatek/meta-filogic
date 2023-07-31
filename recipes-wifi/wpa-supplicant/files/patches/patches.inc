@@ -89,12 +89,13 @@ SRC_URI_append = " \
     file://mtk-0025-hostapd-mtk-Fix-ZWDFS-issue-in-BW-160.patch \
     file://mtk-0026-hostapd-mtk-Add-vendor-for-CAPI-certification-comman.patch \
     file://mtk-0027-hostapd-mtk-Air-Monitor-support-in-hostapd-by-vendor.patch \
-    file://mtk-0028-hostapd-mtk-Fix-scan-result-updating-issue.patch \
-    file://mtk-0028-hostapd-mtk-avoid-setting-beacon-after-wpa_supplican.patch \
-    file://mtk-0029-hostapd-mtk-Fix-setting-wrong-seg0-index-for-5G-cent.patch \
-    file://mtk-0030-hostapd-mtk-Add-muru-user-number-debug-command.patch \
-    file://mtk-0031-hostapd-mtk-Fix-CCA-issue.patch \
-    file://mtk-0032-hostapd-mtk-Fix-unexpected-AP-beacon-state-transitio.patch \
-    file://mtk-0033-hostapd-mtk-register-update_channel_utilization-agai.patch \
+    file://mtk-0028-hostapd-mtk-Avoid-setting-beacon-after-wpa_supplican.patch \
+    file://mtk-0029-hostapd-mtk-Fix-scan-result-updating-issue.patch \
+    file://mtk-0030-hostapd-mtk-Fix-setting-wrong-seg0-index-for-5G-cent.patch \
+    file://mtk-0031-hostapd-mtk-Add-muru-user-number-debug-command.patch \
+    file://mtk-0032-hostapd-mtk-Fix-CCA-issue.patch \
+    file://mtk-0033-hostapd-mtk-Fix-unexpected-AP-beacon-state-transitio.patch \
     file://mtk-0034-hostapd-mtk-Fix-hostapd_dfs_start_cac-log.patch \
+    file://mtk-0035-hostapd-mtk-add-extension-IE-list-for-non-inherit-IE.patch \
+    file://mtk-0036-hostapd-mtk-Fix-wpa_supplicant-configuration-parsing.patch \
     "

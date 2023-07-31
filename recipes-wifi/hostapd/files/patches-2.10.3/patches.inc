@@ -92,6 +92,8 @@ SRC_URI_append = " \
     file://mtk-0032-hostapd-mtk-Add-HE-capabilities-check.patch \
     file://mtk-0034-hostapd-mtk-Fix-hostapd_dfs_start_cac-log.patch \
     file://mtk-0035-hostapd-mtk-Check-the-bridge-after-ioctl-SIOCBRADDIF.patch \
+    file://mtk-0036-hostapd-mtk-Update-parameter_set_count-in-MU-EDCA-IE.patch \
+    file://mtk-0037-hostapd-mtk-Add-extension-IE-list-for-non-inherit-IE.patch \
     file://mtk-1000-hostapd-mtk-update-eht-operation-element.patch \
     file://mtk-1001-hostapd-mtk-Add-support-for-gtk-rekeying-in-hostapd-.patch \
     "
