@@ -97,5 +97,6 @@ SRC_URI_append = " \
     file://mtk-0033-hostapd-mtk-Fix-unexpected-AP-beacon-state-transitio.patch \
     file://mtk-0034-hostapd-mtk-Fix-hostapd_dfs_start_cac-log.patch \
     file://mtk-0035-hostapd-mtk-add-extension-IE-list-for-non-inherit-IE.patch \
+    file://mtk-0036-hostapd-mtk-Fix-background-channel-overlapping-opera.patch \
     file://mtk-0036-hostapd-mtk-Fix-wpa_supplicant-configuration-parsing.patch \
     "

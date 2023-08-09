@@ -1,5 +1,6 @@
 #patch patches (come from openwrt/lede/target/linux/mediatek)
 SRC_URI_append = " \
+    file://0000-sync-to-master-codebase.patch \
     file://0001-wifi-mt76-mt7915-Update-beacon-size-limitation-for-1.patch \
     file://0002-wifi-mt76-mt7915-fix-the-beamformer-issue.patch \
     file://0003-wifi-mt76-fix-incorrect-HE-TX-GI-report.patch \
@@ -7,7 +8,8 @@ SRC_URI_append = " \
     file://0005-wifi-mt76-mt7915-add-pc-stack-dump-for-WM-s-coredump.patch \
     file://0006-wifi-mt76-mt7915-update-mpdu-density-in-2-5g-capabil.patch \
     file://0007-wifi-mt76-mt7915-move-temperature-margin-check-to-mt.patch \
-    file://0008-wifi-mt76-mt7915-fix-tlv-length-of-mt7915_mcu_get_ch.patch \
+    file://0009-wifi-mt76-mt7915-fix-txpower-issues.patch \
+    file://0010-wifi-mt76-mt7915-rework-init-txpower.patch \
     file://0999-wifi-mt76-mt7915-build-pass-for-Linux-Kernel-5.4-fix.patch \
     file://1000-wifi-mt76-mt7915-add-mtk-internal-debug-tools-for-mt.patch \
     file://1001-wifi-mt76-mt7915-csi-implement-csi-support.patch \

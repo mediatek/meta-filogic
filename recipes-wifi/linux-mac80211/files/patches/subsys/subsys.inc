@@ -75,6 +75,9 @@ SRC_URI_append = " \
     file://mtk-0017-mac80211-mtk-update-max_bssid_indicator-based-on-rea.patch \
     file://mtk-0018-mac80211-mtk-support-configurable-addba-resp-time.patch \
     file://mtk-0019-mac80211-mtk-export-ieee80211_tpt_led_trig_tx-rx-for.patch \
+    file://mtk-0020-cfg80211-mtk-fix-early-return-in-cfg80211_stop_backg.patch \
+    file://mtk-0021-cfg80211-mtk-add-background-radar-stop-when-backgrou.patch \
+    file://mtk-0022-mac80211-mtk-avoid-kernel-warning-of-check_flush_dep.patch \
     file://mtk-9900-mac80211-mtk-mask-kernel-version-limitation-and-fill.patch \
     file://mtk-9901-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-id.patch \
     file://mtk-9902-mac80211-mtk-add-support-for-letting-drivers-registe.patch \
