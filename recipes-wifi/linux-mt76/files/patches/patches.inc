@@ -8,6 +8,7 @@ SRC_URI_append = " \
     file://0005-wifi-mt76-mt7915-add-pc-stack-dump-for-WM-s-coredump.patch \
     file://0006-wifi-mt76-mt7915-update-mpdu-density-in-2-5g-capabil.patch \
     file://0007-wifi-mt76-mt7915-move-temperature-margin-check-to-mt.patch \
+    file://0008-wifi-mt76-mt7915-fix-tx-emission-issue-during-bootup.patch \
     file://0009-wifi-mt76-mt7915-fix-txpower-issues.patch \
     file://0010-wifi-mt76-mt7915-rework-init-txpower.patch \
     file://0999-wifi-mt76-mt7915-build-pass-for-Linux-Kernel-5.4-fix.patch \
@@ -46,6 +47,7 @@ SRC_URI_append = " \
     file://1032-wifi-mt76-mt7915-remove-BW160-support.patch \
     file://1033-wifi-mt76-mt7915-add-txpower-info-dump-support.patch \
     file://1034-wifi-mt76-mt7915-report-tx-and-rx-byte-to-tpt_led-wh.patch \
+    file://1035-wifi-mt76-mt7915-Establish-BA-in-VO-queue.patch \
     file://2000-wifi-mt76-mt7915-wed-add-wed-tx-support.patch \
     file://2001-wifi-mt76-mt7915-wed-add-wds-support-when-wed-is-ena.patch \
     file://2002-wifi-mt76-mt7915-wed-add-fill-receive-path-to-report.patch \

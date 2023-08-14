@@ -78,6 +78,7 @@ SRC_URI_append = " \
     file://mtk-0020-cfg80211-mtk-fix-early-return-in-cfg80211_stop_backg.patch \
     file://mtk-0021-cfg80211-mtk-add-background-radar-stop-when-backgrou.patch \
     file://mtk-0022-mac80211-mtk-avoid-kernel-warning-of-check_flush_dep.patch \
+    file://mtk-0023-mac80211-mtk-avoid-calling-switch_vif_chanctx-when-u.patch \
     file://mtk-9900-mac80211-mtk-mask-kernel-version-limitation-and-fill.patch \
     file://mtk-9901-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-id.patch \
     file://mtk-9902-mac80211-mtk-add-support-for-letting-drivers-registe.patch \

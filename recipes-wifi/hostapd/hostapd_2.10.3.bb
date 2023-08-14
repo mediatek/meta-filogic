@@ -4,10 +4,10 @@ SECTION = "kernel/userland"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://hostapd/README;md5=c905478466c90f1cefc0df987c40e172"
 
-DEPENDS = "libnl openssl ubus"
+DEPENDS = "libnl openssl ubus ucode"
 DEPENDS_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'telemetry2_0', 'telemetry', '', d)}"
 LDFLAGS_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'telemetry2_0', ' -ltelemetry_msgsender ', '', d)}"
-RDEPENDS_${PN} += "gawk"
+RDEPENDS_${PN} += "gawk ucode"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches-${PV}:"
@@ -25,8 +25,11 @@ SRC_URI = " \
     file://hostapd-init.sh \
     file://mac80211-EHT.sh \
     file://init-uci-config.service \
-    file://src \
-    file://001-rdkb-remove-ubus-support.patch;apply=no \
+    file://hostapd.uc \
+    file://common.uc \
+    file://wdev.uc \
+    file://src-${PV} \
+    file://002-rdkb-add-ucode-support.patch;apply=no \
 "
 require files/patches-${PV}/patches.inc
 
@@ -39,13 +42,13 @@ INITSCRIPT_NAME = "hostapd"
 SYSTEMD_AUTO_ENABLE_${PN} = "enable"
 SYSTEMD_SERVICE_${PN} = "hostapd.service"
 SYSTEMD_SERVICE_${PN} += " init-uci-config.service"
-
+INSANE_SKIP_${PN} += "file-rdeps"
 do_unpack_append() {
     bb.build.exec_func('do_copy_openwrt_src', d)
 }
 
 do_copy_openwrt_src() {
-    cp -Rfp ${WORKDIR}/src/* ${S}/
+    cp -Rfp ${WORKDIR}/src-${PV}/* ${S}/
 }
 
 do_configure_append() {
@@ -69,12 +72,13 @@ do_configure_append() {
     echo "CONFIG_FILS=y" >> ${B}/.config
     echo "CONFIG_IEEE80211BE=y" >> ${B}/.config
     echo "CONFIG_TESTING_OPTIONS=y" >> ${B}/.config
+    echo "CONFIG_UCODE=y" >> ${B}/.config
 }
 
 do_filogic_patches() {
     cd ${S}
         if [ ! -e patch_applied ]; then
-            patch -p1 < ${WORKDIR}/001-rdkb-remove-ubus-support.patch
+            patch -p1 < ${WORKDIR}/002-rdkb-add-ucode-support.patch
             touch patch_applied
         fi
 }
@@ -88,7 +92,7 @@ do_compile() {
 }
 
 do_install() {
-         install -d ${D}${sbindir} ${D}${sysconfdir} ${D}${systemd_unitdir}/system/ ${D}${base_libdir}/rdk
+         install -d ${D}${sbindir} ${D}${sysconfdir} ${D}${systemd_unitdir}/system/ ${D}${base_libdir}/rdk ${D}${datadir}/hostap
          install -m 0755 ${B}/hostapd ${D}${sbindir}
          install -m 0755 ${B}/hostapd_cli ${D}${sbindir}
          install -m 0644 ${WORKDIR}/hostapd-2G-EHT.conf ${D}${sysconfdir}/hostapd-2G.conf
@@ -100,6 +104,9 @@ do_install() {
          install -m 0755 ${WORKDIR}/hostapd-init.sh ${D}${base_libdir}/rdk
          install -m 0644 ${WORKDIR}/init-uci-config.service ${D}${systemd_unitdir}/system
          install -m 0755 ${WORKDIR}/mac80211-EHT.sh ${D}${sbindir}/mac80211.sh
+         install -m 0755 ${WORKDIR}/hostapd.uc ${D}${datadir}/hostap
+         install -m 0755 ${WORKDIR}/wdev.uc ${D}${datadir}/hostap
+         install -m 0755 ${WORKDIR}/common.uc ${D}${datadir}/hostap
 }
 
 FILES_${PN} += " \
@@ -111,4 +118,7 @@ FILES_${PN} += " \
                 ${sysconfdir}/hostapd-5G-7916.conf \
                 ${base_libdir}/rdk/hostapd-init.sh \
                 ${systemd_unitdir}/system/init-uci-config.service \
+                ${datadir}/hostap/hostapd.uc \
+                ${datadir}/hostap/wdev.uc \
+                ${datadir}/hostap/common.uc \
 "

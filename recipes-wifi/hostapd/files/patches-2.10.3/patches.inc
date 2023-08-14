@@ -17,6 +17,7 @@ SRC_URI_append = " \
     file://150-add-NULL-checks-encountered-during-tests-hwsim.patch \
     file://160-dpp_pkex-EC-point-mul-w-value-prime.patch \
     file://170-hostapd-update-cfs0-and-cfs1-for-160MHz.patch \
+    file://180-BSS-coloring-fix-CCA-with-multiple-BSS.patch \
     file://200-multicall.patch \
     file://300-noscan.patch \
     file://301-mesh-noscan.patch \
@@ -46,8 +47,10 @@ SRC_URI_append = " \
     file://590-rrm-wnm-statistics.patch \
     file://599-wpa_supplicant-fix-warnings.patch \
     file://600-ubus_support.patch \
+    file://601-ucode_support.patch \
     file://610-hostapd_cli_ujail_permission.patch \
     file://700-wifi-reload.patch \
+    file://701-reload_config_inline.patch \
     file://710-vlan_no_bridge.patch \
     file://711-wds_bridge_force.patch \
     file://720-iface_max_num_sta.patch \
@@ -57,6 +60,7 @@ SRC_URI_append = " \
     file://751-qos_map_ignore_when_unsupported.patch \
     file://760-dynamic_own_ip.patch \
     file://761-shared_das_port.patch \
+    file://770-radius_server.patch \
     file://990-ctrl-make-WNM_AP-functions-dependant-on-CONFIG_AP.patch \
     file://mtk-0001-hostapd-mtk-Add-neighbor-report-and-BSS-Termination-.patch \
     file://mtk-0002-hostapd-mtk-print-sae-groups-by-hostapd-ctrl.patch \
@@ -83,17 +87,20 @@ SRC_URI_append = " \
     file://mtk-0023-hostapd-mtk-Add-vendor-for-CAPI-certification-comman.patch \
     file://mtk-0024-hostapd-mtk-Air-Monitor-support-in-hostapd-by-vendor.patch \
     file://mtk-0025-hostapd-mtk-Fix-scan-result-updating-issue.patch \
-    file://mtk-0026-hostapd-mtk-avoid-setting-beacon-after-wpa_supplican.patch \
+    file://mtk-0026-hostapd-mtk-Avoid-setting-beacon-after-wpa_supplican.patch \
     file://mtk-0027-hostapd-mtk-Fix-setting-wrong-seg0-index-for-5G-cent.patch \
     file://mtk-0028-hostapd-mtk-Add-muru-user-number-debug-command.patch \
-    file://mtk-0029-hostapd-mtk-Fix-CCA-issue.patch \
     file://mtk-0030-hostapd-mtk-Fix-unexpected-AP-beacon-state-transitio.patch \
     file://mtk-0031-hostapd-mtk-add-connac3-PHY-MURU-manual-mode-config-.patch \
     file://mtk-0032-hostapd-mtk-Add-HE-capabilities-check.patch \
+    file://mtk-0033-hostapd-mtk-Fix-background-channel-overlapping-opera.patch \
     file://mtk-0034-hostapd-mtk-Fix-hostapd_dfs_start_cac-log.patch \
     file://mtk-0035-hostapd-mtk-Check-the-bridge-after-ioctl-SIOCBRADDIF.patch \
     file://mtk-0036-hostapd-mtk-Update-parameter_set_count-in-MU-EDCA-IE.patch \
     file://mtk-0037-hostapd-mtk-Add-extension-IE-list-for-non-inherit-IE.patch \
+    file://mtk-0038-hostapd-mtk-Fix-11vmbss-aid-using-wrong-pool.patch \
+    file://mtk-0039-hostapd-mtk-Fix-rnr-ie-length-when-no-need-to-report.patch \
+    file://mtk-0040-hostapd-mtk-add-back-ht-vht-cap-missing-field-before.patch \
     file://mtk-1000-hostapd-mtk-update-eht-operation-element.patch \
     file://mtk-1001-hostapd-mtk-Add-support-for-gtk-rekeying-in-hostapd-.patch \
     "

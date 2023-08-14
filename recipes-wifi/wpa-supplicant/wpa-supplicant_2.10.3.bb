@@ -6,7 +6,7 @@ SECTION = "network"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://hostapd/README;md5=c905478466c90f1cefc0df987c40e172"
 
-DEPENDS = "dbus libnl ubus"
+DEPENDS = "dbus libnl ubus ucode"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches-${PV}:"
 
@@ -17,8 +17,9 @@ SRC_URI = "git://w1.fi/hostap.git;protocol=https;branch=main \
            file://wpa_supplicant.conf-sane \
            file://99_wpa_supplicant \
            file://wpa_supplicant-full.config \
-           file://src \
-           file://001-rdkb-remove-ubus-support.patch;apply=no \
+	   file://wpa_supplicant.uc \
+           file://src-${PV} \
+           file://002-rdkb-add-ucode-support.patch;apply=no \
            "
 require files/patches-${PV}/patches.inc
 
@@ -38,13 +39,13 @@ do_unpack_append() {
 }
 
 do_copy_openwrt_src() {
-    cp -Rfp ${WORKDIR}/src/* ${S}/
+    cp -Rfp ${WORKDIR}/src-${PV}/* ${S}/
 }
 
 do_filogic_patches() {
     cd ${S}
         if [ ! -e patch_applied ]; then
-            patch -p1 < ${WORKDIR}/001-rdkb-remove-ubus-support.patch
+            patch -p1 < ${WORKDIR}/002-rdkb-add-ucode-support.patch
             touch patch_applied
         fi
 }
@@ -83,8 +84,10 @@ do_configure_append () {
 	echo "CONFIG_AP=y" >> wpa_supplicant/.config
 	echo "CONFIG_MESH=y" >> wpa_supplicant/.config
 	echo "CONFIG_IEEE80211BE=y" >> wpa_supplicant/.config
+	echo "CONFIG_IEEE80211AC=y" >> wpa_supplicant/.config
 	echo "CONFIG_HE_OVERRIDES=y" >> wpa_supplicant/.config
 	echo "CONFIG_EHT_OVERRIDES=y" >> wpa_supplicant/.config
+	echo "CONFIG_UCODE=y" >> wpa_supplicant/.config
 }
 
 do_compile () {
@@ -125,6 +128,9 @@ do_install () {
 
 	install -d ${D}${libdir}
 	install -m 0644 ${S}/wpa_supplicant/libwpa_client.so ${D}${libdir}
+
+	install -d ${D}${datadir}/hostap
+	install -m 0755 ${WORKDIR}/wpa_supplicant.uc ${D}${datadir}/hostap
 }
 
 pkg_postinst:${PN} () {
@@ -144,7 +150,7 @@ NOAUTOPACKAGEDEBUG = "1"
 
 FILES:${PN}-passphrase = "${sbindir}/wpa_passphrase"
 FILES:${PN}-cli = "${sbindir}/wpa_cli"
-FILES:${PN} += "${datadir}/dbus-1/system-services/* ${systemd_system_unitdir}/*"
+FILES:${PN} += "${datadir}/dbus-1/system-services/* ${systemd_system_unitdir}/* ${datadir}/hostap/*"
 FILES:${PN}-dbg += "${sbindir}/.debug ${libdir}/.debug"
 
 CONFFILES:${PN} += "${sysconfdir}/wpa_supplicant.conf"

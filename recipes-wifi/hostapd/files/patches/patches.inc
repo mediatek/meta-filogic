@@ -99,4 +99,7 @@ SRC_URI_append = " \
     file://mtk-0035-hostapd-mtk-add-extension-IE-list-for-non-inherit-IE.patch \
     file://mtk-0036-hostapd-mtk-Fix-background-channel-overlapping-opera.patch \
     file://mtk-0036-hostapd-mtk-Fix-wpa_supplicant-configuration-parsing.patch \
+    file://mtk-0037-hostapd-mtk-Fix-11vmbss-aid-using-wrong-pool.patch \
+    file://mtk-0037-hostapd-mtk-add-back-ht-vht-cap-missing-field-before.patch \
+    file://mtk-0038-hostapd-mtk-Fix-rnr-ie-length-when-no-need-to-report.patch \
     "

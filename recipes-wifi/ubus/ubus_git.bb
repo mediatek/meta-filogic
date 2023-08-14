@@ -10,7 +10,7 @@ SRC_URI = "\
           file://0001-lua5.3-support.patch \
           "
 
-SRCREV = "9913aa61de739e3efe067a2d186021c20bcd65e2"
+SRCREV = "f787c97b34894a38b15599886cacbca01271684f"
 
 PV = "git${SRCPV}"
 

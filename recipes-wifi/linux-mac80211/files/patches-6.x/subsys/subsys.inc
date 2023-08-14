@@ -69,6 +69,10 @@ SRC_URI_append = " \
     file://mtk-0015-mac80211-support-configurable-addba-resp-time.patch \
     file://mtk-0016-mac80211-mtk-add-sta-assisted-DFS-state-update-mecha.patch \
     file://mtk-0017-nl80211-mtk-Mark-DFS-channel-as-available-for-CSA.patch \
+    file://mtk-0018-cfg80211-mtk-fix-early-return-in-cfg80211_stop_backg.patch \
+    file://mtk-0019-cfg80211-mtk-add-background-radar-stop-when-backgrou.patch \
+    file://mtk-0020-mac80211-mtk-avoid-kernel-warning-of-check_flush_dep.patch \
+    file://mtk-0021-mac80211-mtk-avoid-calling-switch_vif_chanctx-when-u.patch \
     file://mtk-1000-mac80211-mtk-add-EHT-BA1024-support.patch \
     file://mtk-1001-mac80211-mtk-add-rate-duration-for-EHT-rate.patch \
     file://mtk-1002-mac80211-mtk-add-send-bar-action-when-recieve-addba-.patch \
