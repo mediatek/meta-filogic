@@ -35,6 +35,7 @@ SRC_URI_append = " \
     file://1010-pcie-mediatek-fix-clearing-interrupt-status.patch \
     file://1020-spi-nor-w25q512jv.patch \
     file://1021-ubnt-ledbar-driver.patch \
+    file://999-1000-backport-pinctrl-pinconf-setting-combo.patch \
     file://999-1600-mdiobus-add-c45.patch \
     file://999-1700-macsec-revert-async-support.patch \
     file://999-1701-add-default-setting-to-dsa-unused-port.patch \
@@ -58,6 +59,7 @@ SRC_URI_append = " \
     file://999-2020-pinctrl-add-mt7986-driver.patch \
     file://999-2021-pinctrl-enable-mt7988-pinctrl-config.patch \
     file://999-2022-pinctrl-add-mt7981-driver.patch \
+    file://999-2023-pinctrl-add-mt7988-pd-pulltype-support.patch \
     file://999-2040-powerdomain-add-mt7988-support.patch \
     file://999-2050-watchdog-add-mt7986-assert.patch \
     file://999-2100-mt7986-trng-add-rng-support.patch \
