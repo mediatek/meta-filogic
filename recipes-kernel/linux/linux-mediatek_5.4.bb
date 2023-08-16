@@ -45,6 +45,7 @@ SRC_URI_append += " \
     file://rdkb_cfg/prplmesh.cfg \
     file://rdkb_cfg/filogic_rdkb.cfg \
     ${@bb.utils.contains('DISTRO_FEATURES','emmc','file://rdkb_cfg/emmc.cfg','',d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES','ccn34','file://rdkb_cfg/tops.cfg','',d)} \
 "
 
 SRC_URI_append += " \
