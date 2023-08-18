@@ -11,6 +11,7 @@ SRC_URI_append = " \
     file://0008-wifi-mt76-mt7915-fix-tx-emission-issue-during-bootup.patch \
     file://0009-wifi-mt76-mt7915-fix-txpower-issues.patch \
     file://0010-wifi-mt76-mt7915-rework-init-txpower.patch \
+    file://0011-wifi-mt76-mt7915-rework-mmio-access-flow.patch \
     file://0999-wifi-mt76-mt7915-build-pass-for-Linux-Kernel-5.4-fix.patch \
     file://1000-wifi-mt76-mt7915-add-mtk-internal-debug-tools-for-mt.patch \
     file://1001-wifi-mt76-mt7915-csi-implement-csi-support.patch \
@@ -48,6 +49,7 @@ SRC_URI_append = " \
     file://1033-wifi-mt76-mt7915-add-txpower-info-dump-support.patch \
     file://1034-wifi-mt76-mt7915-report-tx-and-rx-byte-to-tpt_led-wh.patch \
     file://1035-wifi-mt76-mt7915-Establish-BA-in-VO-queue.patch \
+    file://1036-wifi-mt76-mt7915-Disable-RegDB-when-enable-single-sk.patch \
     file://2000-wifi-mt76-mt7915-wed-add-wed-tx-support.patch \
     file://2001-wifi-mt76-mt7915-wed-add-wds-support-when-wed-is-ena.patch \
     file://2002-wifi-mt76-mt7915-wed-add-fill-receive-path-to-report.patch \
