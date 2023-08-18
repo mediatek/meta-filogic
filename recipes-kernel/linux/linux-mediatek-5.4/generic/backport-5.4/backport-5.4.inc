@@ -300,10 +300,10 @@ SRC_URI_append = " \
     file://900-v5.9-0001-dt-bindings-Add-multicolor-class-dt-bindings-documen.patch \
     file://900-v5.9-0002-leds-Add-multicolor-ID-to-the-color-ID-list.patch \
     file://900-v5.9-0003-leds-add-RGB-color-option-as-that-is-different-from-.patch \
+    file://999-1410-mtd-spinand-gigadevice-Support-for-modify-GD-Serial-NAND-from-v6-4-9.patch \
     file://999-1900-lib-add-Dhrystone-benchmark-test.patch \
     file://999-2210-v6.1-iio-adc-add-rtq6056-support.patch \
     file://999-2310-v5.7-mtd-nand-spi-rework-detect-procedure-for-different-read-id-op.patch \
-    file://999-2311-mtd-spinand-gigadevice-Support-GD5F1GQ5UExxG.patch \
     file://999-2312-mtd-spinand-macronix-Add-support-for-MX31LF1GE4BC.patch \
     file://999-2313-mtd-spinand-macronix-Add-support-for-MX31UF1GE4BC.patch \
     file://999-2314-mtd-spinand-macronix-Add-support-for-MX35LFxGE4AD.patch \

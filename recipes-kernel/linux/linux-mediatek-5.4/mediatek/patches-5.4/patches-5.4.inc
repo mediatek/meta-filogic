@@ -82,16 +82,13 @@ SRC_URI_append = " \
     file://999-2330-mtd-spinand-winbond-Support-for-W25MxxGV-W25NxxKV-series.patch \
     file://999-2331-mtd-spinand-macronix-suppress-mx35lf1ge4ab-warning-log.patch \
     file://999-2332-mtd-add-mtk-snand-driver.patch \
-    file://999-2333-mtd-spinand-gigadevice-Add-support-for-F50L1G41LB-and-GD5F1GQ5UExxG.patch \
-    file://999-2334-mtd-spinand-gigadevice-Add-support-for-GD5FxGQxUExxG-GD5FxGQxUExxH-and-GD5FxGMxUExxG-series.patch \
-    file://999-2335-mtd-spinand-fix-gigadevice-read-dummy.patch \
-    file://999-2336-mtd-spinand-fix-F50L1G41LB-ecc-check.patch \
     file://999-2337-mtd-spinor-support-EN25QX128A.patch \
     file://999-2338-mtd-tests-fix-pagetest-load.patch \
     file://999-2339-drivers-mtd-spinand-Add-calibration-support-for-spinand.patch \
     file://999-2340-drivers-mtd-spi-nor-Add-calibration-support-for-spi-nor.patch \
     file://999-2341-mtd-spinand-Add-support-etron.patch \
     file://999-2342-drivers-mtd-spi-nor-Add-support-EN25QX256A-2S.patch \
+    file://999-2343-mtd-spinand-gigadevice-Add-support-for-F50L1G41LB.patch \
     file://999-2350-nvmem-core-Add-functions-to-make-number-reading-easy.patch \
     file://999-2351-nvmem-mtk-efuse-support-minimum-one-byte-access-stri.patch \
     file://999-2361-add-spimem-support-to-mtk-spi.patch \
