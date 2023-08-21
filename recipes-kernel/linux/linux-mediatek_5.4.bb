@@ -86,6 +86,12 @@ do_filogic_patches() {
     DISTRO_FlowBlock_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','flow_offload','true','false',d)}"
     DISTRO_logan_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','logan','true','false',d)}"
     DISTRO_secure_boot_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','secure_boot','true','false',d)}"
+    DISTRO_ccn34_build_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','ccn34','true','false',d)}"
+        if [ $DISTRO_ccn34_build_ENABLED = 'true' ]; then
+            rm -rf ${WORKDIR}/mediatek/nf_hnat/999-40*.patch
+            rm -rf ${WORKDIR}/mediatek/nf_hnat/999-41*.patch
+            rm -rf ${WORKDIR}/mediatek/nf_hnat/999-45*.patch
+        fi
         if [ ! -e patch_applied ]; then
             patch -p1 < ${WORKDIR}/001-rdkb-eth-mtk-change-ifname-for.patch
             patch -p1 < ${WORKDIR}/003-rdkb-mtd-kernel-ubi-relayout.patch
