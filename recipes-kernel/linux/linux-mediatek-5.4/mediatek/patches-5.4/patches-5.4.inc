@@ -36,6 +36,7 @@ SRC_URI_append = " \
     file://1020-spi-nor-w25q512jv.patch \
     file://1021-ubnt-ledbar-driver.patch \
     file://999-1000-backport-pinctrl-pinconf-setting-combo.patch \
+    file://999-1033-backport-pinctrl-spinlock.patch \
     file://999-1600-mdiobus-add-c45.patch \
     file://999-1700-macsec-revert-async-support.patch \
     file://999-1701-add-default-setting-to-dsa-unused-port.patch \
@@ -147,6 +148,8 @@ SRC_URI_append = " \
     file://999-2725-iwconfig-wireless-rate-fix.patch;apply=no \
     file://999-2727-net-phy-sfp-add-debug-info.patch.patch \
     file://999-2728-net-phy-aquantia-add-mib-read.patch \
+    file://999-2729-net-phy-remove-reporting-line-rate-to-mac.patch;apply=no \
+    file://999-2730-net-phy-sfp-change-shared-mod-def0.patch \
     file://999-2800-misc-add-mtk-platform.patch \
     file://999-2900-dts-mt7622-enable-new-mtk-snand-for-ubi.patch \
     file://999-2901-dts-mt7622-remove-cooling-device.patch \

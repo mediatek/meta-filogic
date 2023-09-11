@@ -878,18 +878,26 @@ static int mtk_mac_pcs_get_state(struct phylink_config *config,
 static int mtk_gdm_fsm_get(struct mtk_mac *mac, u32 gdm)
 {
 	u32 fsm = mtk_r32(mac->hw, gdm);
-	u32 ret = 0;
+	u32 ret = 0, val = 0;
 
-	if (mac->type == MTK_GDM_TYPE)
+	switch (mac->type) {
+	case MTK_GDM_TYPE:
 		ret = fsm == 0;
-	else if (mac->type == MTK_XGDM_TYPE) {
-		if (mac->id == MTK_GMAC1_ID) {
-			if (((fsm & 0x7ffffff) == 0) &&
-				(mtk_r32(mac->hw, MTK_MAC_FSM(mac->id)) == 0x1010000))
-				ret = 1;
+		break;
+	case MTK_XGDM_TYPE:
+		ret = fsm == 0x10000000;
+		break;
+	default:
+		break;
+	}
+
+	if ((mac->type == MTK_XGDM_TYPE) && (mac->id != MTK_GMAC1_ID)) {
+		val = mtk_r32(mac->hw, MTK_MAC_FSM(mac->id));
+		if ((val == 0x02010100) || (val == 0x01010100)) {
+			ret = (mac->interface == PHY_INTERFACE_MODE_XGMII) ?
+				((fsm & 0x0fffffff) == 0) : ((fsm & 0x00ffffff) == 0);
 		} else
-			ret = ((mac->interface == PHY_INTERFACE_MODE_XGMII) ?
-				((fsm & 0xfffffff) == 0) : ((fsm & 0x0ffffff) == 0));
+			ret = 0;
 	}
 
 	return ret;
@@ -913,7 +921,7 @@ static void mtk_gdm_fsm_poll(struct mtk_mac *mac)
 		pr_info("%s mac id invalid", __func__);
 		break;
 	}
-	msleep(500);
+
 	while (i < 3) {
 		if (mtk_gdm_fsm_get(mac, gdm))
 			break;
@@ -927,7 +935,7 @@ static void mtk_gdm_fsm_poll(struct mtk_mac *mac)
 
 static void mtk_pse_port_link_set(struct mtk_mac *mac, bool up)
 {
-	u32 fe_glo_cfg, val;
+	u32 fe_glo_cfg, val = 0;
 
 	fe_glo_cfg = mtk_r32(mac->hw, MTK_FE_GLO_CFG(mac->id));
 	switch (mac->id) {
@@ -956,6 +964,8 @@ static void mtk_mac_link_down(struct phylink_config *config, unsigned int mode,
 {
 	struct mtk_mac *mac = container_of(config, struct mtk_mac,
 					   phylink_config);
+	struct mtk_eth *eth = mac->hw;
+	unsigned int id;
 	u32 mcr, sts;
 
 	mtk_pse_port_link_set(mac, false);
@@ -964,8 +974,9 @@ static void mtk_mac_link_down(struct phylink_config *config, unsigned int mode,
 		mcr &= ~(MAC_MCR_TX_EN | MAC_MCR_RX_EN | MAC_MCR_FORCE_LINK);
 		mtk_w32(mac->hw, mcr, MTK_MAC_MCR(mac->id));
 	} else if (mac->type == MTK_XGDM_TYPE && mac->id != MTK_GMAC1_ID) {
-		mcr = mtk_r32(mac->hw, MTK_XMAC_MCR(mac->id));
+		struct mtk_usxgmii_pcs *mpcs;
 
+		mcr = mtk_r32(mac->hw, MTK_XMAC_MCR(mac->id));
 		mcr &= 0xfffffff0;
 		mcr |= XMAC_MCR_TRX_DISABLE;
 		mtk_w32(mac->hw, mcr, MTK_XMAC_MCR(mac->id));
@@ -973,6 +984,10 @@ static void mtk_mac_link_down(struct phylink_config *config, unsigned int mode,
 		sts = mtk_r32(mac->hw, MTK_XGMAC_STS(mac->id));
 		sts &= ~MTK_XGMAC_FORCE_LINK(mac->id);
 		mtk_w32(mac->hw, sts, MTK_XGMAC_STS(mac->id));
+
+		id = mtk_mac2xgmii_id(eth, mac->id);
+		mpcs = &eth->usxgmii->pcs[id];
+		cancel_delayed_work_sync(&mpcs->link_poll);
 	}
 }
 
@@ -3345,7 +3360,7 @@ static void mtk_dma_free(struct mtk_eth *eth)
 	if (eth->hwlro) {
 		mtk_hwlro_rx_uninit(eth);
 
-		i = (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V1)) ? 1 : 4;
+		i = (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_RX_V2)) ? 4 : 1;
 		for (; i < MTK_MAX_RX_RING_NUM; i++)
 			mtk_rx_clean(eth, &eth->rx_ring[i], 0);
 	}
@@ -4560,6 +4575,151 @@ static const struct net_device_ops mtk_netdev_ops = {
 #endif
 };
 
+static void mux_poll(struct work_struct *work)
+{
+	struct mtk_mux *mux = container_of(work, struct mtk_mux, poll.work);
+	struct mtk_mac *mac = mux->mac;
+	struct mtk_eth *eth = mac->hw;
+	struct net_device *dev = eth->netdev[mac->id];
+	unsigned int channel;
+
+	if (IS_ERR(mux->gpio[0]) || IS_ERR(mux->gpio[1]))
+		goto exit;
+
+	channel = gpiod_get_value_cansleep(mux->gpio[0]);
+	if (mux->channel == channel || !netif_running(dev))
+		goto exit;
+
+	rtnl_lock();
+
+	mtk_stop(dev);
+
+	if (channel == 0 || channel == 1) {
+		mac->of_node = mux->data[channel]->of_node;
+		mac->phylink = mux->data[channel]->phylink;
+	};
+
+	dev_info(eth->dev, "ethernet mux: switch to channel%d\n", channel);
+
+	gpiod_set_value_cansleep(mux->gpio[1], channel);
+
+	mtk_open(dev);
+
+	rtnl_unlock();
+
+	mux->channel = channel;
+
+exit:
+	mod_delayed_work(system_wq, &mux->poll, msecs_to_jiffies(100));
+}
+
+static int mtk_add_mux_channel(struct mtk_mux *mux, struct device_node *np)
+{
+	const __be32 *_id = of_get_property(np, "reg", NULL);
+	struct mtk_mac *mac = mux->mac;
+	struct mtk_eth *eth = mac->hw;
+	struct mtk_mux_data *data;
+	struct phylink *phylink;
+	int phy_mode, id;
+
+	if (!_id) {
+		dev_err(eth->dev, "missing mux channel id\n");
+		return -EINVAL;
+	}
+
+	id = be32_to_cpup(_id);
+	if (id < 0 || id > 1) {
+		dev_err(eth->dev, "%d is not a valid mux channel id\n", id);
+		return -EINVAL;
+	}
+
+	data = kmalloc(sizeof(*data), GFP_KERNEL);
+	if (unlikely(!data)) {
+		dev_err(eth->dev, "failed to create mux data structure\n");
+		return -ENOMEM;
+	}
+
+	mux->data[id] = data;
+
+	/* phylink create */
+	phy_mode = of_get_phy_mode(np);
+	if (phy_mode < 0) {
+		dev_err(eth->dev, "incorrect phy-mode\n");
+		return -EINVAL;
+	}
+
+	phylink = phylink_create(&mux->mac->phylink_config,
+				 of_fwnode_handle(np),
+				 phy_mode, &mtk_phylink_ops);
+	if (IS_ERR(phylink)) {
+		dev_err(eth->dev, "failed to create phylink structure\n");
+		return PTR_ERR(phylink);
+	}
+
+	data->of_node = np;
+	data->phylink = phylink;
+
+	return 0;
+}
+
+static int mtk_add_mux(struct mtk_eth *eth, struct device_node *np)
+{
+	const __be32 *_id = of_get_property(np, "reg", NULL);
+	struct device_node *child;
+	struct mtk_mux *mux;
+	unsigned int id;
+	int err;
+
+	if (!_id) {
+		dev_err(eth->dev, "missing attach mac id\n");
+		return -EINVAL;
+	}
+
+	id = be32_to_cpup(_id);
+	if (id < 0 || id >= MTK_MAX_DEVS) {
+		dev_err(eth->dev, "%d is not a valid attach mac id\n", id);
+		return -EINVAL;
+	}
+
+	mux = kmalloc(sizeof(struct mtk_mux), GFP_KERNEL);
+	if (unlikely(!mux)) {
+		dev_err(eth->dev, "failed to create mux structure\n");
+		return -ENOMEM;
+	}
+
+	eth->mux[id] = mux;
+
+	mux->mac = eth->mac[id];
+	mux->channel = 0;
+
+	mux->gpio[0] = fwnode_get_named_gpiod(of_fwnode_handle(np),
+					      "mod-def0-gpios", 0,
+					      GPIOD_IN, "?");
+	if (IS_ERR(mux->gpio[0]))
+		dev_err(eth->dev, "failed to requset gpio for mod-def0-gpios\n");
+
+	mux->gpio[1] = fwnode_get_named_gpiod(of_fwnode_handle(np),
+					      "chan-sel-gpios", 0,
+					      GPIOD_OUT_LOW, "?");
+	if (IS_ERR(mux->gpio[1]))
+		dev_err(eth->dev, "failed to requset gpio for chan-sel-gpios\n");
+
+	for_each_child_of_node(np, child) {
+		err = mtk_add_mux_channel(mux, child);
+		if (err) {
+			dev_err(eth->dev, "failed to add mtk_mux\n");
+			of_node_put(child);
+			return -ECHILD;
+		}
+		of_node_put(child);
+	}
+
+	INIT_DELAYED_WORK(&mux->poll, mux_poll);
+	mod_delayed_work(system_wq, &mux->poll, msecs_to_jiffies(3000));
+
+	return 0;
+}
+
 static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
 {
 	const __be32 *_id = of_get_property(np, "reg", NULL);
@@ -4757,7 +4917,7 @@ void mtk_eth_set_dma_device(struct mtk_eth *eth, struct device *dma_dev)
 
 static int mtk_probe(struct platform_device *pdev)
 {
-	struct device_node *mac_np;
+	struct device_node *mac_np, *mux_np;
 	struct mtk_eth *eth;
 	int err, i;
 
@@ -4926,6 +5086,26 @@ static int mtk_probe(struct platform_device *pdev)
 			of_node_put(mac_np);
 			goto err_deinit_hw;
 		}
+	}
+
+	mux_np = of_get_child_by_name(eth->dev->of_node, "mux-bus");
+	if (mux_np) {
+		struct device_node *child;
+
+		for_each_available_child_of_node(mux_np, child) {
+			if (!of_device_is_compatible(child,
+						     "mediatek,eth-mux"))
+				continue;
+
+			if (!of_device_is_available(child))
+				continue;
+
+			err = mtk_add_mux(eth, child);
+			if (err)
+				dev_err(&pdev->dev, "failed to add mux\n");
+
+			of_node_put(mux_np);
+		};
 	}
 
 	err = mtk_napi_init(eth);
@@ -5158,7 +5338,7 @@ static const struct mtk_soc_data mt7986_data = {
 	.hw_features = MTK_HW_FEATURES,
 	.required_clks = MT7986_CLKS_BITMAP,
 	.required_pctl = false,
-	.has_sram = true,
+	.has_sram = false,
 	.rss_num = 0,
 	.txrx = {
 		.txd_size = sizeof(struct mtk_tx_dma_v2),
@@ -5176,7 +5356,7 @@ static const struct mtk_soc_data mt7981_data = {
 	.hw_features = MTK_HW_FEATURES,
 	.required_clks = MT7981_CLKS_BITMAP,
 	.required_pctl = false,
-	.has_sram = true,
+	.has_sram = false,
 	.rss_num = 0,
 	.txrx = {
 		.txd_size = sizeof(struct mtk_tx_dma_v2),
