@@ -9,7 +9,6 @@ SRC_URI_append = " \
     file://030-driver_nl80211-rewrite-neigh-code-to-not-depend-on-l.patch \
     file://040-mesh-allow-processing-authentication-frames-in-block.patch \
     file://050-build_fix.patch \
-    file://100-daemonize_fix.patch \
     file://110-mbedtls-TLS-crypto-option-initial-port.patch \
     file://120-mbedtls-fips186_2_prf.patch \
     file://130-mbedtls-annotate-with-TEST_FAIL-for-hwsim-tests.patch \
@@ -24,11 +23,8 @@ SRC_URI_append = " \
     file://310-rescan_immediately.patch \
     file://320-optional_rfkill.patch \
     file://330-nl80211_fix_set_freq.patch \
-    file://340-reload_freq_change.patch \
     file://341-mesh-ctrl-iface-channel-switch.patch \
     file://350-nl80211_del_beacon_bss.patch \
-    file://360-ctrl_iface_reload.patch \
-    file://370-ap_sta_support.patch \
     file://380-disable_ctrl_iface_mib.patch \
     file://381-hostapd_cli_UNKNOWN-COMMAND.patch \
     file://390-wpa_ie_cap_workaround.patch \
@@ -37,7 +33,6 @@ SRC_URI_append = " \
     file://420-indicate-features.patch \
     file://430-hostapd_cli_ifdef.patch \
     file://431-wpa_cli_ifdef.patch \
-    file://450-scan_wait.patch;apply=no \
     file://460-wpa_supplicant-add-new-config-params-to-be-used-with.patch \
     file://463-add-mcast_rate-to-11s.patch \
     file://464-fix-mesh-obss-check.patch \
@@ -49,7 +44,6 @@ SRC_URI_append = " \
     file://600-ubus_support.patch \
     file://601-ucode_support.patch \
     file://610-hostapd_cli_ujail_permission.patch \
-    file://700-wifi-reload.patch \
     file://701-reload_config_inline.patch \
     file://710-vlan_no_bridge.patch \
     file://711-wds_bridge_force.patch \
@@ -62,6 +56,7 @@ SRC_URI_append = " \
     file://761-shared_das_port.patch \
     file://770-radius_server.patch \
     file://990-ctrl-make-WNM_AP-functions-dependant-on-CONFIG_AP.patch \
+    file://991-Fix-OpenWrt-13156.patch \
     file://mtk-0001-hostapd-mtk-Add-neighbor-report-and-BSS-Termination-.patch \
     file://mtk-0002-hostapd-mtk-print-sae-groups-by-hostapd-ctrl.patch \
     file://mtk-0003-hostapd-mtk-add-support-for-runtime-set-in-band-disc.patch \
@@ -79,28 +74,30 @@ SRC_URI_append = " \
     file://mtk-0015-hostapd-mtk-6G-band-does-not-require-DFS.patch \
     file://mtk-0016-hostapd-mtk-Fix-sending-wrong-VHT-operation-IE-in-CS.patch \
     file://mtk-0017-hostapd-mtk-Add-sta-assisted-DFS-state-update-mechan.patch \
-    file://mtk-0018-hostapd-mtk-Fix-auto-ht-issue-when-switching-to-DFS-.patch \
-    file://mtk-0019-hostapd-mtk-Mark-DFS-channel-as-available-for-CSA.patch \
-    file://mtk-0020-hostapd-mtk-Add-available-color-bitmap.patch \
-    file://mtk-0021-hostapd-mtk-Add-channel-information-for-hostapd-relo.patch \
-    file://mtk-0022-hostapd-mtk-Fix-ZWDFS-issue-in-BW-160.patch \
-    file://mtk-0023-hostapd-mtk-Add-vendor-for-CAPI-certification-comman.patch \
-    file://mtk-0024-hostapd-mtk-Air-Monitor-support-in-hostapd-by-vendor.patch \
-    file://mtk-0025-hostapd-mtk-Fix-scan-result-updating-issue.patch \
-    file://mtk-0026-hostapd-mtk-Avoid-setting-beacon-after-wpa_supplican.patch \
-    file://mtk-0027-hostapd-mtk-Fix-setting-wrong-seg0-index-for-5G-cent.patch \
-    file://mtk-0028-hostapd-mtk-Add-muru-user-number-debug-command.patch \
-    file://mtk-0030-hostapd-mtk-Fix-unexpected-AP-beacon-state-transitio.patch \
-    file://mtk-0031-hostapd-mtk-add-connac3-PHY-MURU-manual-mode-config-.patch \
-    file://mtk-0032-hostapd-mtk-Add-HE-capabilities-check.patch \
-    file://mtk-0033-hostapd-mtk-Fix-background-channel-overlapping-opera.patch \
-    file://mtk-0034-hostapd-mtk-Fix-hostapd_dfs_start_cac-log.patch \
-    file://mtk-0035-hostapd-mtk-Check-the-bridge-after-ioctl-SIOCBRADDIF.patch \
-    file://mtk-0036-hostapd-mtk-Update-parameter_set_count-in-MU-EDCA-IE.patch \
-    file://mtk-0037-hostapd-mtk-Add-extension-IE-list-for-non-inherit-IE.patch \
-    file://mtk-0038-hostapd-mtk-Fix-11vmbss-aid-using-wrong-pool.patch \
-    file://mtk-0039-hostapd-mtk-Fix-rnr-ie-length-when-no-need-to-report.patch \
-    file://mtk-0040-hostapd-mtk-add-back-ht-vht-cap-missing-field-before.patch \
-    file://mtk-1000-hostapd-mtk-update-eht-operation-element.patch \
-    file://mtk-1001-hostapd-mtk-Add-support-for-gtk-rekeying-in-hostapd-.patch \
+    file://mtk-0018-hostapd-mtk-Mark-DFS-channel-as-available-for-CSA.patch \
+    file://mtk-0019-hostapd-mtk-Add-available-color-bitmap.patch \
+    file://mtk-0020-hostapd-mtk-Fix-ZWDFS-issue-in-BW-160.patch \
+    file://mtk-0021-hostapd-mtk-Add-vendor-for-CAPI-certification-comman.patch \
+    file://mtk-0022-hostapd-mtk-Air-Monitor-support-in-hostapd-by-vendor.patch \
+    file://mtk-0023-hostapd-mtk-Fix-setting-wrong-seg0-index-for-5G-cent.patch \
+    file://mtk-0024-hostapd-mtk-Add-muru-user-number-debug-command.patch \
+    file://mtk-0025-hostapd-mtk-add-connac3-PHY-MURU-manual-mode-config-.patch \
+    file://mtk-0026-hostapd-mtk-Add-HE-capabilities-check.patch \
+    file://mtk-0027-hostapd-mtk-Fix-background-channel-overlapping-opera.patch \
+    file://mtk-0028-hostapd-mtk-Fix-hostapd_dfs_start_cac-log.patch \
+    file://mtk-0029-hostapd-mtk-Check-the-bridge-after-ioctl-SIOCBRADDIF.patch \
+    file://mtk-0030-hostapd-mtk-Update-parameter_set_count-in-MU-EDCA-IE.patch \
+    file://mtk-0031-hostapd-mtk-add-extension-IE-list-for-non-inherit-IE.patch \
+    file://mtk-0032-hostapd-mtk-Fix-11vmbss-aid-using-wrong-pool.patch \
+    file://mtk-0033-hostapd-mtk-Fix-rnr-ie-length-when-no-need-to-report.patch \
+    file://mtk-0034-hostapd-mtk-add-back-ht-vht-cap-missing-field-before.patch \
+    file://mtk-0035-hostapd-mtk-update-op_class-when-AP-channel-switchin.patch \
+    file://mtk-0036-hostapd-mtk-Add-support-for-gtk-rekeying-in-hostapd-.patch \
+    file://mtk-0037-hostapd-mtk-Fix-wpa_supplicant-configuration-parsing.patch \
+    file://mtk-0038-hostapd-mtk-Set-WMM-and-TX-queue-parameters-for-wpa_.patch \
+    file://mtk-0039-hostapd-mtk-Set-STA-TX-queue-parameters-configuratio.patch \
+    file://mtk-0040-hostapd-mtk-avoid-color-switch-when-beacon-is-not-se.patch \
+    file://mtk-1001-hostapd-mtk-update-eht-operation-element.patch \
+    file://mtk-1002-hostapd-mtk-ucode-add-support-for-ucode-to-parse-BW3.patch \
+    file://mtk-1003-hostapd-mtk-synchronize-bandwidth-in-AP-STA-support.patch \
     "

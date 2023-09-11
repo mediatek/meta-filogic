@@ -102,4 +102,5 @@ SRC_URI_append = " \
     file://mtk-0037-hostapd-mtk-Fix-11vmbss-aid-using-wrong-pool.patch \
     file://mtk-0037-hostapd-mtk-add-back-ht-vht-cap-missing-field-before.patch \
     file://mtk-0038-hostapd-mtk-Fix-rnr-ie-length-when-no-need-to-report.patch \
+    file://mtk-0039-hostapd-mtk-avoid-color-switch-when-beacon-is-not-se.patch \
     "
