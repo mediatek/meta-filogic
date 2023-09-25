@@ -16,7 +16,10 @@ SRC_URI_append = " \
     file://150-add-NULL-checks-encountered-during-tests-hwsim.patch \
     file://160-dpp_pkex-EC-point-mul-w-value-prime.patch \
     file://170-hostapd-update-cfs0-and-cfs1-for-160MHz.patch \
-    file://180-BSS-coloring-fix-CCA-with-multiple-BSS.patch \
+    file://180-driver_nl80211-fix-setting-QoS-map-on-secondary-BSSs.patch \
+    file://181-driver_nl80211-update-drv-ifindex-on-removing-the-fi.patch \
+    file://182-nl80211-move-nl80211_put_freq_params-call-outside-of.patch \
+    file://183-hostapd-cancel-channel_list_update_timeout-in-hostap.patch \
     file://200-multicall.patch \
     file://300-noscan.patch \
     file://301-mesh-noscan.patch \
@@ -88,16 +91,17 @@ SRC_URI_append = " \
     file://mtk-0029-hostapd-mtk-Check-the-bridge-after-ioctl-SIOCBRADDIF.patch \
     file://mtk-0030-hostapd-mtk-Update-parameter_set_count-in-MU-EDCA-IE.patch \
     file://mtk-0031-hostapd-mtk-add-extension-IE-list-for-non-inherit-IE.patch \
-    file://mtk-0032-hostapd-mtk-Fix-11vmbss-aid-using-wrong-pool.patch \
-    file://mtk-0033-hostapd-mtk-Fix-rnr-ie-length-when-no-need-to-report.patch \
-    file://mtk-0034-hostapd-mtk-add-back-ht-vht-cap-missing-field-before.patch \
-    file://mtk-0035-hostapd-mtk-update-op_class-when-AP-channel-switchin.patch \
-    file://mtk-0036-hostapd-mtk-Add-support-for-gtk-rekeying-in-hostapd-.patch \
-    file://mtk-0037-hostapd-mtk-Fix-wpa_supplicant-configuration-parsing.patch \
-    file://mtk-0038-hostapd-mtk-Set-WMM-and-TX-queue-parameters-for-wpa_.patch \
-    file://mtk-0039-hostapd-mtk-Set-STA-TX-queue-parameters-configuratio.patch \
-    file://mtk-0040-hostapd-mtk-avoid-color-switch-when-beacon-is-not-se.patch \
+    file://mtk-0032-hostapd-mtk-Fix-rnr-ie-length-when-no-need-to-report.patch \
+    file://mtk-0033-hostapd-mtk-add-back-ht-vht-cap-missing-field-before.patch \
+    file://mtk-0034-hostapd-mtk-update-op_class-when-AP-channel-switchin.patch \
+    file://mtk-0035-hostapd-mtk-Add-support-for-gtk-rekeying-in-hostapd-.patch \
+    file://mtk-0036-hostapd-mtk-Set-WMM-and-TX-queue-parameters-for-wpa_.patch \
+    file://mtk-0037-hostapd-mtk-Set-STA-TX-queue-parameters-configuratio.patch \
+    file://mtk-0038-hostapd-mtk-avoid-color-switch-when-beacon-is-not-se.patch \
+    file://mtk-0041-hostapd-mtk-6g-bss-connect-ignore-ht-opera.patch \
     file://mtk-1001-hostapd-mtk-update-eht-operation-element.patch \
     file://mtk-1002-hostapd-mtk-ucode-add-support-for-ucode-to-parse-BW3.patch \
     file://mtk-1003-hostapd-mtk-synchronize-bandwidth-in-AP-STA-support.patch \
+    file://mtk-1004-hostapd-mtk-Add-support-for-updating-background-chan.patch \
+    file://mtk-1005-hostapd-mtk-add-zwdfs-mode-ctrl-for-eagle-efem-hwits.patch \
     "

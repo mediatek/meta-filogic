@@ -2,54 +2,20 @@
 SRC_URI_append = " \
     file://110-mac80211_keep_keys_on_stop_ap.patch \
     file://120-cfg80211_allow_perm_addr_change.patch \
+    file://130-disable_auto_vif.patch \
     file://210-ap_scan.patch \
     file://301-mac80211-sta-randomize-BA-session-dialog-token-alloc.patch \
     file://302-mac80211-minstrel_ht-fix-MINSTREL_FRAC-macro.patch \
     file://303-mac80211-minstrel_ht-reduce-fluctuations-in-rate-pro.patch \
     file://304-mac80211-minstrel_ht-rework-rate-downgrade-code-and-.patch \
     file://305-mac80211-increase-quantum-for-airtime-scheduler.patch \
-    file://306-01-v6.2-wifi-mac80211-add-internal-handler-for-wake_tx_queue.patch \
-    file://306-02-v6.2-wifi-mac80211-add-wake_tx_queue-callback-to-drivers.patch \
-    file://306-03-v6.2-wifi-mac80211-Drop-support-for-TX-push-path.patch \
-    file://306-04-v6.2-wifi-realtek-remove-duplicated-wake_tx_queue.patch \
-    file://310-v6.2-mac80211-add-support-for-restricting-netdev-features.patch \
-    file://311-v6.2-wifi-mac80211-fix-and-simplify-unencrypted-drop-chec.patch \
-    file://312-v6.3-wifi-cfg80211-move-A-MSDU-check-in-ieee80211_data_to.patch \
-    file://313-v6.3-wifi-cfg80211-factor-out-bridge-tunnel-RFC1042-heade.patch \
-    file://314-v6.3-wifi-mac80211-remove-mesh-forwarding-congestion-chec.patch \
-    file://315-v6.3-wifi-mac80211-fix-receiving-A-MSDU-frames-on-mesh-in.patch \
-    file://316-v6.3-wifi-mac80211-add-a-workaround-for-receiving-non-sta.patch \
-    file://318-wifi-mac80211-fix-race-in-mesh-sequence-number-assig.patch \
-    file://319-wifi-mac80211-mesh-fast-xmit-support.patch \
-    file://320-wifi-mac80211-use-mesh-header-cache-to-speed-up-mesh.patch \
-    file://321-mac80211-fix-mesh-forwarding.patch \
-    file://322-wifi-mac80211-fix-mesh-path-discovery-based-on-unica.patch \
-    file://323-v6.3-wifi-mac80211-Add-VHT-MU-MIMO-related-flags-in-ieee8.patch \
-    file://324-v6.3-wifi-mac80211-Add-HE-MU-MIMO-related-flags-in-ieee80.patch \
-    file://325-wifi-mac80211-introduce-ieee80211_refresh_tx_agg_ses.patch \
-    file://326-wifi-mac80211-add-mesh-fast-rx-support.patch \
-    file://327-wifi-mac80211-add-support-for-letting-drivers-regist.patch \
-    file://329-wifi-mac80211-fix-receiving-mesh-packets-in-forwardi.patch \
-    file://330-wifi-ieee80211-correctly-mark-FTM-frames-non-buffera.patch \
-    file://331-wifi-mac80211-flush-queues-on-STA-removal.patch \
-    file://332-wifi-iwlwifi-mvm-support-flush-on-AP-interfaces.patch \
-    file://333-wifi-mac80211-add-flush_sta-method.patch \
-    file://334-wifi-iwlwifi-mvm-support-new-flush_sta-method.patch \
-    file://335-wifi-mac80211-add-LDPC-related-flags-in-ieee80211_bs.patch \
-    file://336-v6.4-wifi-mac80211-generate-EMA-beacons-in-AP-mode.patch \
-    file://337-mac80211-fix-sband-iftype-data-lookup-for-AP_VLAN.patch \
-    file://338-mac80211-split-mesh-fast-tx-cache-into-local-proxied.patch \
-    file://339-wifi-cfg80211-fix-receving-mesh-packets-without-RFC1.patch \
+    file://310-mac80211-split-mesh-fast-tx-cache-into-local-proxied.patch \
+    file://311-mac80211-fix-mesh-id-corruption-on-32-bit-systems.patch \
+    file://312-wifi-cfg80211-annotate-iftype_data-pointer-with-spar.patch \
+    file://320-cfg80211-allow-grace-period-for-DFS-available-after-.patch \
     file://400-allow-ibss-mixed.patch \
     file://782-net-next-1-of-net-pass-the-dst-buffer-to-of_get_mac_address.patch \
-    file://bp-0002-mac80211-support-minimal-EHT-rate-reporting-on-RX.patch \
-    file://bp-0003-cfg80211-Update-Transition-Disable-policy-during-por.patch \
-    file://bp-0004-wifi-mac80211-mlme-handle-EHT-channel-puncturing.patch \
-    file://bp-0005-wifi-cfg80211-move-puncturing-bitmap-validation-from.patch \
-    file://bp-0006-wifi-nl80211-validate-and-configure-puncturing-bitma.patch \
-    file://bp-0007-wifi-cfg80211-include-puncturing-bitmap-in-channel-s.patch \
-    file://bp-0008-wifi-mac80211-configure-puncturing-bitmap.patch \
-    file://bp-0009-wifi-mac80211-add-EHT-MU-MIMO-related-flags-in-ieee8.patch \
+    file://bp-0001-Revert-mac80211-use-the-new-drop-reasons-infrastruct.patch \
     file://mtk-0001-mac80211-mtk-do-not-setup-twt-when-twt-responder-is-.patch \
     file://mtk-0002-cfg80211-mtk-extend-CAC-time-for-weather-radar-chann.patch \
     file://mtk-0003-mac80211-mtk-it-s-invalid-case-when-frag_threshold-i.patch \
@@ -64,7 +30,7 @@ SRC_URI_append = " \
     file://mtk-0012-mac80211-mtk-track-obss-color-bitmap.patch \
     file://mtk-0013-mac80211-mtk-ageout-color-bitmap.patch \
     file://mtk-0014-mac80211-mtk-update-max_bssid_indicator-based-on-rea.patch \
-    file://mtk-0015-mac80211-support-configurable-addba-resp-time.patch \
+    file://mtk-0015-support-configurable-addba-resp-time.patch \
     file://mtk-0016-mac80211-mtk-add-sta-assisted-DFS-state-update-mecha.patch \
     file://mtk-0017-nl80211-mtk-Mark-DFS-channel-as-available-for-CSA.patch \
     file://mtk-0018-cfg80211-mtk-fix-early-return-in-cfg80211_stop_backg.patch \
@@ -75,5 +41,9 @@ SRC_URI_append = " \
     file://mtk-1001-mac80211-mtk-add-rate-duration-for-EHT-rate.patch \
     file://mtk-1002-mac80211-mtk-add-send-bar-action-when-recieve-addba-.patch \
     file://mtk-1003-mac80211-mtk-inrease-beacon-loss-count.patch \
-    file://mtk-1004-mac80211-mtk-add-disabling-cca-when-stopping-AP.patch \
+    file://mtk-1004-cfg80211-mtk-add-support-for-updating-background-cha.patch \
+    file://mtk-1005-mac80211-mtk-Allow-STA-interface-to-set-TX-queue-par.patch \
+    file://mtk-1006-mac80211-mtk-export-ieee80211_tpt_led_trig_tx-rx-for.patch \
+    file://mtk-1007-mac80211-mtk-add-packet-count-input-for-dev_sw_netst.patch \
+    file://mtk-1008-mac80211-mtk-add-per-bss-flag-to-support-vendors-cou.patch \
     "
