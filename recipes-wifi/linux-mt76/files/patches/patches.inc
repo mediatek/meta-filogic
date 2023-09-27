@@ -1,12 +1,20 @@
 #patch patches (come from openwrt/lede/target/linux/mediatek)
 SRC_URI_append = " \
-    file://0001-wifi-mt76-fix-incorrect-HE-TX-GI-report.patch \
-    file://0002-wifi-mt76-mt7915-add-pc-stack-dump-for-WM-s-coredump.patch \
-    file://0003-wifi-mt76-mt7915-move-temperature-margin-check-to-mt.patch \
-    file://0004-wifi-mt76-mt7915-fix-txpower-issues.patch \
-    file://0005-wifi-mt76-mt7915-rework-init-txpower.patch \
-    file://0006-wifi-mt76-mt7915-rework-mmio-access-flow.patch \
-    file://0007-wifi-mt76-disable-HW-AMSDU-when-using-fixed-rate.patch \
+    file://0001-wifi-mt76-mt7915-update-beacon-size-limitation.patch \
+    file://0002-wifi-mt76-mt7915-check-sta-rx-control-frame-to-multi.patch \
+    file://0003-wifi-mt76-mt7915-fix-potential-memory-leak-of-beacon.patch \
+    file://0004-wifi-mt76-mt7915-get-rid-of-false-alamrs-of-tx-emiss.patch \
+    file://0005-wifi-mt76-mt7915-fix-per-band-IEEE80211_CONF_MONITOR.patch \
+    file://0006-wifi-mt76-mt7915-check-vif-type-before-reporting-cca.patch \
+    file://0007-wifi-mt76-mt7915-update-mpdu-density-capability.patch \
+    file://0008-wifi-mt76-mt7915-fix-beamforming-availability-check.patch \
+    file://0009-wifi-mt76-fix-incorrect-HE-TX-GI-report.patch \
+    file://0010-wifi-mt76-mt7915-add-pc-stack-dump-for-WM-s-coredump.patch \
+    file://0011-wifi-mt76-mt7915-move-temperature-margin-check-to-mt.patch \
+    file://0012-wifi-mt76-mt7915-fix-txpower-issues.patch \
+    file://0013-wifi-mt76-mt7915-rework-init-txpower.patch \
+    file://0014-wifi-mt76-mt7915-rework-mmio-access-flow.patch \
+    file://0015-wifi-mt76-disable-HW-AMSDU-when-using-fixed-rate.patch \
     file://0999-wifi-mt76-mt7915-build-pass-for-Linux-Kernel-5.4-fix.patch \
     file://1000-wifi-mt76-mt7915-add-mtk-internal-debug-tools-for-mt.patch \
     file://1001-wifi-mt76-mt7915-csi-implement-csi-support.patch \
@@ -48,8 +56,6 @@ SRC_URI_append = " \
     file://1037-wifi-mt76-mt7915-enable-the-mac80211-hw-bmc-ps-buffe.patch \
     file://1038-wifi-mt76-update-debugfs-knob-to-dump-token-pending-.patch \
     file://1039-wifi-mt76-mt7915-support-enable-disable-spatial-reus.patch \
-    file://1040-wifi-mt76-mt7915-add-debug-log-for-SER-flow.patch \
-    file://1041-wifi-mt76-mt7915-add-additional-chain-signal-info-to.patch \
     file://2000-wifi-mt76-mt7915-wed-add-wed-tx-support.patch \
     file://2001-wifi-mt76-mt7915-wed-add-wds-support-when-wed-is-ena.patch \
     file://2002-wifi-mt76-mt7915-wed-add-fill-receive-path-to-report.patch \
@@ -59,8 +65,5 @@ SRC_URI_append = " \
     file://2006-wifi-mt76-add-debugfs-knob-to-show-packet-error-rate.patch \
     file://2007-wifi-mt76-mt7915-add-ctxd-support-for-mt7916.patch \
     file://2008-wifi-mt76-connac-wed-add-wed-rx-copy-skb.patch \
-    file://2009-wifi-mt76-mt7915-enable-wa-log-to-uart.patch \
-    file://2010-wifi-mt76-mt7915-add-error-message-when-driver-recei.patch \
-    file://2011-mt76-wifi-mt7915-wed-setting-wed-hw-tx-token-to-8192.patch \
     file://9999-mt76-revert-for-backports-5.15-wireless-stack.patch \
     "

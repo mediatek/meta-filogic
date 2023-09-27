@@ -10,6 +10,7 @@ inherit pkgconfig cmake
 PV = "1.0"
 
 require mt76.inc
+require mt76-3x.inc
 
 SRC_URI = " \
     git://git@github.com/openwrt/mt76.git;protocol=https \
