@@ -103,4 +103,7 @@ SRC_URI_append = " \
     file://mtk-0037-hostapd-mtk-add-back-ht-vht-cap-missing-field-before.patch \
     file://mtk-0038-hostapd-mtk-Fix-rnr-ie-length-when-no-need-to-report.patch \
     file://mtk-0039-hostapd-mtk-avoid-color-switch-when-beacon-is-not-se.patch \
+    file://mtk-0041-hostapd-mtk-6g-bss-connect-ignore-ht-opera.patch \
+    file://mtk-0042-hostapd-mtk-avoid-unnecessary-beacon-update-for-6-GH.patch \
+    file://mtk-0044-hostapd-mtk-Add-ACS-chanlist-info-in-get_config.patch \
     "

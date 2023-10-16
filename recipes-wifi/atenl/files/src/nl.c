@@ -27,6 +27,7 @@ static struct nla_policy testdata_policy[NUM_MT76_TM_ATTRS] = {
 	[MT76_TM_ATTR_MTD_PART] = { .type = NLA_STRING },
 	[MT76_TM_ATTR_MTD_OFFSET] = { .type = NLA_U32 },
 	[MT76_TM_ATTR_BAND_IDX] = { .type = NLA_U8 },
+	[MT76_TM_ATTR_SKU_EN] = { .type = NLA_U8 },
 	[MT76_TM_ATTR_TX_COUNT] = { .type = NLA_U32 },
 	[MT76_TM_ATTR_TX_LENGTH] = { .type = NLA_U32 },
 	[MT76_TM_ATTR_TX_RATE_MODE] = { .type = NLA_U8 },
@@ -55,6 +56,7 @@ static struct nla_policy stats_policy[NUM_MT76_TM_STATS_ATTRS] = {
 static struct nla_policy rx_policy[NUM_MT76_TM_RX_ATTRS] = {
 	[MT76_TM_RX_ATTR_FREQ_OFFSET] = { .type = NLA_U32 },
 	[MT76_TM_RX_ATTR_RCPI] = { .type = NLA_NESTED },
+	[MT76_TM_RX_ATTR_RSSI] = { .type = NLA_NESTED },
 	[MT76_TM_RX_ATTR_IB_RSSI] = { .type = NLA_NESTED },
 	[MT76_TM_RX_ATTR_WB_RSSI] = { .type = NLA_NESTED },
 	[MT76_TM_RX_ATTR_SNR] = { .type = NLA_U8 },
@@ -829,15 +831,20 @@ out:
 void
 atenl_get_ibf_cal_result(struct atenl *an)
 {
-	u16 offset;
+	u16 offset, group_size = 40;
 
 	if (an->adie_id == 0x7975)
 		offset = 0x651;
 	else if (an->adie_id == 0x7976)
 		offset = 0x60a;
 
-	/* per group size = 40, for group 0-8 */
-	atenl_eeprom_read_from_driver(an, offset, 40 * 9);
+	if (is_mt7996(an)) {
+		offset = 0xc00;
+		group_size = 46;
+	}
+
+	/* per group size = 40 or 46, for group 0-8 */
+	atenl_eeprom_read_from_driver(an, offset, group_size * 9);
 }
 
 static int
@@ -895,9 +902,11 @@ atenl_nl_ibf_set_val(struct atenl *an, struct atenl_data *data,
 		 * so maintain a temp variable to allow mcs update in anthor action.
 		 */
 		an->ibf_mcs = val[0];
-		an->ibf_ant = tmp_ant;
 		nla_put_u8(msg, MT76_TM_ATTR_TX_RATE_IDX, an->ibf_mcs);
-		nla_put_u8(msg, MT76_TM_ATTR_TX_ANTENNA, an->ibf_ant);
+		if (!is_mt7996(an)) {
+			an->ibf_ant = tmp_ant;
+			nla_put_u8(msg, MT76_TM_ATTR_TX_ANTENNA, an->ibf_ant);
+		}
 		break;
 	case TXBF_ACT_TX_ANT:
 		nla_put_u8(msg, MT76_TM_ATTR_TX_ANTENNA, val[0]);
@@ -935,9 +944,11 @@ atenl_nl_ibf_set_val(struct atenl *an, struct atenl_data *data,
 		a = nla_nest_start(msg, MT76_TM_ATTR_TXBF_PARAM);
 		if (!a)
 			return -ENOMEM;
-		/* Note: litepoint may send random number for lna_gain_level, reset to 0 */
+		/* Note: litepoint may send random number for lna_gain_level,
+		 * reset to 1 (mid gain) and 0 for wifi 7 and wifi 6, respectively
+		 */
 		if (action == TXBF_ACT_IBF_PHASE_CAL)
-			val[4] = 0;
+			val[4] = is_mt7996(an) ? 1 : 0;
 		for (i = 0; i < 5; i++)
 			nla_put_u16(msg, i, val[i]);
 		/* Used to distinguish between command mode and HQADLL mode */
