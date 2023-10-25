@@ -17,7 +17,6 @@ SRC_URI = "git://w1.fi/hostap.git;protocol=https;branch=main \
            file://wpa_supplicant.conf-sane \
            file://99_wpa_supplicant \
            file://wpa_supplicant-full.config \
-	   file://wpa_supplicant.uc \
            file://src-${PV} \
            file://002-rdkb-add-ucode-support.patch;apply=no \
            "
@@ -128,9 +127,6 @@ do_install () {
 
 	install -d ${D}${libdir}
 	install -m 0644 ${S}/wpa_supplicant/libwpa_client.so ${D}${libdir}
-
-	install -d ${D}${datadir}/hostap
-	install -m 0755 ${WORKDIR}/wpa_supplicant.uc ${D}${datadir}/hostap
 }
 
 pkg_postinst:${PN} () {

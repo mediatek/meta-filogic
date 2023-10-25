@@ -28,8 +28,10 @@ SRC_URI = " \
     file://hostapd.uc \
     file://common.uc \
     file://wdev.uc \
+    file://wpa_supplicant.uc \
     file://src-${PV} \
     file://002-rdkb-add-ucode-support.patch;apply=no \
+    file://003-rdkb-uc-script-support.patch;apply=no \
 "
 require files/patches-${PV}/patches.inc
 
@@ -79,6 +81,9 @@ do_filogic_patches() {
     cd ${S}
         if [ ! -e patch_applied ]; then
             patch -p1 < ${WORKDIR}/002-rdkb-add-ucode-support.patch
+            cd ${WORKDIR}
+            patch -p1 < ${WORKDIR}/003-rdkb-uc-script-support.patch
+            cd ${S}
             touch patch_applied
         fi
 }
@@ -107,6 +112,7 @@ do_install() {
          install -m 0755 ${WORKDIR}/hostapd.uc ${D}${datadir}/hostap
          install -m 0755 ${WORKDIR}/wdev.uc ${D}${datadir}/hostap
          install -m 0755 ${WORKDIR}/common.uc ${D}${datadir}/hostap
+         install -m 0755 ${WORKDIR}/wpa_supplicant.uc ${D}${datadir}/hostap
 }
 
 FILES_${PN} += " \
@@ -121,4 +127,5 @@ FILES_${PN} += " \
                 ${datadir}/hostap/hostapd.uc \
                 ${datadir}/hostap/wdev.uc \
                 ${datadir}/hostap/common.uc \
+                ${datadir}/hostap/wpa_supplicant.uc \
 "
