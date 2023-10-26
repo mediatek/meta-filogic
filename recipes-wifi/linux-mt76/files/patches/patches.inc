@@ -62,6 +62,6 @@ SRC_URI_append = " \
     file://2008-wifi-mt76-connac-wed-add-wed-rx-copy-skb.patch \
     file://2009-wifi-mt76-mt7915-enable-wa-log-to-uart.patch \
     file://2010-wifi-mt76-mt7915-add-error-message-when-driver-recei.patch \
-    file://2011-mt76-wifi-mt7915-wed-setting-wed-hw-tx-token-to-8192.patch \
+    file://2011-mt76-wifi-mt7915-wed-setting-wed-hw-tx-token-to-8192.patch;apply=no  \
     file://9999-mt76-revert-for-backports-5.15-wireless-stack.patch \
     "
