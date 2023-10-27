@@ -114,6 +114,7 @@ SRC_URI_append = " \
     file://999-2502-cpufreq-add-mt7988a-spim-snand-support.patch \
     file://999-2503-cpufreq-mtk-vbining-add-mt7988-support.patch \
     file://999-2530-add-pmic-config.patch \
+    file://999-2531-iio-add-zts8032-config.patch \
     file://999-2550-dual-image-mount-rootfs.patch \
     file://999-2600-pcie-add-pcie-gen3-upstream-driver.patch \
     file://999-2601-pcie-add-multi-MSI-support.patch \
