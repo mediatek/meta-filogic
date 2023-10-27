@@ -7,6 +7,7 @@ SRC_URI_append = " \
     file://0005-wifi-mt76-mt7915-rework-init-txpower.patch \
     file://0006-wifi-mt76-mt7915-rework-mmio-access-flow.patch \
     file://0007-wifi-mt76-disable-HW-AMSDU-when-using-fixed-rate.patch \
+    file://0008-wifi-mt76-mt7915-add-new-chip-version-in-power-on-se.patch \
     file://0999-wifi-mt76-mt7915-build-pass-for-Linux-Kernel-5.4-fix.patch \
     file://1000-wifi-mt76-mt7915-add-mtk-internal-debug-tools-for-mt.patch \
     file://1001-wifi-mt76-mt7915-csi-implement-csi-support.patch \
@@ -62,6 +63,10 @@ SRC_URI_append = " \
     file://2008-wifi-mt76-connac-wed-add-wed-rx-copy-skb.patch \
     file://2009-wifi-mt76-mt7915-enable-wa-log-to-uart.patch \
     file://2010-wifi-mt76-mt7915-add-error-message-when-driver-recei.patch \
-    file://2011-mt76-wifi-mt7915-wed-setting-wed-hw-tx-token-to-8192.patch;apply=no  \
+    file://2011-wifi-mt76-mt7915-wed-change-wed-token-init-size-to-a.patch \
+    file://2012-Revert-wifi-mt76-mt7921-fix-the-wrong-rate-selected-.patch \
+    file://2013-Revert-wifi-mt76-mt7921-fix-the-wrong-rate-pickup-fo.patch \
+    file://2014-Revert-wifi-mt76-move-struct-ieee80211_chanctx_conf-.patch \
+    file://2015-Revert-wifi-mt76-fix-race-condition-related-to-check.patch \
     file://9999-mt76-revert-for-backports-5.15-wireless-stack.patch \
     "
