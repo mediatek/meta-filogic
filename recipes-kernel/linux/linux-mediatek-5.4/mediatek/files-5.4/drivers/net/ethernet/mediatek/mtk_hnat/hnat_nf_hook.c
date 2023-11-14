@@ -211,11 +211,13 @@ void foe_clear_all_bind_entries(void)
 
 static void gmac_ppe_fwd_enable(struct net_device *dev)
 {
+	struct mtk_mac *mac = netdev_priv(dev);
+
 	if (IS_LAN(dev) || IS_GMAC1_MODE)
 		set_gmac_ppe_fwd(NR_GMAC1_PORT, 1);
-	else if (IS_WAN(dev))
+	else if (mac->id == MTK_GMAC2_ID)
 		set_gmac_ppe_fwd(NR_GMAC2_PORT, 1);
-	else if (IS_LAN2(dev))
+	else if (mac->id == MTK_GMAC3_ID)
 		set_gmac_ppe_fwd(NR_GMAC3_PORT, 1);
 }
 
@@ -1220,6 +1222,7 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 	u32 qid = 0;
 	u32 port_id = 0;
 	int mape = 0;
+	struct mtk_mac *mac = netdev_priv(dev);
 
 	ct = nf_ct_get(skb, &ctinfo);
 
@@ -1694,7 +1697,7 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 		else
 			gmac = NR_GMAC1_PORT;
 	} else if (IS_LAN2(dev)) {
-		gmac = NR_GMAC3_PORT;
+		gmac = (mac->id == MTK_GMAC2_ID) ? NR_GMAC2_PORT : NR_GMAC3_PORT;
 	} else if (IS_WAN(dev)) {
 		if (IS_DSA_WAN(dev))
 			port_id = hnat_dsa_fill_stag(dev,&entry, hw_path,
@@ -1706,7 +1709,10 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 			entry.ipv4_hnapt.act_dp &= ~UDF_PINGPONG_IFIDX;
 			entry.ipv4_hnapt.act_dp |= dev->ifindex & UDF_PINGPONG_IFIDX;
 		} else {
-			gmac = (IS_GMAC1_MODE) ? NR_GMAC1_PORT : NR_GMAC2_PORT;
+			if (IS_GMAC1_MODE)
+				gmac = NR_GMAC1_PORT;
+			else
+				gmac = (mac->id == MTK_GMAC2_ID) ? NR_GMAC2_PORT : NR_GMAC3_PORT;
 		}
 	} else if (IS_EXT(dev) && (FROM_GE_PPD(skb) || FROM_GE_LAN_GRP(skb) ||
 		   FROM_GE_WAN(skb) || FROM_GE_VIRTUAL(skb) || FROM_WED(skb))) {
@@ -1775,17 +1781,12 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 			}
 
 			if (FROM_EXT(skb) || skb_hnat_sport(skb) == NR_QDMA_PORT ||
-			    (IS_PPPQ_MODE && !IS_DSA_LAN(dev) && !IS_DSA_WAN(dev)))
+			    (IS_PPPQ_MODE && (qid < MAX_PPPQ_PORT_NUM) &&
+			     !IS_DSA_LAN(dev) && !IS_DSA_WAN(dev)))
 				entry.ipv4_hnapt.iblk2.fqos = 0;
 			else
 #if defined(CONFIG_MEDIATEK_NETSYS_V3)
-				if ((IS_HQOS_UL_MODE && IS_WAN(dev)) ||
-				    (IS_HQOS_DL_MODE && IS_LAN_GRP(dev)) ||
-				    (IS_PPPQ_MODE &&
-				     IS_PPPQ_PATH(dev, skb)))
-					entry.ipv4_hnapt.tport_id = 1;
-				else
-					entry.ipv4_hnapt.tport_id = 0;
+				entry.ipv4_hnapt.tport_id = TPORT_FLAG(dev, skb, qid) ? 1 : 0;
 #else
 				entry.ipv4_hnapt.iblk2.fqos =
 					(!IS_PPPQ_MODE ||
@@ -1821,21 +1822,25 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 			}
 
 			if (FROM_EXT(skb) ||
-			    (IS_PPPQ_MODE && !IS_DSA_LAN(dev) && !IS_DSA_WAN(dev)))
+			    (IS_PPPQ_MODE && (qid < MAX_PPPQ_PORT_NUM) &&
+			     !IS_DSA_LAN(dev) && !IS_DSA_WAN(dev)))
 				entry.ipv6_5t_route.iblk2.fqos = 0;
 			else
 #if defined(CONFIG_MEDIATEK_NETSYS_V3)
 				switch (foe->bfib1.pkt_type) {
 				case IPV4_MAP_E:
 				case IPV4_MAP_T:
-					entry.ipv4_mape.tport_id = TPORT_FLAG(dev, skb) ? 1 : 0;
+					entry.ipv4_mape.tport_id =
+						TPORT_FLAG(dev, skb, qid) ? 1 : 0;
 					break;
 				case IPV6_HNAPT:
 				case IPV6_HNAT:
-					entry.ipv6_hnapt.tport_id = TPORT_FLAG(dev, skb) ? 1 : 0;
+					entry.ipv6_hnapt.tport_id =
+						TPORT_FLAG(dev, skb, qid) ? 1 : 0;
 					break;
 				default:
-					entry.ipv6_5t_route.tport_id = TPORT_FLAG(dev, skb) ? 1 : 0;
+					entry.ipv6_5t_route.tport_id =
+						TPORT_FLAG(dev, skb, qid) ? 1 : 0;
 					break;
 				}
 #else
@@ -2313,15 +2318,20 @@ static void mtk_hnat_dscp_update(struct sk_buff *skb, struct foe_entry *entry)
 	switch (ntohs(eth->h_proto)) {
 	case ETH_P_IP:
 		iph = ip_hdr(skb);
-		if (IS_IPV4_GRP(entry) && entry->ipv4_hnapt.iblk2.dscp != iph->tos)
+		if (IS_IPV4_GRP(entry) && entry->ipv4_hnapt.iblk2.dscp != iph->tos) {
+			entry->ipv4_hnapt.iblk2.dscp = iph->tos;
 			flag = true;
+		}
 		break;
 	case ETH_P_IPV6:
 		ip6h = ipv6_hdr(skb);
 		if ((IS_IPV6_3T_ROUTE(entry) || IS_IPV6_5T_ROUTE(entry)) &&
 			(entry->ipv6_5t_route.iblk2.dscp !=
-			(ip6h->priority << 4 | (ip6h->flow_lbl[0] >> 4))))
+			(ip6h->priority << 4 | (ip6h->flow_lbl[0] >> 4)))) {
+			entry->ipv6_5t_route.iblk2.dscp =
+				(ip6h->priority << 4 | (ip6h->flow_lbl[0] >> 4));
 			flag = true;
+		}
 		break;
 	default:
 		return;
@@ -2329,9 +2339,8 @@ static void mtk_hnat_dscp_update(struct sk_buff *skb, struct foe_entry *entry)
 
 	if (flag) {
 		if (debug_level >= 7)
-			pr_info("%s %d Delete entry idx=%d\n", __func__, __LINE__,
+			pr_info("%s %d update entry idx=%d\n", __func__, __LINE__,
 			skb_hnat_entry(skb));
-		memset(entry, 0, sizeof(struct foe_entry));
 		hnat_cache_ebl(1);
 	}
 }
@@ -2705,8 +2714,7 @@ static unsigned int mtk_hnat_nf_post_routing(
 			break;
 
 		/* update dscp for qos */
-		if (hnat_priv->data->version != MTK_HNAT_V3)
-			mtk_hnat_dscp_update(skb, entry);
+		mtk_hnat_dscp_update(skb, entry);
 
 		/* update mcast timestamp*/
 		if (hnat_priv->data->version == MTK_HNAT_V1_3 &&
