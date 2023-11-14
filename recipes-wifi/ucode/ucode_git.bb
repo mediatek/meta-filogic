@@ -8,7 +8,7 @@ SRC_URI = " \
     git://git@github.com/jow-/ucode.git;protocol=https \
 "
 
-SRCREV = "07c03173d4e6a30953f92fa88ed29b0b956c9106"
+SRCREV = "a6e75e02528e36f3610a7f0073453018336def2e"
 PV = "git${SRCPV}"
 
 S = "${WORKDIR}/git"

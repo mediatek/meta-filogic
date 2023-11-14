@@ -83,4 +83,5 @@ SRC_URI_append = " \
     file://mtk-9901-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-id.patch \
     file://mtk-9902-mac80211-mtk-add-support-for-letting-drivers-registe.patch \
     file://mtk-9903-mac80211-mtk-add-per-bss-flag-to-support-vendors-cou.patch \
+    file://mtk-9904-mac80211-mtk-add-packet-count-input-for-dev_sw_netst.patch \
     "

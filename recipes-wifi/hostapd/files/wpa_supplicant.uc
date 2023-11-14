@@ -1,6 +1,6 @@
 let libubus = require("ubus");
 import { open, readfile } from "fs";
-import { wdev_create, wdev_remove, is_equal, vlist_new, phy_open } from "common";
+import { wdev_create, wdev_set_mesh_params, wdev_remove, is_equal, wdev_set_up, vlist_new, phy_open } from "common";
 
 let ubus = libubus.connect();
 
@@ -40,6 +40,7 @@ function iface_start(phydev, iface, macaddr_list)
 	let ret = wdev_create(phy, ifname, wdev_config);
 	if (ret)
 		wpas.printf(`Failed to create device ${ifname}: ${ret}`);
+	wdev_set_up(ifname, true);
 	wpas.add_iface(iface.config);
 	iface.running = true;
 }
@@ -261,7 +262,6 @@ function iface_hostapd_notify(phy, ifname, iface, state)
 	let status = iface.status();
 	let msg = { phy: phy };
 
-	wpas.printf(`ucode: mtk: wpa_s in state ${state} notifies hostapd`);
 	switch (state) {
 	case "DISCONNECTED":
 	case "AUTHENTICATING":
@@ -276,8 +276,6 @@ function iface_hostapd_notify(phy, ifname, iface, state)
 		msg.up = true;
 		msg.frequency = status.frequency;
 		msg.sec_chan_offset = status.sec_chan_offset;
-		msg.ch_width = status.ch_width;
-		msg.bw320_offset = status.bw320_offset;
 		break;
 	default:
 		return;
@@ -294,8 +292,6 @@ function iface_channel_switch(phy, ifname, iface, info)
 		csa: true,
 		csa_count: info.csa_count ? info.csa_count - 1 : 0,
 		frequency: info.frequency,
-		ch_width: info.ch_width,
-		bw320_offset: info.bw320_offset,
 		sec_chan_offset: info.sec_chan_offset,
 	};
 	ubus.call("hostapd", "apsta_state", msg);
@@ -321,6 +317,23 @@ return {
 		}
 
 		iface_hostapd_notify(phy, ifname, iface, state);
+
+		if (state != "COMPLETED")
+			return;
+
+		let phy_data = wpas.data.config[phy];
+		if (!phy_data)
+			return;
+
+		let iface_data = phy_data.data[ifname];
+		if (!iface_data)
+			return;
+
+		let wdev_config = iface_data.config;
+		if (!wdev_config || wdev_config.mode != "mesh")
+			return;
+
+		wdev_set_mesh_params(ifname, wdev_config);
 	},
 	event: function(ifname, iface, ev, info) {
 		let phy = wpas.data.iface_phy[ifname];

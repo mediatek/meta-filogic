@@ -12,6 +12,7 @@ SRC_URI_append = " \
     file://110-mbedtls-TLS-crypto-option-initial-port.patch \
     file://120-mbedtls-fips186_2_prf.patch \
     file://130-mbedtls-annotate-with-TEST_FAIL-for-hwsim-tests.patch \
+    file://135-mbedtls-fix-owe-association.patch \
     file://140-tests-Makefile-make-run-tests-with-CONFIG_TLS.patch \
     file://150-add-NULL-checks-encountered-during-tests-hwsim.patch \
     file://160-dpp_pkex-EC-point-mul-w-value-prime.patch \
@@ -60,6 +61,7 @@ SRC_URI_append = " \
     file://770-radius_server.patch \
     file://990-ctrl-make-WNM_AP-functions-dependant-on-CONFIG_AP.patch \
     file://991-Fix-OpenWrt-13156.patch \
+    file://992-nl80211-add-extra-ies-only-if-allowed-by-driver.patch \
     file://mtk-0001-hostapd-mtk-Add-neighbor-report-and-BSS-Termination-.patch \
     file://mtk-0002-hostapd-mtk-print-sae-groups-by-hostapd-ctrl.patch \
     file://mtk-0003-hostapd-mtk-add-support-for-runtime-set-in-band-disc.patch \

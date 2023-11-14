@@ -18,10 +18,10 @@ atenl_create_file(struct atenl *an, bool flash_mode)
 
 	/* reserve space for pre-cal data in flash mode */
 	if (flash_mode) {
-		atenl_dbg("%s: init eeprom with flash mode\n", __func__);
+		atenl_dbg("%s: init eeprom with flash / binfile mode\n", __func__);
 		max_len = EEPROM_PART_SIZE;
 	} else {
-		atenl_dbg("%s: init eeprom with efuse mode\n", __func__);
+		atenl_dbg("%s: init eeprom with efuse / default bin mode\n", __func__);
 		max_len = 0x1e00;
 	}
 
@@ -117,7 +117,7 @@ atenl_eeprom_init_chip_id(struct atenl *an)
 
 	if (is_mt7915(an)) {
 		an->adie_id = 0x7975;
-	} else if (is_mt7916(an)) {
+	} else if (is_mt7916(an) || is_mt7981(an)) {
 		an->adie_id = 0x7976;
 	} else if (is_mt7986(an)) {
 		bool is_7975 = false;
@@ -164,6 +164,7 @@ atenl_eeprom_init_max_size(struct atenl *an)
 		break;
 	case 0x7906:
 	case 0x7916:
+	case 0x7981:
 	case 0x7986:
 		an->eeprom_size = 4096;
 		an->eeprom_prek_offs = 0x19a;
@@ -209,7 +210,7 @@ atenl_eeprom_init_band_cap(struct atenl *an)
 			anb->valid = true;
 			anb->cap = BAND_TYPE_5G;
 		}
-	} else if (is_mt7916(an) || is_mt7986(an)) {
+	} else if (is_mt7916(an) || is_mt7981(an) || is_mt7986(an)) {
 		struct atenl_band *anb;
 		u8 val, band_sel;
 		int i;
@@ -316,6 +317,10 @@ atenl_eeprom_init_antenna_cap(struct atenl *an)
 		an->anb[0].chainmask = 0x3;
 		an->anb[1].chainmask = 0x3;
 		break;
+	case 0x7981:
+		an->anb[0].chainmask = 0x3;
+		an->anb[1].chainmask = 0x7;
+		break;
 	case 0x7986:
 		an->anb[0].chainmask = 0xf;
 		an->anb[1].chainmask = 0xf;
@@ -419,31 +424,27 @@ int atenl_eeprom_update_precal(struct atenl *an, int write_offs, int size)
 
 int atenl_eeprom_write_mtd(struct atenl *an)
 {
-	bool flash_mode = an->mtd_part != NULL;
+#define TMP_FILE	"/tmp/tmp_eeprom.bin"
 	pid_t pid;
-	char offset[10];
+	u32 size = an->eeprom_size;
+	u32 *precal_info = an->eeprom_data + an->eeprom_size;
+	u32 precal_size = precal_info[0] + precal_info[1];
+	char cmd[100];
 
-	if (!flash_mode)
+	if (an->mtd_part == NULL || !(~an->mtd_offset))
 		return 0;
 
-	pid = fork();
-	if (pid < 0) {
-		perror("Fork");
-		return EXIT_FAILURE;
-	} else if (pid == 0) {
-		int ret;
-		char *part = strdup(an->mtd_part);
-		snprintf(offset, sizeof(offset), "%d", an->mtd_offset);
-		char *cmd[] = {"mtd", "-p", offset, "write", eeprom_file, part, NULL};
+	if (precal_size)
+		size += PRE_CAL_INFO + precal_size;
 
-		ret = execvp("mtd", cmd);
-		if (ret < 0) {
-			atenl_err("%s: exec error\n", __func__);
-			exit(0);
-		}
-	} else {
-		wait(&pid);
-	}
+	sprintf(cmd, "dd if=%s of=%s bs=1 count=%d", eeprom_file, TMP_FILE, size);
+	system(cmd);
+
+	sprintf(cmd, "mtd -p %d write %s %s", an->mtd_offset, TMP_FILE, an->mtd_part);
+	system(cmd);
+
+	sprintf(cmd, "rm %s", TMP_FILE);
+	system(cmd);
 
 	return 0;
 }
@@ -498,12 +499,9 @@ atenl_eeprom_sync_to_driver(struct atenl *an)
 
 void atenl_eeprom_cmd_handler(struct atenl *an, u8 phy_idx, char *cmd)
 {
-	bool flash_mode;
-
 	an->cmd_mode = true;
 
 	atenl_eeprom_init(an, phy_idx);
-	flash_mode = an->mtd_part != NULL;
 
 	if (!strncmp(cmd, "sync eeprom all", 15)) {
 		atenl_eeprom_write_mtd(an);
@@ -520,7 +518,11 @@ void atenl_eeprom_cmd_handler(struct atenl *an, u8 phy_idx, char *cmd)
 			unlink(eeprom_file);
 		} else if (!strncmp(s, "file", 4)) {
 			atenl_info("%s\n", eeprom_file);
-			atenl_info("Flash mode: %d\n", flash_mode);
+			if (an->mtd_part != NULL)
+				atenl_info("%s mode\n",
+					   ~an->mtd_offset == 0 ? "Binfile" : "Flash");
+			else
+				atenl_info("Efuse / Default bin mode\n");
 		} else if (!strncmp(s, "set", 3)) {
 			u32 offset, val;
 

@@ -60,7 +60,6 @@ start_disabled=1
 function iface_freq_info(iface, config, params)
 {
 	let freq = params.frequency;
-	let bw320_offset = params.bw320_offset;
 	if (!freq)
 		return null;
 
@@ -69,29 +68,25 @@ function iface_freq_info(iface, config, params)
 		sec_offset = 0;
 
 	let width = 0;
-	if (params.ch_width >= 0){
-		width = params.ch_width;
-	} else {
-		for (let line in config.radio.data) {
-			if (!sec_offset && match(line, /^ht_capab=.*HT40/)) {
-				sec_offset = null; // auto-detect
-				continue;
-			}
-
-			let val = match(line, /^(vht_oper_chwidth|he_oper_chwidth|eht_oper_chwidth)=(\d+)/);
-			if (!val)
-				continue;
-
-			val = int(val[2]);
-			if (val > width)
-				width = val;
+	for (let line in config.radio.data) {
+		if (!sec_offset && match(line, /^ht_capab=.*HT40/)) {
+			sec_offset = null; // auto-detect
+			continue;
 		}
+
+		let val = match(line, /^(vht_oper_chwidth|he_oper_chwidth)=(\d+)/);
+		if (!val)
+			continue;
+
+		val = int(val[2]);
+		if (val > width)
+			width = val;
 	}
 
 	if (freq < 4000)
 		width = 0;
 
-	return hostapd.freq_info(freq, sec_offset, width, bw320_offset);
+	return hostapd.freq_info(freq, sec_offset, width);
 }
 
 function iface_add(phy, config, phy_status)
@@ -576,7 +571,7 @@ function iface_load_config(filename)
 
 	let bss;
 	let line;
-	while ((line = trim(f.read("line"))) != null) {
+	while ((line = rtrim(f.read("line"), "\n")) != null) {
 		let val = split(line, "=", 2);
 		if (!val[0])
 			continue;
@@ -598,7 +593,7 @@ function iface_load_config(filename)
 		push(config.radio.data, line);
 	}
 
-	while ((line = trim(f.read("line"))) != null) {
+	while ((line = rtrim(f.read("line"), "\n")) != null) {
 		if (line == "#default_macaddr")
 			bss.default_macaddr = true;
 
@@ -663,23 +658,12 @@ let main_obj = {
 			up: true,
 			frequency: 0,
 			sec_chan_offset: 0,
-			ch_width: -1,
-			bw320_offset: 1,
 			csa: true,
 			csa_count: 0,
 		},
 		call: ex_wrap(function(req) {
 			if (req.args.up == null || !req.args.phy)
 				return libubus.STATUS_INVALID_ARGUMENT;
-
-			hostapd.printf(`ucode: mtk: apsta state update`);
-			hostapd.printf(`    * phy: ${req.args.phy}`);
-			hostapd.printf(`    * up: ${req.args.up}`);
-			hostapd.printf(`    * freqeuncy: ${req.args.frequency}`);
-			hostapd.printf(`    * sec_chan_offset: ${req.args.sec_chan_offset}`);
-			hostapd.printf(`    * ch_width: ${req.args.ch_width}`);
-			hostapd.printf(`    * bw320_offset: ${req.args.bw320_offset}`);
-			hostapd.printf(`    * csa: ${req.args.csa}`);
 
 			let phy = req.args.phy;
 			let config = hostapd.data.config[phy];

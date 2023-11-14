@@ -8,6 +8,7 @@ SRC_URI_append = " \
     file://0006-wifi-mt76-mt7915-rework-mmio-access-flow.patch \
     file://0007-wifi-mt76-disable-HW-AMSDU-when-using-fixed-rate.patch \
     file://0008-wifi-mt76-mt7915-add-new-chip-version-in-power-on-se.patch \
+    file://0009-wifi-mt76-mt7915-Fixed-null-pointer-dereference-.patch \
     file://0999-wifi-mt76-mt7915-build-pass-for-Linux-Kernel-5.4-fix.patch \
     file://1000-wifi-mt76-mt7915-add-mtk-internal-debug-tools-for-mt.patch \
     file://1001-wifi-mt76-mt7915-csi-implement-csi-support.patch \
@@ -52,6 +53,8 @@ SRC_URI_append = " \
     file://1040-wifi-mt76-mt7915-add-debug-log-for-SER-flow.patch \
     file://1041-wifi-mt76-mt7915-add-additional-chain-signal-info-to.patch \
     file://1042-wifi-mt76-mt7915-add-debuffs-knob-for-protect-thresh.patch \
+    file://1043-wifi-mt76-mt7915-add-cheetah-eeprom-related-fix.patch \
+    file://1044-wifi-mt76-testmode-add-cheetah-support.patch \
     file://2000-wifi-mt76-mt7915-wed-add-wed-tx-support.patch \
     file://2001-wifi-mt76-mt7915-wed-add-wds-support-when-wed-is-ena.patch \
     file://2002-wifi-mt76-mt7915-wed-add-fill-receive-path-to-report.patch \
@@ -64,9 +67,10 @@ SRC_URI_append = " \
     file://2009-wifi-mt76-mt7915-enable-wa-log-to-uart.patch \
     file://2010-wifi-mt76-mt7915-add-error-message-when-driver-recei.patch \
     file://2011-wifi-mt76-mt7915-wed-change-wed-token-init-size-to-a.patch \
-    file://2012-Revert-wifi-mt76-mt7921-fix-the-wrong-rate-selected-.patch \
-    file://2013-Revert-wifi-mt76-mt7921-fix-the-wrong-rate-pickup-fo.patch \
-    file://2014-Revert-wifi-mt76-move-struct-ieee80211_chanctx_conf-.patch \
-    file://2015-Revert-wifi-mt76-fix-race-condition-related-to-check.patch \
+    file://2012-wifi-mt76-mt7915-wed-add-per-bss-statistic-info.patch \
+    file://2013-Revert-wifi-mt76-mt7921-fix-the-wrong-rate-selected-.patch \
+    file://2014-Revert-wifi-mt76-mt7921-fix-the-wrong-rate-pickup-fo.patch \
+    file://2015-Revert-wifi-mt76-move-struct-ieee80211_chanctx_conf-.patch \
+    file://2016-Revert-wifi-mt76-fix-race-condition-related-to-check.patch \
     file://9999-mt76-revert-for-backports-5.15-wireless-stack.patch \
     "
