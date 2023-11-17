@@ -1,0 +1,37 @@
+From 6a3fa092965c3b19f09592b8608dd9ded6089157 Mon Sep 17 00:00:00 2001
+From: "Allen.Ye" <allen.ye@mediatek.com>
+Date: Wed, 1 Mar 2023 18:05:49 +0800
+Subject: [PATCH] Add EHT support
+
+---
+ wifi_hal_generic.h | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/wifi_hal_generic.h b/wifi_hal_generic.h
+index 01417bf..8d731c4 100644
+--- a/wifi_hal_generic.h
++++ b/wifi_hal_generic.h
+@@ -282,7 +282,9 @@ typedef enum{
+     WIFI_CHANNELBANDWIDTH_40MHZ = 0x2,
+     WIFI_CHANNELBANDWIDTH_80MHZ = 0x4,
+     WIFI_CHANNELBANDWIDTH_160MHZ = 0x8,
+-    WIFI_CHANNELBANDWIDTH_80_80MHZ = 0x10
++    WIFI_CHANNELBANDWIDTH_80_80MHZ = 0x10,
++    WIFI_CHANNELBANDWIDTH_320_1MHZ = 0x20,
++    WIFI_CHANNELBANDWIDTH_320_2MHZ = 0x40
+ } wifi_channelBandwidth_t;
+ 
+ typedef struct {
+@@ -311,7 +313,8 @@ typedef enum {
+     WIFI_80211_VARIANT_H = 0x10,
+     WIFI_80211_VARIANT_AC = 0x20,
+     WIFI_80211_VARIANT_AD = 0x40,
+-    WIFI_80211_VARIANT_AX = 0x80
++    WIFI_80211_VARIANT_AX = 0x80,
++    WIFI_80211_VARIANT_BE = 0x100
+ } wifi_ieee80211Variant_t;
+ 
+ #define MAXNUMBEROFTRANSMIPOWERSUPPORTED 21
+-- 
+2.18.0
+

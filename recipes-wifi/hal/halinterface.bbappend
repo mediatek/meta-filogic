@@ -11,7 +11,11 @@ do_filogic_patches() {
             if ${@bb.utils.contains( 'DISTRO_FEATURES', 'filogic', 'false', 'true', d)}; then
                 patch -p1 < ${WORKDIR}/0001-Add-owe-mode.patch
             fi
-            patch -p1 < ${WORKDIR}/0002-Add-EHT-support.patch
+            if ${@bb.utils.contains( 'DISTRO_FEATURES', '2022q3_support', 'true', 'false', d)}; then
+                patch -p1 < ${WORKDIR}/0003-Add-EHT-support.patch
+            else
+                patch -p1 < ${WORKDIR}/0002-Add-EHT-support.patch
+            fi
             touch patch_applied
         fi
 }
