@@ -6,7 +6,7 @@ SECTION = "network"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://hostapd/README;md5=c905478466c90f1cefc0df987c40e172"
 
-DEPENDS = "dbus libnl ubus ucode"
+DEPENDS = "dbus libnl-tiny ubus ucode"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches-${PV}:"
 
@@ -64,7 +64,8 @@ do_configure_append () {
 
 	# RDKB
 	echo "CONFIG_BUILD_WPA_CLIENT_SO=y" >> wpa_supplicant/.config
-
+	echo "CFLAGS +=-I${STAGING_INCDIR}/libnl-tiny -D_GNU_SOURCE" >> wpa_supplicant/.config
+	echo "DRV_CFLAGS +=-I${STAGING_INCDIR}/libnl-tiny" >> wpa_supplicant/.config
 	# mtk add
 	echo "CONFIG_MBO=y" >> wpa_supplicant/.config
 	echo "CONFIG_WPS_UPNP=y" >> wpa_supplicant/.config
@@ -87,6 +88,8 @@ do_configure_append () {
 	echo "CONFIG_HE_OVERRIDES=y" >> wpa_supplicant/.config
 	echo "CONFIG_EHT_OVERRIDES=y" >> wpa_supplicant/.config
 	echo "CONFIG_UCODE=y" >> wpa_supplicant/.config
+	echo "CONFIG_LIBNL20=y" >> wpa_supplicant/.config
+	echo "CONFIG_LIBNL_TINY=y" >> wpa_supplicant/.config
 }
 
 do_compile () {

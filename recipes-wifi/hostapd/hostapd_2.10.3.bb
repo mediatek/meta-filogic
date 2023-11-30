@@ -4,7 +4,7 @@ SECTION = "kernel/userland"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://hostapd/README;md5=c905478466c90f1cefc0df987c40e172"
 
-DEPENDS = "libnl openssl ubus ucode"
+DEPENDS = "libnl-tiny openssl ubus ucode"
 DEPENDS_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'telemetry2_0', 'telemetry', '', d)}"
 LDFLAGS_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'telemetry2_0', ' -ltelemetry_msgsender ', '', d)}"
 RDEPENDS_${PN} += "gawk ucode"
@@ -31,7 +31,6 @@ SRC_URI = " \
     file://wpa_supplicant.uc \
     file://src-${PV} \
     file://002-rdkb-add-ucode-support.patch;apply=no \
-    file://003-rdkb-uc-script-support.patch;apply=no \
 "
 require files/patches-${PV}/patches.inc
 
@@ -75,15 +74,14 @@ do_configure_append() {
     echo "CONFIG_IEEE80211BE=y" >> ${B}/.config
     echo "CONFIG_TESTING_OPTIONS=y" >> ${B}/.config
     echo "CONFIG_UCODE=y" >> ${B}/.config
+    echo "CONFIG_LIBNL20=y" >> ${B}/.config
+    echo "CONFIG_LIBNL_TINY=y" >> ${B}/.config
 }
 
 do_filogic_patches() {
     cd ${S}
         if [ ! -e patch_applied ]; then
             patch -p1 < ${WORKDIR}/002-rdkb-add-ucode-support.patch
-            cd ${WORKDIR}
-            patch -p1 < ${WORKDIR}/003-rdkb-uc-script-support.patch
-            cd ${S}
             touch patch_applied
         fi
 }
@@ -91,7 +89,7 @@ do_filogic_patches() {
 addtask filogic_patches after do_patch before do_compile
 
 do_compile() {
-    export CFLAGS="-MMD -O2 -Wall -g -I${STAGING_INCDIR}/libnl3"
+    export CFLAGS="-MMD -O2 -Wall -g -I${STAGING_INCDIR}/libnl-tiny -D_GNU_SOURCE"
     export EXTRA_CFLAGS="${CFLAGS}"
     make V=1
 }

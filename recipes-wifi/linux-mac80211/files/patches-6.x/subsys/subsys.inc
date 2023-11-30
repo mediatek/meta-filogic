@@ -17,6 +17,7 @@ SRC_URI_append = " \
     file://400-allow-ibss-mixed.patch \
     file://782-net-next-1-of-net-pass-the-dst-buffer-to-of_get_mac_address.patch \
     file://bp-0001-Revert-mac80211-use-the-new-drop-reasons-infrastruct.patch \
+    file://bp-0002-backports-update-kernel-version-check-for-eth_hw_add.patch \
     file://mtk-0001-mac80211-mtk-do-not-setup-twt-when-twt-responder-is-.patch \
     file://mtk-0002-cfg80211-mtk-extend-CAC-time-for-weather-radar-chann.patch \
     file://mtk-0003-mac80211-mtk-it-s-invalid-case-when-frag_threshold-i.patch \
