@@ -16,4 +16,5 @@ SRC_URI_append = " \
     file://130-iommu_backport.patch \
     file://200-Revert-wifi-iwlwifi-Use-generic-thermal_zone_get_tri.patch \
     file://210-revert-split-op.patch \
+    file://220-list-don-t-backport-list_count_nodes.patch \
     "

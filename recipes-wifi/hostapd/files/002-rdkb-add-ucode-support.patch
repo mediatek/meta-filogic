@@ -4,7 +4,7 @@
  OBJS += ../src/utils/ucode.o
  OBJS += ../src/ap/ucode.o
  NEED_ULOOP:=y
-+LIBS += -lblobmsg_json -lucode
++LIBS += -lblobmsg_json -lucode -ludebug
  endif
  
  ifdef NEED_ULOOP
@@ -15,7 +15,7 @@
  OBJS += ../src/utils/ucode.o
  OBJS += ucode.o
  NEED_ULOOP:=y
-+LIBS += -lblobmsg_json -lucode
++LIBS += -lblobmsg_json -lucode -ludebug
  endif
  
  ifdef NEED_ULOOP

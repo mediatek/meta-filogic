@@ -4,11 +4,13 @@ SRC_URI_append = " \
     file://0002-wifi-mt76-mt7915-add-pc-stack-dump-for-WM-s-coredump.patch \
     file://0003-wifi-mt76-mt7915-move-temperature-margin-check-to-mt.patch \
     file://0004-wifi-mt76-mt7915-fix-txpower-issues.patch \
-    file://0005-wifi-mt76-mt7915-rework-init-txpower.patch \
-    file://0006-wifi-mt76-mt7915-rework-mmio-access-flow.patch \
-    file://0007-wifi-mt76-disable-HW-AMSDU-when-using-fixed-rate.patch \
-    file://0008-wifi-mt76-mt7915-add-new-chip-version-in-power-on-se.patch \
-    file://0009-wifi-mt76-mt7915-Fixed-null-pointer-dereference-.patch \
+    file://0005-wifi-mt76-mt7915-rework-mmio-access-flow.patch \
+    file://0006-wifi-mt76-disable-HW-AMSDU-when-using-fixed-rate.patch \
+    file://0007-wifi-mt76-mt7915-add-new-chip-version-in-power-on-se.patch \
+    file://0008-wifi-mt76-mt7915-Fixed-null-pointer-dereference-issu.patch \
+    file://0009-wifi-mt76-ACS-channel-time-too-long-on-duty-channel.patch \
+    file://0010-wifi-mt76-check-txs-format-before-getting-skb-by-pid.patch \
+    file://0010-wifi-mt76-mt7915-add-post-channel-switch-for-DFS-cha.patch \
     file://0999-wifi-mt76-mt7915-build-pass-for-Linux-Kernel-5.4-fix.patch \
     file://1000-wifi-mt76-mt7915-add-mtk-internal-debug-tools-for-mt.patch \
     file://1001-wifi-mt76-mt7915-csi-implement-csi-support.patch \
@@ -33,7 +35,7 @@ SRC_URI_append = " \
     file://1020-wifi-mt76-mt7915-Add-mu-dump-support.patch \
     file://1021-wifi-mt76-mt7915-add-vendor-subcmd-three-wire-PTA-ct.patch \
     file://1022-wifi-mt76-mt7915-add-ibf-control-vendor-cmd.patch \
-    file://1023-wifi-mt76-mt7915-add-E3-re-bonding-for-low-yield-rat.patch \
+    file://1023-wifi-mt76-mt7915-add-cal-free-data-merge-support.patch \
     file://1024-wifi-mt76-mt7915-support-on-off-SW-ACI-through-debug.patch \
     file://1025-wifi-mt76-mt7915-add-bf-backoff-limit-table-support.patch \
     file://1026-wifi-mt76-mt7915-amsdu-set-and-get-control.patch \
@@ -53,8 +55,9 @@ SRC_URI_append = " \
     file://1040-wifi-mt76-mt7915-add-debug-log-for-SER-flow.patch \
     file://1041-wifi-mt76-mt7915-add-additional-chain-signal-info-to.patch \
     file://1042-wifi-mt76-mt7915-add-debuffs-knob-for-protect-thresh.patch \
-    file://1043-wifi-mt76-mt7915-add-cheetah-eeprom-related-fix.patch \
-    file://1044-wifi-mt76-testmode-add-cheetah-support.patch \
+    file://1043-wifi-mt76-testmode-add-cheetah-support.patch \
+    file://1044-wifi-mt76-mt7915-add-mt7981-efuse-variants-support.patch \
+    file://1045-wifi-mt76-mt7915-support-scs-feature.patch \
     file://2000-wifi-mt76-mt7915-wed-add-wed-tx-support.patch \
     file://2001-wifi-mt76-mt7915-wed-add-wds-support-when-wed-is-ena.patch \
     file://2002-wifi-mt76-mt7915-wed-add-fill-receive-path-to-report.patch \
@@ -72,5 +75,6 @@ SRC_URI_append = " \
     file://2014-Revert-wifi-mt76-mt7921-fix-the-wrong-rate-pickup-fo.patch \
     file://2015-Revert-wifi-mt76-move-struct-ieee80211_chanctx_conf-.patch \
     file://2016-Revert-wifi-mt76-fix-race-condition-related-to-check.patch \
+    file://2999-wifi-mt76-mt7915-support-backaward-compatiable.patch \
     file://9999-mt76-revert-for-backports-5.15-wireless-stack.patch \
     "

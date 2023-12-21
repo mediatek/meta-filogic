@@ -62,6 +62,10 @@ SRC_URI_append = " \
     file://800-acs-don-t-select-indoor-channel-on-outdoor-operation.patch \
     file://990-ctrl-make-WNM_AP-functions-dependant-on-CONFIG_AP.patch \
     file://992-openssl-include-rsa.patch \
+    file://bp-0001-ACS-Extract-bw40-80-160-freqs-out-of-acs_usable_bwXX.patch \
+    file://bp-0002-ACS-Introduce-acs_get_bw_center_chan.patch \
+    file://bp-0003-ACS-introduce-acs_adjust_secondary.patch \
+    file://bp-0004-ACS-Allow-selecting-a-better-channel-when-using-40-8.patch \
     file://mtk-0001-hostapd-mtk-Add-neighbor-report-and-BSS-Termination-.patch \
     file://mtk-0002-hostapd-mtk-print-sae-groups-by-hostapd-ctrl.patch \
     file://mtk-0003-hostapd-mtk-add-support-for-runtime-set-in-band-disc.patch \
@@ -72,7 +76,6 @@ SRC_URI_append = " \
     file://mtk-0008-hostapd-mtk-Add-hostapd-iBF-control.patch \
     file://mtk-0009-hostapd-mtk-Do-not-include-HE-capab-IE-if-associated.patch \
     file://mtk-0010-hostapd-mtk-Add-DFS-detection-mode.patch \
-    file://mtk-0011-hostapd-mtk-Add-DFS-offchan-channel-switch.patch \
     file://mtk-0012-hostapd-mtk-Add-amsdu-set-get-ctrl.patch \
     file://mtk-0013-hostapd-mtk-Add-he_ldpc-configuration.patch \
     file://mtk-0014-hostapd-mtk-Add-the-broadcast-destination-address-of.patch \
@@ -107,4 +110,9 @@ SRC_URI_append = " \
     file://mtk-0042-hostapd-mtk-avoid-unnecessary-beacon-update-for-6-GH.patch \
     file://mtk-0044-hostapd-mtk-Add-ACS-chanlist-info-in-get_config.patch \
     file://mtk-0045-hostapd-mtk-add-log-in-extender-mode.patch \
+    file://mtk-0046-hostapd-mtk-ACS-Fix-2.4GHz-HT40-case-and-channel-swi.patch \
+    file://mtk-0047-hostapd-mtk-Check-the-bridge-after-ioctl-SIOCBRADDIF_new.patch \
+    file://mtk-0047-hostapd-mtk-add-support-for-channel-switching-to-dfs.patch \
+    file://mtk-0048-hostapd-mtk-add-support-for-channel-switching-with-c.patch \
+    file://mtk-0049-hostapd-mtk-Add-DFS-offchan-channel-switch.patch \
     "

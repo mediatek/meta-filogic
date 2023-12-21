@@ -10,7 +10,10 @@ SRC_URI = "\
           file://0001-lua5.3-support.patch \
           "
 
-SRCREV = "f787c97b34894a38b15599886cacbca01271684f"
+wifi6_ver = "4fc532c8a55ba8217ad67d7fd47c5eb9a8aba044"
+wifi7_ver = "f84eb5998c6ea2d34989ca2d3254e56c66139313"
+
+SRCREV = "${@bb.utils.contains('DISTRO_FEATURES', 'wifi_eht', '${wifi7_ver}', '${wifi6_ver}', d)}"
 
 PV = "git${SRCPV}"
 
