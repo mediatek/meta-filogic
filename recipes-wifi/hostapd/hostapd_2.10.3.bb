@@ -7,7 +7,7 @@ LIC_FILES_CHKSUM = "file://hostapd/README;md5=c905478466c90f1cefc0df987c40e172"
 DEPENDS = "libnl-tiny openssl ubus ucode udebug"
 DEPENDS_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'telemetry2_0', 'telemetry', '', d)}"
 LDFLAGS_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'telemetry2_0', ' -ltelemetry_msgsender ', '', d)}"
-RDEPENDS_${PN} += "gawk ucode"
+RDEPENDS_${PN} += "gawk ucode udebug"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches-${PV}:"

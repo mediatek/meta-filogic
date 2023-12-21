@@ -9,7 +9,7 @@ SRC_URI = " \
     file://0001-change-cmakelist.patch \
 "
 
-SRCREV = "a6e75e02528e36f3610a7f0073453018336def2e"
+SRCREV = "6e89b89e95bbb140bbff5ab72b8c9632727bf6a6"
 PV = "git${SRCPV}"
 
 S = "${WORKDIR}/git"

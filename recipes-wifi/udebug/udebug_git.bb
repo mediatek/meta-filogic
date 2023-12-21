@@ -22,7 +22,7 @@ INSANE_SKIP_${PN} += "file-rdeps dev-deps dev-so"
 FILES_SOLIBSDEV = ""
 
 FILES_${PN}-dev = "${includedir}/*"
-FILES_${PN} = "${bindir}/* ${libdir}/*.so* ${libdir}/ucode/*"
+FILES_${PN} = "${sbindir}/* ${libdir}/*.so* ${libdir}/ucode/*"
 
 inherit cmake pkgconfig python3native  
 

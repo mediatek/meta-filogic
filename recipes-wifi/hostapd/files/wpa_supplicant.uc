@@ -246,6 +246,7 @@ let main_obj = {
 
 wpas.data.ubus = ubus;
 wpas.data.obj = ubus.publish("wpa_supplicant", main_obj);
+wpas.udebug_set("wpa_supplicant", wpas.data.ubus);
 
 function iface_event(type, name, data) {
 	let ubus = wpas.data.ubus;
@@ -262,6 +263,7 @@ function iface_hostapd_notify(phy, ifname, iface, state)
 	let status = iface.status();
 	let msg = { phy: phy };
 
+	wpas.printf(`ucode: mtk: wpa_s in state ${state} notifies hostapd`);
 	switch (state) {
 	case "DISCONNECTED":
 	case "AUTHENTICATING":
@@ -276,6 +278,8 @@ function iface_hostapd_notify(phy, ifname, iface, state)
 		msg.up = true;
 		msg.frequency = status.frequency;
 		msg.sec_chan_offset = status.sec_chan_offset;
+		msg.ch_width = status.ch_width;
+		msg.bw320_offset = status.bw320_offset;
 		break;
 	default:
 		return;
@@ -292,6 +296,8 @@ function iface_channel_switch(phy, ifname, iface, info)
 		csa: true,
 		csa_count: info.csa_count ? info.csa_count - 1 : 0,
 		frequency: info.frequency,
+		ch_width: info.ch_width,
+		bw320_offset: info.bw320_offset,
 		sec_chan_offset: info.sec_chan_offset,
 	};
 	ubus.call("hostapd", "apsta_state", msg);
