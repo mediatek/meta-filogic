@@ -444,7 +444,7 @@ static void mtk_setup_bridge_switch(struct mtk_eth *eth)
 
 	/* Force Port1 XGMAC Link Up */
 	val = mtk_r32(eth, MTK_XGMAC_STS(MTK_GMAC1_ID));
-	mtk_w32(eth, val | MTK_XGMAC_FORCE_LINK(MTK_GMAC1_ID),
+	mtk_w32(eth, val | MTK_XGMAC_FORCE_MODE(MTK_GMAC1_ID),
 		MTK_XGMAC_STS(MTK_GMAC1_ID));
 
 	/* Adjust GSW bridge IPG to 11*/
@@ -571,6 +571,28 @@ static struct phylink_pcs *mtk_mac_select_pcs(struct phylink_config *config,
 	}
 
 	return NULL;
+}
+
+static int mtk_mac_prepare(struct phylink_config *config, unsigned int mode,
+			   phy_interface_t iface)
+{
+	struct mtk_mac *mac = container_of(config, struct mtk_mac,
+					   phylink_config);
+	u32 val;
+
+	if (mac->type == MTK_XGDM_TYPE && mac->id != MTK_GMAC1_ID) {
+		val = mtk_r32(mac->hw, MTK_XMAC_MCR(mac->id));
+		val &= 0xfffffff0;
+		val |= XMAC_MCR_TRX_DISABLE;
+		mtk_w32(mac->hw, val, MTK_XMAC_MCR(mac->id));
+
+		val = mtk_r32(mac->hw, MTK_XGMAC_STS(mac->id));
+		val |= MTK_XGMAC_FORCE_MODE(mac->id);
+		val &= ~MTK_XGMAC_FORCE_LINK(mac->id);
+		mtk_w32(mac->hw, val, MTK_XGMAC_STS(mac->id));
+	}
+
+	return 0;
 }
 
 static void mtk_mac_config(struct phylink_config *config, unsigned int mode,
@@ -702,6 +724,9 @@ static void mtk_mac_config(struct phylink_config *config, unsigned int mode,
 		regmap_write(eth->ethsys, ETHSYS_SYSCFG0, val);
 		spin_unlock(&eth->syscfg0_lock);
 
+		/* Save the syscfg0 value for mac_finish */
+		mac->syscfg0 = val;
+
 		mac->interface = state->interface;
 	}
 
@@ -721,9 +746,6 @@ static void mtk_mac_config(struct phylink_config *config, unsigned int mode,
 		/* Decide how GMAC and SGMIISYS be mapped */
 		sid = (MTK_HAS_CAPS(eth->soc->caps, MTK_SHARED_SGMII)) ?
 		       0 : mac->id;
-
-		/* Save the syscfg0 value for mac_finish */
-		mac->syscfg0 = val;
 		spin_unlock(&eth->syscfg0_lock);
 	} else if (state->interface == PHY_INTERFACE_MODE_USXGMII ||
 		   state->interface == PHY_INTERFACE_MODE_10GKR ||
@@ -987,7 +1009,6 @@ static void mtk_mac_link_down(struct phylink_config *config, unsigned int mode,
 
 		id = mtk_mac2xgmii_id(eth, mac->id);
 		mpcs = &eth->usxgmii->pcs[id];
-		cancel_delayed_work_sync(&mpcs->link_poll);
 	}
 }
 
@@ -997,7 +1018,7 @@ static void mtk_mac_link_up(struct phylink_config *config, unsigned int mode,
 {
 	struct mtk_mac *mac = container_of(config, struct mtk_mac,
 					   phylink_config);
-	u32 mcr, mcr_cur, sts, force_link;
+	u32 mcr, mcr_cur, sts;
 
 	mac->speed = speed;
 
@@ -1022,7 +1043,8 @@ static void mtk_mac_link_up(struct phylink_config *config, unsigned int mode,
 		}
 
 		/* Configure duplex */
-		if (duplex == DUPLEX_FULL)
+		if (duplex == DUPLEX_FULL ||
+		    interface == PHY_INTERFACE_MODE_SGMII)
 			mcr |= MAC_MCR_FORCE_DPX;
 
 		/* Configure pause modes -
@@ -1042,27 +1064,17 @@ static void mtk_mac_link_up(struct phylink_config *config, unsigned int mode,
 		if (mode == MLO_AN_PHY && phy)
 			mtk_setup_eee(mac, phy_init_eee(phy, false) >= 0);
 	} else if (mac->type == MTK_XGDM_TYPE && mac->id != MTK_GMAC1_ID) {
+		if (mode == MLO_AN_INBAND)
+			mdelay(1000);
+
 		/* Eliminate the interference(before link-up) caused by PHY noise */
 		mtk_m32(mac->hw, XMAC_LOGIC_RST, 0x0, MTK_XMAC_LOGIC_RST(mac->id));
 		mdelay(20);
 		mtk_m32(mac->hw, XMAC_GLB_CNTCLR, 0x1, MTK_XMAC_CNT_CTRL(mac->id));
 
-		switch (mac->id) {
-		case MTK_GMAC2_ID:
-			force_link = (mac->interface ==
-				      PHY_INTERFACE_MODE_XGMII) ?
-				      MTK_XGMAC_FORCE_LINK(mac->id) : 0;
-			sts = mtk_r32(mac->hw, MTK_XGMAC_STS(mac->id));
-			mtk_w32(mac->hw, sts | force_link,
-				MTK_XGMAC_STS(mac->id));
-			break;
-		case MTK_GMAC3_ID:
-			sts = mtk_r32(mac->hw, MTK_XGMAC_STS(mac->id));
-			mtk_w32(mac->hw,
-				sts | MTK_XGMAC_FORCE_LINK(mac->id),
-				MTK_XGMAC_STS(mac->id));
-			break;
-		}
+		sts = mtk_r32(mac->hw, MTK_XGMAC_STS(mac->id));
+		sts |= MTK_XGMAC_FORCE_LINK(mac->id);
+		mtk_w32(mac->hw, sts, MTK_XGMAC_STS(mac->id));
 
 		mcr = mtk_r32(mac->hw, MTK_XMAC_MCR(mac->id));
 
@@ -1220,6 +1232,7 @@ static const struct phylink_mac_ops mtk_phylink_ops = {
 	.validate = mtk_validate,
 	.mac_select_pcs = mtk_mac_select_pcs,
 	.mac_link_state = mtk_mac_pcs_get_state,
+	.mac_prepare = mtk_mac_prepare,
 	.mac_config = mtk_mac_config,
 	.mac_finish = mtk_mac_finish,
 	.mac_link_down = mtk_mac_link_down,
@@ -2966,6 +2979,68 @@ static int mtk_hwlro_get_ip_cnt(struct mtk_mac *mac)
 	return cnt;
 }
 
+static int mtk_hwlro_add_ipaddr_idx(struct net_device *dev, u32 ip4dst)
+{
+	struct mtk_mac *mac = netdev_priv(dev);
+	struct mtk_eth *eth = mac->hw;
+	u32 reg_val;
+	int i;
+
+	/* check for duplicate IP address in the current DIP list */
+	for (i = 1; i <= MTK_HW_LRO_RING_NUM; i++) {
+		reg_val = mtk_r32(eth, MTK_LRO_DIP_DW0_CFG(i));
+		if (reg_val == ip4dst)
+			break;
+	}
+
+	if (i <= MTK_HW_LRO_RING_NUM) {
+		netdev_warn(dev, "Duplicate IP address at DIP(%d)!\n", i);
+		return -EEXIST;
+	}
+
+	/* find out available DIP index */
+	for (i = 1; i <= MTK_HW_LRO_RING_NUM; i++) {
+		reg_val = mtk_r32(eth, MTK_LRO_DIP_DW0_CFG(i));
+		if (reg_val == 0UL)
+			break;
+	}
+
+	if (i > MTK_HW_LRO_RING_NUM) {
+		netdev_warn(dev, "DIP index is currently out of resource!\n");
+		return -EBUSY;
+	}
+
+	if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_RX_V2))
+		i -= 1;
+
+	return i;
+}
+
+static int mtk_hwlro_get_ipaddr_idx(struct net_device *dev, u32 ip4dst)
+{
+	struct mtk_mac *mac = netdev_priv(dev);
+	struct mtk_eth *eth = mac->hw;
+	u32 reg_val;
+	int i;
+
+	/* find out DIP index that matches the given IP address */
+	for (i = 1; i <= MTK_HW_LRO_RING_NUM; i++) {
+		reg_val = mtk_r32(eth, MTK_LRO_DIP_DW0_CFG(i));
+		if (reg_val == ip4dst)
+			break;
+	}
+
+	if (i > MTK_HW_LRO_RING_NUM) {
+		netdev_warn(dev, "DIP address is not exist!\n");
+		return -ENOENT;
+	}
+
+	if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_RX_V2))
+		i -= 1;
+
+	return i;
+}
+
 static int mtk_hwlro_add_ipaddr(struct net_device *dev,
 				struct ethtool_rxnfc *cmd)
 {
@@ -2974,15 +3049,19 @@ static int mtk_hwlro_add_ipaddr(struct net_device *dev,
 	struct mtk_mac *mac = netdev_priv(dev);
 	struct mtk_eth *eth = mac->hw;
 	int hwlro_idx;
+	u32 ip4dst;
 
 	if ((fsp->flow_type != TCP_V4_FLOW) ||
 	    (!fsp->h_u.tcp_ip4_spec.ip4dst) ||
 	    (fsp->location > 1))
 		return -EINVAL;
 
-	mac->hwlro_ip[fsp->location] = htonl(fsp->h_u.tcp_ip4_spec.ip4dst);
-	hwlro_idx = (mac->id * MTK_MAX_LRO_IP_CNT) + fsp->location;
+	ip4dst = htonl(fsp->h_u.tcp_ip4_spec.ip4dst);
+	hwlro_idx = mtk_hwlro_add_ipaddr_idx(dev, ip4dst);
+	if (hwlro_idx < 0)
+		return hwlro_idx;
 
+	mac->hwlro_ip[fsp->location] = ip4dst;
 	mac->hwlro_ip_cnt = mtk_hwlro_get_ip_cnt(mac);
 
 	mtk_hwlro_val_ipaddr(eth, hwlro_idx, mac->hwlro_ip[fsp->location]);
@@ -2998,18 +3077,40 @@ static int mtk_hwlro_del_ipaddr(struct net_device *dev,
 	struct mtk_mac *mac = netdev_priv(dev);
 	struct mtk_eth *eth = mac->hw;
 	int hwlro_idx;
+	u32 ip4dst;
 
 	if (fsp->location > 1)
 		return -EINVAL;
 
-	mac->hwlro_ip[fsp->location] = 0;
-	hwlro_idx = (mac->id * MTK_MAX_LRO_IP_CNT) + fsp->location;
+	ip4dst = mac->hwlro_ip[fsp->location];
+	hwlro_idx = mtk_hwlro_get_ipaddr_idx(dev, ip4dst);
+	if (hwlro_idx < 0)
+		return hwlro_idx;
 
+	mac->hwlro_ip[fsp->location] = 0;
 	mac->hwlro_ip_cnt = mtk_hwlro_get_ip_cnt(mac);
 
 	mtk_hwlro_inval_ipaddr(eth, hwlro_idx);
 
 	return 0;
+}
+
+static void mtk_hwlro_netdev_enable(struct net_device *dev)
+{
+	struct mtk_mac *mac = netdev_priv(dev);
+	struct mtk_eth *eth = mac->hw;
+	int i, hwlro_idx;
+
+	for (i = 0; i < MTK_MAX_LRO_IP_CNT; i++) {
+		if (mac->hwlro_ip[i] == 0)
+			continue;
+
+		hwlro_idx = mtk_hwlro_get_ipaddr_idx(dev, mac->hwlro_ip[i]);
+		if (hwlro_idx < 0)
+			continue;
+
+		mtk_hwlro_val_ipaddr(eth, hwlro_idx, mac->hwlro_ip[i]);
+	}
 }
 
 static void mtk_hwlro_netdev_disable(struct net_device *dev)
@@ -3019,8 +3120,14 @@ static void mtk_hwlro_netdev_disable(struct net_device *dev)
 	int i, hwlro_idx;
 
 	for (i = 0; i < MTK_MAX_LRO_IP_CNT; i++) {
+		if (mac->hwlro_ip[i] == 0)
+			continue;
+
+		hwlro_idx = mtk_hwlro_get_ipaddr_idx(dev, mac->hwlro_ip[i]);
+		if (hwlro_idx < 0)
+			continue;
+
 		mac->hwlro_ip[i] = 0;
-		hwlro_idx = (mac->id * MTK_MAX_LRO_IP_CNT) + i;
 
 		mtk_hwlro_inval_ipaddr(eth, hwlro_idx);
 	}
@@ -3210,13 +3317,17 @@ static int mtk_set_features(struct net_device *dev, netdev_features_t features)
 {
 	struct mtk_mac *mac = netdev_priv(dev);
 	struct mtk_eth *eth = mac->hw;
+	netdev_features_t lro;
 	int err = 0;
 
 	if (!((dev->features ^ features) & MTK_SET_FEATURES))
 		return 0;
 
-	if (!(features & NETIF_F_LRO))
+	lro = dev->features & NETIF_F_LRO;
+	if (!(features & NETIF_F_LRO) && lro)
 		mtk_hwlro_netdev_disable(dev);
+	else if ((features & NETIF_F_LRO) && !lro)
+		mtk_hwlro_netdev_enable(dev);
 
 	if (!(features & NETIF_F_HW_VLAN_CTAG_RX))
 		mtk_w32(eth, 0, MTK_CDMP_EG_CTRL);
@@ -4150,7 +4261,7 @@ static void mtk_pending_work(struct work_struct *work)
 	pr_info("[%s] mtk_stop starts !\n", __func__);
 	/* stop all devices to make sure that dma is properly shut down */
 	for (i = 0; i < MTK_MAC_COUNT; i++) {
-		if (!eth->netdev[i])
+		if (!eth->netdev[i] || !netif_running(eth->netdev[i]))
 			continue;
 		mtk_stop(eth->netdev[i]);
 		__set_bit(i, &restart);

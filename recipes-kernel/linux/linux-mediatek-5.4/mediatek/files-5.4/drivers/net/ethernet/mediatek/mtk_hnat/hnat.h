@@ -867,6 +867,11 @@ struct foe_entry {
 #endif
 #define CFG_PPE_NUM		(hnat_priv->ppe_num)
 
+/* If the user wants to set skb->mark to prevent hardware acceleration
+ * for the packet flow.
+ */
+#define HNAT_EXCEPTION_TAG	0x99
+
 struct mib_entry {
 	u32 byt_cnt_l;
 	u16 byt_cnt_h;
@@ -1218,13 +1223,11 @@ enum FoeIpAct {
 #define UDF_PINGPONG_IFIDX GENMASK(3, 0)
 #define UDF_HNAT_PRE_FILLED BIT(4)
 
-#if defined(CONFIG_MEDIATEK_NETSYS_V3)
-#define TPORT_FLAG(dev, skb, qid)			\
+#define HQOS_FLAG(dev, skb, qid)			\
 	((IS_HQOS_UL_MODE && IS_WAN(dev)) ||		\
 	 (IS_HQOS_DL_MODE && IS_LAN_GRP(dev)) ||	\
 	 (IS_PPPQ_MODE && (IS_PPPQ_PATH(dev, skb) ||	\
 			   qid >= MAX_PPPQ_PORT_NUM)))
-#endif
 
 extern const struct of_device_id of_hnat_match[];
 extern struct mtk_hnat *hnat_priv;

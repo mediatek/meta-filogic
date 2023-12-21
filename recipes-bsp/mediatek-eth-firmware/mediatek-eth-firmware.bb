@@ -4,20 +4,18 @@ DESCRIPTION = "Firmware for Mediatek 2.5G phy. "
 LICENSE = "CLOSED"
 
 SRC_URI = " \
-    file://mediatek-2p5ge-phy-dmb.bin \
-    file://mediatek-2p5ge-phy-pmb.bin \
+    file://i2p5ge-phy-pmb.bin \
 "
 S = "${WORKDIR}"
 
 inherit allarch
 
 do_install() {
-    install -d ${D}/${base_libdir}/firmware/
-    install -m 644 ${WORKDIR}/mediatek-2p5ge-phy-dmb.bin ${D}${base_libdir}/firmware/
-    install -m 644 ${WORKDIR}/mediatek-2p5ge-phy-pmb.bin ${D}${base_libdir}/firmware/
+    install -d ${D}/${base_libdir}/firmware/mediatek/mt7988/
+    install -m 644 ${WORKDIR}/i2p5ge-phy-pmb.bin ${D}${base_libdir}/firmware/mediatek/mt7988/
 }
 
-FILES_${PN} += "${base_libdir}/firmware/*"
+FILES_${PN} += "${base_libdir}/firmware/mediatek/mt7988/*"
 
 # Make Mediatek-eth-firmware depend on all of the split-out packages.
 python populate_packages_prepend () {

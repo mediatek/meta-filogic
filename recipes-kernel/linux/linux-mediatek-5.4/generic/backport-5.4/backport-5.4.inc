@@ -205,7 +205,6 @@ SRC_URI_append = " \
     file://709-v5.8-0006-net-dsa-b53-remove-redundant-premature-assignment-to.patch \
     file://710-v5.16-0001-net-bgmac-improve-handling-PHY.patch \
     file://710-v5.16-0002-net-bgmac-support-MDIO-described-in-DT.patch \
-    file://711-v6.3-bgmac-fix-initial-chip-reset-to-support-BCM5358.patch \
     file://712-v6.5-net-bgmac-postpone-turning-IRQs-off-to-avoid-SoC-han.patch \
     file://716-v5.5-net-sfp-move-fwnode-parsing-into-sfp-bus-layer.patch \
     file://717-v5.5-net-sfp-rework-upstream-interface.patch \
@@ -301,8 +300,6 @@ SRC_URI_append = " \
     file://900-v5.9-0002-leds-Add-multicolor-ID-to-the-color-ID-list.patch \
     file://900-v5.9-0003-leds-add-RGB-color-option-as-that-is-different-from-.patch \
     file://999-1410-mtd-spinand-gigadevice-Support-for-modify-GD-Serial-NAND-from-v6-4-9.patch \
-    file://999-1900-lib-add-Dhrystone-benchmark-test.patch \
-    file://999-2210-v6.1-iio-adc-add-rtq6056-support.patch \
     file://999-2310-v5.7-mtd-nand-spi-rework-detect-procedure-for-different-read-id-op.patch \
     file://999-2312-mtd-spinand-macronix-Add-support-for-MX31LF1GE4BC.patch \
     file://999-2313-mtd-spinand-macronix-Add-support-for-MX31UF1GE4BC.patch \

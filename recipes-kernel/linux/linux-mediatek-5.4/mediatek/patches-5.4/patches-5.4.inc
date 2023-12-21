@@ -35,10 +35,9 @@ SRC_URI_append = " \
     file://1010-pcie-mediatek-fix-clearing-interrupt-status.patch \
     file://1020-spi-nor-w25q512jv.patch \
     file://1021-ubnt-ledbar-driver.patch \
-    file://999-1000-backport-pinctrl-pinconf-setting-combo.patch \
-    file://999-1033-backport-pinctrl-spinlock.patch \
+    file://999-1050-v6.4-backport-jitterrng-2.2.0.patch \
+    file://999-1051-v5.10-backport-libkcapi.patch \
     file://999-1600-mdiobus-add-c45.patch \
-    file://999-1700-macsec-revert-async-support.patch \
     file://999-1701-add-default-setting-to-dsa-unused-port.patch \
     file://999-1702-net-dsa-add-MT7531-Gigabit-Ethernet-PHY-setting.patch \
     file://999-1703-mxl-gpy-phy-support.patch \
@@ -51,6 +50,14 @@ SRC_URI_append = " \
     file://999-1710-net-phy-add-phylink-pcs-support.patch;apply=no \
     file://999-1711-net-phy-add-phylink-pcs-decode-helper.patch \
     file://999-1712-net-phy-add-phylink-rate-matching-support.patch;apply=no \
+    file://999-1713-v5.15-net-dsa-add-dsa_port_from_netdev.patch \
+    file://999-1714-v5.15-net-dsa-add-netdev_upper_dev_link.patch \
+    file://999-1800-v6.7-MT7986-ASoC-platform-driver.patch \
+    file://999-1801-v6.1-iio-adc-add-rtq6056-support.patch \
+    file://999-1802-v6.4-backport-pinctrl-pinconf-setting-combo.patch \
+    file://999-1803-v6.6-pinctrl-spinlock.patch \
+    file://999-1804-v6.4-leds-pwm-multicolor.patch \
+    file://999-1900-v6.3-lib-add-Dhrystone-benchmark-test.patch \
     file://999-2000-show_model_name_in_cpuinfo_on_arm64.patch \
     file://999-2001-kgdb-add-interrupt-control.patch \
     file://999-2010-clk-mtk-add-mt7986-support.patch \
@@ -77,7 +84,8 @@ SRC_URI_append = " \
     file://999-2140-mtk-thermal-add-lvts-support.patch \
     file://999-2150-sound-add-some-helpers-to-control-mtk_memif.patch \
     file://999-2151-sound-refine-hw-params-and-hw-prepare.patch \
-    file://999-2152-sound-add-mt7986-driver.patch \
+    file://999-2152-sound-add-mt7986-si3218x-driver.patch \
+    file://999-2153-sound-add-si3218x-spi-driver.patch \
     file://999-2300-mtk-sd-add-mt7986-support.patch \
     file://999-2301-mtk-sd-Add-subsys-clock-control.patch \
     file://999-2330-mtd-spinand-winbond-Support-for-W25MxxGV-W25NxxKV-series.patch \
@@ -152,6 +160,7 @@ SRC_URI_append = " \
     file://999-2729-net-phy-remove-reporting-line-rate-to-mac.patch;apply=no \
     file://999-2730-net-phy-sfp-change-shared-mod-def0.patch \
     file://999-2800-misc-add-mtk-platform.patch \
+    file://999-2850-fips-140-3-compliance.patch \
     file://999-2900-dts-mt7622-enable-new-mtk-snand-for-ubi.patch \
     file://999-2901-dts-mt7622-remove-cooling-device.patch \
     "
