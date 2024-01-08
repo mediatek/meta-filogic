@@ -7,11 +7,11 @@ do_filogic_patches() {
     cd ${S}
         if [ ! -e patch_applied ]; then
             patch -p1 < ${WORKDIR}/sta-network.patch
-            patch -p1 < ${WORKDIR}/add_undefined_dfs_function.patch
             if ${@bb.utils.contains( 'DISTRO_FEATURES', 'filogic', 'false', 'true', d)}; then
                 patch -p1 < ${WORKDIR}/0001-Add-owe-mode.patch
             fi
             if ${@bb.utils.contains( 'DISTRO_FEATURES', '2022q3_support', 'true', 'false', d)}; then
+		patch -p1 < ${WORKDIR}/add_undefined_dfs_function.patch
                 patch -p1 < ${WORKDIR}/0003-Add-EHT-support.patch
             else
                 patch -p1 < ${WORKDIR}/0002-Add-EHT-support.patch
