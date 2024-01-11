@@ -11,10 +11,14 @@ do_filogic_patches() {
                 patch -p1 < ${WORKDIR}/0001-Add-owe-mode.patch
             fi
             if ${@bb.utils.contains( 'DISTRO_FEATURES', '2022q3_support', 'true', 'false', d)}; then
-		patch -p1 < ${WORKDIR}/add_undefined_dfs_function.patch
+                patch -p1 < ${WORKDIR}/add_undefined_dfs_function.patch
                 patch -p1 < ${WORKDIR}/0003-Add-EHT-support.patch
             else
-                patch -p1 < ${WORKDIR}/0002-Add-EHT-support.patch
+                if [ ${RDK_RELEASE} == "rdkb-2023q4-dunfell" ]; then
+                    patch -p1 < ${WORKDIR}/2023q4dunfell-Add-EHT-support.patch
+                else
+                    patch -p1 < ${WORKDIR}/0002-Add-EHT-support.patch
+                fi
             fi
             touch patch_applied
         fi
