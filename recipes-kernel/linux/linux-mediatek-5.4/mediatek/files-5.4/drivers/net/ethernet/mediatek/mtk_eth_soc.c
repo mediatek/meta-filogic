@@ -242,7 +242,7 @@ static const char * const mtk_clks_source_name[] = {
 	"top_eth_xgmii_sel", "top_eth_mii_sel", "top_netsys_sel",
 	"top_netsys_500m_sel", "top_netsys_pao_2x_sel",
 	"top_netsys_sync_250m_sel", "top_netsys_ppefb_250m_sel",
-	"top_netsys_warp_sel",
+	"top_netsys_warp_sel", "top_macsec_sel", "macsec_bus_clk",
 };
 
 void mtk_w32(struct mtk_eth *eth, u32 val, unsigned reg)
@@ -1564,6 +1564,17 @@ static bool mtk_rx_get_desc(struct mtk_eth *eth, struct mtk_rx_dma_v2 *rxd,
 	return true;
 }
 
+static void *mtk_max_lro_buf_alloc(gfp_t gfp_mask)
+{
+	unsigned int size = mtk_max_frag_size(MTK_MAX_LRO_RX_LENGTH);
+	unsigned long data;
+
+	data = __get_free_pages(gfp_mask | __GFP_COMP | __GFP_NOWARN,
+				get_order(size));
+
+	return (void *)data;
+}
+
 /* the qdma core needs scratch memory to be setup */
 static int mtk_init_fq_dma(struct mtk_eth *eth)
 {
@@ -2159,7 +2170,6 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
 	struct mtk_rx_ring *ring = rx_napi->rx_ring;
 	int idx;
 	struct sk_buff *skb;
-	u64 addr64 = 0;
 	u8 *data, *new_data;
 	struct mtk_rx_dma_v2 *rxd, trxd;
 	int done = 0;
@@ -2170,7 +2180,8 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
 	while (done < budget) {
 		unsigned int pktlen, *rxdcsum;
 		struct net_device *netdev = NULL;
-		dma_addr_t dma_addr = 0;
+		dma_addr_t dma_addr = DMA_MAPPING_ERROR;
+		u64 addr64 = 0;
 		int mac = 0;
 
 		idx = NEXT_DESP_IDX(ring->calc_idx, ring->dma_size);
@@ -2209,7 +2220,10 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
 			goto release_desc;
 
 		/* alloc new buffer */
-		new_data = napi_alloc_frag(ring->frag_size);
+		if (ring->frag_size <= PAGE_SIZE)
+			new_data = napi_alloc_frag(ring->frag_size);
+		else
+			new_data = mtk_max_lro_buf_alloc(GFP_ATOMIC);
 		if (unlikely(!new_data)) {
 			netdev->stats.rx_dropped++;
 			goto release_desc;
@@ -2229,7 +2243,7 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
 			  ((u64)(trxd.rxd2 & 0xf)) << 32 : 0;
 
 		dma_unmap_single(eth->dma_dev,
-				 (u64)(trxd.rxd1 | addr64),
+				 ((u64)(trxd.rxd1) | addr64),
 				 ring->buf_size, DMA_FROM_DEVICE);
 
 		/* receive data */
@@ -2313,8 +2327,12 @@ skip_rx:
 		rxd->rxd1 = (unsigned int)dma_addr;
 
 release_desc:
-		addr64 = (MTK_HAS_CAPS(eth->soc->caps, MTK_8GB_ADDRESSING)) ?
-			  RX_DMA_SDP1(dma_addr) : 0;
+		if (MTK_HAS_CAPS(eth->soc->caps, MTK_8GB_ADDRESSING)) {
+			if (unlikely(dma_addr == DMA_MAPPING_ERROR))
+				addr64 = RX_DMA_GET_SDP1(rxd->rxd2);
+			else
+				addr64 = RX_DMA_SDP1(dma_addr);
+		}
 
 		if (MTK_HAS_CAPS(eth->soc->caps, MTK_SOC_MT7628))
 			rxd->rxd2 = RX_DMA_LSO;
@@ -2692,7 +2710,10 @@ static int mtk_rx_alloc(struct mtk_eth *eth, int ring_no, int rx_flag)
 		return -ENOMEM;
 
 	for (i = 0; i < rx_dma_size; i++) {
-		ring->data[i] = netdev_alloc_frag(ring->frag_size);
+		if (ring->frag_size <= PAGE_SIZE)
+			ring->data[i] = napi_alloc_frag(ring->frag_size);
+		else
+			ring->data[i] = mtk_max_lro_buf_alloc(GFP_ATOMIC);
 		if (!ring->data[i])
 			return -ENOMEM;
 	}
@@ -2800,7 +2821,7 @@ static void mtk_rx_clean(struct mtk_eth *eth, struct mtk_rx_ring *ring, int in_s
 				  ((u64)(rxd->rxd2 & 0xf)) << 32 : 0;
 
 			dma_unmap_single(eth->dma_dev,
-					 (u64)(rxd->rxd1 | addr64),
+					 ((u64)(rxd->rxd1) | addr64),
 					 ring->buf_size,
 					 DMA_FROM_DEVICE);
 			skb_free_frag(ring->data[i]);
@@ -3485,6 +3506,7 @@ static irqreturn_t mtk_handle_irq_rx(int irq, void *priv)
 	struct mtk_rx_ring *ring = rx_napi->rx_ring;
 
 	if (unlikely(!(mtk_r32(eth, eth->soc->reg_map->pdma.irq_status) &
+		       mtk_r32(eth, eth->soc->reg_map->pdma.irq_mask) &
 		       MTK_RX_DONE_INT(ring->ring_no))))
 		return IRQ_NONE;
 

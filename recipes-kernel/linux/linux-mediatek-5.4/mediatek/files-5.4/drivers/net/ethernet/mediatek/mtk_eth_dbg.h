@@ -26,6 +26,7 @@
 #define MTK_FE_CDM4_FSM			0x298
 #define MTK_FE_CDM5_FSM			0x318
 #define MTK_FE_CDM6_FSM			0x328
+#define MTK_FE_CDM7_FSM			0x338
 #define MTK_FE_GDM1_FSM			0x228
 #define MTK_FE_GDM2_FSM			0x22C
 #define MTK_FE_GDM3_FSM			0x23C
@@ -37,6 +38,9 @@
 #define MTK_SGMII_FALSE_CARRIER_CNT(x)	(0x10060028 + ((x) * 0x10000))
 #define MTK_SGMII_EFUSE			0x11D008C8
 #define MTK_WED_RTQM_GLO_CFG		0x15010B00
+
+#define MTK_FE_GDM_FSM(x)		(((x) == 2) ? MTK_FE_GDM3_FSM :	\
+					 ((x) == 1) ? MTK_FE_GDM2_FSM : MTK_FE_GDM1_FSM)
 
 #if defined(CONFIG_MEDIATEK_NETSYS_V2) || defined(CONFIG_MEDIATEK_NETSYS_V3)
 #define MTK_PSE_IQ_STA(x)		(0x180 + (x) * 0x4)

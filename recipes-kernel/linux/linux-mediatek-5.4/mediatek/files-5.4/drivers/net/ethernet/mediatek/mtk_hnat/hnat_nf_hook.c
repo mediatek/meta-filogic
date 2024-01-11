@@ -1242,6 +1242,9 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 	entry.bfib1.pkt_type = foe->udib1.pkt_type; /* Get packte type state*/
 	entry.bfib1.state = foe->udib1.state;
 
+	if (unlikely(entry.bfib1.state != UNBIND))
+		return 0;
+
 #if defined(CONFIG_MEDIATEK_NETSYS_V2) || defined(CONFIG_MEDIATEK_NETSYS_V3)
 	entry.bfib1.sp = foe->udib1.sp;
 #endif
@@ -1820,7 +1823,7 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 				entry.ipv6_5t_route.iblk2.fqos = 0;
 			else
 #if defined(CONFIG_MEDIATEK_NETSYS_V3)
-				switch (foe->bfib1.pkt_type) {
+				switch (entry.bfib1.pkt_type) {
 				case IPV4_MAP_E:
 				case IPV4_MAP_T:
 					entry.ipv4_mape.tport_id =

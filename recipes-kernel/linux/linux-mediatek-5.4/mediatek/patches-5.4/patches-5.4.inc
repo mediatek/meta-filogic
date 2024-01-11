@@ -35,23 +35,55 @@ SRC_URI_append = " \
     file://1010-pcie-mediatek-fix-clearing-interrupt-status.patch \
     file://1020-spi-nor-w25q512jv.patch \
     file://1021-ubnt-ledbar-driver.patch \
-    file://999-1050-v6.4-backport-jitterrng-2.2.0.patch \
+    file://999-1050-v6.4-backport-jitterrng-2.2.0.patch;apply=no \
     file://999-1051-v5.10-backport-libkcapi.patch \
-    file://999-1600-mdiobus-add-c45.patch \
-    file://999-1701-add-default-setting-to-dsa-unused-port.patch \
-    file://999-1702-net-dsa-add-MT7531-Gigabit-Ethernet-PHY-setting.patch \
-    file://999-1703-mxl-gpy-phy-support.patch \
-    file://999-1704-net-phy-aquantia-add-AQR113C.patch \
-    file://999-1705-add-netlink-support-for-dsa.patch \
-    file://999-1706-net-dsa-support-mt7988.patch \
-    file://999-1707-add-mdio-bus-for-gphy-calibration.patch \
-    file://999-1708-net-phy-add-5GBASER.patch \
-    file://999-1709-net-phy-sfp-add-rollball-support.patch \
-    file://999-1710-net-phy-add-phylink-pcs-support.patch;apply=no \
-    file://999-1711-net-phy-add-phylink-pcs-decode-helper.patch \
-    file://999-1712-net-phy-add-phylink-rate-matching-support.patch;apply=no \
+    file://999-1600-v5.18-mdiobus-add-c45.patch \
+    file://999-1703-v5.18-mxl-gpy-phy-support.patch \
+    file://999-1704-v6.2-net-phy-aquantia-add-AQR113C.patch \
+    file://999-1708-v6.2-net-phy-add-5GBASER.patch \
+    file://999-1709-v6.2-net-phy-sfp-add-rollball-support.patch \
+    file://999-1710-v6.2-net-phy-add-phylink-pcs-support.patch;apply=no \
+    file://999-1711-v6.2-net-phy-add-phylink-pcs-decode-helper.patch \
+    file://999-1712-v6.2-net-phy-add-phylink-rate-matching-support.patch;apply=no \
     file://999-1713-v5.15-net-dsa-add-dsa_port_from_netdev.patch \
     file://999-1714-v5.15-net-dsa-add-netdev_upper_dev_link.patch \
+    file://999-1750-v5.18-net-macsec-get-ready-to-backport-from-5-18.patch \
+    file://999-1751-01-v5.18-net-macsec-move-some-definitions-in-a-dedicated-header.patch \
+    file://999-1752-02-v5.18-net-macsec-introduce-the-macsec_context-structure.patch \
+    file://999-1753-03-v5.18-net-macsec-introduce-MACsec-ops.patch \
+    file://999-1754-04-v5.18-net-phy-add-MACsec-ops-in-phy_device.patch \
+    file://999-1755-05-v5.18-net-macsec-hardware-offloading-infrastructure.patch \
+    file://999-1756-06-v5.18-net-macsec-add-nla-support-for-changing-the-offloading-selection.patch \
+    file://999-1757-07-v5.18-net-phy-mscc-macsec-initialization.patch \
+    file://999-1758-08-v5.18-net-phy-mscc-macsec-support.patch \
+    file://999-1759-09-v5.18-net-macsec-PN-wrap-callback.patch \
+    file://999-1760-10-v5.18-net-phy-mscc-PN-rollover-support.patch \
+    file://999-1761-v5.18-net-macsec-invoke-mdo_upd_secy-callback-when-mac-address-changed.patch \
+    file://999-1762-v5.18-net-macsec-Support-XPN-frame-handling-IEEE-802.1AEbw.patch \
+    file://999-1763-v5.18-net-macsec-Netlink-support-of-XPN-cipher-suites-IEEE802.1AEbw.patch \
+    file://999-1764-v5.18-net-macsec-restrict-to-ethernet-devices.patch \
+    file://999-1765-01-v5.18-net-introduce-the-MACSEC-netdev-feature.patch \
+    file://999-1766-02-v5.18-net-add-a-reference-to-MACsec-ops-in-net_device.patch \
+    file://999-1767-03-v5.18-net-macsec-allow-to-reference-a-netdev-from-a-MACsec-context.patch \
+    file://999-1768-04-v5.18-net-macsec-add-support-for-offloading-to-the-MAC.patch \
+    file://999-1769-05-v5.18-net-macsec-init-secy-pointer-in-macsec_context.patch \
+    file://999-1770-06-v5.18-net-macsec-allow-multiple-macsec-devices-with-offload.patch \
+    file://999-1771-07-v5.18-net-macsec-support-multicast-broadcast-when-offloading.patch \
+    file://999-1772-08-v5.18-net-macsec-add-support-for-getting-offloaded-stats.patch \
+    file://999-1773-09-v5.18-net-macsec-report-real_dev-features-when-HW-offloading-is-enabled.patch \
+    file://999-1774-v5.18-net-macsec-add-support-for-specifying-offload-upon-link-creation.patch \
+    file://999-1775-v5.18-net-macsec-fix-NULL-dereference-in-macsec_upd_offload.patch \
+    file://999-1776-v5.18-net-macsec-fix-using-wrong-structure-in-macsec_changelink.patch \
+    file://999-1777-v5.18-net-partially-revert-dynamic-lockdep-key-changes.patch \
+    file://999-1778-v5.18-net-macsec-fix-rtnl-locking-issue.patch \
+    file://999-1779-v5.18-net-change-addr_list_lock-back-to-static-key.patch \
+    file://999-1780-v5.18-net-get-rid-of-lockdep_set_class_and_subclass.patch \
+    file://999-1781-v5.18-netlink-consistently-use-NLA_POLICY_MIN_LEN.patch \
+    file://999-1782-v5.18-net-macsec-Add-missing-documentation-for-gro_cells.patch \
+    file://999-1783-v5.18-net-macsec-fix-the-length-used-to-copy-the-key-for-offloading.patch \
+    file://999-1784-v5.18-net-drivers-get-ready-for-const-netdev-dev_addr.patch \
+    file://999-1785-v5.18-net-macsec-Fix-offload-support-for-NETDEV_UNREGISTER-event.patch \
+    file://999-1786-v5.18-net-macsec-Verify-that-send_sci-is-on-when-setting-Tx-sci-explicitly.patch \
     file://999-1800-v6.7-MT7986-ASoC-platform-driver.patch \
     file://999-1801-v6.1-iio-adc-add-rtq6056-support.patch \
     file://999-1802-v6.4-backport-pinctrl-pinconf-setting-combo.patch \
@@ -81,6 +113,7 @@ SRC_URI_append = " \
     file://999-2131-pwm-add-mt7981-support.patch \
     file://999-2132-add-pwm-feature-in-mt7988-project.patch \
     file://999-2133-pwm-mediatek-add-longer-period-support.patch \
+    file://999-2134-add-pwm-gpio-support.patch \
     file://999-2140-mtk-thermal-add-lvts-support.patch \
     file://999-2150-sound-add-some-helpers-to-control-mtk_memif.patch \
     file://999-2151-sound-refine-hw-params-and-hw-prepare.patch \
@@ -149,8 +182,6 @@ SRC_URI_append = " \
     file://999-2716-en8801sc-gphy-support.patch \
     file://999-2717-add-mediatek-2p5ge-phy-support.patch \
     file://999-2719-net-phy-aquantia-add-firmware-download.patch \
-    file://999-2720-net-dsa-phy-coverity-scan.patch \
-    file://999-2721-net-mt753x-phy-coverity-scan.patch;apply=no \
     file://999-2722-dt-bindings-phy-Add-PHY_TYPE_DP-definition.patch \
     file://999-2723-dt-bindings-phy-Add-PHY_TYPE_XPCS-definition.patch \
     file://999-2724-dt-bindings-phy-Add-DT-bindings-for-Xilinx-ZynqMP-PS.patch \
@@ -159,6 +190,15 @@ SRC_URI_append = " \
     file://999-2728-net-phy-aquantia-add-mib-read.patch \
     file://999-2729-net-phy-remove-reporting-line-rate-to-mac.patch;apply=no \
     file://999-2730-net-phy-sfp-change-shared-mod-def0.patch \
+    file://999-2731-add-default-setting-to-dsa-unused-port.patch \
+    file://999-2732-net-dsa-add-MT7531-Gigabit-Ethernet-PHY-setting.patch \
+    file://999-2733-add-netlink-support-for-dsa.patch \
+    file://999-2734-net-dsa-support-mt7988.patch \
+    file://999-2735-add-mdio-bus-for-gphy-calibration.patch \
+    file://999-2736-net-dsa-phy-coverity-scan.patch \
+    file://999-2737-net-mt753x-phy-coverity-scan.patch;apply=no \
+    file://999-2738-an8801sb-gphy-support.patch \
+    file://999-2738-net-pptp-bypass-seq-check.patch \
     file://999-2800-misc-add-mtk-platform.patch \
     file://999-2850-fips-140-3-compliance.patch \
     file://999-2900-dts-mt7622-enable-new-mtk-snand-for-ubi.patch \

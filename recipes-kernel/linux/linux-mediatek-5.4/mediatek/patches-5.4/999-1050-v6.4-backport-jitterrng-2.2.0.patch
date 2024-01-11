@@ -141,12 +141,12 @@ index 000000000..2e7e98b9a
 +			ret = -EAGAIN;
 +			break;
 +		}
-+		if (copy_to_user(buf+pos+total, out, ret)) {
++		if (copy_to_user(buf+pos+total, out, copy)) {
 +			ret = -EFAULT;
 +			break;
 +		}
-+		nbytes -= ret;
-+		total += ret;
++		nbytes -= copy;
++		total += copy;
 +	}
 +	kzfree(out);
 +
@@ -902,7 +902,7 @@ index 77fa2120f..fea7a6d42 100644
   * Entry function: Obtain entropy for the caller.
   *
   * This function invokes the entropy gathering logic as often to generate
-@@ -430,42 +521,64 @@ static void jent_fips_test(struct rand_data *ec)
+@@ -430,42 +521,62 @@ static void jent_fips_test(struct rand_data *ec)
   * This function truncates the last 64 bit entropy value output to the exact
   * size specified by the caller.
   *
@@ -928,7 +928,6 @@ index 77fa2120f..fea7a6d42 100644
  int jent_read_entropy(struct rand_data *ec, unsigned char *data,
  		      unsigned int len)
  {
-+	int ret = 0;
  	unsigned char *p = data;
  
  	if (!ec)
@@ -966,13 +965,11 @@ index 77fa2120f..fea7a6d42 100644
  			tocopy = len;
  		jent_memcpy(p, &ec->data, tocopy);
  
-+		ret = ret + tocopy;
  		len -= tocopy;
  		p += tocopy;
  	}
  
--	return 0;
-+	return ret;
+	return 0;
  }
  
  /***************************************************************************

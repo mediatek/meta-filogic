@@ -618,6 +618,7 @@
 #define RX_DMA_GET_REV(_x)	(((_x) >> 10) & 0x1f)
 #define RX_DMA_VTAG		BIT(15)
 #define RX_DMA_SDP1(_x)		((((u64)(_x)) >> 32) & 0xf)
+#define RX_DMA_GET_SDP1(_x)	((_x) & 0xf)
 
 /* QDMA descriptor rxd3 */
 #define RX_DMA_VID(_x)		((_x) & VLAN_VID_MASK)
@@ -1145,6 +1146,8 @@ enum mtk_clks_map {
 	MTK_CLK_TOP_NETSYS_SYNC_250M_SEL,
 	MTK_CLK_TOP_NETSYS_PPEFB_250M_SEL,
 	MTK_CLK_TOP_NETSYS_WARP_SEL,
+	MTK_CLK_TOP_MACSEC_SEL,
+	MTK_CLK_TOP_NETSYS_TOPS_400M_SEL,
 	MTK_CLK_MAX
 };
 
@@ -1228,7 +1231,9 @@ enum mtk_clks_map {
 				 BIT(MTK_CLK_TOP_NETSYS_PAO_2X_SEL) | \
 				 BIT(MTK_CLK_TOP_NETSYS_SYNC_250M_SEL) | \
 				 BIT(MTK_CLK_TOP_NETSYS_PPEFB_250M_SEL) | \
-				 BIT(MTK_CLK_TOP_NETSYS_WARP_SEL))
+				 BIT(MTK_CLK_TOP_NETSYS_WARP_SEL) | \
+				 BIT(MTK_CLK_TOP_MACSEC_SEL) | \
+				 BIT(MTK_CLK_TOP_NETSYS_TOPS_400M_SEL))
 
 enum mtk_dev_state {
 	MTK_HW_INIT,
@@ -1702,7 +1707,9 @@ struct mtk_sgmii_pcs {
 	struct mtk_eth		*eth;
 	struct regmap		*regmap;
 	struct regmap		*regmap_pextp;
+	spinlock_t		regmap_lock;
 	phy_interface_t		interface;
+	__ETHTOOL_DECLARE_LINK_MODE_MASK(advertising);
 	u32			flags;
 	u32			ana_rgc3;
 	u8			id;

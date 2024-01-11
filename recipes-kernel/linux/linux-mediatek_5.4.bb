@@ -96,11 +96,12 @@ do_filogic_patches() {
             patch -p1 < ${WORKDIR}/001-rdkb-eth-mtk-change-ifname-for.patch
             patch -p1 < ${WORKDIR}/003-rdkb-mtd-kernel-ubi-relayout.patch
             patch -p1 < ${WORKDIR}/0600-net-phylink-propagate-resolved-link-config-via-mac_l.patch
+            patch -p1 < ${WORKDIR}/999-1050-v6.4-backport-jitterrng-2.2.0.patch
             patch -p1 < ${WORKDIR}/999-2713-mt7531-gsw-internal_phy_calibration.patch
             patch -p1 < ${WORKDIR}/999-2714-mt7531-gsw-port5_external_phy_init.patch
-            patch -p1 < ${WORKDIR}/999-2721-net-mt753x-phy-coverity-scan.patch
-            patch -p1 < ${WORKDIR}/999-1710-net-phy-add-phylink-pcs-support.patch
-            patch -p1 < ${WORKDIR}/999-1712-net-phy-add-phylink-rate-matching-support.patch
+            patch -p1 < ${WORKDIR}/999-2737-net-mt753x-phy-coverity-scan.patch
+            patch -p1 < ${WORKDIR}/999-1710-v6.2-net-phy-add-phylink-pcs-support.patch
+            patch -p1 < ${WORKDIR}/999-1712-v6.2-net-phy-add-phylink-rate-matching-support.patch
             patch -p1 < ${WORKDIR}/999-2702-v5.9-net-phy-add-support-for-a-common-probe-between-shared-PHYs.patch
             patch -p1 < ${WORKDIR}/999-2725-iwconfig-wireless-rate-fix.patch
             patch -p1 < ${WORKDIR}/999-2729-net-phy-remove-reporting-line-rate-to-mac.patch
