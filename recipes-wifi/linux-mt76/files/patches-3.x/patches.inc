@@ -14,15 +14,17 @@ SRC_URI_append = " \
     file://0012-mtk-wifi-mt76-mt7996-enable-ser-query.patch \
     file://0013-mtk-wifi-mt76-mt7996-init-rcpi-to-use-better-init-mc.patch \
     file://0014-mtk-wifi-mt76-mt7996-Fix-TGax-HE-4.51.1_24G-fail.patch \
-    file://0015-mtk-wifi-mt76-mt7996-add-eagle-default-bin-of-differ.patch \
-    file://0016-mtk-wifi-mt76-mt7996-add-kite-fw-default-bin-for-dif.patch \
-    file://0017-mtk-wifi-mt76-mt7996-add-lock-for-indirect-register-.patch \
-    file://0018-mtk-wifi-mt76-connac-set-correct-muar_idx-for-connac.patch \
-    file://0019-mtk-wifi-mt76-mt7996-ACS-channel-time-too-long-on-du.patch \
-    file://0020-mtk-wifi-mt76-mt7996-Fixed-null-pointer-dereference-.patch \
-    file://0021-mtk-wifi-mt76-add-sanity-check-to-prevent-kernel-cra.patch \
-    file://0022-mtk-wifi-mt76-mt7996-add-firmware-WA-s-coredump.patch \
-    file://0023-mtk-wifi-mt76-mt7996-add-preamble-puncture-support-f.patch \
+    file://0015-mtk-wifi-mt76-mt7996-remove-TxS-queue-setting.patch \
+    file://0016-mtk-wifi-mt76-mt7996-add-eagle-default-bin-of-differ.patch \
+    file://0017-mtk-wifi-mt76-mt7996-add-kite-fw-default-bin-for-dif.patch \
+    file://0018-mtk-wifi-mt76-mt7996-add-lock-for-indirect-register-.patch \
+    file://0019-mtk-wifi-mt76-connac-set-correct-muar_idx-for-connac.patch \
+    file://0020-mtk-wifi-mt76-mt7996-ACS-channel-time-too-long-on-du.patch \
+    file://0021-mtk-wifi-mt76-mt7996-Fixed-null-pointer-dereference-.patch \
+    file://0022-mtk-wifi-mt76-add-sanity-check-to-prevent-kernel-cra.patch \
+    file://0023-mtk-wifi-mt76-mt7996-add-firmware-WA-s-coredump.patch \
+    file://0024-mtk-wifi-mt76-mt7996-add-preamble-puncture-support-f.patch \
+    file://0025-mtk-wifi-mt76-mt7996-enable-hw-cso-module.patch \
     file://0999-mtk-wifi-mt76-mt7996-for-build-pass.patch \
     file://1000-mtk-wifi-mt76-mt7996-add-debug-tool.patch \
     file://1001-mtk-wifi-mt76-mt7996-support-record-muru-algo-log-wh.patch \
@@ -41,31 +43,34 @@ SRC_URI_append = " \
     file://1014-mtk-wifi-mt76-mt7996-add-driver-support-for-wpa3-ocv.patch \
     file://1015-mtk-wifi-mt76-mt7996-add-vendor-cmd-to-get-available.patch \
     file://1016-mtk-wifi-mt76-mt7996-add-debugfs-for-fw-coredump.patch \
-    file://1017-mtk-wifi-mt76-mt7996-add-support-for-runtime-set-in-.patch \
-    file://1018-mtk-wifi-mt76-mt7996-add-vendor-subcmd-EDCCA-ctrl-en.patch \
-    file://1019-mtk-wifi-mt76-mt7996-add-support-spatial-reuse-debug.patch \
-    file://1020-mtk-wifi-mt76-mt7996-Establish-BA-in-VO-queue.patch \
-    file://1021-mtk-wifi-mt76-mt7996-add-eagle-iFEM-HWITS-ZWDFS-SW-w.patch \
-    file://1022-mtk-wifi-mt76-mt7996-report-tx-and-rx-byte-to-tpt_le.patch \
-    file://1023-mtk-wifi-mt76-mt7996-support-dup-wtbl.patch \
-    file://1024-mtk-wifi-mt76-mt7996-add-ibf-control-vendor-cmd.patch \
-    file://1025-mtk-wifi-mt76-try-more-times-when-send-message-timeo.patch \
-    file://1026-mtk-wifi-mt76-mt7996-add-SER-overlap-handle.patch \
-    file://1027-mtk-wifi-mt76-mt7996-kite-default-1-pcie-setting.patch \
-    file://1028-mtk-wifi-mt76-mt7996-add-debugfs-knob-for-rx_counter.patch \
-    file://1029-mtk-wifi-mt76-mt7996-add-three-wire-pta-support.patch \
-    file://1030-mtk-wifi-mt76-mt7996-support-BF-MIMO-debug-commands.patch \
-    file://1031-mtk-wifi-mt76-mt7996-add-build-the-following-MURU-mc.patch \
-    file://1032-mtk-wifi-mt76-mt7996-add-cert-patch.patch \
-    file://1033-mtk-wifi-mt76-testmode-add-testmode-bf-support.patch \
-    file://1034-mtk-wifi-mt76-mt7996-add-zwdfs-cert-mode.patch \
-    file://1035-mtk-wifi-mt76-testmode-add-channel-68-96.patch \
-    file://1036-mtk-wifi-mt76-mt7996-support-enable-disable-pp-featu.patch \
-    file://1037-mtk-wifi-mt76-testmode-add-kite-testmode-support.patch \
-    file://1038-mtk-wifi-mt76-mt7996-assign-DEAUTH-to-ALTX-queue-for.patch \
-    file://1039-mtk-wifi-mt76-mt7996-add-no_beacon-vendor-command-fo.patch \
-    file://1040-mtk-wifi-mt76-mt7996-add-adie-efuse-merge-support.patch \
-    file://1041-mtk-wifi-mt7996-add-Eagle-2adie-TBTC-BE14000-support.patch \
+    file://1017-mtk-wifi-mt76-mt7996-Add-mt7992-coredump-support.patch \
+    file://1018-mtk-wifi-mt76-mt7996-add-support-for-runtime-set-in-.patch \
+    file://1019-mtk-wifi-mt76-mt7996-add-vendor-subcmd-EDCCA-ctrl-en.patch \
+    file://1020-mtk-wifi-mt76-mt7996-add-support-spatial-reuse-debug.patch \
+    file://1021-mtk-wifi-mt76-mt7996-Establish-BA-in-VO-queue.patch \
+    file://1022-mtk-wifi-mt76-mt7996-add-eagle-iFEM-HWITS-ZWDFS-SW-w.patch \
+    file://1023-mtk-wifi-mt76-mt7996-report-tx-and-rx-byte-to-tpt_le.patch \
+    file://1024-mtk-wifi-mt76-mt7996-support-dup-wtbl.patch \
+    file://1025-mtk-wifi-mt76-mt7996-add-ibf-control-vendor-cmd.patch \
+    file://1026-mtk-wifi-mt76-try-more-times-when-send-message-timeo.patch \
+    file://1027-mtk-wifi-mt76-mt7996-add-SER-overlap-handle.patch \
+    file://1028-mtk-wifi-mt76-mt7996-kite-default-1-pcie-setting.patch \
+    file://1029-mtk-wifi-mt76-mt7996-add-debugfs-knob-for-rx_counter.patch \
+    file://1030-mtk-wifi-mt76-mt7996-add-three-wire-pta-support.patch \
+    file://1031-mtk-wifi-mt76-mt7996-support-BF-MIMO-debug-commands.patch \
+    file://1032-mtk-wifi-mt76-mt7996-add-build-the-following-MURU-mc.patch \
+    file://1033-mtk-wifi-mt76-mt7996-add-cert-patch.patch \
+    file://1034-mtk-wifi-mt76-testmode-add-testmode-bf-support.patch \
+    file://1035-mtk-wifi-mt76-mt7996-add-zwdfs-cert-mode.patch \
+    file://1036-mtk-wifi-mt76-testmode-add-channel-68-96.patch \
+    file://1037-mtk-wifi-mt76-mt7996-support-enable-disable-pp-featu.patch \
+    file://1038-mtk-wifi-mt76-testmode-add-kite-testmode-support.patch \
+    file://1039-mtk-wifi-mt76-mt7996-assign-DEAUTH-to-ALTX-queue-for.patch \
+    file://1040-mtk-wifi-mt76-mt7996-add-no_beacon-vendor-command-fo.patch \
+    file://1041-mtk-wifi-mt76-mt7996-add-adie-efuse-merge-support.patch \
+    file://1042-mtk-wifi-mt7996-add-Eagle-2adie-TBTC-BE14000-support.patch \
+    file://1043-mtk-wifi-mt76-mt7996-add-background-radar-hw-cap-che.patch \
+    file://1044-mtk-wifi-mt76-mt7996-support-disable-muru-debug-info.patch \
     file://2000-mtk-wifi-mt76-revert-page_poll-for-kernel-5.4.patch \
     file://2001-mtk-wifi-mt76-rework-wed-rx-flow.patch \
     file://2002-mtk-wifi-mt76-wed-change-wed-token-init-size-to-adap.patch \
@@ -87,4 +92,5 @@ SRC_URI_append = " \
     file://2018-mtk-wifi-mt76-mt7996-Remove-wed_stop-during-L1-SER.patch \
     file://2019-mtk-wifi-mt76-mt7996-Refactor-rro-del-ba-command-for.patch \
     file://2020-mtk-wifi-mt76-mt7996-get-airtime-and-RSSI-via-MCU-co.patch \
+    file://2021-mtk-wifi-mt76-mt7996-add-support-for-WMM-PBC-configu.patch \
     "

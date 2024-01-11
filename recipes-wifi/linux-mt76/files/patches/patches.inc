@@ -58,6 +58,8 @@ SRC_URI_append = " \
     file://1043-wifi-mt76-testmode-add-cheetah-support.patch \
     file://1044-wifi-mt76-mt7915-add-mt7981-efuse-variants-support.patch \
     file://1045-wifi-mt76-mt7915-support-scs-feature.patch \
+    file://1046-wifi-mt76-mt7915-support-thermal-recal-debug-commnad.patch \
+    file://1047-wifi-mt76-mt7915-Add-support-for-lpi-and-duplicate-m.patch \
     file://2000-wifi-mt76-mt7915-wed-add-wed-tx-support.patch \
     file://2001-wifi-mt76-mt7915-wed-add-wds-support-when-wed-is-ena.patch \
     file://2002-wifi-mt76-mt7915-wed-add-fill-receive-path-to-report.patch \
