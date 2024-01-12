@@ -25,6 +25,7 @@ SRC_URI_append = " \
     file://0023-mtk-wifi-mt76-mt7996-add-firmware-WA-s-coredump.patch \
     file://0024-mtk-wifi-mt76-mt7996-add-preamble-puncture-support-f.patch \
     file://0025-mtk-wifi-mt76-mt7996-enable-hw-cso-module.patch \
+    file://0026-mtk-wifi-mt76-mt7996-fix-HIF_TXD_V2_1-value.patch \
     file://0999-mtk-wifi-mt76-mt7996-for-build-pass.patch \
     file://1000-mtk-wifi-mt76-mt7996-add-debug-tool.patch \
     file://1001-mtk-wifi-mt76-mt7996-support-record-muru-algo-log-wh.patch \

@@ -116,4 +116,5 @@ SRC_URI_append = " \
     file://mtk-0048-hostapd-mtk-add-support-for-channel-switching-with-c.patch \
     file://mtk-0049-hostapd-mtk-Add-DFS-offchan-channel-switch.patch \
     file://mtk-0050-hostapd-mtk-Add-txpower-vendor-command.patch \
+    file://mtk-0051-hostapd-mtk-Update-Wide-Bandwidth-Channel-Switch-element.patch \
     "
