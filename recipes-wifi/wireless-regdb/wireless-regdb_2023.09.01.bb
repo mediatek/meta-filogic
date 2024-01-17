@@ -10,7 +10,7 @@ SRC_URI[sha256sum] = "26d4c2a727cc59239b84735aad856b7c7d0b04e30aa5c235c4f7f47f5f
 FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches:"
 require files/patches/patches.inc
 
-inherit bin_package allarch pythonnative
+inherit bin_package allarch ${@bb.utils.contains("DISTRO_FEATURES", "kirkstone", "python3native", "pythonnative", d)}
 
 S = "${WORKDIR}/${PN}-${PV}"
 

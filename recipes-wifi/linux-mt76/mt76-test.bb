@@ -24,20 +24,21 @@ DEPENDS += "virtual/kernel"
 DEPENDS += "linux-mac80211"
 DEPENDS += "linux-mt76"
 
-FILESEXTRAPATHS_prepend := "${@bb.utils.contains('DISTRO_FEATURES','wifi_eht','${THISDIR}/files/patches-3.x:','${THISDIR}/files/patches:',d)}"
+FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
 
 CFLAGS_append = " -I=${includedir}/libnl-tiny "
 
 S = "${WORKDIR}/git/tools"
+PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES','wifi_eht','${WORKDIR}/patches-3.x','${WORKDIR}/patches',d)}"
 
-SRC_URI += "file://*.patch;apply=no"
+SRC_URI += "file://${@bb.utils.contains('DISTRO_FEATURES','wifi_eht','patches-3.x/','patches/',d)};apply=no"
 
 do_mtk_patches() {
 	cd ${S}/../
     
 	if [ ! -e mtk_wifi_patch_applied ]; then
-        for i in ${WORKDIR}/*.patch; do patch -p1 < $i; done
+        for i in ${PATCH_SRC}/*.patch; do patch -p1 < $i; done
 	fi
 	touch mtk_wifi_patch_applied
 }

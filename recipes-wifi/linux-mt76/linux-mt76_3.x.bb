@@ -7,7 +7,7 @@ inherit module
 
 require mt76.inc
 SRC_URI = " \
-    git://git@github.com/openwrt/mt76.git;protocol=https \
+    git://git@github.com/openwrt/mt76.git;protocol=https;branch=master \
     file://COPYING;subdir=git \
     "
 SRC_URI += " \
@@ -69,8 +69,6 @@ do_make_scripts[depends] += "virtual/kernel:do_shared_workdir"
 do_install() {
     # Module
     install -d ${D}/lib/modules/${KERNEL_VERSION}/updates/drivers/net/wireless/mediatek/mt76/
-    install -d ${D}/lib/modules/${KERNEL_VERSION}/updates/drivers/net/wireless/mediatek/mt76/mt7615/
-    install -d ${D}/lib/modules/${KERNEL_VERSION}/updates/drivers/net/wireless/mediatek/mt76/mt7915/
     install -m 0644 ${B}/mt76.ko ${D}/lib/modules/${KERNEL_VERSION}/updates/drivers/net/wireless/mediatek/mt76/
     install -m 0644 ${B}/mt76-connac-lib.ko ${D}/lib/modules/${KERNEL_VERSION}/updates/drivers/net/wireless/mediatek/mt76/
     install -m 0644 ${B}/mt7996/mt7996e.ko ${D}/lib/modules/${KERNEL_VERSION}/updates/drivers/net/wireless/mediatek/mt76/

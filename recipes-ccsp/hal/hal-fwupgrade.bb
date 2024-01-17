@@ -6,7 +6,7 @@ PROVIDES = "hal-fwupgrade"
 RPROVIDES_${PN} = "hal-fwupgrade"
 
 DEPENDS += "ccsp-common-library halinterface"
-SRC_URI = "git://gerrit.mediatek.inc/gateway/rdk-b/rdkb_hal;protocol=https;name=fwupgradehal \
+SRC_URI = "git://gerrit.mediatek.inc/gateway/rdk-b/rdkb_hal;branch=master;protocol=https;name=fwupgradehal \
            file://LICENSE;subdir=git \
           "
 

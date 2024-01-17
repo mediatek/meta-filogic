@@ -7,7 +7,7 @@ inherit module
 
 require mt76.inc
 SRC_URI = " \
-    git://git@github.com/openwrt/mt76.git;protocol=https \
+    git://git@github.com/openwrt/mt76.git;protocol=https;branch=master \
     file://COPYING;subdir=git \
     "
 SRC_URI += " \

@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-SRC_URI += "git://gerrit.mediatek.inc/gateway/rdk-b/rdkb_hal;protocol=https;destsuffix=git/source/platform/rdkb_hal"
+SRC_URI += "git://gerrit.mediatek.inc/gateway/rdk-b/rdkb_hal;branch=master;protocol=https;destsuffix=git/source/platform/rdkb_hal"
 
 
 SRCREV = "${AUTOREV}"

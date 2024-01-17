@@ -29,11 +29,11 @@ EXTRA_OEMAKE = "\
 
 do_install() {
 	install -D -m 0755 ${B}/libiwinfo.so ${D}${libdir}/libiwinfo.so
-        install -D -m 0755 ${B}/iwinfo.so ${D}${libdir}/lua/iwinfo.so
-        install -D -m 0755 ${B}/iwinfo ${D}${bindir}/iwinfo
+    install -D -m 0755 ${B}/iwinfo.so ${D}${libdir}/lua/iwinfo.so
+    install -D -m 0755 ${B}/iwinfo ${D}${bindir}/iwinfo
 	install -D -m 0644 ${S}/include/iwinfo.h ${D}${includedir}/iwinfo.h
 	install -D -m 0644 ${S}/include/iwinfo/utils.h ${D}${includedir}/iwinfo/utils.h
 }
 
 FILES_SOLIBSDEV = ""
-FILES_${PN} += "${libdir}/libiwinfo.so"
+FILES_${PN} += "${libdir}/libiwinfo.so ${libdir}/lua/iwinfo.so"
