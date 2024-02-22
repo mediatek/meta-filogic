@@ -62,6 +62,7 @@ SRC_URI_append = " \
     file://990-ctrl-make-WNM_AP-functions-dependant-on-CONFIG_AP.patch \
     file://991-Fix-OpenWrt-13156.patch \
     file://992-nl80211-add-extra-ies-only-if-allowed-by-driver.patch \
+    file://993-2023-10-28-ACS-Fix-typo-in-bw_40-frequency-array.patch \
     file://mtk-0001-mtk-hostapd-Add-neighbor-report-and-BSS-Termination-.patch \
     file://mtk-0002-mtk-hostapd-print-sae-groups-by-hostapd-ctrl.patch \
     file://mtk-0003-mtk-hostapd-add-support-for-runtime-set-in-band-disc.patch \

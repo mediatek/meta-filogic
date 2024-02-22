@@ -3,29 +3,18 @@ SRC_URI_append = " \
     file://0001-mtk-Revert-wifi-mt76-mt7996-fill-txd-by-host-driver.patch \
     file://0002-mtk-wifi-mt76-connac-use-peer-address-for-station-BM.patch \
     file://0003-mtk-wifi-mt76-mt7996-disable-rx-header-translation-f.patch \
-    file://0004-mtk-wifi-mt76-check-txs-format-before-getting-skb-by.patch \
-    file://0005-mtk-wifi-mt76-mt7996-fix-some-twt-issues.patch \
-    file://0006-mtk-wifi-mt76-mt7996-disable-AMSDU-for-non-data-fram.patch \
-    file://0007-mtk-wifi-mt76-mt7996-fix-incorrect-interpretation-of.patch \
-    file://0008-mtk-wifi-mt76-mt7992-add-TLV-sanity-check.patch \
-    file://0009-mtk-wifi-mt76-mt7996-fix-HE-beamformer-phy-cap-for-s.patch \
-    file://0010-mtk-wifi-mt76-mt7996-Let-MAC80211-handles-GCMP-IGTK.patch \
-    file://0011-mtk-wifi-mt76-mt7996-fix-efuse-read-issue.patch \
-    file://0012-mtk-wifi-mt76-mt7996-enable-ser-query.patch \
-    file://0013-mtk-wifi-mt76-mt7996-init-rcpi-to-use-better-init-mc.patch \
-    file://0014-mtk-wifi-mt76-mt7996-Fix-TGax-HE-4.51.1_24G-fail.patch \
-    file://0015-mtk-wifi-mt76-mt7996-remove-TxS-queue-setting.patch \
-    file://0016-mtk-wifi-mt76-mt7996-add-eagle-default-bin-of-differ.patch \
-    file://0017-mtk-wifi-mt76-mt7996-add-kite-fw-default-bin-for-dif.patch \
-    file://0018-mtk-wifi-mt76-mt7996-add-lock-for-indirect-register-.patch \
-    file://0019-mtk-wifi-mt76-connac-set-correct-muar_idx-for-connac.patch \
-    file://0020-mtk-wifi-mt76-mt7996-ACS-channel-time-too-long-on-du.patch \
-    file://0021-mtk-wifi-mt76-mt7996-Fixed-null-pointer-dereference-.patch \
-    file://0022-mtk-wifi-mt76-add-sanity-check-to-prevent-kernel-cra.patch \
-    file://0023-mtk-wifi-mt76-mt7996-add-firmware-WA-s-coredump.patch \
-    file://0024-mtk-wifi-mt76-mt7996-add-preamble-puncture-support-f.patch \
-    file://0025-mtk-wifi-mt76-mt7996-enable-hw-cso-module.patch \
-    file://0026-mtk-wifi-mt76-mt7996-fix-HIF_TXD_V2_1-value.patch \
+    file://0004-mtk-wifi-mt76-mt7996-set-RCPI-value-in-rate-control-.patch \
+    file://0005-mtk-wifi-mt76-mt7996-enable-ser-query.patch \
+    file://0006-mtk-wifi-mt76-mt7996-Fix-TGax-HE-4.51.1_24G-fail.patch \
+    file://0007-mtk-wifi-mt76-mt7996-add-eagle-default-bin-of-differ.patch \
+    file://0008-mtk-wifi-mt76-mt7996-add-kite-fw-default-bin-for-dif.patch \
+    file://0009-mtk-wifi-mt76-mt7996-ACS-channel-time-too-long-on-du.patch \
+    file://0010-mtk-wifi-mt76-mt7996-Fixed-null-pointer-dereference-.patch \
+    file://0011-mtk-wifi-mt76-add-sanity-check-to-prevent-kernel-cra.patch \
+    file://0012-mtk-wifi-mt76-mt7996-add-firmware-WA-s-coredump.patch \
+    file://0013-mtk-wifi-mt76-mt7996-add-preamble-puncture-support-f.patch \
+    file://0014-mtk-wifi-mt76-mt7996-enable-hw-cso-module.patch \
+    file://0015-mtk-wifi-mt76-mt7996-add-sanity-check-for-NAPI-sched.patch \
     file://0999-mtk-wifi-mt76-mt7996-for-build-pass.patch \
     file://1000-mtk-wifi-mt76-mt7996-add-debug-tool.patch \
     file://1001-mtk-wifi-mt76-mt7996-support-record-muru-algo-log-wh.patch \

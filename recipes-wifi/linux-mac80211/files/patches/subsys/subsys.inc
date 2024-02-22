@@ -82,6 +82,8 @@ SRC_URI_append = " \
     file://mtk-0024-mac80211-mtk-ACS-channel-time-is-reset-by-ch_restore.patch \
     file://mtk-0024-mac80211-mtk-add-DFS-CAC-countdown-in-CSA-flow.patch \
     file://mtk-0025-mac80211-mtk-send-deauth-frame-if-CAC-is-required-du.patch \
+    file://mtk-0026-mac80211-mtk-Add-cert-mode-for-ba-timeout-workaround.patch \
+    file://mtk-0026-mac80211-mtk-add-support-for-scan-dwell-time-customi.patch \
     file://mtk-9900-mac80211-mtk-mask-kernel-version-limitation-and-fill.patch \
     file://mtk-9901-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-id.patch \
     file://mtk-9902-mac80211-mtk-add-support-for-letting-drivers-registe.patch \
