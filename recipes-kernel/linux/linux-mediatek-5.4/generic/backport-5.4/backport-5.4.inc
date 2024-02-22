@@ -299,24 +299,6 @@ SRC_URI_append = " \
     file://900-v5.9-0001-dt-bindings-Add-multicolor-class-dt-bindings-documen.patch \
     file://900-v5.9-0002-leds-Add-multicolor-ID-to-the-color-ID-list.patch \
     file://900-v5.9-0003-leds-add-RGB-color-option-as-that-is-different-from-.patch \
-    file://999-1410-mtd-spinand-gigadevice-Support-for-modify-GD-Serial-NAND-from-v6-4-9.patch \
-    file://999-2310-v5.7-mtd-nand-spi-rework-detect-procedure-for-different-read-id-op.patch \
-    file://999-2312-mtd-spinand-macronix-Add-support-for-MX31LF1GE4BC.patch \
-    file://999-2313-mtd-spinand-macronix-Add-support-for-MX31UF1GE4BC.patch \
-    file://999-2314-mtd-spinand-macronix-Add-support-for-MX35LFxGE4AD.patch \
-    file://999-2315-mtd-spinand-macronix-Add-support-for-MX35LFxG24AD.patch \
-    file://999-2316-mtd-spinand-macronix-Add-support-for-serial-NAND-flash.patch \
-    file://999-2317-mtd-spinand-macronix-Add-Quad-support-for-serial-NAND-flash.patch \
-    file://999-2318-mtd-spinand-micron-Generalize-the-OOB-layout-structure-and-function-names.patch \
-    file://999-2319-mtd-spinand-micron-Describe-the-SPI-NAND-device-MT29F2G01ABAGD.patch \
-    file://999-2320-mtd-spinand-micron-Add-new-Micron-SPI-NAND-devices.patch \
-    file://999-2321-mtd-spinand-micron-identify-SPI-NAND-device-with-Continuous-Read-mode.patch \
-    file://999-2322-mtd-spinand-micron-Add-M70A-series-Micron-SPI-NAND-devices.patch \
-    file://999-2323-mtd-spinand-micron-Add-new-Micron-SPI-NAND-devices-with-multiple-dies.patch \
-    file://999-2324-mtd-spinand-micron-Use-more-specific-names.patch \
-    file://999-2325-mtd-spinand-micron-Add-support-for-MT29F2G01AAAED.patch \
-    file://999-2326-mtd-spinand-toshiba-Rename-function-name-to-change-suffix-and-prefix-8Gbit.patch \
-    file://999-2327-mtd-spinand-toshiba-Support-for-new-Kioxia-Serial-NAND.patch \
     file://999-2360-v5.16-spi-add-power-control-when-set_cs.patch \
     file://999-2700-v5.7-iopoll-introduce-read_poll_timeout-macro.patch \
     file://999-2701-v5.8-net-phy-add-concept-of-shared-storage-for-PHYs.patch \

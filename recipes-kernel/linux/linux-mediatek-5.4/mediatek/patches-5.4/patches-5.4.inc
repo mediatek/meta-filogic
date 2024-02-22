@@ -37,6 +37,8 @@ SRC_URI_append = " \
     file://1021-ubnt-ledbar-driver.patch \
     file://999-1050-v6.4-backport-jitterrng-2.2.0.patch;apply=no \
     file://999-1051-v5.10-backport-libkcapi.patch \
+    file://999-1401-v5.7-mtd-spinand-backport-winbond-and-base-file.patch \
+    file://999-1402-v6.4-mtd-spinand-backport-series-flash.patch \
     file://999-1600-v5.18-mdiobus-add-c45.patch \
     file://999-1703-v5.18-mxl-gpy-phy-support.patch \
     file://999-1704-v6.2-net-phy-aquantia-add-AQR113C.patch \
@@ -47,6 +49,7 @@ SRC_URI_append = " \
     file://999-1712-v6.2-net-phy-add-phylink-rate-matching-support.patch;apply=no \
     file://999-1713-v5.15-net-dsa-add-dsa_port_from_netdev.patch \
     file://999-1714-v5.15-net-dsa-add-netdev_upper_dev_link.patch \
+    file://999-1715-v6.2-net-dsa-add-set-queue-mapping.patch \
     file://999-1750-v5.18-net-macsec-get-ready-to-backport-from-5-18.patch \
     file://999-1751-01-v5.18-net-macsec-move-some-definitions-in-a-dedicated-header.patch \
     file://999-1752-02-v5.18-net-macsec-introduce-the-macsec_context-structure.patch \

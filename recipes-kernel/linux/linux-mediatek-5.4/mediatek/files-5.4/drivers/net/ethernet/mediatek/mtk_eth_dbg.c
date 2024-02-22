@@ -420,6 +420,42 @@ static ssize_t mtketh_debugfs_reset(struct file *file, const char __user *ptr,
 	return count;
 }
 
+static int pppq_toggle_read(struct seq_file *m, void *private)
+{
+	struct mtk_eth *eth = m->private;
+
+	pr_info("value=%d, pppq is %s now!\n",
+		eth->pppq_toggle, (eth->pppq_toggle) ? "enabled" : "disabled");
+
+	return 0;
+}
+
+static int pppq_toggle_open(struct inode *inode, struct file *file)
+{
+	return single_open(file, pppq_toggle_read, inode->i_private);
+}
+
+static ssize_t pppq_toggle_write(struct file *file, const char __user *ptr,
+				 size_t len, loff_t *off)
+{
+	struct seq_file *m = file->private_data;
+	struct mtk_eth *eth = m->private;
+	char buf[8] = {0};
+
+	if ((len > 8) || copy_from_user(buf, ptr, len))
+		return -EFAULT;
+
+	if (buf[0] == '1' && !eth->pppq_toggle) {
+		eth->pppq_toggle = 1;
+		pr_info("pppq is enabled!\n");
+	} else if (buf[0] == '0' && eth->pppq_toggle) {
+		eth->pppq_toggle = 0;
+		pr_info("pppq is disabled!\n");
+	}
+
+	return len;
+}
+
 static const struct file_operations fops_reg_w = {
 	.owner = THIS_MODULE,
 	.open = simple_open,
@@ -432,6 +468,15 @@ static const struct file_operations fops_eth_reset = {
 	.open = simple_open,
 	.write = mtketh_debugfs_reset,
 	.llseek = noop_llseek,
+};
+
+static const struct file_operations fops_pppq_toggle = {
+	.owner = THIS_MODULE,
+	.open = pppq_toggle_open,
+	.read = seq_read,
+	.llseek = seq_lseek,
+	.write = pppq_toggle_write,
+	.release = single_release,
 };
 
 static const struct file_operations fops_mt7530sw_reg_w = {
@@ -456,6 +501,8 @@ int mtketh_debugfs_init(struct mtk_eth *eth)
 		ret = -ENOMEM;
 	}
 
+	debugfs_create_file("pppq_toggle", 0444,
+			    eth_debug.root, eth, &fops_pppq_toggle);
 	debugfs_create_file("phy_regs", S_IRUGO,
 			    eth_debug.root, eth, &mtketh_debug_fops);
 	debugfs_create_file("phy_reg_w", S_IFREG | S_IWUSR,
@@ -980,6 +1027,7 @@ static inline u32 mtk_dbg_r32(u32 reg)
 int dbg_regs_read(struct seq_file *seq, void *v)
 {
 	struct mtk_eth *eth = g_eth;
+	u32 i;
 
 	seq_puts(seq, "   <<DEBUG REG DUMP>>\n");
 
@@ -1038,16 +1086,43 @@ int dbg_regs_read(struct seq_file *seq, void *v)
 		   mtk_r32(eth, MTK_PRX_CRX_IDX0));
 	seq_printf(seq, "| PDMA_DRX_IDX	: %08x |\n",
 		   mtk_r32(eth, MTK_PRX_DRX_IDX0));
-	seq_printf(seq, "| QDMA_CTX_IDX	: %08x |\n",
-		   mtk_r32(eth, MTK_QTX_CTX_PTR));
-	seq_printf(seq, "| QDMA_DTX_IDX	: %08x |\n",
-		   mtk_r32(eth, MTK_QTX_DTX_PTR));
-	seq_printf(seq, "| QDMA_FQ_CNT	: %08x |\n",
-		   mtk_r32(eth, MTK_QDMA_FQ_CNT));
-	seq_printf(seq, "| QDMA_FWD_CNT	: %08x |\n",
-		   mtk_r32(eth, MTK_QDMA_FWD_CNT));
-	seq_printf(seq, "| QDMA_FSM	: %08x |\n",
-		   mtk_r32(eth, MTK_QDMA_FSM));
+	if (MTK_HAS_CAPS(eth->soc->caps, MTK_RSS)) {
+		for (i = 1; i < eth->soc->rss_num; i++) {
+			seq_printf(seq, "| PDMA_CRX_IDX%d	: %08x |\n",
+				   i, mtk_r32(eth, MTK_PRX_CRX_IDX_CFG(i)));
+			seq_printf(seq, "| PDMA_DRX_IDX%d	: %08x |\n",
+				   i, mtk_r32(eth, MTK_PRX_DRX_IDX_CFG(i)));
+		}
+	}
+	if (MTK_HAS_CAPS(eth->soc->caps, MTK_HWLRO)) {
+		for (i = 0; i < MTK_HW_LRO_RING_NUM; i++) {
+			seq_printf(seq, "| PDMA_CRX_IDX%d	: %08x |\n",
+				   MTK_HW_LRO_RING(i),
+				   mtk_r32(eth, MTK_PRX_CRX_IDX_CFG(MTK_HW_LRO_RING(i))));
+			seq_printf(seq, "| PDMA_DRX_IDX%d	: %08x |\n",
+				   MTK_HW_LRO_RING(i),
+				   mtk_r32(eth, MTK_PRX_DRX_IDX_CFG(MTK_HW_LRO_RING(i))));
+		}
+	}
+
+	if (MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA)) {
+		seq_printf(seq, "| QDMA_CTX_IDX	: %08x |\n",
+			   mtk_r32(eth, MTK_QTX_CTX_PTR));
+		seq_printf(seq, "| QDMA_DTX_IDX	: %08x |\n",
+			   mtk_r32(eth, MTK_QTX_DTX_PTR));
+		seq_printf(seq, "| QDMA_FQ_CNT	: %08x |\n",
+			   mtk_r32(eth, MTK_QDMA_FQ_CNT));
+		seq_printf(seq, "| QDMA_FWD_CNT	: %08x |\n",
+			   mtk_r32(eth, MTK_QDMA_FWD_CNT));
+		seq_printf(seq, "| QDMA_FSM	: %08x |\n",
+			   mtk_r32(eth, MTK_QDMA_FSM));
+	} else {
+		seq_printf(seq, "| PDMA_CTX_IDX	: %08x |\n",
+			   mtk_r32(eth, MTK_PTX_CTX_IDX0));
+		seq_printf(seq, "| PDMA_DTX_IDX	: %08x |\n",
+			   mtk_r32(eth, MTK_PTX_DTX_IDX0));
+	}
+
 	seq_printf(seq, "| FE_PSE_FREE	: %08x |\n",
 		   mtk_r32(eth, MTK_FE_PSE_FREE));
 	seq_printf(seq, "| FE_DROP_FQ	: %08x |\n",

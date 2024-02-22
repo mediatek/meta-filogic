@@ -36,6 +36,11 @@ EXPORT_SYMBOL(ra_sw_nat_hook_tx);
 void (*ra_sw_nat_clear_bind_entries)(void) = NULL;
 EXPORT_SYMBOL(ra_sw_nat_clear_bind_entries);
 
+int (*hnat_get_wdma_tx_port)(int wdma_idx) = NULL;
+EXPORT_SYMBOL(hnat_get_wdma_tx_port);
+int (*hnat_get_wdma_rx_port)(int wdma_idx) = NULL;
+EXPORT_SYMBOL(hnat_get_wdma_rx_port);
+
 int (*ppe_del_entry_by_mac)(unsigned char *mac) = NULL;
 EXPORT_SYMBOL(ppe_del_entry_by_mac);
 
@@ -136,6 +141,26 @@ static void exclude_boundary_entry(struct foe_entry *foe_table_cpu)
 	}
 }
 
+static int mtk_get_wdma_tx_port(int wdma_idx)
+{
+	if (wdma_idx == 0 || wdma_idx == 1 || wdma_idx == 2)
+		return NR_PPE0_PORT;
+
+	return -EINVAL;
+}
+
+static int mtk_get_wdma_rx_port(int wdma_idx)
+{
+	if (wdma_idx == 2)
+		return NR_WDMA2_PORT;
+	else if (wdma_idx == 1)
+		return NR_WDMA1_PORT;
+	else if (wdma_idx == 0)
+		return NR_WDMA0_PORT;
+
+	return -EINVAL;
+}
+
 void set_gmac_ppe_fwd(int id, int enable)
 {
 	void __iomem *reg;
@@ -147,9 +172,9 @@ void set_gmac_ppe_fwd(int id, int enable)
 
 	if (enable) {
 #if defined(CONFIG_MEDIATEK_NETSYS_V2) || defined(CONFIG_MEDIATEK_NETSYS_V3)
-		if (CFG_PPE_NUM == 3 && id == NR_GMAC3_PORT)
+		if (CFG_PPE_NUM >= 3 && id == NR_GMAC3_PORT)
 			cr_set_bits(reg, BITS_GDM_ALL_FRC_P_PPE2);
-		else if (CFG_PPE_NUM == 3 && id == NR_GMAC2_PORT)
+		else if (CFG_PPE_NUM >= 2 && id == NR_GMAC2_PORT)
 			cr_set_bits(reg, BITS_GDM_ALL_FRC_P_PPE1);
 		else
 			cr_set_bits(reg, BITS_GDM_ALL_FRC_P_PPE);
@@ -162,7 +187,7 @@ void set_gmac_ppe_fwd(int id, int enable)
 	/*disabled */
 	val = readl(reg);
 #if defined(CONFIG_MEDIATEK_NETSYS_V2) || defined(CONFIG_MEDIATEK_NETSYS_V3)
-	if ((CFG_PPE_NUM == 3 &&
+	if ((CFG_PPE_NUM >= 2 &&
 	    ((val & GDM_ALL_FRC_MASK) == BITS_GDM_ALL_FRC_P_PPE1 ||
 	     (val & GDM_ALL_FRC_MASK) == BITS_GDM_ALL_FRC_P_PPE2)))
 		cr_set_field(reg, GDM_ALL_FRC_MASK,
@@ -616,6 +641,8 @@ int hnat_enable_hook(void)
 		ppe_dev_register_hook = mtk_ppe_dev_register_hook;
 		ppe_dev_unregister_hook = mtk_ppe_dev_unregister_hook;
 		ra_sw_nat_clear_bind_entries = foe_clear_all_bind_entries;
+		hnat_get_wdma_tx_port = mtk_get_wdma_tx_port;
+		hnat_get_wdma_rx_port = mtk_get_wdma_rx_port;
 	}
 
 	if (hnat_register_nf_hooks())
@@ -635,6 +662,8 @@ int hnat_disable_hook(void)
 	ra_sw_nat_hook_tx = NULL;
 	ra_sw_nat_hook_rx = NULL;
 	ra_sw_nat_clear_bind_entries = NULL;
+	hnat_get_wdma_tx_port = NULL;
+	hnat_get_wdma_rx_port = NULL;
 	hnat_unregister_nf_hooks();
 
 	for (i = 0; i < CFG_PPE_NUM; i++) {
