@@ -1,14 +1,15 @@
 diff --git a/wifi_hal_generic.h b/wifi_hal_generic.h
-index d38214f..041426f 100644
+index 61cf9b6..2c1ae58 100644
 --- a/wifi_hal_generic.h
 +++ b/wifi_hal_generic.h
-@@ -302,7 +302,8 @@ typedef enum{
+@@ -309,7 +309,9 @@ typedef enum{
      WIFI_CHANNELBANDWIDTH_80MHZ = 0x4,
      WIFI_CHANNELBANDWIDTH_160MHZ = 0x8,
      WIFI_CHANNELBANDWIDTH_80_80MHZ = 0x10,
 -    WIFI_CHANNELBANDWIDTH_320MHZ = 0x20
-+    WIFI_CHANNELBANDWIDTH_320_1MHZ = 0x20,
-+    WIFI_CHANNELBANDWIDTH_320_2MHZ = 0x40,
++    WIFI_CHANNELBANDWIDTH_320MHZ = 0x20,
++    WIFI_CHANNELBANDWIDTH_320_1MHZ = 0x40,
++    WIFI_CHANNELBANDWIDTH_320_2MHZ = 0x80,
  } wifi_channelBandwidth_t;
  
- typedef struct {
+ /**
