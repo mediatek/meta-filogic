@@ -75,21 +75,9 @@ do_install() {
 }
 
 do_install_append () {
-    install -d ${D}/${base_libdir}/firmware/mediatek/
-
-    install -m 644 ${WORKDIR}/src/firmware/mt7915_rom_patch.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7915_wa.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7915_wm.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7915_eeprom.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7915_eeprom_dbdc.bin ${D}${base_libdir}/firmware/mediatek/
-
-    install -m 644 ${WORKDIR}/src/firmware/mt7916_rom_patch.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7916_wa.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7916_wm.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7916_eeprom.bin ${D}${base_libdir}/firmware/mediatek/
-
     install -d ${D}/${base_libdir}/firmware/mediatek/mt7996
     install -m 644 ${WORKDIR}/src/firmware/mt7996/mt7996*.* ${D}${base_libdir}/firmware/mediatek/mt7996
+    install -m 644 ${WORKDIR}/src/firmware/mt7996/mt7992*.* ${D}${base_libdir}/firmware/mediatek/mt7996
 }
 
 do_install_append_mt7988 () {
@@ -111,5 +99,4 @@ python populate_packages_prepend () {
 #RPROVIDES_${PN} += "kernel-module-${PN}-${KERNEL_VERSION}"
 #RPROVIDES_${PN} += "kernel-module-${PN}-connac-lib-${KERNEL_VERSION}"
 
-#KERNEL_MODULE_AUTOLOAD += "mt7915e"
 KERNEL_MODULE_AUTOLOAD += "mt7996e"
