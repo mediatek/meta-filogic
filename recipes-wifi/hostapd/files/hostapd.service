@@ -6,7 +6,7 @@ StartLimitIntervalSec=120
 [Service]
 Type=forking
 PIDFile=/var/run/hostapd-global.pid
-ExecStart=/usr/sbin/hostapd -g /var/run/hostapd/global -B -P /var/run/hostapd-global.pid
+ExecStart=/usr/sbin/hostapd -g /var/run/hostapd/global -s -B -P /var/run/hostapd-global.pid
 ExecStartPost=/bin/sh -c '(/lib/rdk/hostapd-init.sh)'
 Restart=always
 [Install]
