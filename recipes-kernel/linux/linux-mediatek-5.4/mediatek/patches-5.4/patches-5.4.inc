@@ -35,11 +35,16 @@ SRC_URI_append = " \
     file://1010-pcie-mediatek-fix-clearing-interrupt-status.patch \
     file://1020-spi-nor-w25q512jv.patch \
     file://1021-ubnt-ledbar-driver.patch \
+    file://999-1021-v5.7-iopoll-introduce-read_poll_timeout-macro.patch \
     file://999-1050-v6.4-backport-jitterrng-2.2.0.patch;apply=no \
     file://999-1051-v5.10-backport-libkcapi.patch \
+    file://999-1400-v5.16-spi-add-power-control-when-set_cs.patch \
     file://999-1401-v5.7-mtd-spinand-backport-winbond-and-base-file.patch \
     file://999-1402-v6.4-mtd-spinand-backport-series-flash.patch \
     file://999-1600-v5.18-mdiobus-add-c45.patch \
+    file://999-1700-v5.8-net-phy-add-concept-of-shared-storage-for-PHYs.patch \
+    file://999-1701-v5.8-net-phy-add-concept-of-shared-storage-for-PHYs.patch \
+    file://999-1702-v6.4-backport-mediatek-ge-and-mediatek-ge-soc.patch \
     file://999-1703-v5.18-mxl-gpy-phy-support.patch \
     file://999-1704-v6.2-net-phy-aquantia-add-AQR113C.patch \
     file://999-1708-v6.2-net-phy-add-5GBASER.patch \
@@ -124,6 +129,8 @@ SRC_URI_append = " \
     file://999-2153-sound-add-si3218x-spi-driver.patch \
     file://999-2300-mtk-sd-add-mt7986-support.patch \
     file://999-2301-mtk-sd-Add-subsys-clock-control.patch \
+    file://999-2328-mtd-add-nmbm-support.patch \
+    file://999-2329-ubi-add-configurable-rootdev.patch \
     file://999-2330-mtd-spinand-winbond-Support-for-W25MxxGV-W25NxxKV-series.patch \
     file://999-2331-mtd-spinand-macronix-suppress-mx35lf1ge4ab-warning-log.patch \
     file://999-2332-mtd-add-mtk-snand-driver.patch \
@@ -134,6 +141,7 @@ SRC_URI_append = " \
     file://999-2341-mtd-spinand-Add-support-etron.patch \
     file://999-2342-drivers-mtd-spi-nor-Add-support-EN25QX256A-2S.patch \
     file://999-2343-mtd-spinand-gigadevice-Add-support-for-F50L1G41LB.patch \
+    file://999-2344-mtd-spinand-Add-support-fudanmicro.patch \
     file://999-2350-nvmem-core-Add-functions-to-make-number-reading-easy.patch \
     file://999-2351-nvmem-mtk-efuse-support-minimum-one-byte-access-stri.patch \
     file://999-2361-add-spimem-support-to-mtk-spi.patch \
@@ -159,6 +167,7 @@ SRC_URI_append = " \
     file://999-2503-cpufreq-mtk-vbining-add-mt7988-support.patch \
     file://999-2530-add-pmic-config.patch \
     file://999-2531-iio-add-zts8032-config.patch \
+    file://999-2540-cmdline-boot-parameters.patch \
     file://999-2550-dual-image-mount-rootfs.patch \
     file://999-2600-pcie-add-pcie-gen3-upstream-driver.patch \
     file://999-2601-pcie-add-multi-MSI-support.patch \
@@ -171,6 +180,7 @@ SRC_URI_append = " \
     file://999-2620-xHCI-change-compliance-mode-de-emphasis-default-as-g.patch \
     file://999-2621-xHCI-MT7986-USB-2.0-USBIF-compliance-toolkit.patch \
     file://999-2622-usb-add-embedded-Host-feature-support.patch \
+    file://999-2700-netfilter_optional_tcp_window_check.patch \
     file://999-2704-en8811h-2p5gphy-support.patch \
     file://999-2705-hwnat_Kconfig_Makefile.patch \
     file://999-2706-crypto-add-eip197-inside-secure-support.patch \
@@ -202,6 +212,11 @@ SRC_URI_append = " \
     file://999-2737-net-mt753x-phy-coverity-scan.patch;apply=no \
     file://999-2738-an8801sb-gphy-support.patch \
     file://999-2738-net-pptp-bypass-seq-check.patch \
+    file://999-2739-drivers_net_dsa_add_an8855.patch \
+    file://999-2739-drivers_net_ethernet_mediatek_hnat.patch;apply=no \
+    file://999-2739-drivers_net_phy_add_an8855_gsw.patch \
+    file://999-2739-net-phy-aquantia-add-CUX3410.patch \
+    file://999-2739-net_dsa_add_tag_arht.patch \
     file://999-2800-misc-add-mtk-platform.patch \
     file://999-2850-fips-140-3-compliance.patch \
     file://999-2900-dts-mt7622-enable-new-mtk-snand-for-ubi.patch \

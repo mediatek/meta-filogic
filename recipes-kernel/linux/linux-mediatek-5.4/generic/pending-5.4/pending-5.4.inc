@@ -120,7 +120,4 @@ SRC_URI_append = " \
     file://834-ledtrig-libata.patch \
     file://840-hwrng-bcm2835-set-quality-to-1000.patch \
     file://920-mangle_bootargs.patch \
-    file://999-2328-mtd-add-nmbm-support.patch \
-    file://999-2329-ubi-add-configurable-rootdev.patch \
-    file://999-2704-netfilter_optional_tcp_window_check.patch \
     "

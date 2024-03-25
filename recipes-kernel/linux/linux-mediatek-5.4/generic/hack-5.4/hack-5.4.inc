@@ -41,5 +41,4 @@ SRC_URI_append = " \
     file://910-kobject_uevent.patch \
     file://911-kobject_add_broadcast_uevent.patch \
     file://921-always-create-console-node-in-initramfs.patch \
-    file://999-2540-cmdline-boot-parameters.patch \
     "

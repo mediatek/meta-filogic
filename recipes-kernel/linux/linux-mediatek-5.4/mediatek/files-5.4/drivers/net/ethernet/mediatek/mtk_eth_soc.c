@@ -258,7 +258,7 @@ static const char * const mtk_clks_source_name[] = {
 	"top_eth_xgmii_sel", "top_eth_mii_sel", "top_netsys_sel",
 	"top_netsys_500m_sel", "top_netsys_pao_2x_sel",
 	"top_netsys_sync_250m_sel", "top_netsys_ppefb_250m_sel",
-	"top_netsys_warp_sel", "top_macsec_sel", "macsec_bus_clk",
+	"top_netsys_warp_sel", "top_macsec_sel",
 };
 
 void mtk_w32(struct mtk_eth *eth, u32 val, unsigned reg)
@@ -967,9 +967,27 @@ static void mtk_gdm_fsm_poll(struct mtk_mac *mac)
 		pr_info("%s fsm invalid", __func__);
 }
 
-static void mtk_pse_port_link_set(struct mtk_mac *mac, bool up)
+static void mtk_pse_port_link_set(struct mtk_mac *mac, bool up,
+				  phy_interface_t interface)
 {
 	u32 fe_glo_cfg, val = 0;
+
+	if (!up && interface == PHY_INTERFACE_MODE_XGMII) {
+		void __iomem *base;
+
+		base = ioremap(0x0F0CFB00, SZ_4K);
+		if (base) {
+			/* wait for internal 2.5G PHY to turn off */
+			usleep_range(100, 1000);
+			/* enable the XGMAC clock for 10 msecs to
+			 * flush the packets.
+			 */
+			writel(readl(base) | BIT(9), base);
+			usleep_range(10000, 11000);
+			writel(readl(base) & ~BIT(9), base);
+			iounmap(base);
+		}
+	}
 
 	fe_glo_cfg = mtk_r32(mac->hw, MTK_FE_GLO_CFG(mac->id));
 	switch (mac->id) {
@@ -1002,7 +1020,7 @@ static void mtk_mac_link_down(struct phylink_config *config, unsigned int mode,
 	unsigned int id;
 	u32 mcr, sts;
 
-	mtk_pse_port_link_set(mac, false);
+	mtk_pse_port_link_set(mac, false, interface);
 	if (mac->type == MTK_GDM_TYPE) {
 		mcr = mtk_r32(mac->hw, MTK_MAC_MCR(mac->id));
 		mcr &= ~(MAC_MCR_TX_EN | MAC_MCR_RX_EN | MAC_MCR_FORCE_LINK);
@@ -1140,6 +1158,8 @@ static void mtk_mac_link_up(struct phylink_config *config, unsigned int mode,
 		if (duplex == DUPLEX_FULL ||
 		    interface == PHY_INTERFACE_MODE_SGMII)
 			mcr |= MAC_MCR_FORCE_DPX;
+		else if (interface == PHY_INTERFACE_MODE_GMII)
+			mcr |= MAC_MCR_PRMBL_LMT_EN;
 
 		/* Configure pause modes -
 		 * phylink will avoid these for half duplex
@@ -1184,7 +1204,7 @@ static void mtk_mac_link_up(struct phylink_config *config, unsigned int mode,
 		mcr &= ~(XMAC_MCR_TRX_DISABLE);
 		mtk_w32(mac->hw, mcr, MTK_XMAC_MCR(mac->id));
 	}
-	mtk_pse_port_link_set(mac, true);
+	mtk_pse_port_link_set(mac, true, interface);
 }
 
 static void mtk_validate(struct phylink_config *config,
@@ -4383,6 +4403,7 @@ static int mtk_hw_init(struct mtk_eth *eth, u32 type)
 		mtk_w32(eth, 0x00600009, PSE_IQ_REV(8));
 
 		/* GDM and CDM Threshold */
+		mtk_w32(eth, 0x00000004, MTK_CDM2_THRES);
 		mtk_w32(eth, 0x00000707, MTK_CDMW0_THRES);
 		mtk_w32(eth, 0x00000077, MTK_CDMW1_THRES);
 

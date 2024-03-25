@@ -103,9 +103,9 @@ do_filogic_patches() {
             patch -p1 < ${WORKDIR}/999-2737-net-mt753x-phy-coverity-scan.patch
             patch -p1 < ${WORKDIR}/999-1710-v6.2-net-phy-add-phylink-pcs-support.patch
             patch -p1 < ${WORKDIR}/999-1712-v6.2-net-phy-add-phylink-rate-matching-support.patch
-            patch -p1 < ${WORKDIR}/999-2702-v5.9-net-phy-add-support-for-a-common-probe-between-shared-PHYs.patch
             patch -p1 < ${WORKDIR}/999-2725-iwconfig-wireless-rate-fix.patch
             patch -p1 < ${WORKDIR}/999-2729-net-phy-remove-reporting-line-rate-to-mac.patch
+            patch -p1 < ${WORKDIR}/999-2739-drivers_net_ethernet_mediatek_hnat.patch
             if [ $DISTRO_secure_boot_ENABLED = 'true' ]; then
                 patch -p1 < ${WORKDIR}/0404-mtdsplit-dm-verity.patch
                 patch -p1 < ${WORKDIR}/0800-dm-verity-redo-hash-for-safexel-sha256.patch
@@ -124,14 +124,6 @@ do_filogic_patches() {
         fi
 }
 
-do_filogic_patches_append_mt7988() {
-    if [ ! -e wed3_patch_applied ]; then
-        if [ $DISTRO_FlowBlock_ENABLED = 'true' ]; then
-                for i in ${WORKDIR}/mediatek/wed3/*.patch; do patch -p1 < $i; done
-        fi
-        touch wed3_patch_applied
-    fi
-}
 addtask filogic_patches after do_patch before do_compile
 
 KERNEL_MODULE_AUTOLOAD += "${@bb.utils.contains('DISTRO_FEATURES','logan','mtkhnat nf_flow_table_hw','',d)}"

@@ -299,10 +299,5 @@ SRC_URI_append = " \
     file://900-v5.9-0001-dt-bindings-Add-multicolor-class-dt-bindings-documen.patch \
     file://900-v5.9-0002-leds-Add-multicolor-ID-to-the-color-ID-list.patch \
     file://900-v5.9-0003-leds-add-RGB-color-option-as-that-is-different-from-.patch \
-    file://999-2360-v5.16-spi-add-power-control-when-set_cs.patch \
-    file://999-2700-v5.7-iopoll-introduce-read_poll_timeout-macro.patch \
-    file://999-2701-v5.8-net-phy-add-concept-of-shared-storage-for-PHYs.patch \
-    file://999-2702-v5.9-net-phy-add-support-for-a-common-probe-between-shared-PHYs.patch;apply=no \
-    file://999-2703-net-phy-backport-v5.4-mediatek-ge-and-v6.4-mediatek-ge-soc.patch \
     file://999-update-uapi-header-files-for-bridger.patch \
     "
