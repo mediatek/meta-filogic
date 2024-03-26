@@ -66,6 +66,7 @@ SRC_URI_append = " \
     file://bp-0002-ACS-Introduce-acs_get_bw_center_chan.patch \
     file://bp-0003-ACS-introduce-acs_adjust_secondary.patch \
     file://bp-0004-ACS-Allow-selecting-a-better-channel-when-using-40-8.patch \
+    file://bp-0005-PEAP-client-Update-Phase-2-authentication-requiremen.patch \
     file://mtk-0001-hostapd-mtk-Add-neighbor-report-and-BSS-Termination-.patch \
     file://mtk-0002-hostapd-mtk-print-sae-groups-by-hostapd-ctrl.patch \
     file://mtk-0003-hostapd-mtk-add-support-for-runtime-set-in-band-disc.patch \

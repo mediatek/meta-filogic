@@ -1,4 +1,4 @@
-From b3d10fbe8c8faec735dc2f083debc7c3c802c043 Mon Sep 17 00:00:00 2001
+From 302b6abf2ae7eb56c7e437d67b2aa49a7d47d4fa Mon Sep 17 00:00:00 2001
 From: Rex Lu <rex.lu@mediatek.com>
 Date: Wed, 29 Nov 2023 15:51:04 +0800
 Subject: [PATCH 2019/2032] mtk: wifi: mt76: mt7996: Refactor rro del ba

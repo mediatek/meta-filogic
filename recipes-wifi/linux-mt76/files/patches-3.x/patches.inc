@@ -4,17 +4,19 @@ SRC_URI_append = " \
     file://0002-mtk-wifi-mt76-connac-use-peer-address-for-station-BM.patch \
     file://0003-mtk-wifi-mt76-mt7996-disable-rx-header-translation-f.patch \
     file://0004-mtk-wifi-mt76-mt7996-set-RCPI-value-in-rate-control-.patch \
-    file://0005-mtk-wifi-mt76-mt7996-enable-ser-query.patch \
-    file://0006-mtk-wifi-mt76-mt7996-Fix-TGax-HE-4.51.1_24G-fail.patch \
-    file://0007-mtk-wifi-mt76-mt7996-add-eagle-default-bin-of-differ.patch \
-    file://0008-mtk-wifi-mt76-mt7996-add-kite-fw-default-bin-for-dif.patch \
-    file://0009-mtk-wifi-mt76-mt7996-ACS-channel-time-too-long-on-du.patch \
-    file://0010-mtk-wifi-mt76-mt7996-Fixed-null-pointer-dereference-.patch \
-    file://0011-mtk-wifi-mt76-add-sanity-check-to-prevent-kernel-cra.patch \
-    file://0012-mtk-wifi-mt76-mt7996-add-firmware-WA-s-coredump.patch \
-    file://0013-mtk-wifi-mt76-mt7996-add-preamble-puncture-support-f.patch \
-    file://0014-mtk-wifi-mt76-mt7996-enable-hw-cso-module.patch \
-    file://0015-mtk-wifi-mt76-mt7996-add-sanity-check-for-NAPI-sched.patch \
+    file://0005-mtk-wifi-mt76-mt7996-enable-hw-cso-module.patch \
+    file://0006-mtk-wifi-mt76-mt7996-fix-non-main-BSS-no-beacon-issu.patch \
+    file://0007-mtk-wifi-mt76-mt7996-initialize-variable-to-avoid-un.patch \
+    file://0008-mtk-wifi-mt76-mt7996-enable-ser-query.patch \
+    file://0009-mtk-wifi-mt76-mt7996-Fix-TGax-HE-4.51.1_24G-fail.patch \
+    file://0010-mtk-wifi-mt76-mt7996-add-eagle-default-bin-of-differ.patch \
+    file://0011-mtk-wifi-mt76-mt7996-add-kite-fw-default-bin-for-dif.patch \
+    file://0012-mtk-wifi-mt76-mt7996-ACS-channel-time-too-long-on-du.patch \
+    file://0013-mtk-wifi-mt76-mt7996-Fixed-null-pointer-dereference-.patch \
+    file://0014-mtk-wifi-mt76-add-sanity-check-to-prevent-kernel-cra.patch \
+    file://0015-mtk-wifi-mt76-mt7996-add-firmware-WA-s-coredump.patch \
+    file://0016-mtk-wifi-mt76-mt7996-add-preamble-puncture-support-f.patch \
+    file://0017-mtk-wifi-mt76-mt7996-add-sanity-check-for-NAPI-sched.patch \
     file://0999-mtk-wifi-mt76-mt7996-for-build-pass.patch \
     file://1000-mtk-wifi-mt76-mt7996-add-debug-tool.patch \
     file://1001-mtk-wifi-mt76-mt7996-support-record-muru-algo-log-wh.patch \
@@ -83,4 +85,10 @@ SRC_URI_append = " \
     file://2019-mtk-wifi-mt76-mt7996-Refactor-rro-del-ba-command-for.patch \
     file://2020-mtk-wifi-mt76-mt7996-get-airtime-and-RSSI-via-MCU-co.patch \
     file://2021-mtk-wifi-mt76-mt7996-add-support-for-WMM-PBC-configu.patch \
+    file://2022-mtk-wifi-mt76-mt7996-eagle-support-extra-option_type.patch \
+    file://2023-mtk-wifi-mt76-mt7996-support-enable-disable-thermal-.patch \
+    file://2024-mtk-wifi-mt76-mt7996-support-thermal-recal-debug-com.patch \
+    file://2025-mtk-wifi-mt76-mt7996-Porting-wifi6-txpower-fix-to-ea.patch \
+    file://2026-mtk-wifi-mt76-mt7996-Add-connac3-csi-feature.patch \
+    file://2027-mtk-wifi-mt76-mt7992-add-support-to-enable-index-FW-.patch \
     "

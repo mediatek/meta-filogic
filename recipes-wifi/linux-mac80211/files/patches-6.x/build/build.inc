@@ -17,4 +17,7 @@ SRC_URI_append = " \
     file://200-Revert-wifi-iwlwifi-Use-generic-thermal_zone_get_tri.patch \
     file://210-revert-split-op.patch \
     file://220-list-don-t-backport-list_count_nodes.patch \
+    file://230-backport_genl_info_userhdr.patch \
+    file://240-backport_genl_split_ops.patch \
+    file://250-backport_iwlwifi_thermal.patch \
     "

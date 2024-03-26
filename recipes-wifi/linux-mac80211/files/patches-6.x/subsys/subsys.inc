@@ -1,6 +1,5 @@
 #patch subsys (come from openwrt/lede/target/linux/mediatek)
 SRC_URI_append = " \
-    file://001-wifi-mac80211-do-not-pass-ap_vlan-vif-pointer-to-dri.patch \
     file://110-mac80211_keep_keys_on_stop_ap.patch \
     file://120-cfg80211_allow_perm_addr_change.patch \
     file://130-disable_auto_vif.patch \
@@ -11,15 +10,17 @@ SRC_URI_append = " \
     file://304-mac80211-minstrel_ht-rework-rate-downgrade-code-and-.patch \
     file://305-mac80211-increase-quantum-for-airtime-scheduler.patch \
     file://310-mac80211-split-mesh-fast-tx-cache-into-local-proxied.patch \
-    file://311-mac80211-fix-mesh-id-corruption-on-32-bit-systems.patch \
     file://312-wifi-cfg80211-annotate-iftype_data-pointer-with-spar.patch \
     file://313-wifi-cfg80211-export-DFS-CAC-time-and-usable-state-h.patch \
     file://314-wifi-mac80211-fix-race-condition-on-enabling-fast-xm.patch \
     file://320-cfg80211-allow-grace-period-for-DFS-available-after-.patch \
+    file://330-mac80211-add-AQL-support-for-broadcast-packets.patch \
+    file://331-wifi-mac80211-only-call-drv_sta_rc_update-for-upload.patch \
+    file://332-wifi-mac80211-check-clear-fast-rx-for-non-4addr-sta-.patch \
     file://400-allow-ibss-mixed.patch \
     file://780-avoid-crashing-missing-band.patch \
     file://782-net-next-1-of-net-pass-the-dst-buffer-to-of_get_mac_address.patch \
-    file://bp-0001-backports-Revert-mac80211-use-the-new-drop-reasons-i.patch \
+    file://bp-0001-backports-add-SKB_DROP_REASON-and-kfree_skb_reason-b.patch \
     file://bp-0002-backports-update-kernel-version-check-for-eth_hw_add.patch \
     file://bp-0003-backports-Revert-cfg80211-allow-grace-period-for-DFS.patch \
     file://mtk-0001-mtk-mac80211-do-not-setup-twt-when-twt-responder-is-.patch \
@@ -55,8 +56,8 @@ SRC_URI_append = " \
     file://mtk-0031-mtk-mac80211-add-per-bss-flag-to-support-vendors-cou.patch \
     file://mtk-0032-mtk-mac80211-set-eht_support-to-false-when-AP-is-not.patch \
     file://mtk-0033-mtk-mac80211-Add-cert-mode-to-disable-ba-timeout.patch \
-    file://mtk-0034-mtk-mac80211-Fix-he_6ghz_oper-NULL-pointer-access.patch \
-    file://mtk-0035-mtk-mac80211-ACS-channel-time-is-reset-by-ch_restore.patch \
-    file://mtk-0036-mtk-mac80211-Fix-SMPS-action-frame-cap-check.patch \
-    file://mtk-0037-mtk-mac80211-Add-CSA-action-frame-tx-when-channel-sw.patch \
+    file://mtk-0034-mtk-mac80211-ACS-channel-time-is-reset-by-ch_restore.patch \
+    file://mtk-0035-mtk-mac80211-Fix-SMPS-action-frame-cap-check.patch \
+    file://mtk-0036-mtk-mac80211-Add-CSA-action-frame-tx-when-channel-sw.patch \
+    file://mtk-0037-mtk-mac80211-fix-AP-mgmt-not-encrypted-in-WDS-mode-w.patch \
     "
