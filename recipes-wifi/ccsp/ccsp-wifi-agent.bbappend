@@ -3,7 +3,6 @@ FILESEXTRAPATHS_append := "${THISDIR}/files:"
 CFLAGS_append += " -DWIFI_HAL_VERSION_3 -DCONFIG_DFS -D_WIFI_AX_SUPPORT_ -D_PLATFORM_TURRIS_ "
 
 SRC_URI_append += " \
-    file://fix_guardInterval_set_issue.patch;apply=no \
     file://Fix-dmcli-can-not-set-password.patch;apply=no \
 "
 
@@ -11,7 +10,6 @@ SRC_URI_append += " \
 do_filogic_patches() {
     cd ${S}
     if [ ! -e filogic_patch_applied ]; then
-        patch  -p1 < ${WORKDIR}/fix_guardInterval_set_issue.patch ${S}/source/TR-181/sbapi/cosa_wifi_apis.c
         patch  -p1 < ${WORKDIR}/Fix-dmcli-can-not-set-password.patch ${S}/source/TR-181/ml/cosa_wifi_dml.c
         touch filogic_patch_applied
     fi
