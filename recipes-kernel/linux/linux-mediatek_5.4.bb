@@ -9,8 +9,8 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/mediatek/wed3:"
 
 KBRANCH ?= "linux-5.4.y"
 
-LINUX_VERSION ?= "5.4.260"
-SRCREV_machine ?= "87e8e7a7aa1f96276252a90373de1d56add31918"
+LINUX_VERSION ?= "5.4.271"
+SRCREV_machine ?= "3fec063b052e395f4920fbc59a8d0bb3c9666d76"
 KMETA = "kernel-meta"
 SRCREV_meta ?= "feeb59687bc0f054af837a5061f8d413ec7c93e9"
 
