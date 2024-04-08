@@ -122,4 +122,5 @@ SRC_URI_append = " \
     file://mtk-0051-hostapd-mtk-add-support-for-enable-disable-single-BS.patch \
     file://mtk-0052-hostapd-mtk-ACS-remove-chan-freq-list-check-when-sca.patch \
     file://mtk-0053-hostapd-mtk-add-no_beacon-vendor-command-for-cert.patch \
+    file://mtk-0054-hostapd-mtk-Add-support-for-gtk-rekeying-in-hostapd-.patch \
     "

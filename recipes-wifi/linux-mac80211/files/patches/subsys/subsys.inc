@@ -86,6 +86,7 @@ SRC_URI_append = " \
     file://mtk-0026-mac80211-mtk-add-support-for-scan-dwell-time-customi.patch \
     file://mtk-0027-mac80211-mtk-fix-AP-mgmt-not-encrypted-in-WDS-mode-w.patch \
     file://mtk-0028-mac80211-mtk-backport-refactor-STA-CSA-paring-flow.patch \
+    file://mtk-0029-mac80211-mtk-send-4-addr-nullfunc-after-drv_event_ca.patch \
     file://mtk-9900-mac80211-mtk-mask-kernel-version-limitation-and-fill.patch \
     file://mtk-9901-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-id.patch \
     file://mtk-9902-mac80211-mtk-add-support-for-letting-drivers-registe.patch \

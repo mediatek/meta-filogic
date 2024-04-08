@@ -67,8 +67,8 @@ SRC_URI_append = " \
     file://1049-wifi-mt76-mt7915-add-background-radar-hw-cap-check.patch \
     file://1050-wifi-mt76-mt7915-remove-unnecessary-register-setting.patch \
     file://1051-wifi-mt76-mt7915-add-foolproof-mechanism-for-ZWDFS-d.patch \
-    file://1054-wifi-mt76-mt7915-assign-DEAUTH-to-ALTX-queue-for.patch \
-    file://1055-wifi-mt76-mt7915-set-channel-after-sta-is-associated.patch \
+    file://1052-mtk-wifi-mt76-mt7915-assign-DEAUTH-to-ALTX-queue-for.patch \
+    file://1053-wifi-mt76-mt7915-set-channel-after-sta-is-associated.patch \
     file://2000-wifi-mt76-mt7915-wed-add-wed-tx-support.patch \
     file://2001-wifi-mt76-mt7915-wed-add-wds-support-when-wed-is-ena.patch \
     file://2002-wifi-mt76-mt7915-wed-add-fill-receive-path-to-report.patch \
@@ -82,6 +82,8 @@ SRC_URI_append = " \
     file://2010-wifi-mt76-mt7915-add-error-message-when-driver-recei.patch \
     file://2011-wifi-mt76-mt7915-wed-change-wed-token-init-size-to-a.patch \
     file://2012-wifi-mt76-mt7915-wed-add-per-bss-statistic-info.patch \
+    file://2013-wifi-mt76-add-debugfs-for-tx-drop-counters.patch \
+    file://2014-wifi-mt76-add-debugfs-for-rx-drop-counters.patch \
     file://2999-wifi-mt76-mt7915-support-backaward-compatiable.patch \
     file://9999-mt76-revert-for-backports-5.15-wireless-stack.patch \
     "
