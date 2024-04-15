@@ -14,6 +14,8 @@ SRC_URI_append = " \
     file://0012-wifi-mt76-add-sanity-check-to-prevent-kernel-crash.patch \
     file://0013-wifi-mt76-mt7915-limit-per-band-token-count.patch \
     file://0014-wifi-mt76-mt7915-update-power-on-sequence.patch \
+    file://0015-wifi-mt76-mt7915-add-support-for-IEEE-802.11-fragmen.patch \
+    file://0016-wifi-mt76-mt7915-fix-rx-filter-setting-for-bfee-func.patch \
     file://0999-wifi-mt76-mt7915-build-pass-for-Linux-Kernel-5.4-fix.patch \
     file://1000-wifi-mt76-mt7915-add-mtk-internal-debug-tools-for-mt.patch \
     file://1001-wifi-mt76-mt7915-csi-implement-csi-support.patch \
