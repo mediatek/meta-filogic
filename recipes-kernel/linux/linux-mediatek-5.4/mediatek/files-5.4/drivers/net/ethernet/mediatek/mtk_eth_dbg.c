@@ -885,8 +885,10 @@ int tx_ring_read(struct seq_file *seq, void *v)
 	int i = 0;
 
 	seq_printf(seq, "free count = %d\n", (int)atomic_read(&ring->free_count));
-	seq_printf(seq, "cpu next free: %d\n", (int)(ring->next_free - ring->dma));
-	seq_printf(seq, "cpu last free: %d\n", (int)(ring->last_free - ring->dma));
+	seq_printf(seq, "cpu next free: %d\n",
+		   (int)(ring->next_free - ring->dma) / eth->soc->txrx.txd_size);
+	seq_printf(seq, "cpu last free: %d\n",
+		   (int)(ring->last_free - ring->dma) / eth->soc->txrx.txd_size);
 	for (i = 0; i < eth->soc->txrx.tx_dma_size; i++) {
 		dma_addr_t tmp = ring->phys +
 				 i * (dma_addr_t)eth->soc->txrx.txd_size;
@@ -1155,7 +1157,16 @@ int dbg_regs_read(struct seq_file *seq, void *v)
 		seq_printf(seq, "| MAC_P3_FSM	: %08x |\n",
 			   mtk_r32(eth, MTK_MAC_FSM(2)));
 	}
-
+	if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V3)) {
+		seq_printf(seq, "| XMAC_P1_MCR	: %08x |\n",
+			   mtk_r32(eth, MTK_XMAC_MCR(1)));
+		seq_printf(seq, "| XMAC_P2_MCR	: %08x |\n",
+			   mtk_r32(eth, MTK_XMAC_MCR(2)));
+		seq_printf(seq, "| XMAC_P1_STS	: %08x |\n",
+			   mtk_r32(eth, MTK_XGMAC_STS(1)));
+		seq_printf(seq, "| XMAC_P2_STS	: %08x |\n",
+			   mtk_r32(eth, MTK_XGMAC_STS(2)));
+	}
 	if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2) ||
 	    MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V3)) {
 		seq_printf(seq, "| FE_CDM1_FSM	: %08x |\n",
