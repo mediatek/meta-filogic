@@ -136,6 +136,11 @@ get_band_defaults() {
 		[ -n "$band" ] || continue
 		[ -n "$mode_band" -a "$band" = "6g" ] && return
 
+		# hardcode for default band selection in MLO codebase
+		[ "$phy" = "phy0" -a "$band" != "2g" ] && continue
+		[ "$phy" = "phy1" -a "$band" != "5g" ] && continue
+		[ "$phy" = "phy2" -a "$band" != "6g" ] && continue
+
 		mode_band="$band"
 		channel="$chan"
 		htmode="$mode"

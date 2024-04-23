@@ -16,8 +16,10 @@ SRC_URI = "http://www.kernel.org/pub/software/network/iw/${BP}.tar.xz \
 
 SRC_URI[sha256sum] = "f167bbe947dd53bb9ebc0c1dcef5db6ad73ac1d6084f2c6f9376c5c360cc4d4e"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/patches:"
-require patches/patches.inc
+PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'wifi_eht', 'patches-mlo', 'patches', d)}"
+
+FILESEXTRAPATHS_prepend := "${THISDIR}/${PATCH_SRC}:"
+require ${PATCH_SRC}/patches.inc
 
 SRC_URI_remove = "${@bb.utils.contains('DISTRO_FEATURES', 'wifi_eht', 'file://001-nl80211_h_sync.patch', '', d)}"
 SRC_URI_remove = "${@bb.utils.contains('DISTRO_FEATURES', 'wifi_eht', 'file://120-antenna_gain.patch', '', d)}"

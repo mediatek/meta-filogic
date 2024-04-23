@@ -10,7 +10,7 @@ DEPENDS = "dbus libnl-tiny ubus ucode udebug"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches-${PV}:"
 
-SRCREV ?= "e5ccbfc69ecf297590341ae8b461edba9d8e964c"
+SRCREV ?= "07c9f183ea744ac04585fb6dd10220c75a5e2e74"
 SRC_URI = "git://w1.fi/hostap.git;protocol=https;branch=main \
            file://wpa-supplicant.sh \
            file://wpa_supplicant.conf \
@@ -32,14 +32,6 @@ PACKAGECONFIG[openssl] = ",,openssl"
 CVE_PRODUCT = "wpa_supplicant"
 
 EXTRA_OEMAKE = "'LIBDIR=${libdir}' 'INCDIR=${includedir}' 'BINDIR=${sbindir}'"
-
-do_unpack_append() {
-    bb.build.exec_func('do_copy_openwrt_src', d)
-}
-
-do_copy_openwrt_src() {
-    cp -Rfp ${WORKDIR}/src-${PV}/* ${S}/
-}
 
 do_filogic_patches() {
     cd ${S}

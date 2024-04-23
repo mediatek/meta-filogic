@@ -12,7 +12,7 @@ RDEPENDS_${PN} += "gawk ucode udebug"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches-${PV}:"
 
-SRCREV ?= "e5ccbfc69ecf297590341ae8b461edba9d8e964c"
+SRCREV ?= "07c9f183ea744ac04585fb6dd10220c75a5e2e74"
 SRC_URI = " \
     git://w1.fi/hostap.git;protocol=https;branch=main \
     file://hostapd-full.config \
@@ -22,7 +22,7 @@ SRC_URI = " \
     file://hostapd-5G-7915.conf \
     file://hostapd-5G-7916.conf \
     file://hostapd.service \
-    file://hostapd-init.sh \
+    file://hostapd-init-EHT.sh \
     file://mac80211-EHT.sh \
     file://init-uci-config.service \
     file://hostapd.uc \
@@ -44,13 +44,7 @@ SYSTEMD_AUTO_ENABLE_${PN} = "enable"
 SYSTEMD_SERVICE_${PN} = "hostapd.service"
 SYSTEMD_SERVICE_${PN} += " init-uci-config.service"
 INSANE_SKIP_${PN} += "file-rdeps"
-do_unpack_append() {
-    bb.build.exec_func('do_copy_openwrt_src', d)
-}
 
-do_copy_openwrt_src() {
-    cp -Rfp ${WORKDIR}/src-${PV}/* ${S}/
-}
 
 do_configure_append() {
     install -m 0644 ${WORKDIR}/hostapd-full.config ${B}/.config
@@ -76,6 +70,7 @@ do_configure_append() {
     echo "CONFIG_UCODE=y" >> ${B}/.config
     echo "CONFIG_LIBNL20=y" >> ${B}/.config
     echo "CONFIG_LIBNL_TINY=y" >> ${B}/.config
+    echo "CONFIG_AFC=y" >> ${B}/.config
 }
 
 do_filogic_patches() {
@@ -104,7 +99,7 @@ do_install() {
          install -m 0644 ${WORKDIR}/hostapd-5G-7915.conf ${D}${sysconfdir}
          install -m 0644 ${WORKDIR}/hostapd-5G-7916.conf ${D}${sysconfdir}
          install -m 0644 ${WORKDIR}/hostapd.service ${D}${systemd_unitdir}/system
-         install -m 0755 ${WORKDIR}/hostapd-init.sh ${D}${base_libdir}/rdk
+         install -m 0755 ${WORKDIR}/hostapd-init-EHT.sh ${D}${base_libdir}/rdk/hostapd-init.sh
          install -m 0644 ${WORKDIR}/init-uci-config.service ${D}${systemd_unitdir}/system
          install -m 0755 ${WORKDIR}/mac80211-EHT.sh ${D}${sbindir}/mac80211.sh
          install -m 0755 ${WORKDIR}/hostapd.uc ${D}${datadir}/hostap
