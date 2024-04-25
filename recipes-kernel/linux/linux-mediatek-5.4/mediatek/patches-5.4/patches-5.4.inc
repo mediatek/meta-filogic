@@ -217,6 +217,7 @@ SRC_URI_append = " \
     file://999-2739-drivers_net_phy_add_an8855_gsw.patch \
     file://999-2739-net-phy-aquantia-add-CUX3410.patch \
     file://999-2739-net_dsa_add_tag_arht.patch \
+    file://999-2740-crypto-add-eip197-aes-ctr-support.patch \
     file://999-2800-misc-add-mtk-platform.patch \
     file://999-2850-fips-140-3-compliance.patch \
     file://999-2900-dts-mt7622-enable-new-mtk-snand-for-ubi.patch \
