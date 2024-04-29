@@ -103,4 +103,5 @@ SRC_URI_append = " \
     file://0102-mtk-hostapd-Refactor-static-PP-and-mld-support.patch \
     file://0103-mtk-hostapd-make-sure-all-links-are-set-before-enabl.patch \
     file://0104-mtk-hostapd-ucode-add-is_mld_finished-check.patch \
+    file://0105-mtk-hostapd-free-station-when-hapd-deinit.patch \
     "

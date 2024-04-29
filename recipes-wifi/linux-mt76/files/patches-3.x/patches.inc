@@ -116,4 +116,5 @@ SRC_URI_append = " \
     file://0114-mtk-wifi-mt76-mt7996-add-beacon_int_min_gcd-to-suppo.patch \
     file://0115-mtk-wifi-mt76-mt7996-Add-connac3-csi-feature.patch \
     file://0116-mtk-wifi-mt76-mt7996-add-more-debug-info-for-MLO.patch \
+    file://0117-mtk-wifi-mt76-mt7996-remain-multiple-wiphy-model-for.patch \
     "

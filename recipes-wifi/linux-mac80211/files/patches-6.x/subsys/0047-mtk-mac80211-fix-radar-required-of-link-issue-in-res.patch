@@ -1,4 +1,4 @@
-From 588692667ae3d8a198760c19d335d33b0dca6ba0 Mon Sep 17 00:00:00 2001
+From f5a7e57bca203a7d063faf0b9b54b4da8c42f884 Mon Sep 17 00:00:00 2001
 From: StanleyYP Wang <StanleyYP.Wang@mediatek.com>
 Date: Thu, 1 Feb 2024 17:46:49 +0800
 Subject: [PATCH 47/61] mtk: mac80211: fix radar required of link issue in
@@ -9,9 +9,7 @@ ieee80211_link_use_reserved_assign & ieee80211_link_use_reserved_reassign
 This will lead to DFS RDD init incomplete (RDD_CAC_START, RDD_CAC_END &
 RDD_DET_MODE is not set to fw)
 
-CR-Id: WCNCR00274293
 Signed-off-by: StanleyYP Wang <StanleyYP.Wang@mediatek.com>
-Change-Id: I44eeb32be5ff42202639f94418d079930369fde9
 ---
  net/mac80211/chan.c | 2 ++
  1 file changed, 2 insertions(+)
@@ -37,5 +35,5 @@ index 8043d1d..ac22524 100644
  	if (err) {
  		if (ieee80211_chanctx_refcount(local, new_ctx) == 0)
 -- 
-2.39.2
+2.18.0
 
