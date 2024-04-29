@@ -33,6 +33,7 @@ S = "${WORKDIR}/git/tools"
 PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES','wifi_eht','${WORKDIR}/patches-3.x','${WORKDIR}/patches',d)}"
 
 SRC_URI += "file://${@bb.utils.contains('DISTRO_FEATURES','wifi_eht','patches-3.x/','patches/',d)};apply=no"
+SRC_URI += "${@bb.utils.contains('DISTRO_FEATURES','wifi_eht','file://0118-fixup-wifi-mt76-mt7996-temp-support-for-single-wiphy.patch;subdir=${PATCH_SRC};apply=no','',d)}"
 
 do_mtk_patches() {
 	cd ${S}/../

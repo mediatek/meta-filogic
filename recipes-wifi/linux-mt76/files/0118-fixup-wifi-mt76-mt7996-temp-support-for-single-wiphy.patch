@@ -1,0 +1,27 @@
+From 74b58da2fc1d7f264300417939702f068d8c4f27 Mon Sep 17 00:00:00 2001
+From: Shayne Chen <shayne.chen@mediatek.com>
+Date: Mon, 29 Apr 2024 15:59:44 +0800
+Subject: [PATCH] fixup! wifi: mt76: mt7996: temp support for single wiphy
+
+Change-Id: Idb4d417064826dedca6b64873d0d1a7dc6525c0b
+---
+ mt7996/main.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/mt7996/main.c b/mt7996/main.c
+index ea230921..57786413 100644
+--- a/mt7996/main.c
++++ b/mt7996/main.c
+@@ -466,8 +466,7 @@ static int mt7996_add_interface(struct ieee80211_hw *hw,
+ 	/* TODO: temporaily set this to prevent some crashes */
+ 	mvif->deflink.phy = phy;
+ 
+-	if (vif->type == NL80211_IFTYPE_STATION)
+-		ret = mt7996_add_bss_conf(phy, vif, &vif->bss_conf);
++	ret = mt7996_add_bss_conf(phy, vif, &vif->bss_conf);
+ 	mutex_unlock(&dev->mt76.mutex);
+ 
+ 	return ret;
+-- 
+2.18.0
+
