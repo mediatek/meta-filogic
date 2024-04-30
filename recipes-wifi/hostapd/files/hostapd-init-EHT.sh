@@ -1,5 +1,131 @@
 #!/bin/sh
 
+mac80211_add_capabilities() {
+	local __var="$1"; shift
+	local __mask="$1"; shift
+	local __out= oifs
+
+	oifs="$IFS"
+	IFS=:
+	for capab in "$@"; do
+		set -- $capab
+
+		[ "$(($4))" -gt 0 ] || continue
+		[ "$(($__mask & $2))" -eq "$((${3:-$2}))" ] || continue
+		__out="$__out[$1]"
+	done
+	IFS="$oifs"
+
+	export -n -- "$__var=$__out"
+}
+
+gen_vht_cap() {
+    rxldpc=1
+    short_gi_80=1
+    short_gi_160=1
+    tx_stbc_2by1=1
+    su_beamformer=1
+    su_beamformee=1
+    mu_beamformer=1
+    mu_beamformee=1
+    vht_txop_ps=1
+    htc_vht=1
+    beamformee_antennas=5
+    beamformer_antennas=4
+    rx_antenna_pattern=1
+    tx_antenna_pattern=1
+    vht_max_a_mpdu_len_exp=7
+    vht_max_mpdu=11454
+    rx_stbc=4
+    vht_link_adapt=3
+    vht160=2
+
+    vht_cap=0
+    for cap in $(iw phy phy0 info | awk -F "[()]" '/VHT Capabilities/ { print $2 }'); do
+        vht_cap="$(($vht_cap | $cap))"
+    done
+
+    cap_rx_stbc=$((($vht_cap >> 8) & 7))
+    [ "$rx_stbc" -lt "$cap_rx_stbc" ] && cap_rx_stbc="$rx_stbc"
+    vht_cap="$(( ($vht_cap & ~(0x700)) | ($cap_rx_stbc << 8) ))"
+
+    mac80211_add_capabilities vht_capab $vht_cap \
+        RXLDPC:0x10::$rxldpc \
+        SHORT-GI-80:0x20::$short_gi_80 \
+        SHORT-GI-160:0x40::$short_gi_160 \
+        TX-STBC-2BY1:0x80::$tx_stbc_2by1 \
+        SU-BEAMFORMER:0x800::$su_beamformer \
+        SU-BEAMFORMEE:0x1000::$su_beamformee \
+        MU-BEAMFORMER:0x80000::$mu_beamformer \
+        MU-BEAMFORMEE:0x100000::$mu_beamformee \
+        VHT-TXOP-PS:0x200000::$vht_txop_ps \
+        HTC-VHT:0x400000::$htc_vht \
+        RX-ANTENNA-PATTERN:0x10000000::$rx_antenna_pattern \
+        TX-ANTENNA-PATTERN:0x20000000::$tx_antenna_pattern \
+        RX-STBC-1:0x700:0x100:1 \
+        RX-STBC-12:0x700:0x200:1 \
+        RX-STBC-123:0x700:0x300:1 \
+        RX-STBC-1234:0x700:0x400:1 \
+
+    [ "$(($vht_cap & 0x800))" -gt 0 -a "$su_beamformer" -gt 0 ] && {
+        cap_ant="$(( ( ($vht_cap >> 16) & 3 ) + 1 ))"
+        [ "$cap_ant" -gt "$beamformer_antennas" ] && cap_ant="$beamformer_antennas"
+        [ "$cap_ant" -gt 1 ] && vht_capab="$vht_capab[SOUNDING-DIMENSION-$cap_ant]"
+    }
+
+    [ "$(($vht_cap & 0x1000))" -gt 0 -a "$su_beamformee" -gt 0 ] && {
+        cap_ant="$(( ( ($vht_cap >> 13) & 7 ) + 1 ))"
+        [ "$cap_ant" -gt "$beamformee_antennas" ] && cap_ant="$beamformee_antennas"
+        [ "$cap_ant" -gt 1 ] && vht_capab="$vht_capab[BF-ANTENNA-$cap_ant]"
+    }
+    # supported Channel widths
+    vht160_hw=0
+    [ "$(($vht_cap & 12))" -eq 4 -a 1 -le "$vht160" ] && \
+        vht160_hw=1
+    [ "$(($vht_cap & 12))" -eq 8 -a 2 -le "$vht160" ] && \
+        vht160_hw=2
+    [ "$vht160_hw" = 1 ] && vht_capab="$vht_capab[VHT160]"
+    [ "$vht160_hw" = 2 ] && vht_capab="$vht_capab[VHT160-80PLUS80]"
+
+    # maximum MPDU length
+    vht_max_mpdu_hw=3895
+    [ "$(($vht_cap & 3))" -ge 1 -a 7991 -le "$vht_max_mpdu" ] && \
+        vht_max_mpdu_hw=7991
+    [ "$(($vht_cap & 3))" -ge 2 -a 11454 -le "$vht_max_mpdu" ] && \
+        vht_max_mpdu_hw=11454
+    [ "$vht_max_mpdu_hw" != 3895 ] && \
+        vht_capab="$vht_capab[MAX-MPDU-$vht_max_mpdu_hw]"
+
+    # maximum A-MPDU length exponent
+    vht_max_a_mpdu_len_exp_hw=0
+    [ "$(($vht_cap & 58720256))" -ge 8388608 -a 1 -le "$vht_max_a_mpdu_len_exp" ] && \
+        vht_max_a_mpdu_len_exp_hw=1
+    [ "$(($vht_cap & 58720256))" -ge 16777216 -a 2 -le "$vht_max_a_mpdu_len_exp" ] && \
+        vht_max_a_mpdu_len_exp_hw=2
+    [ "$(($vht_cap & 58720256))" -ge 25165824 -a 3 -le "$vht_max_a_mpdu_len_exp" ] && \
+        vht_max_a_mpdu_len_exp_hw=3
+    [ "$(($vht_cap & 58720256))" -ge 33554432 -a 4 -le "$vht_max_a_mpdu_len_exp" ] && \
+        vht_max_a_mpdu_len_exp_hw=4
+    [ "$(($vht_cap & 58720256))" -ge 41943040 -a 5 -le "$vht_max_a_mpdu_len_exp" ] && \
+        vht_max_a_mpdu_len_exp_hw=5
+    [ "$(($vht_cap & 58720256))" -ge 50331648 -a 6 -le "$vht_max_a_mpdu_len_exp" ] && \
+        vht_max_a_mpdu_len_exp_hw=6
+    [ "$(($vht_cap & 58720256))" -ge 58720256 -a 7 -le "$vht_max_a_mpdu_len_exp" ] && \
+        vht_max_a_mpdu_len_exp_hw=7
+    vht_capab="$vht_capab[MAX-A-MPDU-LEN-EXP$vht_max_a_mpdu_len_exp_hw]"
+
+    # whether or not the STA supports link adaptation using VHT variant
+    vht_link_adapt_hw=0
+    [ "$(($vht_cap & 201326592))" -ge 134217728 -a 2 -le "$vht_link_adapt" ] && \
+        vht_link_adapt_hw=2
+    [ "$(($vht_cap & 201326592))" -ge 201326592 -a 3 -le "$vht_link_adapt" ] && \
+        vht_link_adapt_hw=3
+    [ "$vht_link_adapt_hw" != 0 ] && \
+        vht_capab="$vht_capab[VHT-LINK-ADAPT-$vht_link_adapt_hw]"
+
+    echo vht_capab=$vht_capab >> /etc/hostapd-5G.conf
+}
+
 create_hostapdConf() {
 	devidx=0
 	phyidx=0
@@ -91,6 +217,7 @@ create_hostapdConf() {
             elif [ $chip == "0x7915" ]; then
                 cp -f /etc/hostapd-5G-7915.conf /nvram/hostapd"$devidx".conf
             else
+                gen_vht_cap
                 cp -f /etc/hostapd-5G.conf /nvram/hostapd"$devidx".conf
             fi                 
         fi
