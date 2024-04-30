@@ -8,7 +8,7 @@ index b71c90a..d43ebe8 100755
  
 -. /lib/functions.sh
 +#. /lib/functions.sh
-+board_name=`cat /proc/device-tree/model`
++board_name=`cat /proc/device-tree/compatible`
  
  RPS_IF_LIST=""
  NUM_WIFI_CARD=0
