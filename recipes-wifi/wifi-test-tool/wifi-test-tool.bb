@@ -18,6 +18,7 @@ SRC_URI = " \
 S = "${WORKDIR}/git/src"
 
 CFLAGS_append = " -DWIFI_HAL_VERSION_3 -DMTK_UCI_SUPPORT -luci "
+CFLAGS_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'wifi_eht', '-DSINGLE_WIPHY_SUPPORT', '', d)}"
 CFLAGS_append = " -I=${includedir}/ccsp "
 do_install_append() {
     install -d ${D}${sbindir}

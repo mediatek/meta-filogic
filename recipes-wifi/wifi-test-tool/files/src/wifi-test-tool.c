@@ -5,6 +5,12 @@
 #include <uci.h>
 #include "wifi-test-tool.h"
 
+#ifdef SINGLE_WIPHY_SUPPORT
+#define single_wiphy TRUE
+#else
+#define single_wiphy FALSE
+#endif
+
 static int mac_addr_aton(unsigned char *mac_addr, char *arg)
 {
     sscanf(arg, "%02hhx:%02hhx:%02hhx:%02hhx:%02hhx:%02hhx", &mac_addr[0], &mac_addr[1], &mac_addr[2], &mac_addr[3], &mac_addr[4], &mac_addr[5]);
@@ -58,6 +64,10 @@ int phy_index_to_radio(int phyIndex)
     char cmd[128] = {0};
     char buf[64] = {0};
     int radioIndex = 0;
+
+    if (single_wiphy)
+        return phyIndex;
+
     snprintf(cmd, sizeof(cmd), "ls /tmp | grep phy%d | cut -d '-' -f2 | tr -d '\n'", phyIndex);
     _syscmd(cmd, buf, sizeof(buf));
 
@@ -514,7 +524,7 @@ void set_ap_param(wifi_intf_param ap_param , wifi_vap_info_map_t *map)
     vap_info = map->vap_array[vap_index_in_map];
     vap_info.u.bss_info.enabled = TRUE;
     phy_index = radio_index_to_phy(vap_info.radio_index);
-    if (set_interface_bssid(phy_index, ap_param.mac_offset, &vap_info.u.bss_info.bssid) == -1) {
+    if (set_interface_bssid(single_wiphy ? vap_info.radio_index : phy_index, ap_param.mac_offset, &vap_info.u.bss_info.bssid) == -1) {
         fprintf(stderr, "Get mac address failed.\n");
         return;
     }
@@ -628,7 +638,7 @@ void set_sta_param(wifi_intf_param sta_param)
     sta = calloc(1, sizeof(wifi_sta_network_t));
 
     phy_index = radio_index_to_phy(sta_param.radio_index);
-    set_interface_bssid(phy_index, sta_param.mac_offset, &sta_mac);
+    set_interface_bssid(single_wiphy ? sta_param.radio_index : phy_index, sta_param.mac_offset, &sta_mac);
     mac_addr_ntoa(sta_mac_str, sta_mac);
     snprintf(sta->ssid, 31, "%s", sta_param.ssid);
     sta->ssid[31] = '\0';
@@ -759,7 +769,6 @@ void show_ap_param(wifi_intf_param ap_param , wifi_vap_info_map_t *map)
     int ret = 0;
     int filter_mode = 0;
     int vap_index_in_map = 0;
-    int phy_index = 0;
     wifi_vap_info_t vap_info = {0};
     BOOL radio_enable = FALSE;
     BOOL wps_state = FALSE;
@@ -788,7 +797,6 @@ void show_ap_param(wifi_intf_param ap_param , wifi_vap_info_map_t *map)
 
     vap_info = map->vap_array[vap_index_in_map];
     vap_info.u.bss_info.enabled = TRUE;
-    phy_index = radio_index_to_phy(vap_info.radio_index);
 
     // SSID
     printf("wifi%d ssid: %s\n", ap_param.ap_index, vap_info.u.bss_info.ssid);
