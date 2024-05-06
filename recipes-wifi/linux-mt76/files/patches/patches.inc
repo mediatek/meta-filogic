@@ -18,6 +18,7 @@ SRC_URI_append = " \
     file://0016-wifi-mt76-mt7915-add-dummy-HW-offload-of-IEEE-802.11.patch \
     file://0016-wifi-mt76-mt7915-fix-rx-filter-setting-for-bfee-func.patch \
     file://0017-wifi-mt76-mt7915-fix-inconsistent-QoS-mapping-betwee.patch \
+    file://0018-wifi-mt76-mt7915-adjust-rx-filter.patch \
     file://0999-wifi-mt76-mt7915-build-pass-for-Linux-Kernel-5.4-fix.patch \
     file://1000-wifi-mt76-mt7915-add-mtk-internal-debug-tools-for-mt.patch \
     file://1001-wifi-mt76-mt7915-csi-implement-csi-support.patch \
