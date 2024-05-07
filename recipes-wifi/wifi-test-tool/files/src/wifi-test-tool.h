@@ -69,6 +69,7 @@ typedef struct {
     bool wps_pushbutton;
     char macfilter[10];
     char maclist[512];
+    char mac_address[20];
 } wifi_intf_param;
 
 struct params

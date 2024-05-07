@@ -211,6 +211,11 @@ void set_macfilter(wifi_intf_param *intf_param, char *macfilter)
     strncpy(intf_param->macfilter, macfilter, 10);
 }
 
+void set_macaddr(wifi_intf_param *intf_param, char *macaddr)
+{
+    strncpy(intf_param->mac_address, macaddr, 20);
+}
+
 void set_maclist(wifi_intf_param *intf_param, char *maclist)
 {
     strncpy(intf_param->maclist, maclist, 512);
@@ -332,7 +337,7 @@ void set_hidden(wifi_intf_param *intf_param, char *hidden)
     intf_param->hidden = strtol(hidden, NULL, 10);
 }
 
-int set_interface_bssid(int phy_index, int offset, mac_address_t *bssid)
+int set_interface_bssid(int phy_index, int offset, mac_address_t *bssid, char *setmacaddr)
 {
     FILE *f;
     char mac_file[64] = {0};
@@ -345,7 +350,10 @@ int set_interface_bssid(int phy_index, int offset, mac_address_t *bssid)
     fgets(mac_address, 20, f);
     fclose(f);
 
-    mac_addr_aton(&(*bssid)[0], mac_address);
+    if (strlen(setmacaddr) > 0)
+        mac_addr_aton(&(*bssid)[0], setmacaddr);
+    else
+        mac_addr_aton(&(*bssid)[0], mac_address);
     (*bssid)[0] += offset*2;
     return 0;
 }
@@ -524,7 +532,7 @@ void set_ap_param(wifi_intf_param ap_param , wifi_vap_info_map_t *map)
     vap_info = map->vap_array[vap_index_in_map];
     vap_info.u.bss_info.enabled = TRUE;
     phy_index = radio_index_to_phy(vap_info.radio_index);
-    if (set_interface_bssid(single_wiphy ? vap_info.radio_index : phy_index, ap_param.mac_offset, &vap_info.u.bss_info.bssid) == -1) {
+    if (set_interface_bssid(single_wiphy ? vap_info.radio_index : phy_index, ap_param.mac_offset, &vap_info.u.bss_info.bssid, ap_param.mac_address) == -1) {
         fprintf(stderr, "Get mac address failed.\n");
         return;
     }
@@ -638,7 +646,7 @@ void set_sta_param(wifi_intf_param sta_param)
     sta = calloc(1, sizeof(wifi_sta_network_t));
 
     phy_index = radio_index_to_phy(sta_param.radio_index);
-    set_interface_bssid(single_wiphy ? sta_param.radio_index : phy_index, sta_param.mac_offset, &sta_mac);
+    set_interface_bssid(single_wiphy ? sta_param.radio_index : phy_index, sta_param.mac_offset, &sta_mac, sta_param.mac_address);
     mac_addr_ntoa(sta_mac_str, sta_mac);
     snprintf(sta->ssid, 31, "%s", sta_param.ssid);
     sta->ssid[31] = '\0';
@@ -992,6 +1000,8 @@ int apply_uci_config ()
                     set_wps_state(&intf_param, op->v.string);
                 }else if (strcmp(op->e.name, "wps_pushbutton") == 0){
                     set_wps_pushbutton(&intf_param, op->v.string);
+                }else if (strcmp(op->e.name, "macaddr") == 0){
+                    set_macaddr(&intf_param, op->v.string);
                 }else{
                     fprintf(stderr, "[%s %s not set!]\n", op->e.name, op->v.string);
                 }
