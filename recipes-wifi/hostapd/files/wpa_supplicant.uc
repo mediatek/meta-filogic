@@ -320,7 +320,6 @@ return {
 		let phy = wpas.data.iface_phy[ifname];
 		let ret = iface.get_valid_links();
 		let link_id = 0, valid_links = ret.valid_links;
-
 		if (!phy) {
 			wpas.printf(`no PHY for ifname ${ifname}`);
 			return;
