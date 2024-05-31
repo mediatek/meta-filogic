@@ -299,6 +299,7 @@ function iface_channel_switch(phy, ifname, iface, info)
 		frequency: info.frequency,
 		ch_width: info.ch_width,
 		bw320_offset: info.bw320_offset,
+		band_idx: info.band_idx,
 		sec_chan_offset: info.sec_chan_offset,
 	};
 	ubus.call("hostapd", "apsta_state", msg);
@@ -361,7 +362,7 @@ return {
 			return;
 		}
 
-		if (ev == "CH_SWITCH_STARTED")
+		if (ev == "CH_SWITCH_STARTED" || ev == "LINK_CH_SWITCH_STARTED")
 			iface_channel_switch(phy, ifname, iface, info);
 	}
 };

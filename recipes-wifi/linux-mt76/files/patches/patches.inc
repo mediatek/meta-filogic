@@ -16,9 +16,11 @@ SRC_URI_append = " \
     file://0014-wifi-mt76-mt7915-update-power-on-sequence.patch \
     file://0015-wifi-mt76-mt7915-add-support-for-IEEE-802.11-fragmen.patch \
     file://0016-wifi-mt76-mt7915-add-dummy-HW-offload-of-IEEE-802.11.patch \
-    file://0016-wifi-mt76-mt7915-fix-rx-filter-setting-for-bfee-func.patch \
-    file://0017-wifi-mt76-mt7915-fix-inconsistent-QoS-mapping-betwee.patch \
-    file://0018-wifi-mt76-mt7915-adjust-rx-filter.patch \
+    file://0017-wifi-mt76-mt7915-fix-rx-filter-setting-for-bfee-func.patch \
+    file://0018-wifi-mt76-mt7915-fix-inconsistent-QoS-mapping-betwee.patch \
+    file://0019-wifi-mt76-mt7915-adjust-rx-filter.patch \
+    file://0020-wifi-mt76-mt7915-add-additional-chain-signal-info-to.patch \
+    file://0021-wifi-mt76-mt7915-remove-unnecessary-register-setting.patch \
     file://0999-wifi-mt76-mt7915-build-pass-for-Linux-Kernel-5.4-fix.patch \
     file://1000-wifi-mt76-mt7915-add-mtk-internal-debug-tools-for-mt.patch \
     file://1001-wifi-mt76-mt7915-csi-implement-csi-support.patch \
@@ -58,22 +60,20 @@ SRC_URI_append = " \
     file://1035-wifi-mt76-update-debugfs-knob-for-tx-tokens.patch \
     file://1036-wifi-mt76-mt7915-support-enable-disable-spatial-reus.patch \
     file://1037-wifi-mt76-mt7915-add-debug-log-for-SER-flow.patch \
-    file://1038-wifi-mt76-mt7915-add-additional-chain-signal-info-to.patch \
-    file://1039-wifi-mt76-mt7915-add-debuffs-knob-for-protect-thresh.patch \
-    file://1040-wifi-mt76-mt7915-add-mt7981-efuse-variants-support.patch \
-    file://1041-wifi-mt76-mt7915-support-scs-feature.patch \
-    file://1042-wifi-mt76-mt7915-support-thermal-recal-debug-commnad.patch \
-    file://1043-wifi-mt76-mt7915-Add-support-for-lpi-and-duplicate-m.patch \
-    file://1044-wifi-mt76-testmode-add-cheetah-support.patch \
-    file://1045-wifi-mt76-mt7915-add-no_beacon-vendor-command-for-ce.patch \
-    file://1046-wifi-mt76-mt7915-support-spatial-reuse-debug-command.patch \
-    file://1047-wifi-mt76-try-more-times-when-send-message-timeout.patch \
-    file://1048-wifi-mt76-mt7915-add-SER-overlap-handle.patch \
-    file://1049-wifi-mt76-mt7915-add-background-radar-hw-cap-check.patch \
-    file://1050-wifi-mt76-mt7915-remove-unnecessary-register-setting.patch \
-    file://1051-wifi-mt76-mt7915-add-foolproof-mechanism-for-ZWDFS-d.patch \
-    file://1052-mtk-wifi-mt76-mt7915-assign-DEAUTH-to-ALTX-queue-for.patch \
-    file://1053-wifi-mt76-mt7915-set-channel-after-sta-is-associated.patch \
+    file://1038-wifi-mt76-mt7915-add-debuffs-knob-for-protect-thresh.patch \
+    file://1039-wifi-mt76-mt7915-add-mt7981-efuse-variants-support.patch \
+    file://1040-wifi-mt76-mt7915-support-scs-feature.patch \
+    file://1041-wifi-mt76-mt7915-support-thermal-recal-debug-commnad.patch \
+    file://1042-wifi-mt76-mt7915-Add-support-for-lpi-and-duplicate-m.patch \
+    file://1043-wifi-mt76-testmode-add-cheetah-support.patch \
+    file://1044-wifi-mt76-mt7915-add-no_beacon-vendor-command-for-ce.patch \
+    file://1045-wifi-mt76-mt7915-support-spatial-reuse-debug-command.patch \
+    file://1046-wifi-mt76-try-more-times-when-send-message-timeout.patch \
+    file://1047-wifi-mt76-mt7915-add-SER-overlap-handle.patch \
+    file://1048-wifi-mt76-mt7915-add-background-radar-hw-cap-check.patch \
+    file://1049-wifi-mt76-mt7915-add-foolproof-mechanism-for-ZWDFS-d.patch \
+    file://1050-mtk-wifi-mt76-mt7915-assign-DEAUTH-to-ALTX-queue-for.patch \
+    file://1051-wifi-mt76-mt7915-set-channel-after-sta-is-associated.patch \
     file://2000-wifi-mt76-mt7915-wed-add-wed-tx-support.patch \
     file://2001-wifi-mt76-mt7915-wed-add-wds-support-when-wed-is-ena.patch \
     file://2002-wifi-mt76-mt7915-wed-add-fill-receive-path-to-report.patch \
@@ -89,6 +89,6 @@ SRC_URI_append = " \
     file://2012-wifi-mt76-mt7915-wed-add-per-bss-statistic-info.patch \
     file://2013-wifi-mt76-add-debugfs-for-tx-drop-counters.patch \
     file://2014-wifi-mt76-add-debugfs-for-rx-drop-counters.patch \
-    file://2999-wifi-mt76-mt7915-support-backaward-compatiable.patch \
+    file://2015-wifi-mt76-mt7915-support-backaward-compatiable.patch \
     file://9999-mt76-revert-for-backports-5.15-wireless-stack.patch \
     "

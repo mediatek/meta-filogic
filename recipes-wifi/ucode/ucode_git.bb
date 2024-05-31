@@ -9,7 +9,7 @@ SRC_URI = " \
     file://0001-change-cmakelist.patch \
 "
 
-SRCREV = "6e89b89e95bbb140bbff5ab72b8c9632727bf6a6"
+SRCREV = "0d823e702bfe5f2bb5be694030a98afedf34aa6b"
 PV = "git${SRCPV}"
 
 S = "${WORKDIR}/git"
@@ -36,5 +36,6 @@ EXTRA_OECMAKE = "\
 	-DUBUS_SUPPORT=ON \
 	-DUCI_SUPPORT=ON \
 	-DULOOP_SUPPORT=ON \
+	-DSOCKET_SUPPORT=OFF \
 	"
 
