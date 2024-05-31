@@ -55,6 +55,7 @@ SRC_URI_append = " \
     file://999-1713-v5.15-net-dsa-add-dsa_port_from_netdev.patch \
     file://999-1714-v5.15-net-dsa-add-netdev_upper_dev_link.patch \
     file://999-1715-v6.2-net-dsa-add-set-queue-mapping.patch \
+    file://999-1716-v6.6-net-phy-add-phylink-pcs_enable-and-pcs_disable.patch;apply=no \
     file://999-1750-v5.18-net-macsec-get-ready-to-backport-from-5-18.patch \
     file://999-1751-01-v5.18-net-macsec-move-some-definitions-in-a-dedicated-header.patch \
     file://999-1752-02-v5.18-net-macsec-introduce-the-macsec_context-structure.patch \
@@ -218,6 +219,7 @@ SRC_URI_append = " \
     file://999-2739-net-phy-aquantia-add-CUX3410.patch \
     file://999-2739-net_dsa_add_tag_arht.patch \
     file://999-2740-crypto-add-eip197-aes-ctr-support.patch \
+    file://999-2741-net-phy-aquantia-add-automatic-firmware-selection.patch \
     file://999-2800-misc-add-mtk-platform.patch \
     file://999-2850-fips-140-3-compliance.patch \
     file://999-2900-dts-mt7622-enable-new-mtk-snand-for-ubi.patch \

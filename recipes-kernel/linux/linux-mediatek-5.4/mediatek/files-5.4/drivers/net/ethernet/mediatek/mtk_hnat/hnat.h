@@ -10,9 +10,8 @@
  *   Copyright (C) 2014-2016 Sean Wang <sean.wang@mediatek.com>
  *   Copyright (C) 2016-2017 John Crispin <blogic@openwrt.org>
  */
-
-#ifndef _MTK_NF_HNAT_H_
-#define _MTK_NF_HNAT_H_
+#ifndef NF_HNAT_H
+#define NF_HNAT_H
 
 #include <linux/debugfs.h>
 #include <linux/string.h>
@@ -889,6 +888,7 @@ struct mib_entry {
 struct hnat_accounting {
 	u64 bytes;
 	u64 packets;
+	u64 nfct; /* For retrieving nf_conn info */
 };
 
 enum mtk_hnat_version {
@@ -1333,4 +1333,5 @@ static inline u16 foe_timestamp(struct mtk_hnat *h)
 {
 	return (readl(hnat_priv->fe_base + 0x0010)) & 0xffff;
 }
-#endif /* _MTK_NF_HNAT_H_ */
+
+#endif /* NF_HNAT_H */

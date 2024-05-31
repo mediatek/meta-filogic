@@ -19,6 +19,7 @@
 #define MTK_FE_STOP_TRAFFIC_DONE	(0x2006)
 #define MTK_FE_START_TRAFFIC	(0x2007)
 #define MTK_FE_STOP_TRAFFIC_DONE_FAIL	(0x2008)
+#define MTK_FE_START_RESET_INIT	(0x2009)
 
 /*FE GDM Counter */
 #define MTK_GDM_RX_FC	(0x24)
@@ -71,7 +72,7 @@ enum mtk_reset_event_id {
 	MTK_EVENT_RFIFO_UF	= 19,
 };
 
-extern struct notifier_block mtk_eth_netdevice_nb __read_mostly;
+int mtk_eth_netdevice_event(struct notifier_block *n, unsigned long event, void *ptr);
 extern struct completion wait_ser_done;
 extern char* mtk_reset_event_name[32];
 extern atomic_t reset_lock;
@@ -86,6 +87,8 @@ int mtk_eth_warm_reset(struct mtk_eth *eth);
 void mtk_reset_event_update(struct mtk_eth *eth, u32 id);
 void mtk_dump_netsys_info(void *_eth);
 void mtk_dma_monitor(struct timer_list *t);
+void mtk_save_qdma_cfg(struct mtk_eth *eth);
+void mtk_restore_qdma_cfg(struct mtk_eth *eth);
 void mtk_prepare_reset_fe(struct mtk_eth *eth);
 void mtk_prepare_reset_ppe(struct mtk_eth *eth, u32 ppe_id);
 

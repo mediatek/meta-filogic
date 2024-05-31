@@ -10,6 +10,7 @@
 #include <linux/of_mdio.h>
 #include <linux/of_net.h>
 #include <linux/of_address.h>
+#include <linux/mtd/mtd.h>
 #include <linux/mfd/syscon.h>
 #include <linux/regmap.h>
 #include <linux/clk.h>
@@ -912,68 +913,39 @@ static int mtk_mac_pcs_get_state(struct phylink_config *config,
 	return 1;
 }
 
-static int mtk_gdm_fsm_get(struct mtk_mac *mac, u32 gdm)
-{
-	u32 fsm = mtk_r32(mac->hw, gdm);
-	u32 ret = 0, val = 0;
-
-	switch (mac->type) {
-	case MTK_GDM_TYPE:
-		ret = fsm == 0;
-		break;
-	case MTK_XGDM_TYPE:
-		ret = fsm == 0x10000000;
-		break;
-	default:
-		break;
-	}
-
-	if ((mac->type == MTK_XGDM_TYPE) && (mac->id != MTK_GMAC1_ID)) {
-		val = mtk_r32(mac->hw, MTK_MAC_FSM(mac->id));
-		if ((val == 0x02010100) || (val == 0x01010100)) {
-			ret = (mac->interface == PHY_INTERFACE_MODE_XGMII) ?
-				((fsm & 0x0fffffff) == 0) : ((fsm & 0x00ffffff) == 0);
-		} else
-			ret = 0;
-	}
-
-	return ret;
-}
-
 static void mtk_gdm_fsm_poll(struct mtk_mac *mac)
 {
-	u32 gdm = 0, i = 0;
-
-	switch (mac->id) {
-	case MTK_GMAC1_ID:
-		gdm = MTK_FE_GDM1_FSM;
-		break;
-	case MTK_GMAC2_ID:
-		gdm = MTK_FE_GDM2_FSM;
-		break;
-	case MTK_GMAC3_ID:
-		gdm = MTK_FE_GDM3_FSM;
-		break;
-	default:
-		pr_info("%s mac id invalid", __func__);
-		break;
-	}
+	u32 gdm_fsm, mac_fsm, gdm_idle, mac_idle;
+	u32 i = 0;
 
 	while (i < 3) {
-		if (mtk_gdm_fsm_get(mac, gdm))
+		gdm_fsm = mtk_r32(mac->hw, MTK_FE_GDM_FSM(mac->id));
+		mac_fsm = mtk_r32(mac->hw, MTK_MAC_FSM(mac->id));
+
+		if (mac->type == MTK_XGDM_TYPE) {
+			gdm_idle = ((gdm_fsm & 0x00ffffff) == 0);
+			mac_idle = 1;
+		} else {
+			gdm_idle = ((gdm_fsm & 0xffffffff) == 0);
+			mac_idle = (mac_fsm == 0x01010000 || mac_fsm == 0x01010100);
+		}
+
+		if (gdm_idle && mac_idle)
 			break;
+
 		msleep(500);
 		i++;
 	}
 
 	if (i == 3)
-		pr_info("%s fsm invalid", __func__);
+		pr_info("%s poll fsm idle timeout(gdm=%08x, mac=%08x)\n",
+			__func__, gdm_fsm, mac_fsm);
 }
 
 static void mtk_pse_port_link_set(struct mtk_mac *mac, bool up,
 				  phy_interface_t interface)
 {
-	u32 fe_glo_cfg, val = 0;
+	u32 fe_glo_cfg, val = 0, port = 0;
 
 	if (!up && interface == PHY_INTERFACE_MODE_XGMII) {
 		void __iomem *base;
@@ -992,25 +964,29 @@ static void mtk_pse_port_link_set(struct mtk_mac *mac, bool up,
 		}
 	}
 
-	fe_glo_cfg = mtk_r32(mac->hw, MTK_FE_GLO_CFG(mac->id));
 	switch (mac->id) {
 	case MTK_GMAC1_ID:
 		val = MTK_FE_LINK_DOWN_P1;
+		port = PSE_GDM1_PORT;
 		break;
 	case MTK_GMAC2_ID:
 		val = MTK_FE_LINK_DOWN_P2;
+		port = PSE_GDM2_PORT;
 		break;
 	case MTK_GMAC3_ID:
 		val = MTK_FE_LINK_DOWN_P15;
+		port = PSE_GDM3_PORT;
 		break;
 	}
+
+	fe_glo_cfg = mtk_r32(mac->hw, MTK_FE_GLO_CFG(port));
 
 	if (!up)
 		fe_glo_cfg |= val;
 	else
 		fe_glo_cfg &= ~val;
 
-	mtk_w32(mac->hw, fe_glo_cfg, MTK_FE_GLO_CFG(mac->id));
+	mtk_w32(mac->hw, fe_glo_cfg, MTK_FE_GLO_CFG(port));
 	mtk_gdm_fsm_poll(mac);
 }
 
@@ -2101,10 +2077,11 @@ static int mtk_tx_map(struct sk_buff *skb, struct net_device *dev,
 	int queue = skb_get_queue_mapping(skb);
 	int k = 0;
 
-	if (skb->len < 32) {
+	if (skb->len <= 40) {
 		if (skb_put_padto(skb, MTK_MIN_TX_LENGTH))
 			return -ENOMEM;
 
+		txd_info.last = !skb_is_nonlinear(skb);
 		txd_info.size = skb_headlen(skb);
 	}
 
@@ -2159,7 +2136,7 @@ static int mtk_tx_map(struct sk_buff *skb, struct net_device *dev,
 			}
 
 			memset(&txd_info, 0, sizeof(struct mtk_tx_dma_desc_info));
-			txd_info.size = min(frag_size, MTK_TX_DMA_BUF_LEN);
+			txd_info.size = min(frag_size, eth->soc->txrx.dma_max_len);
 			txd_info.qid = queue;
 			txd_info.last = i == skb_shinfo(skb)->nr_frags - 1 &&
 					!(frag_size - txd_info.size);
@@ -3891,9 +3868,19 @@ static int mtk_start_dma(struct mtk_eth *eth)
 			MTK_RX_BT_32DWORDS | MTK_MULTI_EN,
 			reg_map->pdma.glo_cfg);
 	} else {
-		mtk_w32(eth, MTK_TX_WB_DDONE | MTK_TX_DMA_EN | MTK_RX_DMA_EN |
-			MTK_MULTI_EN | MTK_PDMA_SIZE_8DWORDS,
-			reg_map->pdma.glo_cfg);
+		if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V3)) {
+			mtk_w32(eth, MTK_TX_DMA_EN | MTK_RX_DMA_EN |
+				MTK_PDMA_SIZE_8DWORDS | MTK_TX_WB_DDONE |
+				MTK_CHK_DDONE | MTK_MULTI_EN_V2 |
+				MTK_PDMA_MUTLI_CNT | MTK_PDMA_RESV_BUF |
+				MTK_DEC_WCOMP | MTK_CSR_CLKGATE_BYP,
+				reg_map->pdma.glo_cfg);
+		} else {
+			mtk_w32(eth, MTK_TX_WB_DDONE | MTK_TX_DMA_EN |
+				MTK_RX_DMA_EN | MTK_MULTI_EN |
+				MTK_PDMA_SIZE_8DWORDS,
+				reg_map->pdma.glo_cfg);
+		}
 	}
 
 	if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_RX_V2) && eth->hwlro) {
@@ -4492,8 +4479,10 @@ static int __init mtk_init(struct net_device *dev)
 	const char *mac_addr;
 
 	mac_addr = of_get_mac_address(mac->of_node);
-	if (!IS_ERR(mac_addr))
+	if (!IS_ERR(mac_addr)) {
 		ether_addr_copy(dev->dev_addr, mac_addr);
+		ether_addr_copy(dev->perm_addr, mac_addr);
+	}
 
 	/* If the mac address is invalid, use random mac address  */
 	if (!is_valid_ether_addr(dev->dev_addr)) {
@@ -4590,6 +4579,10 @@ static void mtk_pending_work(struct work_struct *work)
 
 	mtk_phy_config(eth, 0);
 
+	/* Store QDMA configurations to prepare for reset */
+	if (MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA))
+		mtk_save_qdma_cfg(eth);
+
 	/* Adjust PPE configurations to prepare for reset */
 	mtk_prepare_reset_ppe(eth, 0);
 	if (MTK_HAS_CAPS(eth->soc->caps, MTK_RSTCTRL_PPE1))
@@ -4678,6 +4671,10 @@ static void mtk_pending_work(struct work_struct *work)
 			eth->netdev[i]);
 		break;
 	}
+
+	/* Restore QDMA configurations */
+	if (MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA))
+		mtk_restore_qdma_cfg(eth);
 
 	atomic_dec(&reset_lock);
 
@@ -5250,6 +5247,40 @@ static int mtk_add_mux(struct mtk_eth *eth, struct device_node *np)
 	return 0;
 }
 
+static int mtk_of_mtd_mac_address_is_available(struct device_node *np)
+{
+#ifdef CONFIG_MTD
+	struct device_node *mtd_np = NULL;
+	int size;
+	struct mtd_info *mtd;
+	const char *part;
+	const __be32 *list;
+	phandle phandle;
+
+	list = of_get_property(np, "mtd-mac-address", &size);
+	if (!list || (size != (2 * sizeof(*list))))
+		return 0;
+
+	phandle = be32_to_cpup(list++);
+	if (phandle)
+		mtd_np = of_find_node_by_phandle(phandle);
+
+	if (!mtd_np)
+		return 0;
+
+	part = of_get_property(mtd_np, "label", NULL);
+	if (!part)
+		part = mtd_np->name;
+
+	mtd = get_mtd_device_nm(part);
+	if (IS_ERR(mtd))
+		return -ENODEV;
+
+	return 1;
+#endif
+	return 0;
+}
+
 static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
 {
 	const __be32 *_id = of_get_property(np, "reg", NULL);
@@ -5277,6 +5308,9 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
 		dev_err(eth->dev, "duplicate mac id found: %d\n", id);
 		return -EINVAL;
 	}
+
+	if (mtk_of_mtd_mac_address_is_available(np) < 0)
+		return -EPROBE_DEFER;
 
 	if (MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA))
 		txqs = MTK_QDMA_TX_NUM;
@@ -5777,7 +5811,8 @@ static int mtk_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, eth);
 
-	register_netdevice_notifier(&mtk_eth_netdevice_nb);
+	eth->netdevice_notifier.notifier_call = mtk_eth_netdevice_event;
+	register_netdevice_notifier(&eth->netdevice_notifier);
 #if defined(CONFIG_MEDIATEK_NETSYS_V2) || defined(CONFIG_MEDIATEK_NETSYS_V3)
 	timer_setup(&eth->mtk_dma_monitor_timer, mtk_dma_monitor, 0);
 	eth->mtk_dma_monitor_timer.expires = jiffies;
@@ -5823,7 +5858,7 @@ static int mtk_remove(struct platform_device *pdev)
 
 	mtk_cleanup(eth);
 	mtk_mdio_cleanup(eth);
-	unregister_netdevice_notifier(&mtk_eth_netdevice_nb);
+	unregister_netdevice_notifier(&eth->netdevice_notifier);
 	del_timer_sync(&eth->mtk_dma_monitor_timer);
 
 	return 0;

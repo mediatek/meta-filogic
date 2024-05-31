@@ -103,6 +103,7 @@ do_filogic_patches() {
             patch -p1 < ${WORKDIR}/999-2737-net-mt753x-phy-coverity-scan.patch
             patch -p1 < ${WORKDIR}/999-1710-v6.2-net-phy-add-phylink-pcs-support.patch
             patch -p1 < ${WORKDIR}/999-1712-v6.2-net-phy-add-phylink-rate-matching-support.patch
+            patch -p1 < ${WORKDIR}/999-1716-v6.6-net-phy-add-phylink-pcs_enable-and-pcs_disable.patch
             patch -p1 < ${WORKDIR}/999-2725-iwconfig-wireless-rate-fix.patch
             patch -p1 < ${WORKDIR}/999-2729-net-phy-remove-reporting-line-rate-to-mac.patch
             patch -p1 < ${WORKDIR}/999-2739-drivers_net_ethernet_mediatek_hnat.patch

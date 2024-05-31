@@ -71,7 +71,7 @@
 #define MTK_RSS_MAX_INDIRECTION_TABLE	128
 
 /* Frame Engine Global Configuration */
-#define MTK_FE_GLO_CFG(x)		((x == MTK_GMAC3_ID) ? 0x24 : 0x00)
+#define MTK_FE_GLO_CFG(port)	((port < 8) ? 0x0 : 0x24)
 #define MTK_FE_LINK_DOWN_P1	BIT(9)
 #define MTK_FE_LINK_DOWN_P2	BIT(10)
 #define MTK_FE_LINK_DOWN_P3	BIT(11)
@@ -295,11 +295,19 @@
 
 /* PDMA Global Configuration Register */
 #define MTK_PDMA_GLO_CFG	(PDMA_BASE + 0x204)
-#define MTK_RX_DMA_LRO_EN	BIT(8)
+#define MTK_CSR_CLKGATE_BYP	BIT(30)
 #define MTK_MULTI_EN		BIT(10)
+#define MTK_RX_DMA_LRO_EN	BIT(8)
 #define MTK_PDMA_SIZE_8DWORDS	(1 << 4)
 
-/* PDMA Global Configuration Register */
+/* PDMA V2 Global Configuration Register */
+#define MTK_DEC_WCOMP		BIT(28)
+#define MTK_PDMA_RESV_BUF	(0x40 << 16)
+#define MTK_PDMA_MUTLI_CNT	(0xf << 12)
+#define MTK_MULTI_EN_V2		BIT(11)
+#define MTK_CHK_DDONE		BIT(10)
+
+/* PDMA RX DMA Configuration Register */
 #define MTK_PDMA_RX_CFG		(PDMA_BASE + 0x210)
 #define MTK_PDMA_LRO_SDL	(0x3000)
 #define MTK_RX_CFG_SDL_OFFSET	(16)
@@ -312,6 +320,7 @@
 #define MTK_PST_DTX_IDX_CFG(x)	(MTK_PST_DTX_IDX0 << (x))
 
 /*PDMA HW RX Index Register*/
+#define MTK_ADMA_CRX_PTR	(PDMA_BASE + 0x108)
 #define MTK_ADMA_DRX_PTR	(PDMA_BASE + 0x10C)
 
 /* PDMA Delay Interrupt Register */
@@ -485,6 +494,9 @@
 #define FC_THRES_DROP_EN	(7 << 16)
 #define FC_THRES_MIN		0x4444
 
+/* QDMA TX Scheduler Rate Control Register */
+#define MTK_QDMA_TX_2SCH_BASE	(QDMA_BASE + 0x214)
+
 /* QDMA Interrupt Status Register */
 #define MTK_QDMA_INT_STATUS	(QDMA_BASE + 0x218)
 #if defined(CONFIG_MEDIATEK_NETSYS_RX_V2) || defined(CONFIG_MEDIATEK_NETSYS_V3)
@@ -555,6 +567,9 @@
 /* QDMA FQ Free Page Buffer Length Register */
 #define MTK_QDMA_FQ_BLEN	(QDMA_BASE +0x32c)
 
+/* QDMA TX Scheduler Rate Control Register */
+#define MTK_QDMA_TX_4SCH_BASE(x)	(QDMA_BASE + 0x398 + (((x) >> 1) * 0x4))
+
 /* WDMA Registers */
 #define MTK_WDMA_CTX_PTR(x)	(WDMA_BASE(x) + 0x8)
 #define MTK_WDMA_DTX_PTR(x)	(WDMA_BASE(x) + 0xC)
@@ -563,7 +578,10 @@
 #define MTK_WDMA_RX_DBG_MON1(x)	(WDMA_BASE(x) + 0x3c4)
 #define MTK_WDMA_CRX_PTR(x)	(WDMA_BASE(x) + 0x108)
 #define MTK_WDMA_DRX_PTR(x)	(WDMA_BASE(x) + 0x10C)
-#define MTK_CDM_TXFIFO_RDY	BIT(7)
+#define MTK_CDM_FS_PARSER_FSM_MASK	GENMASK(27, 24)
+#define MTK_CDM_FS_FSM_MASK		GENMASK(19, 16)
+#define MTK_CDM_TS_PARSER_FSM_MASK	GENMASK(12, 8)
+#define MTK_CDM_TS_FSM_MASK		GENMASK(3, 0)
 
 /*TDMA Register*/
 #define MTK_TDMA_GLO_CFG	(0x6204)
@@ -959,7 +977,8 @@
 /* Register to QPHY wrapper control */
 #define SGMSYS_QPHY_WRAP_CTRL	0xec
 #define SGMII_PN_SWAP_MASK	GENMASK(1, 0)
-#define SGMII_PN_SWAP_TX_RX	(BIT(0) | BIT(1))
+#define SGMII_PN_SWAP_RX	BIT(1)
+#define SGMII_PN_SWAP_TX	BIT(0)
 
 /* USXGMII subsystem config registers */
 /* Register to control speed */
@@ -1745,7 +1764,7 @@ struct mtk_soc_data {
 #define MTK_SGMII_PHYSPEED_2500        BIT(1)
 #define MTK_SGMII_PHYSPEED_5000	       BIT(2)
 #define MTK_SGMII_PHYSPEED_10000       BIT(3)
-#define MTK_SGMII_PN_SWAP	       BIT(16)
+
 #define MTK_HAS_FLAGS(flags, _x)       (((flags) & (_x)) == (_x))
 
 /* struct mtk_sgmii_pcs - This structure holds each sgmii regmap and associated
@@ -1765,9 +1784,13 @@ struct mtk_sgmii_pcs {
 	spinlock_t		regmap_lock;
 	phy_interface_t		interface;
 	__ETHTOOL_DECLARE_LINK_MODE_MASK(advertising);
+	unsigned long		link_poll_inband;
+	unsigned int		mode;
 	u32			flags;
 	u32			ana_rgc3;
+	u32			polarity;
 	u8			id;
+	struct timer_list	link_poll_outband;
 	struct phylink_pcs	pcs;
 };
 
@@ -1797,8 +1820,10 @@ struct mtk_usxgmii_pcs {
 	struct regmap		*regmap_pextp;
 	spinlock_t		regmap_lock;
 	phy_interface_t		interface;
+	unsigned long		link_poll_inband;
 	unsigned int		mode;
 	u8			id;
+	struct timer_list	link_poll_outband;
 	struct phylink_pcs	pcs;
 };
 
@@ -1920,6 +1945,7 @@ struct mtk_eth {
 	u32				rx_dma_l4_valid;
 	int				ip_align;
 	spinlock_t			syscfg0_lock;
+	struct notifier_block		netdevice_notifier;
 	struct timer_list		mtk_dma_monitor_timer;
 };
 
@@ -1999,7 +2025,6 @@ int mtk_mac2xgmii_id(struct mtk_eth *eth, int mac_id);
 struct phylink_pcs *mtk_usxgmii_select_pcs(struct mtk_usxgmii *ss, int id);
 int mtk_usxgmii_init(struct mtk_eth *eth, struct device_node *r);
 int mtk_toprgu_init(struct mtk_eth *eth, struct device_node *r);
-void mtk_usxgmii_link_poll(struct work_struct *work);
 
 void mtk_eth_set_dma_device(struct mtk_eth *eth, struct device *dma_dev);
 u32 mtk_rss_indr_table(struct mtk_rss_params *rss_params, int index);
