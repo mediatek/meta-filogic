@@ -122,6 +122,29 @@ u32 mt7530_mdio_r32(struct mtk_eth *eth, u32 reg)
 	return (high << 16) | (low & 0xffff);
 }
 
+void mt753x_set_port_link_state(bool up)
+{
+	struct mtk_eth *eth = g_eth;
+	u32 val, i;
+
+	if (!mt7530_exist(eth))
+		return;
+
+	mt798x_iomap();
+	for (i = 0; i < 4; i++) {
+		val = mt7530_mdio_r32(eth, MTK_MT753X_PMCR_P(i));
+		if (up)
+			val |= 0x1;
+		else
+			val &= 0xfffffffe;
+
+		mt7530_mdio_w32(eth, MTK_MT753X_PMCR_P(i), val);
+	}
+	mt798x_iounmap();
+
+	return;
+}
+
 void mtk_switch_w32(struct mtk_eth *eth, u32 val, unsigned reg)
 {
 	mtk_w32(eth, val, reg + 0x10000);
@@ -1075,33 +1098,56 @@ static struct proc_dir_entry *proc_tx_ring, *proc_hwtx_ring, *proc_rx_ring;
 int tx_ring_read(struct seq_file *seq, void *v)
 {
 	struct mtk_eth *eth = g_eth;
-	struct mtk_tx_ring *ring = &g_eth->tx_ring;
+	struct mtk_tx_ring *ring;
 	struct mtk_tx_dma_v2 *tx_ring;
-	int i = 0;
+	dma_addr_t tmp;
+	int i = 0, j = 0;
 
-	seq_printf(seq, "free count = %d\n", (int)atomic_read(&ring->free_count));
-	seq_printf(seq, "cpu next free: %d\n",
-		   (int)(ring->next_free - ring->dma) / eth->soc->txrx.txd_size);
-	seq_printf(seq, "cpu last free: %d\n",
-		   (int)(ring->last_free - ring->dma) / eth->soc->txrx.txd_size);
-	for (i = 0; i < eth->soc->txrx.tx_dma_size; i++) {
-		dma_addr_t tmp = ring->phys +
-				 i * (dma_addr_t)eth->soc->txrx.txd_size;
+	for (j = 0; j < MTK_MAX_TX_RING_NUM; j++) {
+		ring = &eth->tx_ring[j];
+		if (!ring->dma)
+			continue;
 
-		tx_ring = ring->dma + i * eth->soc->txrx.txd_size;
+		seq_printf(seq, "[Ring%d]\n", j);
+		seq_printf(seq, "free count = %d\n", (int)atomic_read(&ring->free_count));
+		seq_printf(seq, "cpu next free: %d\n",
+			   (int)(ring->next_free - ring->dma) / eth->soc->txrx.txd_size);
+		seq_printf(seq, "cpu last free: %d\n",
+			   (int)(ring->last_free - ring->dma) / eth->soc->txrx.txd_size);
+		for (i = 0; i < eth->soc->txrx.tx_dma_size; i++) {
 
-		seq_printf(seq, "%d (%pad): %08x %08x %08x %08x", i, &tmp,
-			   tx_ring->txd1, tx_ring->txd2,
-			   tx_ring->txd3, tx_ring->txd4);
+			if (MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA)) {
+				tmp = ring->phys + i * (dma_addr_t)eth->soc->txrx.txd_size;
+				tx_ring = ring->dma + i * eth->soc->txrx.txd_size;
+			} else {
+				tmp = ring->phys_pdma + i * (dma_addr_t)eth->soc->txrx.txd_size;
+				tx_ring = ring->dma_pdma + i * eth->soc->txrx.txd_size;
+			}
 
-		if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2) ||
-		    MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V3)) {
-			seq_printf(seq, " %08x %08x %08x %08x",
-				   tx_ring->txd5, tx_ring->txd6,
-				   tx_ring->txd7, tx_ring->txd8);
+			seq_printf(seq, "%d (%pad): %08x %08x %08x %08x", i, &tmp,
+				   tx_ring->txd1, tx_ring->txd2,
+				   tx_ring->txd3, tx_ring->txd4);
+
+			if (MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA)) {
+				if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2) ||
+				    MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V3)) {
+					seq_printf(seq, " %08x %08x %08x %08x",
+						   tx_ring->txd5, tx_ring->txd6,
+						   tx_ring->txd7, tx_ring->txd8);
+				}
+			} else {
+				if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V3)) {
+					seq_printf(seq, " %08x %08x %08x %08x",
+						   tx_ring->txd5, tx_ring->txd6,
+						   tx_ring->txd7, tx_ring->txd8);
+				}
+			}
+
+			seq_puts(seq, "\n");
 		}
 
-		seq_printf(seq, "\n");
+		if (MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA))
+			break;
 	}
 
 	return 0;
@@ -1314,10 +1360,12 @@ int dbg_regs_read(struct seq_file *seq, void *v)
 		seq_printf(seq, "| QDMA_FSM	: %08x |\n",
 			   mtk_r32(eth, MTK_QDMA_FSM));
 	} else {
-		seq_printf(seq, "| PDMA_CTX_IDX	: %08x |\n",
-			   mtk_r32(eth, MTK_PTX_CTX_IDX0));
-		seq_printf(seq, "| PDMA_DTX_IDX	: %08x |\n",
-			   mtk_r32(eth, MTK_PTX_DTX_IDX0));
+		for (i = 0; i < MTK_MAX_TX_RING_NUM; i++) {
+			seq_printf(seq, "| PDMA_CTX_IDX%d	: %08x |\n",
+				   i, mtk_r32(eth, MTK_PTX_CTX_IDX_CFG(i)));
+			seq_printf(seq, "| PDMA_DTX_IDX%d	: %08x |\n",
+				   i, mtk_r32(eth, MTK_PTX_DTX_IDX_CFG(i)));
+		}
 	}
 
 	seq_printf(seq, "| FE_PSE_FREE	: %08x |\n",

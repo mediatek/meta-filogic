@@ -1,7 +1,7 @@
-From 1892dfe5c26f58f5831a34485ea00241d8e6ae1a Mon Sep 17 00:00:00 2001
+From 7f03888eb832e80ea8cd95593504a7cbcf98fd81 Mon Sep 17 00:00:00 2001
 From: "chak-kei.lam" <chak-kei.lam@mediatek.com>
 Date: Tue, 9 Apr 2024 15:05:24 +0800
-Subject: [PATCH 13/26] flow-offload-add-mtkhnat-qdma-qos
+Subject: [PATCH] flow-offload-add-mtkhnat-qdma-qos
 
 ---
  drivers/net/ethernet/mediatek/Makefile        |   2 +-
@@ -353,7 +353,7 @@ index b80f72d..3bc50a4 100755
  		return err;
 diff --git a/drivers/net/ethernet/mediatek/mtk_qdma_debugfs.c b/drivers/net/ethernet/mediatek/mtk_qdma_debugfs.c
 new file mode 100644
-index 0000000..c7af3eb
+index 0000000..0266e88
 --- /dev/null
 +++ b/drivers/net/ethernet/mediatek/mtk_qdma_debugfs.c
 @@ -0,0 +1,448 @@
@@ -379,18 +379,18 @@ index 0000000..c7af3eb
 +	if (enable) {
 +		if (id < MAX_PPPQ_PORT_NUM) {
 +			val = MTK_QTX_SCH_MIN_RATE_EN | MTK_QTX_SCH_MAX_RATE_EN;
-+			val |=  FIELD_PREP(MTK_QTX_SCH_MIN_RATE_MAN,  1) |
-+		       		FIELD_PREP(MTK_QTX_SCH_MIN_RATE_EXP,  4) |
-+		       		FIELD_PREP(MTK_QTX_SCH_MAX_RATE_MAN, 25) |
-+		       		FIELD_PREP(MTK_QTX_SCH_MAX_RATE_EXP,  5) |
-+		       		FIELD_PREP(MTK_QTX_SCH_MAX_RATE_WEIGHT, 4);
++			val |= FIELD_PREP(MTK_QTX_SCH_MIN_RATE_MAN, 1) |
++			       FIELD_PREP(MTK_QTX_SCH_MIN_RATE_EXP, 4) |
++			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_MAN, 1) |
++			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_EXP, 6) |
++			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_WEIGHT, 4);
 +		} else {
 +			val = MTK_QTX_SCH_MIN_RATE_EN;
-+			val |=  FIELD_PREP(MTK_QTX_SCH_MIN_RATE_MAN,  1) |
-+		       		FIELD_PREP(MTK_QTX_SCH_MIN_RATE_EXP,  3) |
-+		       		FIELD_PREP(MTK_QTX_SCH_MAX_RATE_MAN,  0) |
-+		       		FIELD_PREP(MTK_QTX_SCH_MAX_RATE_EXP,  0) |
-+		       		FIELD_PREP(MTK_QTX_SCH_MAX_RATE_WEIGHT, 4);
++			val |= FIELD_PREP(MTK_QTX_SCH_MIN_RATE_MAN, 1) |
++			       FIELD_PREP(MTK_QTX_SCH_MIN_RATE_EXP, 3) |
++			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_MAN, 0) |
++			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_EXP, 0) |
++			       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_WEIGHT, 4);
 +		}
 +
 +		writel(val, eth->base + MTK_QTX_SCH(id % MTK_QTX_PER_PAGE));
