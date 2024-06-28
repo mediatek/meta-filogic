@@ -25,6 +25,7 @@ SRC_URI = " \
     file://001-rdkb-eth-mtk-change-ifname-for.patch;apply=no \
     file://003-rdkb-mtd-kernel-ubi-relayout.patch;apply=no \
     file://004-rdkb-hnat-bind-ifname.patch;apply=no \
+    file://002-bpi_r4-lan0_as_wan.patch;apply=no \
     "
 SRC_URI_append_mt7988 += " \
     file://mediatek/mt7988.cfg \
@@ -88,6 +89,7 @@ do_filogic_patches() {
     DISTRO_logan_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','logan','true','false',d)}"
     DISTRO_secure_boot_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','secure_boot','true','false',d)}"
     DISTRO_ccn34_build_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','ccn34','true','false',d)}"
+    DISTRO_LAN_AS_WAN_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','lan0_as_wan','true','false',d)}"
         if [ $DISTRO_ccn34_build_ENABLED = 'true' ]; then
             rm -rf ${WORKDIR}/mediatek/nf_hnat/999-40*.patch
             rm -rf ${WORKDIR}/mediatek/nf_hnat/999-41*.patch
@@ -96,6 +98,9 @@ do_filogic_patches() {
         if [ ! -e patch_applied ]; then
             patch -p1 < ${WORKDIR}/001-rdkb-eth-mtk-change-ifname-for.patch
             patch -p1 < ${WORKDIR}/003-rdkb-mtd-kernel-ubi-relayout.patch
+            if [ $DISTRO_LAN_AS_WAN_ENABLED = 'true' ]; then
+                patch -p1 < ${WORKDIR}/002-bpi_r4-lan0_as_wan.patch
+            fi
             patch -p1 < ${WORKDIR}/0600-net-phylink-propagate-resolved-link-config-via-mac_l.patch
             patch -p1 < ${WORKDIR}/999-1050-v6.4-backport-jitterrng-2.2.0.patch
             patch -p1 < ${WORKDIR}/999-2713-mt7531-gsw-internal_phy_calibration.patch

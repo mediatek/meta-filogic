@@ -10,7 +10,7 @@ then
 fi
 
 #Work around for Ethernet connected clients
-if [ ! -d /sys/class/net/lan0 ]
+if [ ! -d /sys/class/net/lan1 ]
 then
 brctl addif brlan0 eth1
 else
