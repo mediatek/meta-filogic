@@ -88,7 +88,7 @@ SRC_URI_append = " \
     file://mtk-0028-mac80211-mtk-backport-refactor-STA-CSA-paring-flow.patch \
     file://mtk-0029-mac80211-mtk-send-4-addr-nullfunc-after-drv_event_ca.patch \
     file://mtk-0030-mac80211-mtk-fix-incorrect-VIF-assignment-for-IEEE-8.patch \
-    file://mtk-0031-mac80211-mtk-add-exported-function-for-SoftMAC-drive.patch \
+    file://mtk-0031-mac80211-mtk-add-callback-function-to-set-QoS-map-in.patch \
     file://mtk-0032-mac80211-mtk-fix-inconsistent-QoS-mapping-between-AP.patch \
     file://mtk-9900-mac80211-mtk-mask-kernel-version-limitation-and-fill.patch \
     file://mtk-9901-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-id.patch \

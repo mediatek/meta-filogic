@@ -14,7 +14,7 @@ SRC_URI = "http://www.kernel.org/pub/software/network/iw/${BP}.tar.xz \
            file://separate-objdir.patch \
 "
 
-SRC_URI[sha256sum] = "f167bbe947dd53bb9ebc0c1dcef5db6ad73ac1d6084f2c6f9376c5c360cc4d4e"
+SRC_URI[sha256sum] = "3f2db22ad41c675242b98ae3942dbf3112548c60a42ff739210f2de4e98e4894"
 
 PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'wifi_eht', 'patches-mlo', 'patches', d)}"
 

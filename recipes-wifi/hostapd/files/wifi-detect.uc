@@ -53,6 +53,26 @@ function wiphy_get_entry(phy, path) {
 	return wlan[phy];
 }
 
+function freq_to_channel(freq) {
+	if (freq < 1000)
+		return 0;
+	if (freq == 2484)
+		return 14;
+	if (freq == 5935)
+		return 2;
+	if (freq < 2484)
+		return (freq - 2407) / 5;
+	if (freq >= 4910 && freq <= 4980)
+		return (freq - 4000) / 5;
+	if (freq < 5950)
+		return (freq - 5000) / 5;
+	if (freq <= 45000)
+		return (freq - 5950) / 5;
+	if (freq >= 58320 && freq <= 70200)
+		return (freq - 56160) / 2160;
+	return 0;
+}
+
 function wiphy_detect() {
 	let phys = nl.request(nl.const.NL80211_CMD_GET_WIPHY, nl.const.NLM_F_DUMP, { split_wiphy_dump: true });
 	if (!phys)
@@ -80,8 +100,10 @@ function wiphy_detect() {
 				band_name = "6G";
 			else if (freq > 4000)
 				band_name = "5G";
-			else
+			else if (freq > 2000)
 				band_name = "2G";
+			else
+				continue;
 			bands[band_name] = band_info;
 			if (band.ht_capa > 0)
 				band_info.ht = true;
@@ -96,9 +118,13 @@ function wiphy_detect() {
 				band_info.he = true;
 				he_phy_cap |= ift.he_cap_phy[0];
 				/* TODO: EHT */
+				/* FIXME: hardcode */
+				band_info.eht = true;
 			}
 
-			if (band_name != "2G" &&
+			if (band_name == "6G" && band_info.eht)
+				band_info.max_width = 320;
+			else if (band_name != "2G" &&
 			    (he_phy_cap & 0x18) || ((band.vht_capa >> 2) & 0x3))
 				band_info.max_width = 160;
 			else if (band_name != "2G" &&
@@ -116,24 +142,48 @@ function wiphy_detect() {
 				push(modes, "VHT20");
 			if (band_info.he)
 				push(modes, "HE20");
+			if (band_info.eht)
+				push(modes, "EHT20");
 			if (band.ht_capa & 0x2) {
 				push(modes, "HT40");
 				if (band_info.vht)
 					push(modes, "VHT40")
 			}
-			if (he_phy_cap & 0x2)
+			if (he_phy_cap & 0x2) {
 				push(modes, "HE40");
+
+				if (band_info.eht)
+					push(modes, "EHT40");
+			}
+
+			for (let freq in band.freqs) {
+				if (freq.disabled)
+					continue;
+				let chan = freq_to_channel(freq.freq);
+				if (!chan)
+					continue;
+				band_info.default_channel = chan;
+				break;
+			}
 
 			if (band_name == "2G")
 				continue;
 			if (band_info.vht)
 				push(modes, "VHT80");
-			if (he_phy_cap & 4)
+			if (he_phy_cap & 4) {
 				push(modes, "HE80");
+				if (band_info.eht)
+					push(modes, "EHT80");
+			}
 			if ((band.vht_capa >> 2) & 0x3)
 				push(modes, "VHT160");
-			if (he_phy_cap & 0x18)
+			if (he_phy_cap & 0x18) {
 				push(modes, "HE160");
+				if (band_info.eht)
+					push(modes, "EHT160");
+			}
+			if (band_name == "6G" && band_info.eht)
+				push(modes, "EHT320");
 		}
 
 		let entry = wiphy_get_entry(name, path);

@@ -1222,16 +1222,54 @@ if [ "${cmd_type}" = "set" ]; then
         ## Translate to mt76-vendor command
         "csi"|"amnt"|"ap_rfeatures"|"ap_wireless"|"mu"|"set_muru_manual_config")
             cert_cmd="$*"
-            if [ ! -z "$mld" ]; then
-                mld_interface=$(iw dev | grep Interface | awk '{print $2}')
-                cert_cmd="$(echo $* | sed 's/band[0-9]/${mld_interface}/')"
-            fi
+
+	    if [ ! -z "$mld" ]; then
+		    mld_interface=$(iw dev | grep Interface | awk '{print $2}')
+		    if [ $cmd == "ap_rfeatures" ] || [ "$cmd" == "ap_wireless" ]; then
+
+			    band_number=$(echo "$cert_cmd" | grep -o 'band[0-9]*')
+
+			    links_info_base="/sys/kernel/debug/ieee80211/phy0/netdev"
+			    links_info_intf="${mld_interface}/mt76_links_info"
+			    links_info_cmd="${links_info_base}:${links_info_intf}"
+
+			    band_link_id_info=$(
+			    	cat "$links_info_cmd" | grep "${band_number}_link_id"
+			    )
+			    band_link_id=$(
+			    	echo "$band_link_id_info" | awk -F'=' '{print $2}' | tr -d ' '
+			    )
+
+			    cmd_w_link_id=$(echo $* | sed "s/band[0-9]/& -l ${band_link_id}/g")
+			    cert_cmd=${cmd_w_link_id}
+
+		    fi
+		    ## convert bandX to mld interface name
+		    cert_cmd="$(echo ${cert_cmd} | sed 's/band[0-9]/${mld_interface}/')"
+	    fi
+
             if [ ${is_connac3} == "1" ]; then
                 hostapd_cmd="$(echo $cert_cmd | sed 's/set/raw/')"
                 do_cmd "hostapd_cli -i $hostapd_cmd"
             else
                 do_cmd "mt76-vendor $cert_cmd"
             fi
+            skip=1
+            ;;
+    	"txbftxsndinfo"|"TxBfTxSndInfo")
+            cert_cmd="$*"
+            cmd_setting=$(echo $cert_cmd | awk -F'=' '{print $2}')
+            snd_cmd_base="/sys/kernel/debug/ieee80211/phy0/mt76/band0/bf_txsnd_info"
+            mt76_snd_cmd="echo $cmd_setting > $snd_cmd_base"
+            do_cmd "$mt76_snd_cmd"
+            skip=1
+            ;;
+    	"muruDbgInfo")
+            cert_cmd="$*"
+            cmd_setting=$(echo $cert_cmd | awk -F'=' '{print $2}')
+            muru_cmd_base="/sys/kernel/debug/ieee80211/phy0/mt76/muru_dbg"
+            mt76_muru_cmd="echo $cmd_setting > $muru_cmd_base"
+            do_cmd "$mt76_muru_cmd"
             skip=1
             ;;
         "ATE")
