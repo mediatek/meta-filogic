@@ -134,17 +134,30 @@ static int str_to_ip(unsigned int *ip, char *str)
 }
 
 /*convert IP address from number to string */
-static void ip_to_str(char *str, unsigned int ip)
+static void ip_to_str(char *str, size_t size, unsigned int ip)
 {
 	unsigned char *ptr = (unsigned char *)&ip;
 	unsigned char c[4];
+	int ret;
+
+	if (str == NULL || size == 0) {
+		printf("convert IP address failed\n");
+		return;
+	}
 
 	c[0] = *(ptr);
 	c[1] = *(ptr + 1);
 	c[2] = *(ptr + 2);
 	c[3] = *(ptr + 3);
-	/*sprintf(str, "%d.%d.%d.%d", c[0], c[1], c[2], c[3]); */
-	sprintf(str, "%d.%d.%d.%d", c[3], c[2], c[1], c[0]);
+
+	ret = snprintf(str, size, "%d.%d.%d.%d", c[3], c[2], c[1], c[0]);
+	if (ret < 0) {
+		printf("Encoding error in snprintf\n");
+		return;
+	} else if ((size_t)ret >= size) {
+		printf("Required size %d, provided size %zu\n", ret, size);
+		return;
+	}
 }
 
 int reg_read(unsigned int offset, unsigned int *value)
@@ -362,6 +375,7 @@ int rw_phy_token_ring(int argc, char *argv[])
 	unsigned int val_l = 0;
 	unsigned int val_h = 0;
 	unsigned int port_num;
+	char *endptr;
 
 	if (argc < 4)
 		return -1;
@@ -370,14 +384,29 @@ int rw_phy_token_ring(int argc, char *argv[])
 		if (argc != 7)
 			return -1;
 		mii_mgr_write(0, 0x1f, 0x52b5);	// r31 = 0x52b5
-		port_num = strtoul(argv[3], NULL, 0);
-		if (port_num > MAX_PORT) {
+
+		errno = 0;
+		port_num = strtoul(argv[3], &endptr, 10);
+		if (errno != 0 || *endptr != '\0' || port_num > MAX_PORT) {
 			printf("Illegal port index and port:0~6\n");
 			return -1;
 		}
-		ch_addr = strtoul(argv[4], NULL, 0);
-		node_addr = strtoul(argv[5], NULL, 0);
-		data_addr = strtoul(argv[6], NULL, 0);
+
+		errno = 0;
+		ch_addr = strtoul(argv[4], &endptr, 10);
+		if (errno != 0 || *endptr != '\0')
+			goto error;
+
+		errno = 0;
+		node_addr = strtoul(argv[5], &endptr, 16);
+		if (errno != 0 || *endptr != '\0')
+			goto error;
+
+		errno = 0;
+		data_addr = strtoul(argv[6], &endptr, 16);
+		if (errno != 0 || *endptr != '\0')
+			goto error;
+
 		printf("port = %x, ch_addr = %x, node_addr=%x, data_addr=%x\n",
 		       port_num, ch_addr, node_addr, data_addr);
 		tr_reg_control =
@@ -393,16 +422,39 @@ int rw_phy_token_ring(int argc, char *argv[])
 		if (argc != 9)
 			return -1;
 		mii_mgr_write(0, 0x1f, 0x52b5);	// r31 = 0x52b5
-		port_num = strtoul(argv[3], NULL, 0);
-		if (port_num > MAX_PORT) {
-			printf("\n**Illegal port index and port:0~6\n");
+
+		errno = 0;
+		port_num = strtoul(argv[3], &endptr, 10);
+		if (errno != 0 || *endptr != '\0' || port_num > MAX_PORT) {
+			printf("Illegal port index and port:0~6\n");
 			return -1;
 		}
-		ch_addr = strtoul(argv[4], NULL, 0);
-		node_addr = strtoul(argv[5], NULL, 0);
-		data_addr = strtoul(argv[6], NULL, 0);
-		val_h = strtoul(argv[7], NULL, 0);
-		val_l = strtoul(argv[8], NULL, 0);
+
+		errno = 0;
+		ch_addr = strtoul(argv[4], &endptr, 10);
+		if (errno != 0 || *endptr != '\0')
+			goto error;
+
+		errno = 0;
+		node_addr = strtoul(argv[5], &endptr, 16);
+		if (errno != 0 || *endptr != '\0')
+			goto error;
+
+		errno = 0;
+		data_addr = strtoul(argv[6], &endptr, 16);
+		if (errno != 0 || *endptr != '\0')
+			goto error;
+
+		errno = 0;
+		val_h = strtoul(argv[7], &endptr, 16);
+		if (errno != 0 || *endptr != '\0')
+			goto error;
+
+		errno = 0;
+		val_l = strtoul(argv[8], &endptr, 16);
+		if (errno != 0 || *endptr != '\0')
+			goto error;
+
 		printf("port = %x, ch_addr = %x, node_addr=%x, data_addr=%x\n",
 		       port_num, ch_addr, node_addr, data_addr);
 		tr_reg_control =
@@ -416,7 +468,12 @@ int rw_phy_token_ring(int argc, char *argv[])
 		     tr_reg_control, val_h, val_l);
 	} else
 		return -1;
+
 	return 0;
+
+error:
+	printf("\n**Illegal parameters\n");
+	return -1;
 }
 
 void write_acl_table(unsigned char tbl_idx, unsigned int vawd1,
@@ -464,10 +521,29 @@ void acl_table_add(int argc, char *argv[])
 {
 	unsigned int vawd1 = 0, vawd2 = 0;
 	unsigned char tbl_idx = 0;
+	char *endptr;
 
-	tbl_idx = atoi(argv[3]);
-	vawd1 = strtoul(argv[4], (char **)NULL, 16);
-	vawd2 = strtoul(argv[5], (char **)NULL, 16);
+	errno = 0;
+	tbl_idx = strtoul(argv[3], &endptr, 10);
+	if (errno != 0 || *endptr != '\0') {
+		printf("Error: wrong ACL rule table index\n");
+		return;
+	}
+
+	errno = 0;
+	vawd1 = strtoul(argv[4], &endptr, 16);
+	if (errno != 0 || *endptr != '\0') {
+		printf("Error: wrong ACL rule table write data 1\n");
+		return;
+	}
+
+	errno = 0;
+	vawd2 = strtoul(argv[5], &endptr, 16);
+	if (errno != 0 || *endptr != '\0') {
+		printf("Error: wrong ACL rule table write data 2\n");
+		return;
+	}
+
 	write_acl_table(tbl_idx, vawd1, vawd2);
 }
 
@@ -513,10 +589,29 @@ void acl_mask_table_add(int argc, char *argv[])
 {
 	unsigned int vawd1 = 0, vawd2 = 0;
 	unsigned char tbl_idx = 0;
+	char *endptr;
 
-	tbl_idx = atoi(argv[3]);
-	vawd1 = strtoul(argv[4], (char **)NULL, 16);
-	vawd2 = strtoul(argv[5], (char **)NULL, 16);
+	errno = 0;
+	tbl_idx = strtoul(argv[3], &endptr, 10);
+	if (errno != 0 || *endptr != '\0') {
+		printf("Error: wrong ACL mask table index\n");
+		return;
+	}
+
+	errno = 0;
+	vawd1 = strtoul(argv[4], &endptr, 16);
+	if (errno != 0 || *endptr != '\0') {
+		printf("Error: wrong ACL mask table write data 1\n");
+		return;
+	}
+
+	errno = 0;
+	vawd2 = strtoul(argv[5], &endptr, 16);
+	if (errno != 0 || *endptr != '\0') {
+		printf("Error: wrong ACL mask table write data 2\n");
+		return;
+	}
+
 	write_acl_mask_table(tbl_idx, vawd1, vawd2);
 }
 
@@ -566,10 +661,29 @@ void acl_rule_table_add(int argc, char *argv[])
 {
 	unsigned int vawd1 = 0, vawd2 = 0;
 	unsigned char tbl_idx = 0;
+	char *endptr;
 
-	tbl_idx = atoi(argv[3]);
-	vawd1 = strtoul(argv[4], (char **)NULL, 16);
-	vawd2 = strtoul(argv[5], (char **)NULL, 16);
+	errno = 0;
+	tbl_idx = strtoul(argv[3], &endptr, 10);
+	if (errno != 0 || *endptr != '\0') {
+		printf("Error: wrong ACL rule control table index\n");
+		return;
+	}
+
+	errno = 0;
+	vawd1 = strtoul(argv[4], &endptr, 16);
+	if (errno != 0 || *endptr != '\0') {
+		printf("Error: wrong ACL rule control table write data 1\n");
+		return;
+	}
+
+	errno = 0;
+	vawd2 = strtoul(argv[5], &endptr, 16);
+	if (errno != 0 || *endptr != '\0') {
+		printf("Error: wrong ACL rule control table write data 2\n");
+		return;
+	}
+
 	write_acl_rule_table(tbl_idx, vawd1, vawd2);
 }
 
@@ -613,10 +727,28 @@ void acl_rate_table_add(int argc, char *argv[])
 {
 	unsigned int vawd1 = 0, vawd2 = 0;
 	unsigned char tbl_idx = 0;
+	char *endptr;
 
-	tbl_idx = atoi(argv[3]);
-	vawd1 = strtoul(argv[4], (char **)NULL, 16);
-	vawd2 = strtoul(argv[5], (char **)NULL, 16);
+	errno = 0;
+	tbl_idx = strtoul(argv[3], &endptr, 10);
+	if (errno != 0 || *endptr != '\0') {
+		printf("Error: wrong ACL rate control table index\n");
+		return;
+	}
+
+	errno = 0;
+	vawd1 = strtoul(argv[4], &endptr, 16);
+	if (errno != 0 || *endptr != '\0') {
+		printf("Error: wrong ACL rate control table write data 1\n");
+		return;
+	}
+
+	errno = 0;
+	vawd2 = strtoul(argv[5], &endptr, 16);
+	if (errno != 0 || *endptr != '\0') {
+		printf("Error: wrong ACL rate control table write data 2\n");
+		return;
+	}
 
 	write_rate_table(tbl_idx, vawd1, vawd2);
 }
@@ -714,6 +846,7 @@ void acl_mac_add(int argc, char *argv[])
 	int ports = 0;
 	char tmpstr[5];
 	int ret;
+	char *endptr;
 
 	ret = acl_parameters_pre_del(6, 12, argc, argv, &ports);
 	if (ret < 0)
@@ -721,17 +854,27 @@ void acl_mac_add(int argc, char *argv[])
 	/* Set pattern */
 	strncpy(tmpstr, argv[4], 4);
 	tmpstr[4] = '\0';
-	value = strtoul(tmpstr, NULL, 16);
+	errno = 0;
+	value = strtoul(tmpstr, &endptr, 16);
+	if (errno != 0 || *endptr != '\0')
+		goto error;
+
 	acl_compare_pattern(ports, value, 0x0, 0, 0);
 
 	strncpy(tmpstr, argv[4] + 4, 4);
 	tmpstr[4] = '\0';
-	value = strtoul(tmpstr, NULL, 16);
+	errno = 0;
+	value = strtoul(tmpstr, &endptr, 16);
+	if (errno != 0 || *endptr != '\0')
+		goto error;
 	acl_compare_pattern(ports, value, 0x0, 1, 1);
 
 	strncpy(tmpstr, argv[4] + 8, 4);
 	tmpstr[4] = '\0';
-	value = strtoul(tmpstr, NULL, 16);
+	errno = 0;
+	value = strtoul(tmpstr, &endptr, 16);
+	if (errno != 0 || *endptr != '\0')
+		goto error;
 	acl_compare_pattern(ports, value, 0x0, 2, 2);
 
 	//set mask
@@ -743,6 +886,11 @@ void acl_mac_add(int argc, char *argv[])
 	value |= 1 << 27;	//acl hit count
 	value |= 2 << 24;	//acl hit count group index (0~3)
 	write_acl_rule_table(0, value, 0);
+	return;
+
+error:
+	printf("Error: string converting\n");
+	return;
 }
 
 void acl_dip_meter(int argc, char *argv[])
@@ -1024,17 +1172,23 @@ void acl_port_enable(int argc, char *argv[])
 {
 	unsigned int value = 0, reg = 0;
 	unsigned char acl_port = 0, acl_en = 0;
+	char *endptr;
 
-	acl_port = atoi(argv[3]);
-	acl_en = atoi(argv[4]);
+	errno = 0;
+	acl_port = strtoul(argv[3], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || acl_port > MAX_PORT) {
+		printf("Error: wrong port member, should be within 0~%d\n", MAX_PORT);
+		return;
+	}
 
-	printf("acl_port:%d, acl_en:%d\n", acl_port, acl_en);
-
-	/*Check the input parameters is right or not. */
-	if ((acl_port > SWITCH_MAX_PORT) || (acl_en > 1)) {
+	errno = 0;
+	acl_en = strtoul(argv[4], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || acl_en > 1) {
 		printf(HELP_ACL_SETPORTEN);
 		return;
 	}
+
+	printf("acl_port:%d, acl_en:%d\n", acl_port, acl_en);
 
 	reg = REG_PCR_P0_ADDR + (0x100 * acl_port);	// 0x2004[10]
 	reg_read(reg, &value);
@@ -1094,7 +1248,7 @@ static void dip_dump_internal(int type)
 				printf("  %3d", ((mac2 >> 24) & 0xff));	//RESP_TIMER
 				//printf(" %4d", (value2 >> 24) & 0xff); //r_age_field
 				reg_read(REG_TSRA1_ADDR, &mac);
-				ip_to_str(tmpstr, mac);
+				ip_to_str(tmpstr, sizeof(tmpstr), mac);
 				printf("     %s", tmpstr);
 				printf("  0x%8x\n", value2);	//ATRD
 				//printf("%04x", ((mac2 >> 16) & 0xffff));
@@ -1266,12 +1420,12 @@ static void sip_dump_internal(int type)
 
 				reg_read(REG_TSRA2_ADDR, &mac2);
 
-				ip_to_str(tmpstr, mac2);
+				ip_to_str(tmpstr, sizeof(tmpstr), mac2);
 				printf("   %s", tmpstr);
 
 				//printf(" %4d", (value2 >> 24) & 0xff); //r_age_field
 				reg_read(REG_TSRA1_ADDR, &mac);
-				ip_to_str(tmpstr, mac);
+				ip_to_str(tmpstr, sizeof(tmpstr), mac);
 				printf("    %s", tmpstr);
 				printf("      0x%x\n", value2);
 				//printf("%04x", ((mac2 >> 16) & 0xffff));
@@ -1494,6 +1648,7 @@ void table_add(int argc, char *argv[])
 {
 	unsigned int i = 0, j = 0, value = 0, is_filter = 0, is_mymac = 0;
 	char tmpstr[9];
+	char *endptr;
 
 	is_filter = (argv[1][0] == 'f') ? 1 : 0;
 	is_mymac = (argv[1][0] == 'm') ? 1 : 0;
@@ -1503,20 +1658,30 @@ void table_add(int argc, char *argv[])
 	}
 	strncpy(tmpstr, argv[2], 8);
 	tmpstr[8] = '\0';
-	value = strtoul(tmpstr, NULL, 16);
+	errno = 0;
+	value = strtoul(tmpstr, &endptr, 16);
+	if (errno != 0 || *endptr != '\0') {
+		printf("Error: string converting\n");
+		return;
+	}
 	reg_write(REG_ATA1_ADDR, value);
 	printf("REG_ATA1_ADDR is 0x%x\n\r", value);
 
 	strncpy(tmpstr, argv[2] + 8, 4);
 	tmpstr[4] = '\0';
-
-	value = strtoul(tmpstr, NULL, 16);
+	errno = 0;
+	value = strtoul(tmpstr, &endptr, 16);
+	if (errno != 0 || *endptr != '\0') {
+		printf("Error: string converting\n");
+		return;
+	}
 	value = (value << 16);
 	value |= (1 << 15);	//IVL=1
 
 	if (argc > 4) {
-		j = strtoul(argv[4], NULL, 0);
-		if (4095 < j) {
+		errno = 0;
+		j = strtoul(argv[4], &endptr, 10);
+		if (errno != 0 || *endptr != '\0' || j > 4095) {
 			printf("wrong vid range, should be within 0~4095\n");
 			return;
 		}
@@ -1546,8 +1711,9 @@ void table_add(int argc, char *argv[])
 	value = j << 4;		//w_port_map
 
 	if (argc > 5) {
-		j = strtoul(argv[5], NULL, 0);
-		if (j < 1 || 255 < j) {
+		errno = 0;
+		j = strtoul(argv[5], &endptr, 10);
+		if (errno != 0 || *endptr != '\0' || j < 1 || 255 < j) {
 			printf("wrong age range, should be within 1~255\n");
 			return;
 		}
@@ -1559,8 +1725,9 @@ void table_add(int argc, char *argv[])
 	}
 
 	if (argc > 6) {
-		j = strtoul(argv[6], NULL, 0);
-		if (7 < j) {
+		errno = 0;
+		j = strtoul(argv[6], &endptr, 10);
+		if (errno != 0 || *endptr != '\0' || j > 7) {
 			printf("wrong eg-tag range, should be within 0~7\n");
 			return;
 		}
@@ -1600,6 +1767,7 @@ void table_search_mac_vid(int argc, char *argv[])
 {
 	unsigned int i = 0, j = 0, value = 0, mac = 0, mac2 = 0, value2 = 0;
 	char tmpstr[9];
+	char *endptr;
 
 	if (!argv[3] || strlen(argv[3]) != 12) {
 		printf("MAC address format error, should be of length 12\n");
@@ -1607,22 +1775,34 @@ void table_search_mac_vid(int argc, char *argv[])
 	}
 	strncpy(tmpstr, argv[3], 8);
 	tmpstr[8] = '\0';
-	value = strtoul(tmpstr, NULL, 16);
+	errno = 0;
+	value = strtoul(tmpstr, &endptr, 16);
+	if (errno != 0 || *endptr != '\0') {
+		printf("Error: string converting\n");
+		return;
+	}
 	reg_write(REG_ATA1_ADDR, value);
 	//printf("REG_ATA1_ADDR is 0x%x\n\r",value);
 
 	strncpy(tmpstr, argv[3] + 8, 4);
 	tmpstr[4] = '\0';
 
-	value = strtoul(tmpstr, NULL, 16);
+	errno = 0;
+	value = strtoul(tmpstr, &endptr, 16);
+	if (errno != 0 || *endptr != '\0') {
+		printf("Error: string converting\n");
+		return;
+	}
 	value = (value << 16);
 	value |= (1 << 15);	//IVL=1
 
-	j = strtoul(argv[5], NULL, 0);
-	if (4095 < j) {
+	errno = 0;
+	j = strtoul(argv[5], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || j > 4095) {
 		printf("wrong vid range, should be within 0~4095\n");
 		return;
 	}
+
 	value |= j;		//vid
 
 	reg_write(REG_ATA2_ADDR, value);
@@ -1682,6 +1862,7 @@ void table_search_mac_fid(int argc, char *argv[])
 {
 	unsigned int i = 0, j = 0, value = 0, mac = 0, mac2 = 0, value2 = 0;
 	char tmpstr[9];
+	char *endptr;
 
 	if (!argv[3] || strlen(argv[3]) != 12) {
 		printf("MAC address format error, should be of length 12\n");
@@ -1689,22 +1870,33 @@ void table_search_mac_fid(int argc, char *argv[])
 	}
 	strncpy(tmpstr, argv[3], 8);
 	tmpstr[8] = '\0';
-	value = strtoul(tmpstr, NULL, 16);
+	errno = 0;
+	value = strtoul(tmpstr, &endptr, 16);
+	if (errno != 0 || *endptr != '\0') {
+		printf("Error: string converting\n");
+		return;
+	}
 	reg_write(REG_ATA1_ADDR, value);
 	//printf("REG_ATA1_ADDR is 0x%x\n\r",value);
 
 	strncpy(tmpstr, argv[3] + 8, 4);
 	tmpstr[4] = '\0';
-
-	value = strtoul(tmpstr, NULL, 16);
+	errno = 0;
+	value = strtoul(tmpstr, &endptr, 16);
+	if (errno != 0 || *endptr != '\0') {
+		printf("Error: string converting\n");
+		return;
+	}
 	value = (value << 16);
 	value &= ~(1 << 15);	//IVL=0
 
-	j = strtoul(argv[5], NULL, 0);
-	if (7 < j) {
+	errno = 0;
+	j = strtoul(argv[5], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || j > 7) {
 		printf("wrong fid range, should be within 0~7\n");
 		return;
 	}
+
 	value |= (j << 12);	//vid
 
 	reg_write(REG_ATA2_ADDR, value);
@@ -1764,6 +1956,7 @@ void table_del_fid(int argc, char *argv[])
 {
 	unsigned int i = 0, j = 0, value = 0;
 	char tmpstr[9];
+	char *endptr;
 
 	if (!argv[3] || strlen(argv[3]) != 12) {
 		printf("MAC address format error, should be of length 12\n");
@@ -1771,16 +1964,28 @@ void table_del_fid(int argc, char *argv[])
 	}
 	strncpy(tmpstr, argv[3], 8);
 	tmpstr[8] = '\0';
-	value = strtoul(tmpstr, NULL, 16);
+	errno = 0;
+	value = strtoul(tmpstr, &endptr, 16);
+	if (errno != 0 || *endptr != '\0') {
+		printf("Error: string converting\n");
+		return;
+	}
 	reg_write(REG_ATA1_ADDR, value);
+
 	strncpy(tmpstr, argv[3] + 8, 4);
 	tmpstr[4] = '\0';
-	value = strtoul(tmpstr, NULL, 16);
+	errno = 0;
+	value = strtoul(tmpstr, &endptr, 16);
+	if (errno != 0 || *endptr != '\0') {
+		printf("Error: string converting\n");
+		return;
+	}
 	value = (value << 16);
 
 	if (argc > 5) {
-		j = strtoul(argv[5], NULL, 0);
-		if (j > 7) {
+		errno = 0;
+		j = strtoul(argv[5], &endptr, 10);
+		if (errno != 0 || *endptr != '\0' || j > 7) {
 			printf("wrong fid range, should be within 0~7\n");
 			return;
 		}
@@ -1812,6 +2017,7 @@ void table_del_vid(int argc, char *argv[])
 {
 	unsigned int i = 0, j = 0, value = 0;
 	char tmpstr[9];
+	char *endptr;
 
 	if (!argv[3] || strlen(argv[3]) != 12) {
 		printf("MAC address format error, should be of length 12\n");
@@ -1819,19 +2025,31 @@ void table_del_vid(int argc, char *argv[])
 	}
 	strncpy(tmpstr, argv[3], 8);
 	tmpstr[8] = '\0';
-	value = strtoul(tmpstr, NULL, 16);
+	errno = 0;
+	value = strtoul(tmpstr, &endptr, 16);
+	if (errno != 0 || *endptr != '\0') {
+		printf("Error: string converting\n");
+		return;
+	}
 	reg_write(REG_ATA1_ADDR, value);
 
 	strncpy(tmpstr, argv[3] + 8, 4);
 	tmpstr[4] = '\0';
-	value = strtoul(tmpstr, NULL, 16);
+	errno = 0;
+	value = strtoul(tmpstr, &endptr, 16);
+	if (errno != 0 || *endptr != '\0') {
+		printf("Error: string converting\n");
+		return;
+	}
 	value = (value << 16);
 
-	j = strtoul(argv[5], NULL, 0);
-	if (j > 4095) {
+	errno = 0;
+	j = strtoul(argv[5], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || j > 4095) {
 		printf("wrong fid range, should be within 0~4095\n");
 		return;
 	}
+
 	value |= j;		//vid
 	value |= 1 << 15;
 	reg_write(REG_ATA2_ADDR, value);
@@ -1898,17 +2116,20 @@ void set_mirror_to(int argc, char *argv[])
 void set_mirror_from(int argc, char *argv[])
 {
 	unsigned int offset = 0, value = 0;
-	int idx = 0, mirror = 0;
+	unsigned int idx = 0, mirror = 0;
+	char *endptr;
 
-	idx = strtoul(argv[3], NULL, 0);
-	mirror = strtoul(argv[4], NULL, 0);
-
-	if (idx < 0 || MAX_PORT < idx) {
-		printf("wrong port member, should be within 0~%d\n", MAX_PORT);
+	errno = 0;
+	idx = strtoul(argv[3], &endptr, 0);
+	if (errno != 0 || *endptr != '\0' || idx > MAX_PORT) {
+		printf("Error: wrong port member, should be within 0~%d\n", MAX_PORT);
 		return;
 	}
 
-	if (mirror < 0 || 3 < mirror) {
+	errno = 0;
+	mirror = strtoul(argv[4], &endptr, 0);
+
+	if (errno != 0 || *endptr != '\0' || mirror > 3) {
 		printf("wrong mirror setting, should be within 0~3\n");
 		return;
 	}
@@ -2162,11 +2383,24 @@ void igmp_on(int argc, char *argv[])
 	unsigned int port = 0, offset = 0, value = 0;
 	char cmd[80];
 	int ret;
+	char *endptr;
 
-	if (argc > 3)
-		leaky_en = strtoul(argv[3], NULL, 10);
-	if (argc > 4)
-		wan_num = strtoul(argv[4], NULL, 10);
+	if (argc > 3) {
+		errno = 0;
+		leaky_en = strtoul(argv[3], &endptr, 10);
+		if (errno != 0 || *endptr != '\0') {
+			printf("Error: string converting\n");
+			return;
+		}
+	}
+	if (argc > 4) {
+		errno = 0;
+		wan_num = strtoul(argv[4], &endptr, 10);
+		if (errno != 0 || *endptr != '\0') {
+			printf("Error: string converting\n");
+			return;
+		}
+	}
 
 	if (leaky_en == 1) {
 		if (wan_num == 4) {
@@ -2271,14 +2505,22 @@ void igmp_on(int argc, char *argv[])
 	reg_write(0x90, 0x8000b003);
 
 	/*Force eth2 to receive all igmp packets */
-	snprintf(cmd, sizeof(cmd),
+	ret = snprintf(cmd, sizeof(cmd),
 		 "echo 2 > /sys/devices/virtual/net/%s/brif/%s/multicast_router",
 		 BR_DEVNAME, ETH_DEVNAME);
+
+	if (ret < 0 || ret >= sizeof(cmd))
+		goto error;
+
 	ret = system(cmd);
 	if (ret)
-		printf
-		    ("Failed to set /sys/devices/virtual/net/%s/brif/%s/multicast_router\n",
-		     BR_DEVNAME, ETH_DEVNAME);
+		goto error;
+
+	return;
+
+error:
+	printf("Failed to set /sys/devices/virtual/net/%s/brif/%s/multicast_router\n",
+		BR_DEVNAME, ETH_DEVNAME);
 }
 
 void igmp_disable(int argc, char *argv[])
@@ -2363,16 +2605,22 @@ void phy_set_fc(int argc, char *argv[])
 {
 	unsigned int port = 0, pause_capable = 0;
 	unsigned int phy_value = 0;
+	char *endptr;
 
-	port = atoi(argv[3]);
-	pause_capable = atoi(argv[4]);
-
-	/*Check the input parameters is right or not. */
-	if (port > MAX_PORT - 2 || pause_capable > 1) {
-		printf
-		    ("Illegal parameter (port:0~4, full_duplex_pause_capable:0|1)\n");
+	errno = 0;
+	port = strtoul(argv[3], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || port > MAX_PORT - 2) {
+		printf("Error: wrong PHY port number, should be within 0~4\n");
 		return;
 	}
+
+	errno = 0;
+	pause_capable = strtoul(argv[4], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || pause_capable > 1) {
+		printf("Illegal parameter, full_duplex_pause_capable:0|1\n");
+		return;
+	}
+
 	printf("port=%d, full_duplex_pause_capable:%d\n", port, pause_capable);
 
 	mii_mgr_read(port, 4, &phy_value);
@@ -2392,16 +2640,22 @@ void phy_set_an(int argc, char *argv[])
 {
 	unsigned int port = 0, auto_negotiation_en = 0;
 	unsigned int phy_value = 0;
+	char *endptr;
 
-	port = atoi(argv[3]);
-	auto_negotiation_en = atoi(argv[4]);
-
-	/*Check the input parameters is right or not. */
-	if (port > MAX_PORT - 2 || auto_negotiation_en > 1) {
-		printf
-		    ("Illegal parameter (port:0~4, auto_negotiation_en:0|1)\n");
+	errno = 0;
+	port = strtoul(argv[3], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || port > MAX_PORT - 2) {
+		printf("Error: wrong PHY port number, should be within 0~4\n");
 		return;
 	}
+
+	errno = 0;
+	auto_negotiation_en = strtoul(argv[4], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || auto_negotiation_en > 1) {
+		printf("Illegal parameter, auto_negotiation_en:0|1\n");
+		return;
+	}
+
 	printf("port=%d, auto_negotiation_en:%d\n", port, auto_negotiation_en);
 
 	mii_mgr_read(port, 0, &phy_value);
@@ -2415,15 +2669,24 @@ void phy_set_an(int argc, char *argv[])
 void set_mac_pfc(int argc, char *argv[])
 {
 	unsigned int value = 0;
-	int port, enable = 0;
+	unsigned int port, enable = 0;
+	char *endptr;
 
-	port = atoi(argv[3]);
-	enable = atoi(argv[4]);
-	printf("enable: %d\n", enable);
-	if (port < 0 || port > 6 || enable < 0 || enable > 1) {
-		printf("Illegal parameter (port:0~6, enable|diable:0|1) \n");
+	errno = 0;
+	port = strtoul(argv[3], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || port > MAX_PORT) {
+		printf("Error: wrong port member, should be within 0~%d\n", MAX_PORT);
 		return;
 	}
+
+	errno = 0;
+	enable = strtoul(argv[4], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || enable > 1) {
+		printf("Error: Illegal paramete, enable|diable:0|1\n");
+		return;
+	}
+	printf("enable: %d\n", enable);
+
 	if (chip_name == 0x7531 || chip_name == 0x7988) {
 		reg_read(REG_PFC_CTRL_ADDR, &value);
 		value &= ~(1 << port);
@@ -2464,20 +2727,28 @@ void qos_sch_select(int argc, char *argv[])
 	unsigned char port = 0, queue = 0;
 	unsigned char type = 0;
 	unsigned int value = 0, reg = 0;
+	char *endptr;
 
 	if (argc < 7)
 		return;
 
-	port = atoi(argv[3]);
-	queue = atoi(argv[4]);
-	type = atoi(argv[6]);
-
-	if (port > 6 || queue > 7) {
-		printf("\n Illegal input parameters\n");
+	errno = 0;
+	port = strtoul(argv[3], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || port > MAX_PORT) {
+		printf("Error: wrong port member, should be within 0~%d\n", MAX_PORT);
 		return;
 	}
 
-	if ((type != 0 && type != 1 && type != 2)) {
+	errno = 0;
+	queue = strtoul(argv[4], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || queue > 7) {
+		printf("Error: wrong port queue member\n");
+		return;
+	}
+
+	errno = 0;
+	type = strtoul(argv[6], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || type > 2) {
 		printf(HELP_QOS_TYPE);
 		return;
 	}
@@ -2567,20 +2838,22 @@ void qos_set_base(int argc, char *argv[])
 	unsigned char base = 0;
 	unsigned char port = 0;
 	unsigned int value = 0;
+	char *endptr;
 
 	if (argc < 5)
 		return;
 
-	port = atoi(argv[3]);
-	base = atoi(argv[4]);
-
-	if (base > 6) {
-		printf(HELP_QOS_BASE);
+	errno = 0;
+	port = strtoul(argv[3], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || port > MAX_PORT) {
+		printf("Error: wrong port member, should be within 0~%d\n", MAX_PORT);
 		return;
 	}
 
-	if (port > 6) {
-		printf("Illegal port index:%d\n", port);
+	errno = 0;
+	base = strtoul(argv[4], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || base > 5) {
+		printf(HELP_QOS_BASE);
 		return;
 	}
 
@@ -2647,12 +2920,19 @@ void qos_set_portpri(int argc, char *argv[])
 {
 	unsigned char port = 0, prio = 0;
 	unsigned int value = 0;
+	char *endptr;
 
-	port = atoi(argv[3]);
-	prio = atoi(argv[4]);
+	errno = 0;
+	port = strtoul(argv[3], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || port > MAX_PORT) {
+		printf("Error: wrong port member, should be within 0~%d\n", MAX_PORT);
+		return;
+	}
 
-	if (port >= 7 || prio > 7) {
-		printf(HELP_QOS_PORT_PRIO);
+	errno = 0;
+	prio = strtoul(argv[4], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || prio > 7) {
+		printf("Error: wrong priority, should be within 0~7\n");
 		return;
 	}
 
@@ -2667,11 +2947,18 @@ void qos_set_dscppri(int argc, char *argv[])
 {
 	unsigned char prio = 0, dscp = 0, pim_n = 0, pim_offset = 0;
 	unsigned int value = 0, reg = 0;
+	char *endptr;
 
-	dscp = atoi(argv[3]);
-	prio = atoi(argv[4]);
+	errno = 0;
+	dscp = strtoul(argv[3], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || dscp > 63) {
+		printf(HELP_QOS_DSCP_PRIO);
+		return;
+	}
 
-	if (dscp > 63 || prio > 7) {
+	errno = 0;
+	prio = strtoul(argv[4], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || prio > 7) {
 		printf(HELP_QOS_DSCP_PRIO);
 		return;
 	}
@@ -2690,15 +2977,28 @@ void qos_pri_mapping_queue(int argc, char *argv[])
 {
 	unsigned char prio = 0, queue = 0, pem_n = 0, port = 0;
 	unsigned int value = 0, reg = 0;
+	char *endptr;
 
 	if (argc < 6)
 		return;
 
-	port = atoi(argv[3]);
-	prio = atoi(argv[4]);
-	queue = atoi(argv[5]);
+	errno = 0;
+	port = strtoul(argv[3], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || port > MAX_PORT) {
+		printf("Error: wrong port member, should be within 0~%d\n", MAX_PORT);
+		return;
+	}
 
-	if (prio > 7 || queue > 7) {
+	errno = 0;
+	prio = strtoul(argv[4], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || prio > 7) {
+		printf(HELP_QOS_PRIO_QMAP);
+		return;
+	}
+
+	errno = 0;
+	queue = strtoul(argv[5], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || queue > 7) {
 		printf(HELP_QOS_PRIO_QMAP);
 		return;
 	}
@@ -2821,11 +3121,18 @@ void doVlanSetPvid(int argc, char *argv[])
 {
 	unsigned char port = 0;
 	unsigned short pvid = 0;
+	char *endptr;
 
-	port = atoi(argv[3]);
-	pvid = atoi(argv[4]);
-	/*Check the input parameters is right or not. */
-	if ((port >= SWITCH_MAX_PORT) || (pvid > MAX_VID_VALUE)) {
+	errno = 0;
+	port = strtoul(argv[3], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || port > MAX_PORT) {
+		printf("Error: wrong port member, should be within 0~%d\n", MAX_PORT);
+		return;
+	}
+
+	errno = 0;
+	pvid = strtoul(argv[4], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || pvid > MAX_VID_VALUE) {
 		printf(HELP_VLAN_PVID);
 		return;
 	}
@@ -2838,37 +3145,70 @@ void doVlanSetPvid(int argc, char *argv[])
 
 void doVlanSetVid(int argc, char *argv[])
 {
-	unsigned char index = 0;
-	unsigned char active = 0;
-	unsigned char portMap = 0;
-	unsigned char tagPortMap = 0;
-	unsigned short vid = 0;
+	unsigned char index = 0, active = 0;
+	unsigned char portMap = 0, tagPortMap = 0;
+	unsigned short vid = 0, stag = 0;
+	unsigned char ivl_en = 0, fid = 0;
+	char *endptr;
 
-	unsigned char ivl_en = 0;
-	unsigned char fid = 0;
-	unsigned short stag = 0;
-
-	index = atoi(argv[3]);
-	active = atoi(argv[4]);
-	vid = atoi(argv[5]);
-
-	/*Check the input parameters is right or not. */
-	if ((index >= MAX_VLAN_RULE) || (vid >= 4096) || (active > ACTIVED)) {
+	errno = 0;
+	index = strtoul(argv[3], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || index >= MAX_VLAN_RULE) {
 		printf(HELP_VLAN_VID);
 		return;
 	}
 
-	/*CPU Port is always the membership */
-	portMap = atoi(argv[6]);
-	tagPortMap = atoi(argv[7]);
+	errno = 0;
+	active = strtoul(argv[4], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || active > ACTIVED) {
+		printf(HELP_VLAN_VID);
+		return;
+	}
+
+	errno = 0;
+	vid = strtoul(argv[5], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || vid >= 4096) {
+		printf(HELP_VLAN_VID);
+		return;
+	}
+
+	errno = 0;
+	portMap = strtoul(argv[6], &endptr, 10);
+	if (errno != 0 || *endptr != '\0') {
+		printf(HELP_VLAN_VID);
+		return;
+	}
+
+	errno = 0;
+	tagPortMap = strtoul(argv[7], &endptr, 10);
+	if (errno != 0 || *endptr != '\0') {
+		printf(HELP_VLAN_VID);
+		return;
+	}
 
 	printf("subcmd parameter argc = %d\r\n", argc);
 	if (argc >= 9) {
-		ivl_en = atoi(argv[8]);
+		errno = 0;
+		ivl_en = strtoul(argv[8], &endptr, 10);
+		if (errno != 0 || *endptr != '\0') {
+			printf(HELP_VLAN_VID);
+			return;
+		}
 		if (argc >= 10) {
-			fid = atoi(argv[9]);
-			if (argc >= 11)
-				stag = atoi(argv[10]);
+			errno = 0;
+			fid = strtoul(argv[9], &endptr, 16);
+			if (errno != 0 || *endptr != '\0') {
+				printf(HELP_VLAN_VID);
+				return;
+			}
+			if (argc >= 11) {
+				errno = 0;
+				stag = strtoul(argv[10], &endptr, 10);
+				if (errno != 0 || *endptr != '\0') {
+					printf(HELP_VLAN_VID);
+					return;
+				}
+			}
 		}
 	}
 	macMT753xVlanSetVid(index, active, vid, portMap, tagPortMap,
@@ -2882,17 +3222,23 @@ void doVlanSetAccFrm(int argc, char *argv[])
 	unsigned char type = 0;
 	unsigned int value = 0;
 	unsigned int reg = 0;
+	char *endptr;
 
-	port = atoi(argv[3]);
-	type = atoi(argv[4]);
+	errno = 0;
+	port = strtoul(argv[3], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || port > MAX_PORT) {
+		printf("Error: wrong port member, should be within 0~%d\n", MAX_PORT);
+		return;
+	}
 
-	printf("port: %d, type: %d\n", port, type);
-
-	/*Check the input parameters is right or not. */
-	if ((port > SWITCH_MAX_PORT) || (type > REG_PVC_ACC_FRM_RELMASK)) {
+	errno = 0;
+	type = strtoul(argv[4], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || type > REG_PVC_ACC_FRM_RELMASK) {
 		printf(HELP_VLAN_ACC_FRM);
 		return;
 	}
+
+	printf("port: %d, type: %d\n", port, type);
 
 	reg = REG_PVC_P0_ADDR + port * 0x100;
 	reg_read(reg, &value);
@@ -2909,17 +3255,23 @@ void doVlanSetPortAttr(int argc, char *argv[])
 	unsigned char attr = 0;
 	unsigned int value = 0;
 	unsigned int reg = 0;
+	char *endptr;
 
-	port = atoi(argv[3]);
-	attr = atoi(argv[4]);
+	errno = 0;
+	port = strtoul(argv[3], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || port > MAX_PORT) {
+		printf("Error: wrong port member, should be within 0~%d\n", MAX_PORT);
+		return;
+	}
 
-	printf("port: %x, attr: %x\n", port, attr);
-
-	/*Check the input parameters is right or not. */
-	if (port > SWITCH_MAX_PORT || attr > 3) {
+	errno = 0;
+	attr = strtoul(argv[4], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || attr > 3) {
 		printf(HELP_VLAN_PORT_ATTR);
 		return;
 	}
+
+	printf("port: %x, attr: %x\n", port, attr);
 
 	reg = 0x2010 + port * 0x100;
 	reg_read(reg, &value);
@@ -2936,16 +3288,23 @@ void doVlanSetPortMode(int argc, char *argv[])
 	unsigned char mode = 0;
 	unsigned int value = 0;
 	unsigned int reg = 0;
+	char *endptr;
 
-	port = atoi(argv[3]);
-	mode = atoi(argv[4]);
-	printf("port: %x, mode: %x\n", port, mode);
+	errno = 0;
+	port = strtoul(argv[3], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || port > MAX_PORT) {
+		printf("Error: wrong port member, should be within 0~%d\n", MAX_PORT);
+		return;
+	}
 
-	/*Check the input parameters is right or not. */
-	if (port > SWITCH_MAX_PORT || mode > 3) {
+	errno = 0;
+	mode = strtoul(argv[4], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || mode > 3) {
 		printf(HELP_VLAN_PORT_MODE);
 		return;
 	}
+
+	printf("port: %x, mode: %x\n", port, mode);
 
 	reg = 0x2004 + port * 0x100;
 	reg_read(reg, &value);
@@ -2961,17 +3320,23 @@ void doVlanSetEgressTagPCR(int argc, char *argv[])
 	unsigned char eg_tag = 0;
 	unsigned int value = 0;
 	unsigned int reg = 0;
+	char *endptr;
 
-	port = atoi(argv[3]);
-	eg_tag = atoi(argv[4]);
+	errno = 0;
+	port = strtoul(argv[3], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || port > MAX_PORT) {
+		printf("Error: wrong port member, should be within 0~%d\n", MAX_PORT);
+		return;
+	}
 
-	printf("port: %d, eg_tag: %d\n", port, eg_tag);
-
-	/*Check the input parameters is right or not. */
-	if ((port > SWITCH_MAX_PORT) || (eg_tag > REG_PCR_EG_TAG_RELMASK)) {
+	errno = 0;
+	eg_tag = strtoul(argv[4], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || (eg_tag > REG_PCR_EG_TAG_RELMASK)) {
 		printf(HELP_VLAN_EGRESS_TAG_PCR);
 		return;
 	}
+
+	printf("port: %d, eg_tag: %d\n", port, eg_tag);
 
 	reg = REG_PCR_P0_ADDR + port * 0x100;
 	reg_read(reg, &value);
@@ -2989,17 +3354,23 @@ void doVlanSetEgressTagPVC(int argc, char *argv[])
 	unsigned char eg_tag = 0;
 	unsigned int value = 0;
 	unsigned int reg = 0;
+	char *endptr;
 
-	port = atoi(argv[3]);
-	eg_tag = atoi(argv[4]);
+	errno = 0;
+	port = strtoul(argv[3], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || port > MAX_PORT) {
+		printf("Error: wrong port member, should be within 0~%d\n", MAX_PORT);
+		return;
+	}
 
-	printf("port: %d, eg_tag: %d\n", port, eg_tag);
-
-	/*Check the input parameters is right or not. */
-	if ((port > SWITCH_MAX_PORT) || (eg_tag > REG_PVC_EG_TAG_RELMASK)) {
+	errno = 0;
+	eg_tag = strtoul(argv[4], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || (eg_tag > REG_PVC_EG_TAG_RELMASK)) {
 		printf(HELP_VLAN_EGRESS_TAG_PVC);
 		return;
 	}
+
+	printf("port: %d, eg_tag: %d\n", port, eg_tag);
 
 	reg = REG_PVC_P0_ADDR + port * 0x100;
 	reg_read(reg, &value);
@@ -3013,18 +3384,25 @@ void doVlanSetEgressTagPVC(int argc, char *argv[])
 void doArlAging(int argc, char *argv[])
 {
 	unsigned char aging_en = 0;
-	unsigned int time = 0, aging_cnt = 0, aging_unit = 0, value = 0, reg =
-	    0;
+	unsigned int time = 0, aging_cnt = 0, aging_unit = 0;
+	unsigned int value = 0, reg = 0;
+	char *endptr;
 
-	aging_en = atoi(argv[3]);
-	time = atoi(argv[4]);
-	printf("aging_en: %x, aging time: %x\n", aging_en, time);
-
-	/*Check the input parameters is right or not. */
-	if ((aging_en != 0 && aging_en != 1) || (time <= 0 || time > 65536)) {
+	errno = 0;
+	aging_en = strtoul(argv[3], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || aging_en > 1) {
 		printf(HELP_ARL_AGING);
 		return;
 	}
+
+	errno = 0;
+	time = strtoul(argv[4], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || (time <= 0 || time > 65536)) {
+		printf(HELP_ARL_AGING);
+		return;
+	}
+
+	printf("aging_en: %x, aging time: %x\n", aging_en, time);
 
 	reg = 0xa0;
 	reg_read(reg, &value);
@@ -3052,17 +3430,23 @@ void doMirrorEn(int argc, char *argv[])
 	unsigned char mirror_en = 0;
 	unsigned char mirror_port = 0;
 	unsigned int value = 0, reg = 0;
+	char *endptr;
 
-	mirror_en = atoi(argv[3]);
-	mirror_port = atoi(argv[4]);
-
-	printf("mirror_en: %d, mirror_port: %d\n", mirror_en, mirror_port);
-
-	/*Check the input parameters is right or not. */
-	if ((mirror_en > 1) || (mirror_port > REG_CFC_MIRROR_PORT_RELMASK)) {
+	errno = 0;
+	mirror_en = strtoul(argv[3], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || mirror_en > 1) {
 		printf(HELP_MIRROR_EN);
 		return;
 	}
+
+	errno = 0;
+	mirror_port = strtoul(argv[4], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || mirror_port > REG_CFC_MIRROR_PORT_RELMASK) {
+		printf(HELP_MIRROR_EN);
+		return;
+	}
+
+	printf("mirror_en: %d, mirror_port: %d\n", mirror_en, mirror_port);
 
 	reg = REG_CFC_ADDR;
 	reg_read(reg, &value);
@@ -3081,24 +3465,41 @@ void doMirrorPortBased(int argc, char *argv[])
 	unsigned char port = 0, port_tx_mir = 0, port_rx_mir = 0, vlan_mis =
 	    0, acl_mir = 0, igmp_mir = 0;
 	unsigned int value = 0, reg = 0;
+	char *endptr;
 
-	port = atoi(argv[3]);
-	port_tx_mir = atoi(argv[4]);
-	port_rx_mir = atoi(argv[5]);
-	acl_mir = atoi(argv[6]);
-	vlan_mis = atoi(argv[7]);
-	igmp_mir = atoi(argv[8]);
+	errno = 0;
+	port = strtoul(argv[3], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || port > MAX_PORT)
+		goto error;
+
+	errno = 0;
+	port_tx_mir = strtoul(argv[4], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || port_tx_mir > 1)
+		goto error;
+
+	errno = 0;
+	port_rx_mir = strtoul(argv[5], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || port_rx_mir > 1)
+		goto error;
+
+	errno = 0;
+	acl_mir = strtoul(argv[6], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || acl_mir > 1)
+		goto error;
+
+	errno = 0;
+	vlan_mis = strtoul(argv[7], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || vlan_mis > 1)
+		goto error;
+
+	errno = 0;
+	igmp_mir = strtoul(argv[8], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || igmp_mir > 1)
+		goto error;
 
 	printf
 	    ("port:%d, port_tx_mir:%d, port_rx_mir:%d, acl_mir:%d, vlan_mis:%d, igmp_mir:%d\n",
 	     port, port_tx_mir, port_rx_mir, acl_mir, vlan_mis, igmp_mir);
-
-	/*Check the input parameters is right or not. */
-	//if((port >= vlanCap->max_port_no) || (port_tx_mir > 1) || (port_rx_mir > 1) || (acl_mir > 1) || (vlan_mis > 1)){
-	if ((port >= 7) || (port_tx_mir > 1) || (port_rx_mir > 1) || (acl_mir > 1) || (vlan_mis > 1)) {	// also allow CPU port (port6)
-		printf(HELP_MIRROR_PORTBASED);
-		return;
-	}
 
 	reg = REG_PCR_P0_ADDR + port * 0x100;
 	reg_read(reg, &value);
@@ -3122,7 +3523,11 @@ void doMirrorPortBased(int argc, char *argv[])
 
 	printf("write reg: %x, value: %x\n", reg, value);
 	reg_write(reg, value);
+	return;
 
+error:
+	printf(HELP_MIRROR_PORTBASED);
+	return;
 }				/*end doMirrorPortBased */
 
 void doStp(int argc, char *argv[])
@@ -3132,18 +3537,30 @@ void doStp(int argc, char *argv[])
 	unsigned char state = 0;
 	unsigned int value = 0;
 	unsigned int reg = 0;
+	char *endptr;
 
-	port = atoi(argv[2]);
-	fid = atoi(argv[3]);
-	state = atoi(argv[4]);
+	errno = 0;
+	port = strtoul(argv[2], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || port > MAX_PORT) {
+		printf("Error: wrong port member, should be within 0~%d\n", MAX_PORT);
+		return;
+	}
 
-	printf("port: %d, fid: %d, state: %d\n", port, fid, state);
-
-	/*Check the input parameters is right or not. */
-	if ((port > MAX_PORT + 1) || (fid > 7) || (state > 3)) {
+	errno = 0;
+	fid = strtoul(argv[3], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || fid > 7) {
 		printf(HELP_STP);
 		return;
 	}
+
+	errno = 0;
+	state = strtoul(argv[4], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || state > 3) {
+		printf(HELP_STP);
+		return;
+	}
+
+	printf("port: %d, fid: %d, state: %d\n", port, fid, state);
 
 	reg = REG_SSC_P0_ADDR + port * 0x100;
 	reg_read(reg, &value);
@@ -3380,20 +3797,33 @@ void rate_control(int argc, char *argv[])
 	unsigned char dir = 0;
 	unsigned char port = 0;
 	unsigned int rate = 0;
+	char *endptr;
 
-	dir = atoi(argv[2]);
-	port = atoi(argv[3]);
-	rate = atoi(argv[4]);
-
-	if (port > 6)
+	errno = 0;
+	dir = strtoul(argv[2], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || dir > 1) {
+		printf("Error: wrong port member, should be 0:egress, 1:ingress\n");
 		return;
+	}
+
+	errno = 0;
+	port = strtoul(argv[3], &endptr, 10);
+	if (errno != 0 || *endptr != '\0' || port > MAX_PORT) {
+		printf("Error: wrong port member, should be within 0~%d\n", MAX_PORT);
+		return;
+	}
+
+	errno = 0;
+	rate = strtoul(argv[4], &endptr, 10);
+	if (errno != 0 || *endptr != '\0') {
+		printf("Error: wrong traffic rate, unit is kbps\n");
+		return;
+	}
 
 	if (dir == 1)		//ingress
 		_ingress_rate_set(1, port, rate);
 	else if (dir == 0)	//egress
 		_egress_rate_set(1, port, rate);
-	else
-		return;
 }
 
 void collision_pool_enable(int argc, char *argv[])

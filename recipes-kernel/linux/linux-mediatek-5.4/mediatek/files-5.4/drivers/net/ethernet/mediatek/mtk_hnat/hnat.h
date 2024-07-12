@@ -18,6 +18,7 @@
 #include <linux/if.h>
 #include <linux/if_ether.h>
 #include <net/netevent.h>
+#include <net/netfilter/nf_conntrack_zones.h>
 #include <linux/mod_devicetable.h>
 #include "hnat_mcast.h"
 #include "nf_hnat_mtk.h"
@@ -388,9 +389,9 @@ struct hnat_ipv4_hnapt {
 	u32 resv3_1 : 9;
 	u32 eg_keep_ecn : 1;
 	u32 eg_keep_dscp : 1;
-	u32 resv3_2:13;
+	u32 resv3_2 : 13;
 #else
-	u32 resv3:24;
+	u32 resv3 : 24;
 #endif
 	u32 act_dp : 8; /* UDF */
 	u16 vlan1;
@@ -447,12 +448,12 @@ struct hnat_ipv4_dslite {
 	u8 priority;    /* in order to consist with Linux kernel (should be 8bits) */
 	u32 hop_limit : 8;
 #if defined(CONFIG_MEDIATEK_NETSYS_V3)
-		u32 resv2_1 : 1;
-		u32 eg_keep_ecn : 1;
-		u32 eg_keep_cls : 1;
-		u32 resv2_2 : 13;
+	u32 resv2_1 : 1;
+	u32 eg_keep_ecn : 1;
+	u32 eg_keep_cls : 1;
+	u32 resv2_2 : 13;
 #else
-		u32 resv2 : 16;
+	u32 resv2 : 16;
 #endif
 	u32 act_dp : 8; /* UDF */
 
@@ -888,7 +889,8 @@ struct mib_entry {
 struct hnat_accounting {
 	u64 bytes;
 	u64 packets;
-	u64 nfct; /* For retrieving nf_conn info */
+	struct nf_conntrack_zone zone;
+	u8 dir;
 };
 
 enum mtk_hnat_version {
@@ -1232,7 +1234,7 @@ enum FoeIpAct {
 #endif
 
 #define UDF_PINGPONG_IFIDX GENMASK(6, 0)
-#define UDF_HNAT_PRE_FILLED BIT(7)
+#define UDF_HNAT_ENTRY_LOCKED BIT(7)
 
 #define HQOS_FLAG(dev, skb, qid)			\
 	((IS_HQOS_UL_MODE && IS_WAN(dev)) ||		\
@@ -1249,7 +1251,7 @@ enum FoeIpAct {
 extern const struct of_device_id of_hnat_match[];
 extern struct mtk_hnat *hnat_priv;
 
-static inline int is_hnat_pre_filled(struct foe_entry *entry)
+static inline int is_hnat_entry_locked(struct foe_entry *entry)
 {
 	u32 udf = 0;
 
@@ -1258,7 +1260,30 @@ static inline int is_hnat_pre_filled(struct foe_entry *entry)
 	else
 		udf = entry->ipv6_5t_route.act_dp;
 
-	return !!(udf & UDF_HNAT_PRE_FILLED);
+	return !!(udf & UDF_HNAT_ENTRY_LOCKED);
+}
+
+static inline void hnat_set_entry_lock(struct foe_entry *entry, bool locked)
+{
+	if (IS_IPV4_GRP(entry)) {
+		if (locked)
+			entry->ipv4_hnapt.act_dp |= UDF_HNAT_ENTRY_LOCKED;
+		else
+			entry->ipv4_hnapt.act_dp &= ~UDF_HNAT_ENTRY_LOCKED;
+	} else {
+		if (locked)
+			entry->ipv6_5t_route.act_dp |= UDF_HNAT_ENTRY_LOCKED;
+		else
+			entry->ipv6_5t_route.act_dp &= ~UDF_HNAT_ENTRY_LOCKED;
+	}
+	/* Ensure the lock has been written to the entry before return */
+	wmb();
+}
+
+static inline void hnat_check_release_entry_lock(struct foe_entry *entry)
+{
+	if (is_hnat_entry_locked(entry))
+		hnat_set_entry_lock(entry, false);
 }
 
 #if defined(CONFIG_NET_DSA_MT7530)

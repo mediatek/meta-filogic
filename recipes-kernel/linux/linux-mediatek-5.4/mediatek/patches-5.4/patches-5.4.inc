@@ -48,7 +48,7 @@ SRC_URI_append = " \
     file://999-1703-v5.18-mxl-gpy-phy-support.patch \
     file://999-1704-v6.2-net-phy-aquantia-add-AQR113C.patch \
     file://999-1708-v6.2-net-phy-add-5GBASER.patch \
-    file://999-1709-v6.2-net-phy-sfp-add-rollball-support.patch \
+    file://999-1709-v6.10-net-phy-sfp-add-rollball-support.patch \
     file://999-1710-v6.2-net-phy-add-phylink-pcs-support.patch;apply=no \
     file://999-1711-v6.2-net-phy-add-phylink-pcs-decode-helper.patch \
     file://999-1712-v6.2-net-phy-add-phylink-rate-matching-support.patch;apply=no \
@@ -56,6 +56,7 @@ SRC_URI_append = " \
     file://999-1714-v5.15-net-dsa-add-netdev_upper_dev_link.patch \
     file://999-1715-v6.2-net-dsa-add-set-queue-mapping.patch \
     file://999-1716-v6.6-net-phy-add-phylink-pcs_enable-and-pcs_disable.patch;apply=no \
+    file://999-1717-v5.12-net-phy-sfp-add-debugfs-support.patch \
     file://999-1750-v5.18-net-macsec-get-ready-to-backport-from-5-18.patch \
     file://999-1751-01-v5.18-net-macsec-move-some-definitions-in-a-dedicated-header.patch \
     file://999-1752-02-v5.18-net-macsec-introduce-the-macsec_context-structure.patch \
