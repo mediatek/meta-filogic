@@ -301,6 +301,7 @@ function iface_channel_switch(phy, ifname, iface, info)
 		bw320_offset: info.bw320_offset,
 		band_idx: info.band_idx,
 		sec_chan_offset: info.sec_chan_offset,
+		punct_bitmap: info.punct_bitmap,
 	};
 	ubus.call("hostapd", "apsta_state", msg);
 }

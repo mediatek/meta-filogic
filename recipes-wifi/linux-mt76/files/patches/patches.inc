@@ -21,6 +21,7 @@ SRC_URI_append = " \
     file://0019-wifi-mt76-mt7915-adjust-rx-filter.patch \
     file://0020-wifi-mt76-mt7915-add-additional-chain-signal-info-to.patch \
     file://0021-wifi-mt76-mt7915-remove-unnecessary-register-setting.patch \
+    file://0022-wifi-mt76-mt7915-add-PID-to-only-report-data-frame-T.patch \
     file://0999-wifi-mt76-mt7915-build-pass-for-Linux-Kernel-5.4-fix.patch \
     file://1000-wifi-mt76-mt7915-add-mtk-internal-debug-tools-for-mt.patch \
     file://1001-wifi-mt76-mt7915-csi-implement-csi-support.patch \

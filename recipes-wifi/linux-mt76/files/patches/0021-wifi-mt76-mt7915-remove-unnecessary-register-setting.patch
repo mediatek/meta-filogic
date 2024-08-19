@@ -1,7 +1,8 @@
-From 1af0fe3345f26594c78e91681997ad3a1838fc7c Mon Sep 17 00:00:00 2001
+From 9976288a87664bacf514902869be38215da1d8b1 Mon Sep 17 00:00:00 2001
 From: Henry Yen <henry.yen@mediatek.com>
 Date: Wed, 6 Mar 2024 12:42:06 +0800
-Subject: [PATCH] wifi: mt76: mt7915: remove unnecessary register settings
+Subject: [PATCH 21/21] wifi: mt76: mt7915: remove unnecessary register
+ settings
 
 Remove unnecessary register settings from the driver layer,
 and let firmware take over the configuration control.
@@ -13,10 +14,10 @@ Signed-off-by: Henry.Yen <henry.yen@mediatek.com>
  2 files changed, 1 insertion(+), 72 deletions(-)
 
 diff --git a/mt7915/init.c b/mt7915/init.c
-index 19a68c5..15ae27a 100644
+index 470b198a..84c69a88 100644
 --- a/mt7915/init.c
 +++ b/mt7915/init.c
-@@ -475,30 +475,6 @@ mt7915_mac_init_band(struct mt7915_dev *dev, u8 band)
+@@ -476,30 +476,6 @@ mt7915_mac_init_band(struct mt7915_dev *dev, u8 band)
  {
  	u32 mask, set;
  
@@ -47,7 +48,7 @@ index 19a68c5..15ae27a 100644
  	/* mt7915: disable rx rate report by default due to hw issues */
  	mt76_clear(dev, MT_DMA_DCR0(band), MT_DMA_DCR0_RXD_G5_EN);
  
-@@ -601,23 +577,17 @@ mt7915_init_led_mux(struct mt7915_dev *dev)
+@@ -602,23 +578,17 @@ mt7915_init_led_mux(struct mt7915_dev *dev)
  void mt7915_mac_init(struct mt7915_dev *dev)
  {
  	int i;
@@ -72,7 +73,7 @@ index 19a68c5..15ae27a 100644
  		mt7915_mac_wtbl_update(dev, i,
  				       MT_WTBL_UPDATE_ADM_COUNT_CLEAR);
 diff --git a/mt7915/mac.c b/mt7915/mac.c
-index 95c794a..1c5ab41 100644
+index 95c794a3..1c5ab41f 100644
 --- a/mt7915/mac.c
 +++ b/mt7915/mac.c
 @@ -1149,61 +1149,20 @@ void mt7915_mac_reset_counters(struct mt7915_phy *phy)

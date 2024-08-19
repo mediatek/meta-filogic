@@ -1,4 +1,4 @@
-From fc34c39c5e3484ab7d438dd0f5a701c5256cc643 Mon Sep 17 00:00:00 2001
+From 3be6f92d47cdfd1ab676c9728cc84560fd2cee91 Mon Sep 17 00:00:00 2001
 From: Peter Chiu <chui-hao.chiu@mediatek.com>
 Date: Fri, 8 Sep 2023 18:26:21 +0800
 Subject: [PATCH 2009/2015] wifi: mt76: mt7915: enable wa log to uart
@@ -9,7 +9,7 @@ Signed-off-by: Peter Chiu <chui-hao.chiu@mediatek.com>
  1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/mt7915/debugfs.c b/mt7915/debugfs.c
-index 3ae4aca..76d1951 100644
+index 576ec1a5..03ccb51b 100644
 --- a/mt7915/debugfs.c
 +++ b/mt7915/debugfs.c
 @@ -951,7 +951,11 @@ mt7915_fw_debug_wa_set(void *data, u64 val)

@@ -1,9 +1,8 @@
-From 0f8d644d9c7ab28e9e4da56151987a3e4be1f55f Mon Sep 17 00:00:00 2001
+From 1b93f1495d5f28a7620add2ebea0f691ff6e8a0d Mon Sep 17 00:00:00 2001
 From: Bo Jiao <Bo.Jiao@mediatek.com>
 Date: Tue, 6 Feb 2024 14:46:59 +0800
-Subject: [PATCH 1047/1051] wifi: mt76: mt7915: add SER overlap handle
+Subject: [PATCH 1047/1052] wifi: mt76: mt7915: add SER overlap handle
 
-CR-ID: WCNCR00355921
 Signed-off-by: Bo Jiao <Bo.Jiao@mediatek.com>
 ---
  dma.c        |  3 ++-
@@ -14,7 +13,7 @@ Signed-off-by: Bo Jiao <Bo.Jiao@mediatek.com>
  5 files changed, 34 insertions(+), 3 deletions(-)
 
 diff --git a/dma.c b/dma.c
-index 133a50d..100d2af 100644
+index 133a50dc..100d2aff 100644
 --- a/dma.c
 +++ b/dma.c
 @@ -506,7 +506,8 @@ mt76_dma_tx_queue_skb_raw(struct mt76_dev *dev, struct mt76_queue *q,
@@ -28,7 +27,7 @@ index 133a50d..100d2af 100644
  		goto error;
  	}
 diff --git a/mcu.c b/mcu.c
-index de185cc..1bc94e8 100644
+index de185cc9..1bc94e85 100644
 --- a/mcu.c
 +++ b/mcu.c
 @@ -42,7 +42,9 @@ struct sk_buff *mt76_mcu_get_response(struct mt76_dev *dev,
@@ -53,7 +52,7 @@ index de185cc..1bc94e8 100644
  			dev_err(dev->dev, "send message %08x timeout, try again(%d).\n",
  				cmd, (MT76_MSG_MAX_RETRY_CNT - retry_cnt));
 diff --git a/mt76.h b/mt76.h
-index a7a8ece..e6482e5 100644
+index a18b3e57..49ddaade 100644
 --- a/mt76.h
 +++ b/mt76.h
 @@ -478,6 +478,14 @@ enum {
@@ -80,7 +79,7 @@ index a7a8ece..e6482e5 100644
  	u32 wcid_mask[DIV_ROUND_UP(MT76_N_WCIDS, 32)];
  	u32 wcid_phy_mask[DIV_ROUND_UP(MT76_N_WCIDS, 32)];
 diff --git a/mt7915/mac.c b/mt7915/mac.c
-index b3c9163..c84b957 100644
+index b3c91633..c84b9573 100644
 --- a/mt7915/mac.c
 +++ b/mt7915/mac.c
 @@ -1538,6 +1538,7 @@ void mt7915_mac_reset_work(struct work_struct *work)
@@ -116,7 +115,7 @@ index b3c9163..c84b957 100644
  	wake_up(&dev->reset_wait);
  }
 diff --git a/mt7915/mcu.c b/mt7915/mcu.c
-index cb78961..f890063 100644
+index e505664e..272db06a 100644
 --- a/mt7915/mcu.c
 +++ b/mt7915/mcu.c
 @@ -198,6 +198,13 @@ mt7915_mcu_send_message(struct mt76_dev *mdev, struct sk_buff *skb,

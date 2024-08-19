@@ -1,7 +1,7 @@
-From c5e9e8836065c1651ab7b84a0d30953c45c7a35d Mon Sep 17 00:00:00 2001
+From 594116fbcff4d30156c7207244633ad3c1bf9ec1 Mon Sep 17 00:00:00 2001
 From: Bo Jiao <Bo.Jiao@mediatek.com>
 Date: Mon, 6 Jun 2022 20:13:02 +0800
-Subject: [PATCH] wifi: mt76: mt7915: csi: implement csi support
+Subject: [PATCH 1001/1052] wifi: mt76: mt7915: csi: implement csi support
 
 ---
  mt76_connac_mcu.h |   2 +
@@ -19,10 +19,10 @@ Subject: [PATCH] wifi: mt76: mt7915: csi: implement csi support
  create mode 100644 mt7915/vendor.h
 
 diff --git a/mt76_connac_mcu.h b/mt76_connac_mcu.h
-index a8690cd..cda7559 100644
+index 01d6598a..ad63596d 100644
 --- a/mt76_connac_mcu.h
 +++ b/mt76_connac_mcu.h
-@@ -1029,6 +1029,7 @@ enum {
+@@ -1030,6 +1030,7 @@ enum {
  	MCU_EXT_EVENT_WA_TX_STAT = 0x74,
  	MCU_EXT_EVENT_BCC_NOTIFY = 0x75,
  	MCU_EXT_EVENT_MURU_CTRL = 0x9f,
@@ -30,7 +30,7 @@ index a8690cd..cda7559 100644
  };
  
  /* unified event table */
-@@ -1243,6 +1244,7 @@ enum {
+@@ -1245,6 +1246,7 @@ enum {
  	MCU_EXT_CMD_DPD_PRE_CAL_INFO = 0xac,
  	MCU_EXT_CMD_PHY_STAT_INFO = 0xad,
  	MCU_EXT_CMD_SET_QOS_MAP = 0xb4,
@@ -39,7 +39,7 @@ index a8690cd..cda7559 100644
  
  enum {
 diff --git a/mt7915/Makefile b/mt7915/Makefile
-index fd71141..65129b4 100644
+index fd711416..65129b4f 100644
 --- a/mt7915/Makefile
 +++ b/mt7915/Makefile
 @@ -1,10 +1,10 @@
@@ -56,7 +56,7 @@ index fd71141..65129b4 100644
  mt7915e-$(CONFIG_NL80211_TESTMODE) += testmode.o
  mt7915e-$(CONFIG_MT798X_WMAC) += soc.o
 diff --git a/mt7915/debugfs.c b/mt7915/debugfs.c
-index 2661386..909df24 100644
+index 26613869..909df246 100644
 --- a/mt7915/debugfs.c
 +++ b/mt7915/debugfs.c
 @@ -1241,6 +1241,51 @@ mt7915_rf_regval_set(void *data, u64 val)
@@ -122,10 +122,10 @@ index 2661386..909df24 100644
  	if (!ext_phy)
  		dev->debugfs_dir = dir;
 diff --git a/mt7915/init.c b/mt7915/init.c
-index 19a68c5..1200405 100644
+index 84c69a88..ac15bc53 100644
 --- a/mt7915/init.c
 +++ b/mt7915/init.c
-@@ -697,6 +697,14 @@ mt7915_register_ext_phy(struct mt7915_dev *dev, struct mt7915_phy *phy)
+@@ -668,6 +668,14 @@ mt7915_register_ext_phy(struct mt7915_dev *dev, struct mt7915_phy *phy)
  	/* init wiphy according to mphy and phy */
  	mt7915_init_wiphy(phy);
  
@@ -140,7 +140,7 @@ index 19a68c5..1200405 100644
  	ret = mt76_register_phy(mphy, true, mt76_rates,
  				ARRAY_SIZE(mt76_rates));
  	if (ret)
-@@ -1178,6 +1186,28 @@ void mt7915_set_stream_he_caps(struct mt7915_phy *phy)
+@@ -1146,6 +1154,28 @@ void mt7915_set_stream_he_caps(struct mt7915_phy *phy)
  	}
  }
  
@@ -169,7 +169,7 @@ index 19a68c5..1200405 100644
  static void mt7915_unregister_ext_phy(struct mt7915_dev *dev)
  {
  	struct mt7915_phy *phy = mt7915_ext_phy(dev);
-@@ -1186,6 +1216,10 @@ static void mt7915_unregister_ext_phy(struct mt7915_dev *dev)
+@@ -1154,6 +1184,10 @@ static void mt7915_unregister_ext_phy(struct mt7915_dev *dev)
  	if (!phy)
  		return;
  
@@ -180,7 +180,7 @@ index 19a68c5..1200405 100644
  	mt7915_unregister_thermal(phy);
  	mt76_unregister_phy(mphy);
  	ieee80211_free_hw(mphy->hw);
-@@ -1198,6 +1232,10 @@ static void mt7915_stop_hardware(struct mt7915_dev *dev)
+@@ -1166,6 +1200,10 @@ static void mt7915_stop_hardware(struct mt7915_dev *dev)
  	mt7915_dma_cleanup(dev);
  	tasklet_disable(&dev->mt76.irq_tasklet);
  
@@ -191,7 +191,7 @@ index 19a68c5..1200405 100644
  	if (is_mt798x(&dev->mt76))
  		mt7986_wmac_disable(dev);
  }
-@@ -1242,6 +1280,14 @@ int mt7915_register_device(struct mt7915_dev *dev)
+@@ -1210,6 +1248,14 @@ int mt7915_register_device(struct mt7915_dev *dev)
  	dev->mt76.test_ops = &mt7915_testmode_ops;
  #endif
  
@@ -207,7 +207,7 @@ index 19a68c5..1200405 100644
  				   ARRAY_SIZE(mt76_rates));
  	if (ret)
 diff --git a/mt7915/main.c b/mt7915/main.c
-index 5523031..f3c3b7e 100644
+index fc9a464a..12bb0b39 100644
 --- a/mt7915/main.c
 +++ b/mt7915/main.c
 @@ -810,6 +810,19 @@ void mt7915_mac_sta_remove(struct mt76_dev *mdev, struct ieee80211_vif *vif,
@@ -231,7 +231,7 @@ index 5523031..f3c3b7e 100644
  	mt7915_mcu_add_sta(dev, vif, sta, false);
  
 diff --git a/mt7915/mcu.c b/mt7915/mcu.c
-index 37b1505..33dab71 100644
+index ff7f81b0..44765b1f 100644
 --- a/mt7915/mcu.c
 +++ b/mt7915/mcu.c
 @@ -40,6 +40,10 @@ static bool sr_scene_detect = true;
@@ -459,7 +459,7 @@ index 37b1505..33dab71 100644
  int mt7915_dbg_mcu_wa_cmd(struct mt7915_dev *dev, int cmd, u32 a1, u32 a2, u32 a3, bool wait_resp)
  {
 diff --git a/mt7915/mcu.h b/mt7915/mcu.h
-index 9ae0f07..f32d525 100644
+index 9ae0f07a..f32d5256 100644
 --- a/mt7915/mcu.h
 +++ b/mt7915/mcu.h
 @@ -604,4 +604,78 @@ mt7915_get_power_bound(struct mt7915_phy *phy, s8 txpower)
@@ -542,10 +542,10 @@ index 9ae0f07..f32d525 100644
 +
  #endif
 diff --git a/mt7915/mt7915.h b/mt7915/mt7915.h
-index d2224dc..4696171 100644
+index 58c0bf99..1316f93d 100644
 --- a/mt7915/mt7915.h
 +++ b/mt7915/mt7915.h
-@@ -197,6 +197,57 @@ struct mt7915_hif {
+@@ -195,6 +195,57 @@ struct mt7915_hif {
  	int irq;
  };
  
@@ -603,7 +603,7 @@ index d2224dc..4696171 100644
  struct mt7915_phy {
  	struct mt76_phy *mt76;
  	struct mt7915_dev *dev;
-@@ -245,6 +296,25 @@ struct mt7915_phy {
+@@ -243,6 +294,25 @@ struct mt7915_phy {
  		u8 spe_idx;
  	} test;
  #endif
@@ -629,7 +629,7 @@ index d2224dc..4696171 100644
  };
  
  #ifdef MTK_DEBUG
-@@ -649,6 +719,14 @@ void mt7915_sta_add_debugfs(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
+@@ -646,6 +716,14 @@ void mt7915_sta_add_debugfs(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
  int mt7915_mmio_wed_init(struct mt7915_dev *dev, void *pdev_ptr,
  			 bool pci, int *irq);
  
@@ -646,7 +646,7 @@ index d2224dc..4696171 100644
  int mt7915_dbg_mcu_wa_cmd(struct mt7915_dev *dev, int cmd, u32 a1, u32 a2, u32 a3, bool wait_resp);
 diff --git a/mt7915/vendor.c b/mt7915/vendor.c
 new file mode 100644
-index 0000000..0476202
+index 00000000..92496513
 --- /dev/null
 +++ b/mt7915/vendor.c
 @@ -0,0 +1,606 @@
@@ -1258,7 +1258,7 @@ index 0000000..0476202
 +}
 diff --git a/mt7915/vendor.h b/mt7915/vendor.h
 new file mode 100644
-index 0000000..d2b90aa
+index 00000000..d2b90aa0
 --- /dev/null
 +++ b/mt7915/vendor.h
 @@ -0,0 +1,75 @@

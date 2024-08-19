@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 inherit module
 
-PV = "2024-04-03"
+PV = "2024-07-11"
 
 SRC_URI = " \
     file://backports-${PV}.tar.xz \

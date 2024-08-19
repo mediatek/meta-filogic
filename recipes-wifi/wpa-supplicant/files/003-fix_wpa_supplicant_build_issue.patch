@@ -1,0 +1,73 @@
+diff --git a/src/ap/ap_drv_ops.c b/src/ap/ap_drv_ops.c
+index bd71083..9da8f8b 100644
+--- a/src/ap/ap_drv_ops.c
++++ b/src/ap/ap_drv_ops.c
+@@ -1399,6 +1399,7 @@ int hostapd_drv_txpower_ctrl(struct hostapd_data *hapd)
+ {
+ 	s8 link_id = -1, sku_idx = hapd->iconf->sku_idx, ret = 0, i;
+ 	s8 **afc_power_table = NULL;
++	int lpi_mode = 0;
+ 
+ 	if (!hapd->driver || !hapd->driver->txpower_ctrl)
+ 		return 0;
+@@ -1407,6 +1408,7 @@ int hostapd_drv_txpower_ctrl(struct hostapd_data *hapd)
+ 		link_id = hapd->mld_link_id;
+ 
+ #ifdef CONFIG_AFC
++	lpi_mode = hapd->iface->afc.lpi_mode;
+ 	if (hapd->iface->current_mode->is_6ghz &&
+ 	    he_reg_is_sp(hapd->iface->conf->he_6ghz_reg_pwr_type) &&
+ 	    !hapd->iface->afc.lpi_mode) {
+@@ -1424,7 +1426,7 @@ int hostapd_drv_txpower_ctrl(struct hostapd_data *hapd)
+ 					 hapd->iconf->lpi_bcn_enhance,
+ 					 link_id,
+ 					 afc_power_table,
+-					 hapd->iface->afc.lpi_mode);
++					 lpi_mode);
+ #ifdef CONFIG_AFC
+ out:
+ 	if (afc_power_table)
+diff --git a/src/ap/hostapd.h b/src/ap/hostapd.h
+index 0625bb7..643506f 100644
+--- a/src/ap/hostapd.h
++++ b/src/ap/hostapd.h
+@@ -869,7 +869,7 @@ static inline void hostap_afc_disable_channels(struct hostapd_iface *iface)
+ {
+ }
+ 
+-int hostapd_afc_translate_table(struct hostapd_iface *iface,
++static inline int hostapd_afc_translate_table(struct hostapd_iface *iface,
+ 				 s8 ***power_table)
+ {
+ 	return -EINVAL;
+diff --git a/src/drivers/driver_nl80211.c b/src/drivers/driver_nl80211.c
+index a08afb5..414d0df 100644
+--- a/src/drivers/driver_nl80211.c
++++ b/src/drivers/driver_nl80211.c
+@@ -15708,12 +15708,12 @@ static int nl80211_txpower_ctrl(void *priv, u8 lpi_psd, u8 sku_idx, u8 lpi_bcn_e
+ 
+ 	if (link_id > -1)
+ 		nla_put_u8(msg, MTK_VENDOR_ATTR_TXPOWER_CTRL_LINK_ID, link_id);
+-
++#ifdef CONFIG_AFC
+ 	if (power_table && *power_table) {
+ 		nla_put(msg, MTK_VENDOR_ATTR_TXPOWER_CTRL_AFC_TABLE,
+ 		        MAX_CHANNEL_NUM_6G * afc_power_table_num, power_table);
+ 	}
+-
++#endif
+ 	nla_put_u8(msg, MTK_VENDOR_ATTR_TXPOWER_CTRL_AFC_LPI, lpi_mode);
+ 	nla_nest_end(msg, data);
+ 	ret = send_and_recv_cmd(drv, msg);
+diff --git a/wpa_supplicant/Makefile b/wpa_supplicant/Makefile
+index d2982cb..23a3e44 100644
+--- a/wpa_supplicant/Makefile
++++ b/wpa_supplicant/Makefile
+@@ -1082,6 +1082,7 @@ endif
+ ifdef CONFIG_IEEE80211BE
+ CONFIG_IEEE80211AX=y
+ CFLAGS += -DCONFIG_IEEE80211BE
++OBJS += ../src/ap/scs.o
+ endif
+ ifdef CONFIG_IEEE80211AX
+ CFLAGS += -DCONFIG_IEEE80211AX

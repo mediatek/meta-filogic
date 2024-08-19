@@ -2,7 +2,7 @@ SUMMARY = "User space daemon for extended IEEE 802.11 management"
 HOMEPAGE = "http://w1.fi/hostapd/"
 SECTION = "kernel/userland"
 LICENSE = "BSD-3-Clause"
-LIC_FILES_CHKSUM = "file://hostapd/README;md5=c905478466c90f1cefc0df987c40e172"
+LIC_FILES_CHKSUM = "file://hostapd/README;md5=0e430ef1be3d6eebf257cf493fc7661d"
 
 DEPENDS = "libnl-tiny openssl ubus ucode udebug"
 DEPENDS_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'telemetry2_0', 'telemetry', '', d)}"
@@ -12,7 +12,7 @@ RDEPENDS_${PN} += "gawk ucode udebug"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches-${PV}:"
 
-SRCREV ?= "07c9f183ea744ac04585fb6dd10220c75a5e2e74"
+SRCREV ?= "7e0e69cfeac300414ef0492bc76a2aa164443249"
 SRC_URI = " \
     git://w1.fi/hostap.git;protocol=https;branch=main \
     file://hostapd-full.config \
@@ -71,6 +71,10 @@ do_configure_append() {
     echo "CONFIG_LIBNL20=y" >> ${B}/.config
     echo "CONFIG_LIBNL_TINY=y" >> ${B}/.config
     echo "CONFIG_AFC=y" >> ${B}/.config
+    echo "CONFIG_SAE_PK=y" >> ${B}/.config
+    echo "CONFIG_HS20=y" >> ${B}/.config
+    echo "CONFIG_HE_OVERRIDES=y" >> ${B}/.config
+    echo "CONFIG_EHT_OVERRIDES=y" >> ${B}/.config
 }
 
 do_filogic_patches() {

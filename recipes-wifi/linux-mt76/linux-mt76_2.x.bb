@@ -42,7 +42,6 @@ PKG_MAKE_FLAGS = " \
     CONFIG_MAC80211_DEBUGFS=y \
     CONFIG_NL80211_TESTMODE=y \
     CONFIG_MT76_CONNAC_LIB=m \
-    CONFIG_MT7615_COMMON=m \
     CONFIG_MT7915E=m \
     CONFIG_MT798X_WMAC=y \
     "
@@ -72,11 +71,9 @@ do_make_scripts[depends] += "virtual/kernel:do_shared_workdir"
 do_install() {
     # Module
     install -d ${D}/lib/modules/${KERNEL_VERSION}/updates/drivers/net/wireless/mediatek/mt76/
-    install -d ${D}/lib/modules/${KERNEL_VERSION}/updates/drivers/net/wireless/mediatek/mt76/mt7615/
     install -d ${D}/lib/modules/${KERNEL_VERSION}/updates/drivers/net/wireless/mediatek/mt76/mt7915/
     install -m 0644 ${B}/mt76.ko ${D}/lib/modules/${KERNEL_VERSION}/updates/drivers/net/wireless/mediatek/mt76/
     install -m 0644 ${B}/mt76-connac-lib.ko ${D}/lib/modules/${KERNEL_VERSION}/updates/drivers/net/wireless/mediatek/mt76/
-    install -m 0644 ${B}/mt7615/mt7615-common.ko ${D}/lib/modules/${KERNEL_VERSION}/updates/drivers/net/wireless/mediatek/mt76/mt7615/
     install -m 0644 ${B}/mt7915/mt7915e.ko ${D}/lib/modules/${KERNEL_VERSION}/updates/drivers/net/wireless/mediatek/mt76/mt7915/
 }
 

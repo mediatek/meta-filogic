@@ -1,7 +1,7 @@
-From eebe902614c5e2759492afcd1f84665d241077cb Mon Sep 17 00:00:00 2001
+From fd382c52114f01db7d28f60b3e8917b4c9dfd301 Mon Sep 17 00:00:00 2001
 From: Rex Lu <rex.lu@mediatek.com>
 Date: Mon, 11 Dec 2023 19:21:16 +0800
-Subject: [PATCH 3/4] wifi: mt76: mt7915: support backaward compatiable
+Subject: [PATCH 2015/2015] wifi: mt76: mt7915: support backaward compatiable
 
 ---
  mt7915/mmio.c | 4 ++--
@@ -9,7 +9,7 @@ Subject: [PATCH 3/4] wifi: mt76: mt7915: support backaward compatiable
  2 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/mt7915/mmio.c b/mt7915/mmio.c
-index 142f308..11db3ed 100644
+index ab807369..1ea91676 100644
 --- a/mt7915/mmio.c
 +++ b/mt7915/mmio.c
 @@ -697,7 +697,7 @@ int mt7915_mmio_wed_init(struct mt7915_dev *dev, void *pdev_ptr,
@@ -31,7 +31,7 @@ index 142f308..11db3ed 100644
  
  	wed->wlan.nbuf = is_mt7915(&dev->mt76) ?
 diff --git a/wed.c b/wed.c
-index 5ed681e..652f59e 100644
+index 5ed681ed..652f59e1 100644
 --- a/wed.c
 +++ b/wed.c
 @@ -175,7 +175,7 @@ int mt76_wed_dma_setup(struct mt76_dev *dev, struct mt76_queue *q, bool reset)
