@@ -162,6 +162,8 @@ SRC_URI_append = " \
     file://999-2374-drivers-spi-mt65xx-Add-controller-calibration-parameter.patch \
     file://999-2375-spi-update-driver.patch \
     file://999-2376-drivers-spi-mt65xx-add-dts-buswidth-flow.patch \
+    file://999-2377-integrate-ONFI-and-CASN-manipulation.patch \
+    file://999-2378-Add-CASN-support-for-SPI-NAND.patch \
     file://999-2380-fix-dirty-race-between-do_tmpfile.patch \
     file://999-2500-cpufreq-add-the-missing-platform-driver-unregister.patch \
     file://999-2501-cpufreq-Enable-clocks-and-regulators.patch \

@@ -623,9 +623,11 @@ static int mtk_mac_prepare(struct phylink_config *config, unsigned int mode,
 {
 	struct mtk_mac *mac = container_of(config, struct mtk_mac,
 					   phylink_config);
+	struct mtk_eth *eth = mac->hw;
 	u32 val;
 
-	if (mac->type == MTK_XGDM_TYPE && mac->id != MTK_GMAC1_ID) {
+	if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V3) &&
+	    mac->id != MTK_GMAC1_ID) {
 		val = mtk_r32(mac->hw, MTK_XMAC_MCR(mac->id));
 		val &= 0xfffffff0;
 		val |= XMAC_MCR_TRX_DISABLE;
@@ -970,10 +972,10 @@ static void mtk_gdm_fsm_poll(struct mtk_mac *mac)
 			__func__, gdm_fsm, mac_fsm);
 }
 
-static void mtk_pse_port_link_set(struct mtk_mac *mac, bool up,
-				  phy_interface_t interface)
+static void mtk_pse_set_mac_port_link(struct mtk_mac *mac, bool up,
+				      phy_interface_t interface)
 {
-	u32 fe_glo_cfg, val = 0, port = 0;
+	u32 port = 0;
 
 	if (!up && interface == PHY_INTERFACE_MODE_XGMII) {
 		void __iomem *base;
@@ -995,26 +997,18 @@ static void mtk_pse_port_link_set(struct mtk_mac *mac, bool up,
 	switch (mac->id) {
 	case MTK_GMAC1_ID:
 		port = PSE_GDM1_PORT;
-		val = MTK_FE_LINK_DOWN_PORT(port);
 		break;
 	case MTK_GMAC2_ID:
 		port = PSE_GDM2_PORT;
-		val = MTK_FE_LINK_DOWN_PORT(port);
 		break;
 	case MTK_GMAC3_ID:
 		port = PSE_GDM3_PORT;
-		val = MTK_FE_LINK_DOWN_PORT(port);
 		break;
+	default:
+		return;
 	}
 
-	fe_glo_cfg = mtk_r32(mac->hw, MTK_FE_GLO_CFG(port));
-
-	if (!up)
-		fe_glo_cfg |= val;
-	else
-		fe_glo_cfg &= ~val;
-
-	mtk_w32(mac->hw, fe_glo_cfg, MTK_FE_GLO_CFG(port));
+	mtk_pse_set_port_link(mac->hw, port, up);
 	mtk_gdm_fsm_poll(mac);
 }
 
@@ -1027,7 +1021,7 @@ static void mtk_mac_link_down(struct phylink_config *config, unsigned int mode,
 	unsigned int id;
 	u32 mcr, sts;
 
-	mtk_pse_port_link_set(mac, false, interface);
+	mtk_pse_set_mac_port_link(mac, false, interface);
 	if (mac->type == MTK_GDM_TYPE) {
 		mcr = mtk_r32(mac->hw, MTK_MAC_MCR(mac->id));
 		mcr &= ~(MAC_MCR_TX_EN | MAC_MCR_RX_EN | MAC_MCR_FORCE_LINK);
@@ -1209,7 +1203,7 @@ static void mtk_mac_link_up(struct phylink_config *config, unsigned int mode,
 		mcr &= ~(XMAC_MCR_TRX_DISABLE);
 		mtk_w32(mac->hw, mcr, MTK_XMAC_MCR(mac->id));
 	}
-	mtk_pse_port_link_set(mac, true, interface);
+	mtk_pse_set_mac_port_link(mac, true, interface);
 }
 
 static void mtk_validate(struct phylink_config *config,
@@ -2162,7 +2156,8 @@ static int mtk_tx_map(struct sk_buff *skb, struct net_device *dev,
 			}
 
 			memset(&txd_info, 0, sizeof(struct mtk_tx_dma_desc_info));
-			txd_info.size = min(frag_size, eth->soc->txrx.dma_max_len);
+			txd_info.size = min_t(unsigned int, frag_size,
+					      eth->soc->txrx.dma_max_len);
 			txd_info.qid = queue;
 			txd_info.last = i == skb_shinfo(skb)->nr_frags - 1 &&
 					!(frag_size - txd_info.size);
@@ -2322,7 +2317,6 @@ static int mtk_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	struct netdev_queue *txq;
 	bool gso = false;
 	int tx_num;
-	int i = 0;
 	int qid = skb_get_queue_mapping(skb);
 
 	/* normally we can rely on the stack not calling this more than once,
@@ -3254,8 +3248,11 @@ static void mtk_hwlro_rx_uninit(struct mtk_eth *eth)
 	}
 
 	/* invalidate lro rings */
-	for (i = 0; i < MTK_HW_LRO_RING_NUM; i++)
-		mtk_w32(eth, 0, reg_map->pdma.lro_rx_ctrl_dw0 + 0x8 + (i * 0x40));
+	for (i = 0; i < MTK_HW_LRO_RING_NUM; i++) {
+		int idx = MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_RX_V2) ? i : i + 1;
+
+		mtk_w32(eth, 0, reg_map->pdma.lro_rx_ctrl_dw0 + 0x8 + (idx * 0x40));
+	}
 
 	/* disable HW LRO */
 	mtk_w32(eth, 0, reg_map->pdma.lro_ctrl_dw0);
@@ -3763,11 +3760,21 @@ static int mtk_dma_init(struct mtk_eth *eth)
 static void mtk_dma_free(struct mtk_eth *eth)
 {
 	const struct mtk_soc_data *soc = eth->soc;
-	int i;
+	int i, j, txqs;
 
-	for (i = 0; i < MTK_MAC_COUNT; i++)
-		if (eth->netdev[i])
-			netdev_reset_queue(eth->netdev[i]);
+	if (MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA))
+		txqs = MTK_QDMA_TX_NUM;
+	else
+		txqs = MTK_PDMA_TX_NUM;
+
+	for (i = 0; i < MTK_MAC_COUNT; i++) {
+		if (!eth->netdev[i])
+			continue;
+
+		for (j = 0; j < txqs; j++)
+			netdev_tx_reset_queue(netdev_get_tx_queue(eth->netdev[i], j));
+	}
+
 	if ( !eth->soc->has_sram && eth->scratch_ring) {
 		dma_free_coherent(eth->dma_dev,
 				  soc->txrx.fq_dma_size * soc->txrx.txd_size,
@@ -3859,8 +3866,8 @@ static irqreturn_t mtk_handle_irq_txrx(int irq, void *priv)
 	const struct mtk_reg_map *reg_map = eth->soc->reg_map;
 
 	if (tx_ring) {
-		if (unlikely(!(mtk_r32(eth, eth->soc->reg_map->pdma.irq_status) &
-			       mtk_r32(eth, eth->soc->reg_map->pdma.irq_mask) &
+		if (unlikely(!(mtk_r32(eth, reg_map->pdma.irq_status) &
+			       mtk_r32(eth, reg_map->pdma.irq_mask) &
 			       MTK_TX_DONE_INT(tx_ring->ring_no))))
 			return IRQ_NONE;
 
@@ -3869,8 +3876,8 @@ static irqreturn_t mtk_handle_irq_txrx(int irq, void *priv)
 			__napi_schedule(&txrx_napi->napi);
 		}
 	} else {
-		if (unlikely(!(mtk_r32(eth, eth->soc->reg_map->pdma.irq_status) &
-			       mtk_r32(eth, eth->soc->reg_map->pdma.irq_mask) &
+		if (unlikely(!(mtk_r32(eth, reg_map->pdma.irq_status) &
+			       mtk_r32(eth, reg_map->pdma.irq_mask) &
 			       MTK_RX_DONE_INT(rx_ring->ring_no))))
 			return IRQ_NONE;
 
@@ -4739,6 +4746,8 @@ static void mtk_pending_work(struct work_struct *work)
 	mtk_prepare_reset_ppe(eth, 0);
 	if (MTK_HAS_CAPS(eth->soc->caps, MTK_RSTCTRL_PPE1))
 		mtk_prepare_reset_ppe(eth, 1);
+	if (MTK_HAS_CAPS(eth->soc->caps, MTK_RSTCTRL_PPE2))
+		mtk_prepare_reset_ppe(eth, 2);
 
 	/* Adjust FE configurations to prepare for reset */
 	mtk_prepare_reset_fe(eth);
@@ -4757,7 +4766,7 @@ static void mtk_pending_work(struct work_struct *work)
 				eth->netdev[i]);
 		}
 		rtnl_unlock();
-		if (wait_for_completion_timeout(&wait_ser_done, 3000)) {
+		if (wait_for_completion_timeout(&wait_ser_done, msecs_to_jiffies(3000))) {
 			if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V3) &&
 			    (mtk_stop_fail)) {
 				pr_info("send MTK_FE_START_RESET stop\n");
@@ -4766,8 +4775,9 @@ static void mtk_pending_work(struct work_struct *work)
 							 eth->netdev[i]);
 				rtnl_unlock();
 				if (!wait_for_completion_timeout(&wait_ser_done,
-								 3000))
+								 msecs_to_jiffies(3000)))
 					pr_warn("wait for MTK_FE_START_RESET\n");
+				mtk_stop_fail = 0;
 			}
 			pr_warn("wait for MTK_FE_START_RESET\n");
 		}

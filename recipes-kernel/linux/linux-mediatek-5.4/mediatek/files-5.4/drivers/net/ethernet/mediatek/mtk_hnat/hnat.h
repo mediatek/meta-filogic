@@ -17,6 +17,7 @@
 #include <linux/string.h>
 #include <linux/if.h>
 #include <linux/if_ether.h>
+#include <net/dsa.h>
 #include <net/netevent.h>
 #include <net/netfilter/nf_conntrack_zones.h>
 #include <linux/mod_devicetable.h>
@@ -192,6 +193,7 @@
 #define TTL0_DRP (0x1 << 4) /* RW */
 #define MCAST_TB_EN (0x1 << 7) /* RW */
 #define MCAST_HASH (0x3 << 12) /* RW */
+#define NEW_IPV4_ID_INC_EN (0x1 << 20) /* RW */
 #define SP_CMP_EN (0x1 << 25) /* RW */
 
 #define MC_P3_PPSE (0xf << 12) /* RW */
@@ -1286,30 +1288,19 @@ static inline void hnat_check_release_entry_lock(struct foe_entry *entry)
 		hnat_set_entry_lock(entry, false);
 }
 
-#if defined(CONFIG_NET_DSA_MT7530)
-u32 hnat_dsa_fill_stag(const struct net_device *netdev,
+int hnat_dsa_fill_stag(const struct net_device *netdev,
 		       struct foe_entry *entry,
 		       struct flow_offload_hw_path *hw_path,
 		       u16 eth_proto, int mape);
-
+int hnat_dsa_get_port(struct net_device **dev);
 static inline bool hnat_dsa_is_enable(struct mtk_hnat *priv)
 {
+#if defined(CONFIG_NET_DSA)
 	return (priv->wan_dsa_port != NONE_DSA_PORT);
-}
 #else
-static inline u32 hnat_dsa_fill_stag(const struct net_device *netdev,
-				     struct foe_entry *entry,
-				     struct flow_offload_hw_path *hw_path,
-				     u16 eth_proto, int mape)
-{
-	return 0;
-}
-
-static inline bool hnat_dsa_is_enable(struct mtk_hnat *priv)
-{
 	return false;
-}
 #endif
+}
 
 void hnat_deinit_debugfs(struct mtk_hnat *h);
 int hnat_init_debugfs(struct mtk_hnat *h);
@@ -1350,6 +1341,7 @@ void exclude_boundary_entry(struct foe_entry *foe_table_cpu);
 void set_gmac_ppe_fwd(int gmac_no, int enable);
 int entry_detail(u32 ppe_id, int index);
 int entry_delete_by_mac(u8 *mac);
+int entry_delete_by_ip(bool is_ipv4, void *addr);
 int entry_delete(u32 ppe_id, int index);
 int hnat_warm_init(void);
 u32 hnat_get_ppe_hash(struct foe_entry *entry);

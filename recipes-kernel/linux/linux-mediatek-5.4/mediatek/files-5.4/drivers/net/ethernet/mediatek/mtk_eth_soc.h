@@ -71,8 +71,10 @@
 #define MTK_RSS_MAX_INDIRECTION_TABLE	128
 
 /* Frame Engine Global Configuration */
-#define MTK_FE_GLO_CFG(port)	((port < 8) ? 0x0 : 0x24)
-#define MTK_FE_LINK_DOWN_PORT(x)	((x < 8) ? (1 << (8 + x)) : (1 << (x - 8)))
+#define MTK_FE_GLO_CFG(x)	((x < 8) ? 0x0 : 0x24)
+#define MTK_FE_LINK_DOWN_P(x)	((x < 8) ? FIELD_PREP(GENMASK(15, 8), BIT(x)) :	\
+					   FIELD_PREP(GENMASK(7, 0), BIT(x - 8)))
+
 /* Frame Engine Global Reset Register */
 #define MTK_RST_GL		0x04
 #define RST_GL_PSE		BIT(0)
@@ -539,6 +541,7 @@
 #define MTK_WDMA_GLO_CFG(x)	(WDMA_BASE(x) + 0x204)
 #define MTK_WDMA_TX_DBG_MON0(x)	(WDMA_BASE(x) + 0x230)
 #define MTK_WDMA_RX_DBG_MON1(x)	(WDMA_BASE(x) + 0x3c4)
+#define MTK_WDMA_RX_MAX_CNT(x)	(WDMA_BASE(x) + 0x104)
 #define MTK_WDMA_CRX_PTR(x)	(WDMA_BASE(x) + 0x108)
 #define MTK_WDMA_DRX_PTR(x)	(WDMA_BASE(x) + 0x10C)
 #define MTK_CDM_FS_PARSER_FSM_MASK	GENMASK(27, 24)
@@ -892,6 +895,10 @@
 /* ethernet reset check idle register */
 #define ETHSYS_FE_RST_CHK_IDLE_EN 	0x28
 
+/* ethernet non-idle check register */
+#define ETHSYS_LP_NONE_IDLE_LAT0 (0x144)
+#define ETHSYS_LP_NONE_IDLE_LAT1 (0x148)
+
 /* ethernet dma channel agent map */
 #define ETHSYS_DMA_AG_MAP	0x408
 #define ETHSYS_DMA_AG_MAP_PDMA	BIT(0)
@@ -1005,6 +1012,12 @@
 #define USXGMII_LPA_DUPLEX	BIT(12)
 #define USXGMII_LPA_LINK	BIT(15)
 #define USXGMII_LPA_LATCH	BIT(31)
+
+/* Register to QPHY wrapper control */
+#define RG_PHY_TOP_CTRL0	0x82C
+#define USXGMII_PN_SWAP_MASK	GENMASK(1, 0)
+#define USXGMII_PN_SWAP_RX	BIT(1)
+#define USXGMII_PN_SWAP_TX	BIT(0)
 
 /* Register to read PCS Link status */
 #define RG_PCS_RX_STATUS0	0x904
@@ -1775,16 +1788,18 @@ struct mtk_sgmii_pcs {
 	struct mtk_eth		*eth;
 	struct regmap		*regmap;
 	struct regmap		*regmap_pextp;
-	spinlock_t		regmap_lock;
+	struct mutex		regmap_lock;
+	struct mutex		reset_lock;
 	phy_interface_t		interface;
 	__ETHTOOL_DECLARE_LINK_MODE_MASK(advertising);
-	unsigned long		link_poll_inband;
+	unsigned long		link_poll_expire;
 	unsigned int		mode;
 	u32			flags;
 	u32			ana_rgc3;
 	u32			polarity;
 	u8			id;
-	struct timer_list	link_poll_outband;
+	struct phylink_link_state	state;
+	struct delayed_work	link_poll;
 	struct phylink_pcs	pcs;
 };
 
@@ -1812,12 +1827,15 @@ struct mtk_usxgmii_pcs {
 	struct mtk_eth		*eth;
 	struct regmap		*regmap;
 	struct regmap		*regmap_pextp;
-	spinlock_t		regmap_lock;
+	struct mutex		regmap_lock;
+	struct mutex		reset_lock;
 	phy_interface_t		interface;
-	unsigned long		link_poll_inband;
+	unsigned long		link_poll_expire;
 	unsigned int		mode;
+	u32			polarity;
 	u8			id;
-	struct timer_list	link_poll_outband;
+	struct phylink_link_state	state;
+	struct delayed_work	link_poll;
 	struct phylink_pcs	pcs;
 };
 

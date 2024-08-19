@@ -843,7 +843,7 @@ static unsigned int
 mtk_hnat_ipv4_nf_pre_routing(void *priv, struct sk_buff *skb,
 			     const struct nf_hook_state *state)
 {
-	struct flow_offload_hw_path hw_path;
+	struct flow_offload_hw_path hw_path = { 0 };
 
 	if (!skb)
 		goto drop;
@@ -998,7 +998,7 @@ drop:
 	return NF_DROP;
 }
 
-static unsigned int hnat_ipv6_get_nexthop(struct sk_buff *skb,
+static int hnat_ipv6_get_nexthop(struct sk_buff *skb,
 					  const struct net_device *out,
 					  struct flow_offload_hw_path *hw_path)
 {
@@ -1056,7 +1056,7 @@ static unsigned int hnat_ipv6_get_nexthop(struct sk_buff *skb,
 	return 0;
 }
 
-static unsigned int hnat_ipv4_get_nexthop(struct sk_buff *skb,
+static int hnat_ipv4_get_nexthop(struct sk_buff *skb,
 					  const struct net_device *out,
 					  struct flow_offload_hw_path *hw_path)
 {
@@ -1065,10 +1065,13 @@ static unsigned int hnat_ipv4_get_nexthop(struct sk_buff *skb,
 	struct dst_entry *dst = skb_dst(skb);
 	struct rtable *rt = (struct rtable *)dst;
 	struct net_device *dev = (__force struct net_device *)out;
+	struct ethhdr *eth;
 
 	if (hw_path->flags & FLOW_OFFLOAD_PATH_PPPOE) {
+		rcu_read_lock_bh();
 		memcpy(eth_hdr(skb)->h_source, hw_path->eth_src, ETH_ALEN);
 		memcpy(eth_hdr(skb)->h_dest, hw_path->eth_dest, ETH_ALEN);
+		rcu_read_unlock_bh();
 		return 0;
 	}
 
@@ -1088,8 +1091,15 @@ static unsigned int hnat_ipv4_get_nexthop(struct sk_buff *skb,
 		return -1;
 	}
 
-	memcpy(eth_hdr(skb)->h_dest, neigh->ha, ETH_ALEN);
-	memcpy(eth_hdr(skb)->h_source, out->dev_addr, ETH_ALEN);
+	if (ip_hdr(skb)->protocol == IPPROTO_IPV6)
+		/* 6RD LAN->WAN(6to4) */
+		eth = (struct ethhdr *)(skb->data - ETH_HLEN);
+	else
+		eth = eth_hdr(skb);
+
+	memcpy(eth->h_dest, neigh->ha, ETH_ALEN);
+	memcpy(eth->h_source, out->dev_addr, ETH_ALEN);
+	eth->h_proto = htons(ETH_P_IP);
 
 	rcu_read_unlock_bh();
 
@@ -1224,8 +1234,10 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 				     struct foe_entry *foe,
 				     struct flow_offload_hw_path *hw_path)
 {
+	struct net_device *master_dev = (struct net_device *)dev;
 	struct foe_entry entry = { 0 };
 	int whnat = IS_WHNAT(dev);
+	struct mtk_mac *mac;
 	struct ethhdr *eth;
 	struct iphdr *iph;
 	struct ipv6hdr *ip6h;
@@ -1235,15 +1247,17 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 	enum ip_conntrack_info ctinfo;
 	int gmac = NR_DISCARD;
 	int udp = 0;
+	int port_id = 0;
 	u32 qid = 0;
-	u32 port_id = 0;
 	u32 payload_len = 0;
 	int mape = 0;
-	struct mtk_mac *mac = netdev_priv(dev);
 
 	if (ipv6_hdr(skb)->nexthdr == NEXTHDR_IPIP)
 		/* point to ethernet header for DS-Lite and MapE */
 		eth = get_ipv6_ipip_ethhdr(skb, hw_path);
+	else if (ip_hdr(skb)->protocol == IPPROTO_IPV6)
+		/* 6RD LAN->WAN(6to4) */
+		eth = (struct ethhdr *)(skb->data - ETH_HLEN);
 	else
 		eth = eth_hdr(skb);
 
@@ -1381,6 +1395,44 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 			entry.ipv4_hnapt.bfib1.udp = udp;
 			break;
 
+		case IPPROTO_IPV6:
+			/* 6RD LAN->WAN(6to4) */
+			if (entry.bfib1.pkt_type == IPV6_6RD) {
+				entry.ipv6_6rd.ipv6_sip0 = foe->ipv6_6rd.ipv6_sip0;
+				entry.ipv6_6rd.ipv6_sip1 = foe->ipv6_6rd.ipv6_sip1;
+				entry.ipv6_6rd.ipv6_sip2 = foe->ipv6_6rd.ipv6_sip2;
+				entry.ipv6_6rd.ipv6_sip3 = foe->ipv6_6rd.ipv6_sip3;
+
+				entry.ipv6_6rd.ipv6_dip0 = foe->ipv6_6rd.ipv6_dip0;
+				entry.ipv6_6rd.ipv6_dip1 = foe->ipv6_6rd.ipv6_dip1;
+				entry.ipv6_6rd.ipv6_dip2 = foe->ipv6_6rd.ipv6_dip2;
+				entry.ipv6_6rd.ipv6_dip3 = foe->ipv6_6rd.ipv6_dip3;
+
+				entry.ipv6_6rd.sport = foe->ipv6_6rd.sport;
+				entry.ipv6_6rd.dport = foe->ipv6_6rd.dport;
+				entry.ipv6_6rd.tunnel_sipv4 = ntohl(iph->saddr);
+				entry.ipv6_6rd.tunnel_dipv4 = ntohl(iph->daddr);
+				entry.ipv6_6rd.hdr_chksum = ppe_get_chkbase(iph);
+				entry.ipv6_6rd.flag = (ntohs(iph->frag_off) >> 13);
+				entry.ipv6_6rd.ttl = iph->ttl;
+				entry.ipv6_6rd.dscp = iph->tos;
+				entry.ipv6_6rd.per_flow_6rd_id = 1;
+				entry.ipv6_6rd.vlan1 = hw_path->vlan_id;
+				if (hnat_priv->data->per_flow_accounting)
+					entry.ipv6_6rd.iblk2.mibf = 1;
+
+				ip6h = (struct ipv6hdr *)skb_inner_network_header(skb);
+				if (ip6h->nexthdr == NEXTHDR_UDP)
+					entry.ipv6_6rd.bfib1.udp = 1;
+
+#if defined(CONFIG_MEDIATEK_NETSYS_V3)
+				entry.ipv6_6rd.eg_keep_ecn = 1;
+				entry.ipv6_6rd.eg_keep_cls = 1;
+#endif
+				break;
+			}
+
+			return -1;
 		default:
 			return -1;
 		}
@@ -1640,41 +1692,7 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 		break;
 
 	default:
-		iph = ip_hdr(skb);
-		switch (entry.bfib1.pkt_type) {
-		case IPV6_6RD: /* 6RD LAN->WAN */
-			entry.ipv6_6rd.ipv6_sip0 = foe->ipv6_6rd.ipv6_sip0;
-			entry.ipv6_6rd.ipv6_sip1 = foe->ipv6_6rd.ipv6_sip1;
-			entry.ipv6_6rd.ipv6_sip2 = foe->ipv6_6rd.ipv6_sip2;
-			entry.ipv6_6rd.ipv6_sip3 = foe->ipv6_6rd.ipv6_sip3;
-
-			entry.ipv6_6rd.ipv6_dip0 = foe->ipv6_6rd.ipv6_dip0;
-			entry.ipv6_6rd.ipv6_dip1 = foe->ipv6_6rd.ipv6_dip1;
-			entry.ipv6_6rd.ipv6_dip2 = foe->ipv6_6rd.ipv6_dip2;
-			entry.ipv6_6rd.ipv6_dip3 = foe->ipv6_6rd.ipv6_dip3;
-
-			entry.ipv6_6rd.sport = foe->ipv6_6rd.sport;
-			entry.ipv6_6rd.dport = foe->ipv6_6rd.dport;
-			entry.ipv6_6rd.tunnel_sipv4 = ntohl(iph->saddr);
-			entry.ipv6_6rd.tunnel_dipv4 = ntohl(iph->daddr);
-			entry.ipv6_6rd.hdr_chksum = ppe_get_chkbase(iph);
-			entry.ipv6_6rd.flag = (ntohs(iph->frag_off) >> 13);
-			entry.ipv6_6rd.ttl = iph->ttl;
-			entry.ipv6_6rd.dscp = iph->tos;
-			entry.ipv6_6rd.per_flow_6rd_id = 1;
-			entry.ipv6_6rd.vlan1 = hw_path->vlan_id;
-			if (hnat_priv->data->per_flow_accounting)
-				entry.ipv6_6rd.iblk2.mibf = 1;
-
-#if defined(CONFIG_MEDIATEK_NETSYS_V3)
-			entry.ipv6_6rd.eg_keep_ecn = 1;
-			entry.ipv6_6rd.eg_keep_cls = 1;
-#endif
-			break;
-
-		default:
-			return -1;
-		}
+		return -1;
 	}
 
 	/* Fill Layer2 Info.*/
@@ -1683,33 +1701,25 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 	/* Fill Info Blk*/
 	entry = ppe_fill_info_blk(eth, entry, hw_path);
 
-	if (IS_LAN(dev)) {
-		if (IS_BOND_MODE) {
+	if (IS_LAN_GRP(dev) || IS_WAN(dev)) { /* Forward to GMAC Ports */
+		port_id = hnat_dsa_get_port(&master_dev);
+		if (port_id >= 0) {
+			if (hnat_dsa_fill_stag(dev, &entry, hw_path,
+					       ntohs(eth->h_proto), mape) < 0)
+				return 0;
+		}
+
+		mac = netdev_priv(master_dev);
+		gmac = HNAT_GMAC_FP(mac->id);
+
+		if (IS_LAN(dev) && IS_BOND_MODE) {
 			gmac = ((skb_hnat_entry(skb) >> 1) % hnat_priv->gmac_num) ?
 				 NR_GMAC2_PORT : NR_GMAC1_PORT;
-		} else if (IS_DSA_LAN(dev)) {
-			port_id = hnat_dsa_fill_stag(dev, &entry, hw_path,
-						     ntohs(eth->h_proto),
-						     mape);
-			gmac = NR_GMAC1_PORT;
-		} else {
-			gmac = HNAT_GMAC_FP(mac->id);
-		}
-	} else if (IS_LAN2(dev)) {
-		gmac = HNAT_GMAC_FP(mac->id);
-	} else if (IS_WAN(dev)) {
-		if (mape_toggle && mape == 1) {
+		} else if (IS_WAN(dev) && mape_toggle && mape == 1) {
 			gmac = NR_PDMA_PORT;
 			/* Set act_dp = wan_dev */
 			entry.ipv4_hnapt.act_dp &= ~UDF_PINGPONG_IFIDX;
 			entry.ipv4_hnapt.act_dp |= dev->ifindex & UDF_PINGPONG_IFIDX;
-		} else if (IS_DSA_WAN(dev)) {
-			port_id = hnat_dsa_fill_stag(dev, &entry, hw_path,
-						     ntohs(eth->h_proto),
-						     mape);
-			gmac = NR_GMAC1_PORT;
-		} else {
-			gmac = HNAT_GMAC_FP(mac->id);
 		}
 	} else if (IS_EXT(dev) && (FROM_GE_PPD(skb) || FROM_GE_LAN_GRP(skb) ||
 		   FROM_GE_WAN(skb) || FROM_GE_VIRTUAL(skb) || FROM_WED(skb))) {
@@ -1931,7 +1941,7 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 		/* We must ensure all info has been updated before set to hw */
 		wmb();
 		/* After other fields have been written, write info1 to BIND the entry */
-		foe->bfib1 = entry.bfib1;
+		memcpy(&foe->bfib1, &entry.bfib1, sizeof(entry.bfib1));
 
 		/* reset statistic for this entry */
 		if (hnat_priv->data->per_flow_accounting &&
@@ -2240,7 +2250,7 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 	/* We must ensure all info has been updated before set to hw */
 	wmb();
 	/* After other fields have been written, write info1 to BIND the entry */
-	hw_entry->bfib1 = entry.bfib1;
+	memcpy(&hw_entry->bfib1, &entry.bfib1, sizeof(entry.bfib1));
 
 	hnat_set_entry_lock(hw_entry, false);
 
@@ -2748,8 +2758,8 @@ int mtk_464xlat_post_process(struct sk_buff *skb, const struct net_device *out)
 
 static unsigned int mtk_hnat_nf_post_routing(
 	struct sk_buff *skb, const struct net_device *out,
-	unsigned int (*fn)(struct sk_buff *, const struct net_device *,
-			   struct flow_offload_hw_path *),
+	int (*fn)(struct sk_buff *, const struct net_device *,
+		  struct flow_offload_hw_path *),
 	const char *func)
 {
 	struct foe_entry *entry;
