@@ -1,0 +1,12 @@
+[Unit]
+Description=eip197_insmod
+After=tops_insmod.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh /usr/sbin/eip-197_insmod.sh
+ExecStartPost=/bin/sh -c '(/bin/touch /tmp/eip197_initialized)'
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
