@@ -126,6 +126,15 @@ gen_vht_cap() {
     echo vht_capab=$vht_capab >> /etc/hostapd-5G.conf
 }
 
+gen_he_6ghz_reg_pwr_type() { 
+    local config_file="$1"
+
+    if grep -q "^country_code=US" "$config_file"; then
+	sed -i "/^he_6ghz_reg_pwr_type=.*/c\he_6ghz_reg_pwr_type=0" "$config_file"
+	grep -q "^he_6ghz_reg_pwr_type" "$config_file" || echo "he_6ghz_reg_pwr_type=0" >> "$config_file"
+    fi
+}
+
 create_hostapdConf() {
 	devidx=0
 	phyidx=0
@@ -202,6 +211,7 @@ create_hostapdConf() {
         fi
 
         if [ "$band" == "6g" ]; then
+	    gen_he_6ghz_reg_pwr_type /etc/hostapd-6G.conf
             cp -f /etc/hostapd-6G.conf /nvram/hostapd"$devidx".conf
         fi
 
