@@ -52,6 +52,14 @@ void (*ppe_dev_register_hook)(struct net_device *dev) = NULL;
 EXPORT_SYMBOL(ppe_dev_register_hook);
 void (*ppe_dev_unregister_hook)(struct net_device *dev) = NULL;
 EXPORT_SYMBOL(ppe_dev_unregister_hook);
+int (*mtk_tnl_encap_offload)(struct sk_buff *skb, struct ethhdr *eth) = NULL;
+EXPORT_SYMBOL(mtk_tnl_encap_offload);
+int (*mtk_tnl_decap_offload)(struct sk_buff *skb) = NULL;
+EXPORT_SYMBOL(mtk_tnl_decap_offload);
+bool (*mtk_tnl_decap_offloadable)(struct sk_buff *skb) = NULL;
+EXPORT_SYMBOL(mtk_tnl_decap_offloadable);
+bool (*mtk_crypto_offloadable)(struct sk_buff *skb) = NULL;
+EXPORT_SYMBOL(mtk_crypto_offloadable);
 
 int (*hnat_set_wdma_pse_port_state)(u32 wdma_idx, bool up) = NULL;
 EXPORT_SYMBOL(hnat_set_wdma_pse_port_state);
@@ -65,6 +73,16 @@ static void hnat_sma_build_entry(struct timer_list *t)
 			     SMA, SMA_FWD_CPU_BUILD_ENTRY);
 }
 
+struct foe_entry *hnat_get_foe_entry(u32 ppe_id, u32 index)
+{
+	if (index == 0x7fff || index >= hnat_priv->foe_etry_num ||
+	    ppe_id >= CFG_PPE_NUM)
+		return ERR_PTR(-EINVAL);
+
+	return &hnat_priv->foe_table_cpu[ppe_id][index];
+}
+EXPORT_SYMBOL(hnat_get_foe_entry);
+
 void hnat_cache_ebl(int enable)
 {
 	int i;
@@ -75,6 +93,7 @@ void hnat_cache_ebl(int enable)
 		cr_set_field(hnat_priv->ppe_base[i] + PPE_CAH_CTRL, CAH_EN, enable);
 	}
 }
+EXPORT_SYMBOL(hnat_cache_ebl);
 
 static void hnat_reset_timestamp(struct timer_list *t)
 {
@@ -413,6 +432,16 @@ static int entry_delete_by_bssid_wcid(u32 wdma_idx, u16 bssid, u16 wcid)
 				if (entry->ipv4_hnapt.winfo.bssid != bssid ||
 				    entry->ipv4_hnapt.winfo.wcid != wcid ||
 				    entry->ipv4_hnapt.iblk2.dp != port)
+					continue;
+			} else if (IS_IPV4_MAPE(entry) || IS_IPV4_MAPT(entry)) {
+				if (entry->ipv4_mape.winfo.bssid != bssid ||
+				    entry->ipv4_mape.winfo.wcid != wcid ||
+				    entry->ipv4_mape.iblk2.dp != port)
+					continue;
+			} else if (IS_IPV6_HNAPT(entry) || IS_IPV6_HNAT(entry)) {
+				if (entry->ipv6_hnapt.winfo.bssid != bssid ||
+				    entry->ipv6_hnapt.winfo.wcid != wcid ||
+				    entry->ipv6_hnapt.iblk2.dp != port)
 					continue;
 			} else {
 				if (entry->ipv6_5t_route.winfo.bssid != bssid ||

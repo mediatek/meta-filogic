@@ -198,6 +198,7 @@ SRC_URI_append = " \
     file://999-2715-add-gpy211-phy-support.patch \
     file://999-2716-en8801sc-gphy-support.patch \
     file://999-2717-add-mediatek-2p5ge-phy-support.patch \
+    file://999-2718-backport-6.1x-mediatek-net-internal-phy-drivers.patch \
     file://999-2719-net-phy-aquantia-add-firmware-download.patch \
     file://999-2722-dt-bindings-phy-Add-PHY_TYPE_DP-definition.patch \
     file://999-2723-dt-bindings-phy-Add-PHY_TYPE_XPCS-definition.patch \
@@ -205,7 +206,6 @@ SRC_URI_append = " \
     file://999-2725-iwconfig-wireless-rate-fix.patch;apply=no \
     file://999-2727-net-phy-sfp-add-debug-info.patch.patch \
     file://999-2728-net-phy-aquantia-add-mib-read.patch \
-    file://999-2729-net-phy-remove-reporting-line-rate-to-mac.patch;apply=no \
     file://999-2730-net-phy-sfp-change-shared-mod-def0.patch \
     file://999-2731-add-default-setting-to-dsa-unused-port.patch \
     file://999-2732-net-dsa-add-MT7531-Gigabit-Ethernet-PHY-setting.patch \
@@ -223,6 +223,9 @@ SRC_URI_append = " \
     file://999-2739-net_dsa_add_tag_arht.patch \
     file://999-2740-crypto-add-eip197-aes-ctr-support.patch \
     file://999-2741-net-phy-aquantia-add-automatic-firmware-selection.patch \
+    file://999-2742-drivers-net-dsa-mxl862xx.patch \
+    file://999-2743-drivers-net-dsa-mxl862xx-kernel-compatible.patch;apply=no \
+    file://999-2744-drivers-net-phy-mxl862xx-mxl-gpy.patch \
     file://999-2800-misc-add-mtk-platform.patch \
     file://999-2850-fips-140-3-compliance.patch \
     file://999-2900-dts-mt7622-enable-new-mtk-snand-for-ubi.patch \

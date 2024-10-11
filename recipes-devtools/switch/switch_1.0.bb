@@ -26,6 +26,5 @@ do_compile() {
 
 do_install() {
     install -d ${D}/usr/sbin
-    install -d ${D}/lib/network
     install -m 0755 ${S}/switch ${D}/usr/sbin
 }

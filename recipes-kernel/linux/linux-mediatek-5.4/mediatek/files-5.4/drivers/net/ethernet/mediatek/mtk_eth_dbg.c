@@ -30,6 +30,13 @@
 #include "mtk_eth_dbg.h"
 #include "mtk_eth_reset.h"
 
+enum mt753x_presence {
+	MT753X_ABSENT = 0,
+	MT753X_PRESENT = 1,
+	MT753X_UNKNOWN = 0xffff,
+};
+
+enum mt753x_presence mt753x_presence = MT753X_UNKNOWN;
 u32 hw_lro_agg_num_cnt[MTK_HW_LRO_RING_NUM][MTK_HW_LRO_MAX_AGG_CNT + 1];
 u32 hw_lro_agg_size_cnt[MTK_HW_LRO_RING_NUM][16];
 u32 hw_lro_tot_agg_cnt[MTK_HW_LRO_RING_NUM];
@@ -42,6 +49,7 @@ u32 hw_lro_norule_flush_cnt[MTK_HW_LRO_RING_NUM];
 u32 mtk_hwlro_stats_ebl;
 u32 dbg_show_level;
 u32 cur_rss_num;
+int eth_debug_level;
 
 static struct proc_dir_entry *proc_hw_lro_stats, *proc_hw_lro_auto_tlb,
 			     *proc_rss_ctrl;
@@ -122,6 +130,35 @@ u32 mt7530_mdio_r32(struct mtk_eth *eth, u32 reg)
 	return (high << 16) | (low & 0xffff);
 }
 
+static enum mt753x_presence mt753x_sw_detect(struct mtk_eth *eth)
+{
+	struct device_node *np;
+	u32 sw_id;
+	u32 rev;
+
+	/* mt7988 with built-in 7531 */
+	np = of_find_compatible_node(NULL, NULL, "mediatek,mt7988-switch");
+	if (np) {
+		of_node_put(np);
+		return MT753X_PRESENT;
+	}
+	/* external 753x */
+	rev = mt7530_mdio_r32(eth, 0x781c);
+	sw_id = (rev & 0xffff0000) >> 16;
+	if (sw_id == 0x7530 || sw_id == 0x7531)
+		return MT753X_PRESENT;
+
+	return MT753X_ABSENT;
+}
+
+static enum mt753x_presence mt7530_exist(struct mtk_eth *eth)
+{
+	if (mt753x_presence == MT753X_UNKNOWN)
+		mt753x_presence = mt753x_sw_detect(eth);
+
+	return mt753x_presence;
+}
+
 void mt753x_set_port_link_state(bool up)
 {
 	struct mtk_eth *eth = g_eth;
@@ -174,7 +211,7 @@ static int mtketh_debug_show(struct seq_file *m, void *private)
 				   mac->phy_dev->addr, j, d);
 			j++;
 		}
-#endif		
+#endif
 	}
 	return 0;
 }
@@ -259,6 +296,7 @@ static int mtketh_mt7530sw_debug_show(struct seq_file *m, void *private)
 		return 0;
 	}
 
+	mt798x_iomap();
 	for (i = 0 ; i < ARRAY_SIZE(ranges) ; i++) {
 		for (offset = ranges[i].start;
 		     offset <= ranges[i].end; offset += 4) {
@@ -267,6 +305,7 @@ static int mtketh_mt7530sw_debug_show(struct seq_file *m, void *private)
 				   offset, data);
 		}
 	}
+	mt798x_iounmap();
 
 	return 0;
 }
@@ -325,11 +364,13 @@ static ssize_t mtketh_mt7530sw_debugfs_write(struct file *file,
 	if (kstrtoul(token, 16, (unsigned long *)&value))
 		return -EINVAL;
 
+	mt798x_iomap();
 	pr_info("%s:phy=%d, reg=0x%lx, val=0x%lx\n", __func__,
 		0x1f, reg, value);
 	mt7530_mdio_w32(eth, reg, value);
 	pr_info("%s:phy=%d, reg=0x%lx, val=0x%x confirm..\n", __func__,
 		0x1f, reg, mt7530_mdio_r32(eth, reg));
+	mt798x_iounmap();
 
 	return len;
 }
@@ -406,9 +447,10 @@ static ssize_t mtketh_debugfs_reset(struct file *file, const char __user *ptr,
 			atomic_set(&force, 0);
 			break;
 		case 1:
-			if (atomic_read(&force) == 1)
+			if (atomic_read(&force) == 1) {
+				eth->reset.event = MTK_FE_START_RESET;
 				schedule_work(&eth->pending_work);
-			else
+			} else
 				pr_info(" stat:disable\n");
 			break;
 		case 2:
@@ -416,7 +458,7 @@ static ssize_t mtketh_debugfs_reset(struct file *file, const char __user *ptr,
 			break;
 		case 3:
 			if (atomic_read(&force) == 1) {
-				mtk_reset_flag = MTK_FE_STOP_TRAFFIC;
+				eth->reset.event = MTK_FE_STOP_TRAFFIC;
 				schedule_work(&eth->pending_work);
 			} else
 				pr_info(" device resetting !!!\n");
@@ -473,6 +515,49 @@ static ssize_t pppq_toggle_write(struct file *file, const char __user *ptr,
 		eth->pppq_toggle = 0;
 		pr_info("pppq is disabled!\n");
 	}
+
+	return len;
+}
+
+static int eth_debug_level_read(struct seq_file *m, void *private)
+{
+	pr_info("eth debug level=%d!\n", eth_debug_level);
+
+	return 0;
+}
+
+static int eth_debug_level_open(struct inode *inode, struct file *file)
+{
+	return single_open(file, eth_debug_level_read, inode->i_private);
+}
+
+static ssize_t eth_debug_level_write(struct file *file, const char __user *ptr,
+				 size_t len, loff_t *off)
+{
+	char *p_delimiter = " \t";
+	char *p_token = NULL;
+	char buf[8] = {0};
+	long arg0 = 0;
+	char *p_buf;
+	int ret;
+
+	if ((len > 8) || copy_from_user(buf, ptr, len))
+		return -EFAULT;
+
+	buf[len] = '\0';
+
+	p_buf = buf;
+	p_token = strsep(&p_buf, p_delimiter);
+	if (!p_token)
+		arg0 = 0;
+	else
+		ret = kstrtol(p_token, 10, &arg0);
+
+	if (ret)
+		arg0 = 0;
+
+	eth_debug_level = arg0;
+	pr_info("Set eth debug level=%d!\n", eth_debug_level);
 
 	return len;
 }
@@ -699,6 +784,15 @@ static const struct file_operations fops_mt7530sw_reg_w = {
 	.llseek = noop_llseek,
 };
 
+static const struct file_operations fops_eth_debug = {
+	.owner = THIS_MODULE,
+	.open = eth_debug_level_open,
+	.read = seq_read,
+	.llseek = seq_lseek,
+	.write = eth_debug_level_write,
+	.release = single_release,
+};
+
 void mtketh_debugfs_exit(struct mtk_eth *eth)
 {
 	debugfs_remove_recursive(eth_debug.root);
@@ -724,6 +818,8 @@ int mtketh_debugfs_init(struct mtk_eth *eth)
 			    eth_debug.root, eth,  &fops_reg_w);
 	debugfs_create_file("reset", S_IFREG | S_IWUSR,
 			    eth_debug.root, eth,  &fops_eth_reset);
+	debugfs_create_file("eth_debug_level", 0444,
+			    eth_debug.root, eth, &fops_eth_debug);
 	if (mt7530_exist(eth)) {
 		debugfs_create_file("mt7530sw_regs", S_IRUGO,
 				    eth_debug.root, eth,

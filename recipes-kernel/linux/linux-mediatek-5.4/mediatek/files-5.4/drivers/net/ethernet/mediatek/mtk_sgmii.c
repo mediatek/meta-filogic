@@ -45,7 +45,7 @@ static int mtk_sgmii_xfi_pll_init(struct mtk_sgmii *ss, struct device_node *r)
 
 	np = of_parse_phandle(r, "mediatek,xfi_pll", 0);
 	if (!np)
-		return -1;
+		return 0;
 
 	ss->pll = syscon_node_to_regmap(np);
 	if (IS_ERR(ss->pll))
@@ -479,7 +479,7 @@ static int mtk_sgmii_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
 
 	mutex_lock(&mpcs->regmap_lock);
 
-	if (mode >= 0 && mpcs->interface != interface) {
+	if (mode <= MLO_AN_INBAND && mpcs->interface != interface) {
 		mpcs->interface = interface;
 		mpcs->mode = mode;
 		linkmode_copy(mpcs->advertising, advertising);
@@ -552,7 +552,7 @@ static void mtk_sgmii_pcs_link_poll(struct work_struct *work)
 		goto exit;
 
 	if (!mtk_sgmii_link_status(mpcs))
-		mtk_sgmii_pcs_config(&mpcs->pcs, -1, mpcs->interface,
+		mtk_sgmii_pcs_config(&mpcs->pcs, UINT_MAX, mpcs->interface,
 				     mpcs->advertising, false);
 
 exit:
