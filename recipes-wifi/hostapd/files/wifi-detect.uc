@@ -79,6 +79,9 @@ function wiphy_detect() {
 		return;
 
 	for (let phy in phys) {
+		if (!phy)
+			continue;
+
 		let name = phy.wiphy_name;
 		let path = phy_path(name);
 		let info = {
@@ -110,6 +113,7 @@ function wiphy_detect() {
 			if (band.vht_capa > 0)
 				band_info.vht = true;
 			let he_phy_cap = 0;
+			let eht_phy_cap = 0;
 
 			for (let ift in band.iftype_data) {
 				if (!ift.he_cap_phy)
@@ -117,9 +121,15 @@ function wiphy_detect() {
 
 				band_info.he = true;
 				he_phy_cap |= ift.he_cap_phy[0];
+
+				/* if (!ift.eht_cap_phy) */
+				/*	continue; */
+
 				/* TODO: EHT */
 				/* FIXME: hardcode */
 				band_info.eht = true;
+				eht_phy_cap = 2;
+				/* eht_phy_cap |= ift.eht_cap_phy[0]; */
 			}
 
 			if (band_name == "6G" && band_info.eht)
@@ -149,12 +159,11 @@ function wiphy_detect() {
 				if (band_info.vht)
 					push(modes, "VHT40")
 			}
-			if (he_phy_cap & 0x2) {
+			if (he_phy_cap & 2)
 				push(modes, "HE40");
 
-				if (band_info.eht)
-					push(modes, "EHT40");
-			}
+			if (eht_phy_cap && he_phy_cap & 2)
+				push(modes, "EHT40");
 
 			for (let freq in band.freqs) {
 				if (freq.disabled)
@@ -168,21 +177,25 @@ function wiphy_detect() {
 
 			if (band_name == "2G")
 				continue;
+
+			if (he_phy_cap & 4)
+				push(modes, "HE40");
+			if (eht_phy_cap && he_phy_cap & 4)
+				push(modes, "EHT40");
 			if (band_info.vht)
 				push(modes, "VHT80");
-			if (he_phy_cap & 4) {
+			if (he_phy_cap & 4)
 				push(modes, "HE80");
-				if (band_info.eht)
-					push(modes, "EHT80");
-			}
+			if (eht_phy_cap && he_phy_cap & 4)
+				push(modes, "EHT80");
 			if ((band.vht_capa >> 2) & 0x3)
 				push(modes, "VHT160");
-			if (he_phy_cap & 0x18) {
+			if (he_phy_cap & 0x18)
 				push(modes, "HE160");
-				if (band_info.eht)
-					push(modes, "EHT160");
-			}
-			if (band_name == "6G" && band_info.eht)
+			if (eht_phy_cap && he_phy_cap & 0x18)
+				push(modes, "EHT160");
+
+			if (eht_phy_cap & 2)
 				push(modes, "EHT320");
 		}
 

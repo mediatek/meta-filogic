@@ -118,6 +118,10 @@ function parse_sku {
             SOC_start_idx="0"
             SOC_end_idx="1"
             is_connac3="1"
+        elif [ ! -z "$(head -c 2 ${eeprom_file} | hexdump | grep "7993")" ]; then
+            SOC_start_idx="0"
+            SOC_end_idx="1"
+            is_connac3="1"
         else
             echo "Interface Conversion Failed!"
             echo "Please use iwpriv <phy0/phy1/..> set <...> or configure the sku of your board manually by the following commands"
@@ -138,6 +142,10 @@ function parse_sku {
             echo "      echo ENDIDX=2 >> ${interface_file}"
             echo "      echo IS_CONNAC3=1 >> ${interface_file}"
             echo "For Kite:"
+            echo "      echo STARTIDX=0 >> ${interface_file}"
+            echo "      echo ENDIDX=1 >> ${interface_file}"
+            echo "      echo IS_CONNAC3=1 >> ${interface_file}"
+            echo "For Griffin:"
             echo "      echo STARTIDX=0 >> ${interface_file}"
             echo "      echo ENDIDX=1 >> ${interface_file}"
             echo "      echo IS_CONNAC3=1 >> ${interface_file}"
@@ -198,9 +206,7 @@ function convert_interface {
 function change_band_idx {
     local new_idx=$1
     local new_phy_idx=$phy_idx
-
     local old_idx=$(get_config "ATECTRLBANDIDX" ${iwpriv_file})
-
 
     if [[ ${interface_ori} == "ra"* ]]; then
         if [ -z "${old_idx}" ] || [ "${old_idx}" != "${new_idx}" ]; then
@@ -243,7 +249,7 @@ function simple_convert() {
         echo "tx_length"
     elif [ "$1" = "ATETXMCS" ]; then
         echo "tx_rate_idx"
-    elif [ "$1" = "ATEVHTNSS" ]; then
+    elif [ "$1" = "ATEVHTNSS" ] || [ "$1" = "ATETXNSS" ]; then
         echo "tx_rate_nss"
     elif [ "$1" = "ATETXLDPC" ]; then
         echo "tx_rate_ldpc"
@@ -1105,7 +1111,7 @@ if [ "${cmd_type}" = "set" ]; then
 
             skip=1
             ;;
-        "ATETXCNT"|"ATETXLEN"|"ATETXMCS"|"ATEVHTNSS"|"ATETXLDPC"|"ATETXSTBC"| \
+        "ATETXCNT"|"ATETXLEN"|"ATETXMCS"|"ATEVHTNSS"|"ATETXNSS"|"ATETXLDPC"|"ATETXSTBC"| \
         "ATEPKTTXTIME"|"ATEIPG"|"ATEDUTYCYCLE"|"ATETXFREQOFFSET")
             cmd_new=$(simple_convert ${cmd})
             if [ "${param_new}" = "undefined" ]; then

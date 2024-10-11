@@ -23,9 +23,6 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches-${PV}:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/src:"
 
 require files/patches-${PV}/patches.inc
-SRC_URI_append += " \
-        file://5000-mt76-add-internal-wed_tiny-header-file.patch \
-        "
 
 S = "${WORKDIR}/git"
 
