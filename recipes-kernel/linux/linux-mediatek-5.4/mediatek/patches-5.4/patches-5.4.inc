@@ -57,6 +57,7 @@ SRC_URI_append = " \
     file://999-1715-v6.2-net-dsa-add-set-queue-mapping.patch \
     file://999-1716-v6.6-net-phy-add-phylink-pcs_enable-and-pcs_disable.patch;apply=no \
     file://999-1717-v5.12-net-phy-sfp-add-debugfs-support.patch \
+    file://999-1719-v6.2-net-ptp-introduce-adjust-by-scaled-ppm.patch \
     file://999-1750-v5.18-net-macsec-get-ready-to-backport-from-5-18.patch \
     file://999-1751-01-v5.18-net-macsec-move-some-definitions-in-a-dedicated-header.patch \
     file://999-1752-02-v5.18-net-macsec-introduce-the-macsec_context-structure.patch \
