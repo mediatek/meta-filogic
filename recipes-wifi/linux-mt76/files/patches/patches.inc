@@ -23,6 +23,8 @@ SRC_URI_append = " \
     file://0021-wifi-mt76-mt7915-remove-unnecessary-register-setting.patch \
     file://0022-wifi-mt76-mt7915-add-PID-to-only-report-data-frame-T.patch \
     file://0023-wifi-mt76-mt7915-fix-add-ba-issue-on-tid-not-equal-t.patch \
+    file://0024-wifi-mt76-mt7915-delete-twt-flow-before-remove-stati.patch \
+    file://0025-mtk-mt76-do-not-report-ACK-when-TXS-is-lost.patch \
     file://0999-wifi-mt76-mt7915-build-pass-for-Linux-Kernel-5.4-fix.patch \
     file://1000-wifi-mt76-mt7915-add-mtk-internal-debug-tools-for-mt.patch \
     file://1001-wifi-mt76-mt7915-csi-implement-csi-support.patch \
@@ -77,6 +79,7 @@ SRC_URI_append = " \
     file://1050-mtk-wifi-mt76-mt7915-assign-DEAUTH-to-ALTX-queue-for.patch \
     file://1051-wifi-mt76-mt7915-set-channel-after-sta-is-associated.patch \
     file://1052-wifi-mt76-mt7915-Clear-private-driver-data-in-case-o.patch \
+    file://1053-wifi-mt76-mt7915-fix-TX-RX-hang-without-SER-hw-bit-t.patch \
     file://2000-wifi-mt76-mt7915-wed-add-wed-tx-support.patch \
     file://2001-wifi-mt76-mt7915-wed-add-wds-support-when-wed-is-ena.patch \
     file://2002-wifi-mt76-mt7915-wed-add-fill-receive-path-to-report.patch \
@@ -93,5 +96,6 @@ SRC_URI_append = " \
     file://2013-wifi-mt76-add-debugfs-for-tx-drop-counters.patch \
     file://2014-wifi-mt76-add-debugfs-for-rx-drop-counters.patch \
     file://2015-wifi-mt76-mt7915-support-backaward-compatiable.patch \
+    file://2016-wifi-mt76-mt7915-refine-twt-mcu-update-flow.patch \
     file://9999-mt76-revert-for-backports-5.15-wireless-stack.patch \
     "

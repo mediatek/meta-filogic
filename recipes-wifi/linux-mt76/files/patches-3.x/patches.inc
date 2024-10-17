@@ -1,5 +1,6 @@
 #patch patches (come from openwrt/lede/target/linux/mediatek)
 SRC_URI_append = " \
+    file://0000-mtk-Revert-wifi-mac80211-don-t-use-rate-mask-for-offchan.patch \
     file://0001-mtk-Revert-wifi-mt76-mt7996-fill-txd-by-host-driver.patch \
     file://0002-mtk-mt76-mt7996-fix-amsdu-information.patch \
     file://0003-mtk-mt76-mt7996-add-preamble-puncture-support-for-mt.patch \
@@ -178,20 +179,19 @@ SRC_URI_append = " \
     file://0176-mtk-mt76-mt7996-Add-lpi-support-with-sku_idx-and-enh.patch \
     file://0177-mtk-mt76-mt7996-Add-Triggered-Uplink-Access-Optimiza.patch \
     file://0178-mtk-mt76-mt7996-add-per-band-token-limit.patch \
-    file://0179-mtk-mt76-sync-with-upstream-changes.patch \
-    file://0180-mtk-mt76-mt7996-record-per-antenna-average-data-fram.patch \
-    file://0181-mtk-mt76-mt7996-remove-default-bss_conf-when-link-be.patch \
-    file://0182-mtk-mt76-mt7996-pass-vif-cfg.assoc-to-mt7996_mac_sta.patch \
-    file://0183-mtk-mt76-mt7996-separate-hwrro-from-wed.patch \
-    file://0184-mtk-mt76-mt7996-ignore-vif.dormant_links-in-mt7996_c.patch \
-    file://0185-mtk-mt76-mt7996-add-Adv-TTLM-support-for-STA.patch \
-    file://0186-mtk-mt76-mt7996-Add-AFC-and-lpi-power-support.patch \
-    file://0187-mtk-mt76-do-not-report-ACK-when-TXS-is-lost.patch \
-    file://0188-mtk-mt76-mt7996-fix-ldpc-setting.patch \
-    file://0189-mtk-mt76-mt7996-add-external-eeprom-support.patch \
-    file://0190-mtk-mt76-mt7996-add-efuse-write-protection.patch \
-    file://0191-mtk-mt76-mt7996-fix-the-capability-of-reception-of-E.patch \
-    file://0192-mtk-mt76-mt7996-fix-HE-Phy-capability.patch \
-    file://0193-mtk-mt76-mt7996-fix-potential-crash-issue-in-mt7996_.patch \
-    file://0194-mtk-mt76-mt7996-Fix-call-trace-happened-when-wed-att.patch \
+    file://0179-mtk-mt76-mt7996-record-per-antenna-average-data-fram.patch \
+    file://0180-mtk-mt76-mt7996-remove-default-bss_conf-when-link-be.patch \
+    file://0181-mtk-mt76-mt7996-pass-vif-cfg.assoc-to-mt7996_mac_sta.patch \
+    file://0182-mtk-mt76-mt7996-separate-hwrro-from-wed.patch \
+    file://0183-mtk-mt76-mt7996-ignore-vif.dormant_links-in-mt7996_c.patch \
+    file://0184-mtk-mt76-mt7996-add-Adv-TTLM-support-for-STA.patch \
+    file://0185-mtk-mt76-mt7996-Add-AFC-and-lpi-power-support.patch \
+    file://0186-mtk-mt76-do-not-report-ACK-when-TXS-is-lost.patch \
+    file://0187-mtk-mt76-mt7996-fix-ldpc-setting.patch \
+    file://0188-mtk-mt76-mt7996-add-external-eeprom-support.patch \
+    file://0189-mtk-mt76-mt7996-add-efuse-write-protection.patch \
+    file://0190-mtk-mt76-mt7996-fix-the-capability-of-reception-of-E.patch \
+    file://0191-mtk-mt76-mt7996-fix-HE-Phy-capability.patch \
+    file://0192-mtk-mt76-mt7996-fix-potential-crash-issue-in-mt7996_.patch \
+    file://0193-mtk-mt76-mt7996-Fix-call-trace-happened-when-wed-att.patch \
     "
