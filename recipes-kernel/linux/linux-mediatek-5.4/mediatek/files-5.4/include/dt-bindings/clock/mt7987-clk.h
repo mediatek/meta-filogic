@@ -1,0 +1,267 @@
+/*
+ * Copyright (c) 2024 MediaTek Inc.
+ * Author: Lu Tang <Lu.Tang@mediatek.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#ifndef _DT_BINDINGS_CLK_MT7987_H
+#define _DT_BINDINGS_CLK_MT7987_H
+
+/* INFRACFG_AO */
+
+#define CK_INFRA_CK_F26M		0
+#define CK_INFRA_PWM_O			1
+#define CK_INFRA_INFRA_F32K		2
+#define CK_INFRA_PCIE_OCC_P0		3
+#define CK_INFRA_PCIE_OCC_P1		4
+#define CK_INFRA_133M_HCK		5
+#define CK_INFRA_133M_PHCK		6
+#define CK_INFRA_66M_PHCK		7
+#define CK_INFRA_FAUD_L_O		8
+#define CK_INFRA_FAUD_AUD_O		9
+#define CK_INFRA_FAUD_EG2_O		10
+#define CK_INFRA_I2C_O			11
+#define CK_INFRA_UART_O0		12
+#define CK_INFRA_UART_O1		13
+#define CK_INFRA_UART_O2		14
+#define CK_INFRA_NFI_O			15
+#define CK_INFRA_SPI0_O			16
+#define CK_INFRA_SPI1_O			17
+#define CK_INFRA_SPI2_O			18
+#define CK_INFRA_LB_MUX_FRTC		19
+#define CK_INFRA_FRTC			20
+#define CK_INFRA_FMSDC200_SRC_O		21
+#define CK_INFRA_FMSDC400_O		22
+#define CK_INFRA_FMSDC2_HCK_OCC		23
+#define CK_INFRA_PERI_133M		24
+#define CK_INFRA_USB_O_P1		25
+#define CK_INFRA_USB_FRMCNT_O_P1	26
+#define CK_INFRA_USB_XHCI_O_P1		27
+#define CK_INFRA_USB_PIPE_O_P1		28
+#define CK_INFRA_USB_UTMI_O_P1		29
+#define CK_INFRA_PCIE_PIPE_OCC_P0	30
+#define CK_INFRA_PCIE_PIPE_OCC_P1	31
+#define CK_INFRA_F26M_O0		32
+#define CK_INFRA_F26M_O1		33
+#define CK_INFRA_133M_MCK		34
+#define CK_INFRA_66M_MCK		35
+#define CK_INFRA_PERI_66M_O		36
+#define CK_INFRA_USB_SYS_O_P1		37
+#define CK_INFRA_MUX_UART0_SEL		38
+#define CK_INFRA_MUX_UART1_SEL		39
+#define CK_INFRA_MUX_UART2_SEL		40
+#define CK_INFRA_MUX_SPI0_SEL		41
+#define CK_INFRA_MUX_SPI1_SEL		42
+#define CK_INFRA_MUX_SPI2_BCK_SEL	43
+#define CK_INFRA_PWM_BCK_SEL		44
+#define CK_INFRA_PCIE_GFMUX_TL_O_P0_SEL 45
+#define CK_INFRA_PCIE_GFMUX_TL_O_P1_SEL 46
+#define CK_INFRA_66M_GPT_BCK		47
+#define CK_INFRA_66M_PWM_HCK		48
+#define CK_INFRA_66M_PWM_BCK		49
+#define CK_INFRA_133M_CQDMA_BCK		50
+#define CK_INFRA_66M_AUD_SLV_BCK	51
+#define CK_INFRA_AUD_26M		52
+#define CK_INFRA_AUD_L			53
+#define CK_INFRA_AUD_AUD		54
+#define CK_INFRA_AUD_EG2		55
+#define CK_INFRA_DRAMC_F26M		56
+#define CK_INFRA_133M_DBG_ACKM		57
+#define CK_INFRA_66M_AP_DMA_BCK		58
+#define CK_INFRA_MSDC200_SRC		59
+#define CK_INFRA_66M_SEJ_BCK		60
+#define CK_INFRA_PRE_CK_SEJ_F13M	61
+#define CK_INFRA_66M_TRNG		62
+#define CK_INFRA_26M_THERM_SYSTEM	63
+#define CK_INFRA_I2C_BCK		64
+#define CK_INFRA_66M_UART0_PCK		65
+#define CK_INFRA_66M_UART1_PCK		66
+#define CK_INFRA_66M_UART2_PCK		67
+#define CK_INFRA_52M_UART0_CK		68
+#define CK_INFRA_52M_UART1_CK		69
+#define CK_INFRA_52M_UART2_CK		70
+#define CK_INFRA_NFI			71
+#define CK_INFRA_66M_NFI_HCK		72
+#define CK_INFRA_104M_SPI0		73
+#define CK_INFRA_104M_SPI1		74
+#define CK_INFRA_104M_SPI2_BCK		75
+#define CK_INFRA_66M_SPI0_HCK		76
+#define CK_INFRA_66M_SPI1_HCK		77
+#define CK_INFRA_66M_SPI2_HCK		78
+#define CK_INFRA_66M_FLASHIF_AXI	79
+#define CK_INFRA_RTC			80
+#define CK_INFRA_26M_ADC_BCK		81
+#define CK_INFRA_RC_ADC			82
+#define CK_INFRA_MSDC400		83
+#define CK_INFRA_MSDC2_HCK		84
+#define CK_INFRA_133M_MSDC_0_HCK	85
+#define CK_INFRA_66M_MSDC_0_HCK		86
+#define CK_INFRA_133M_CPUM_BCK		87
+#define CK_INFRA_BIST2FPC		88
+#define CK_INFRA_I2C_X16W_MCK_CK_P1	89
+#define CK_INFRA_I2C_X16W_PCK_CK_P1	90
+#define CK_INFRA_133M_USB_HCK		91
+#define CK_INFRA_133M_USB_HCK_CK_P1	92
+#define CK_INFRA_66M_USB_HCK		93
+#define CK_INFRA_66M_USB_HCK_CK_P1	94
+#define CK_INFRA_USB_SYS_CK_P1		95
+#define CK_INFRA_USB_CK_P1		96
+#define CK_INFRA_USB_FRMCNT_CK_P1	97
+#define CK_INFRA_USB_PIPE_CK_P1		98
+#define CK_INFRA_USB_UTMI_CK_P1		99
+#define CK_INFRA_USB_XHCI_CK_P1		100
+#define CK_INFRA_PCIE_GFMUX_TL_P0	101
+#define CK_INFRA_PCIE_GFMUX_TL_P1	102
+#define CK_INFRA_PCIE_PIPE_P0		103
+#define CK_INFRA_PCIE_PIPE_P1		104
+#define CK_INFRA_133M_PCIE_CK_P0	105
+#define CK_INFRA_133M_PCIE_CK_P1	106
+#define CK_INFRA_PCIE_PERI_26M_CK_P0	107
+#define CK_INFRA_PCIE_PERI_26M_CK_P1	108
+#define CLK_INFRA_NR_CLK		109
+
+/* TOPCKGEN */
+
+#define CK_TOP_CB_M_D2		   0
+#define CK_TOP_CB_M_D3		   1
+#define CK_TOP_M_D3_D2		   2
+#define CK_TOP_CB_M_D4		   3
+#define CK_TOP_CB_M_D8		   4
+#define CK_TOP_M_D8_D2		   5
+#define CK_TOP_CB_APLL2_196M	   6
+#define CK_TOP_CB_APLL2_D4	   7
+#define CK_TOP_CB_NET1_D3	   8
+#define CK_TOP_CB_NET1_D4	   9
+#define CK_TOP_CB_NET1_D5	   10
+#define CK_TOP_NET1_D5_D2	   11
+#define CK_TOP_NET1_D5_D4	   12
+#define CK_TOP_CB_NET1_D7	   13
+#define CK_TOP_NET1_D7_D2	   14
+#define CK_TOP_NET1_D7_D4	   15
+#define CK_TOP_NET1_D8_D2	   16
+#define CK_TOP_NET1_D8_D4	   17
+#define CK_TOP_NET1_D8_D8	   18
+#define CK_TOP_NET1_D8_D16	   19
+#define CK_TOP_CB_NET2_800M	   20
+#define CK_TOP_CB_NET2_D2	   21
+#define CK_TOP_CB_NET2_D4	   22
+#define CK_TOP_NET2_D4_D4	   23
+#define CK_TOP_NET2_D4_D8	   24
+#define CK_TOP_CB_NET2_D6	   25
+#define CK_TOP_NET2_D7_D2	   26
+#define CK_TOP_CB_NET2_D8	   27
+#define CK_TOP_CB_WEDMCU_208M	   28
+#define CK_TOP_CB_SGM_325M	   29
+#define CK_TOP_CB_MSDC_416M	   30
+#define CK_TOP_MSDC_D2		   31
+#define CK_TOP_CB_CKSQ_40M	   32
+#define CK_TOP_CKSQ_40M_D2	   33
+#define CK_TOP_CB_RTC_32K	   34
+#define CK_TOP_CB_RTC_32P7K	   35
+#define CK_TOP_NETSYS_500m		36
+#define CK_TOP_NETSYS_2X		37
+#define CK_TOP_EMMC_250M		38
+#define CK_TOP_EMMC_400M		39
+#define CK_TOP_NFI_BCK			40
+#define CK_TOP_I2C_BCK			41
+#define CK_TOP_USB_SYS_P1		42
+#define CK_TOP_USB_XHCI_P1		43
+#define CK_TOP_AUD			44
+#define CK_TOP_A1SYS			45
+#define CK_TOP_AUD_L			46
+#define CK_TOP_A_TUNER			47
+#define CK_TOP_SYSAXI			48
+#define CK_TOP_INFRA_F26M		49
+#define CK_TOP_EMMC_200M		50
+#define CK_TOP_USB_FRMCNT_P1		51
+#define CK_TOP_USB_CK_P1		52
+#define CK_TOP_NETSYS_SEL		53
+#define CK_TOP_NETSYS_500M_SEL		54
+#define CK_TOP_NETSYS_2X_SEL		55
+#define CK_TOP_ETH_GMII_SEL		56
+#define CK_TOP_EIP_SEL			57
+#define CK_TOP_AXI_INFRA_SEL		58
+#define CK_TOP_UART_SEL			59
+#define CK_TOP_EMMC_250M_SEL		60
+#define CK_TOP_EMMC_400M_SEL		61
+#define CK_TOP_SPI_SEL			62
+#define CK_TOP_SPIM_MST_SEL		63
+#define CK_TOP_NFI_SEL			64
+#define CK_TOP_PWM_SEL			65
+#define CK_TOP_I2C_SEL			66
+#define CK_TOP_PCIE_MBIST_250M_SEL	67
+#define CK_TOP_PEXTP_TL_SEL		68
+#define CK_TOP_PEXTP_TL_P1_SEL		69
+#define CK_TOP_USB_SYS_P1_SEL		70
+#define CK_TOP_USB_XHCI_P1_SEL		71
+#define CK_TOP_AUD_SEL			72
+#define CK_TOP_A1SYS_SEL		73
+#define CK_TOP_AUD_L_SEL		74
+#define CK_TOP_A_TUNER_SEL		75
+#define CK_TOP_USB_PHY_SEL		76
+#define CK_TOP_SGM_0_SEL		77
+#define CK_TOP_SGM_SBUS_0_SEL		78
+#define CK_TOP_SGM_1_SEL		79
+#define CK_TOP_SGM_SBUS_1_SEL		80
+#define CK_TOP_SYSAXI_SEL		81
+#define CK_TOP_SYSAPB_SEL		82
+#define CK_TOP_ETH_REFCK_50M_SEL	83
+#define CK_TOP_ETH_SYS_200M_SEL		84
+#define CK_TOP_ETH_SYS_SEL		85
+#define CK_TOP_ETH_XGMII_SEL		86
+#define CK_TOP_DRAMC_SEL		87
+#define CK_TOP_DRAMC_MD32_SEL		88
+#define CK_TOP_INFRA_F26M_SEL		89
+#define CK_TOP_PEXTP_P0_SEL		90
+#define CK_TOP_PEXTP_P1_SEL		91
+#define CK_TOP_DA_XTP_GLB_P0_SEL	92
+#define CK_TOP_DA_XTP_GLB_P1_SEL	93
+#define CK_TOP_CKM_SEL			94
+#define CK_TOP_DA_CKM_XTAL_SEL		95
+#define CK_TOP_PEXTP_SEL		96
+#define CK_TOP_ETH_MII_SEL		97
+#define CK_TOP_EMMC_200M_SEL		98
+#define CK_TOP_AUD_I2S_M		99
+#define CLK_TOP_NR_CLK			100
+
+/* APMIXEDSYS */
+
+#define CK_APMIXED_MPLL	     0
+#define CK_APMIXED_APLL2     1
+#define CK_APMIXED_NET1PLL   2
+#define CK_APMIXED_NET2PLL   3
+#define CK_APMIXED_WEDMCUPLL 4
+#define CK_APMIXED_SGMPLL    5
+#define CK_APMIXED_ARM_LL    6
+#define CK_APMIXED_MSDCPLL   7
+#define CLK_APMIXED_NR_CLK   8
+
+/* SGMIISYS_0 */
+
+#define CK_SGM0_TX_EN	  0
+#define CK_SGM0_RX_EN	  1
+#define CLK_SGMII0_NR_CLK 2
+
+/* SGMIISYS_1 */
+
+#define CK_SGM1_TX_EN	  0
+#define CK_SGM1_RX_EN	  1
+#define CLK_SGMII1_NR_CLK 2
+
+/* ETHDMA */
+
+#define CK_ETHDMA_FE_EN			0
+#define CK_ETHDMA_GP2_EN		1
+#define CK_ETHDMA_GP1_EN		2
+#define CK_ETHDMA_GP3_EN		3
+#define CLK_ETHDMA_NR_CLK		4
+
+#endif /* _DT_BINDINGS_CLK_MT7987_H */

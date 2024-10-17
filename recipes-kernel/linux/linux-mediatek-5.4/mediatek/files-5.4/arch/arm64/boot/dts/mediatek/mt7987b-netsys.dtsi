@@ -1,0 +1,11 @@
+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+
+#include "mt7987-netsys.dtsi"
+
+&eth {
+	/delete-node/ mac@2;
+};
+
+&hnat {
+	mtketh-max-gmac = <2>;
+};

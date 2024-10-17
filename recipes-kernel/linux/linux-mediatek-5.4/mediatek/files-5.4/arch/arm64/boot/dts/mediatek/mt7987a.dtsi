@@ -1,0 +1,150 @@
+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+/*
+ * Copyright (C) 2023 MediaTek Inc.
+ * Author: Sam.Shih <sam.shih@mediatek.com>
+ */
+
+/dts-v1/;
+#include "mt7987.dtsi"
+#include "mt7987-pinctrl.dtsi"
+
+/ {
+	compatible = "mediatek,mt7987a", "mediatek,mt7987";
+
+	memory {
+		reg = <0 0x40000000 0 0x10000000>;
+	};
+
+};
+
+&afe {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcm_pins>;
+	status = "okay";
+};
+
+&boottrap {
+	status = "okay";
+};
+
+&fan {
+	pwms = <&pwm 0 50000 0>;
+	status = "okay";
+};
+
+&i2c0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c0_pins>;
+	status = "okay";
+};
+
+&infra_bus_prot {
+	status = "okay";
+};
+
+&lvts {
+	status = "okay";
+};
+
+&pcie0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcie0_pins>;
+	status = "okay";
+};
+
+&pcie1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pcie1_pins>;
+	status = "disabled";
+};
+
+&pwm {
+	status = "okay";
+};
+
+&soc {
+	usbtphy: usb-phy@11c50000 {
+		compatible = "mediatek,mt7987",
+			     "mediatek,generic-tphy-v2";
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+		status = "okay";
+
+		tphyu2port0: usb-phy@11c50000 {
+			reg = <0 0x11c50000 0 0x700>;
+			clocks = <&infracfg_ao CK_INFRA_USB_UTMI_CK_P1>;
+			clock-names = "ref";
+			#phy-cells = <1>;
+
+			auto_load_valid;
+			nvmem-cells = <&u2_intr_p0>, <&u2_auto_load_valid_p0>;
+			nvmem-cell-names = "intr", "auto_load_valid";
+
+			status = "okay";
+		};
+
+		tphyu3port0: usb-phy@11c50700 {
+			reg = <0 0x11c50700 0 0x900>;
+			clocks = <&infracfg_ao CK_INFRA_USB_PIPE_CK_P1>;
+			clock-names = "ref";
+			#phy-cells = <1>;
+
+			auto_load_valid;
+			nvmem-cells = <&comb_intr_p0>,
+			      <&comb_rx_imp_p0>,
+			      <&comb_tx_imp_p0>,
+			      <&comb_auto_load_valid>;
+			nvmem-cell-names = "intr", "rx_imp", "tx_imp", "auto_load_valid";
+
+			/* MT7987: 4'b0010 default USB30 Don't change the '0' */
+			mediatek,syscon-type = <&topmisc 0x218 0>;
+
+			status = "disabled";
+		};
+	};
+};
+
+&spi1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&spic_pins>;
+	status = "okay";
+};
+
+&trng {
+	status = "okay";
+};
+
+&uart0 {
+	interrupts = <GIC_SPI 123 IRQ_TYPE_LEVEL_HIGH>;
+	clocks = <&clkxtal>;
+	clock-names = "bus";
+	/delete-property/ assigned-clocks;
+	/delete-property/ assigned-clock-parents;
+	status = "okay";
+};
+
+&uart1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart1_pins>;
+	status = "okay";
+};
+
+&watchdog {
+	status = "okay";
+};
+
+&xhci {
+	mediatek,u3p-dis-msk = <0x00000001>;
+	phys = <&tphyu2port0 PHY_TYPE_USB2>;
+
+	clocks = <&infracfg_ao CK_INFRA_USB_SYS_CK_P1>,
+		 <&infracfg_ao CK_INFRA_USB_XHCI_CK_P1>,
+		 <&infracfg_ao CK_INFRA_USB_CK_P1>,
+		 <&infracfg_ao CK_INFRA_66M_USB_HCK_CK_P1>,
+		 <&infracfg_ao CK_INFRA_133M_USB_HCK_CK_P1>;
+	clock-names = "sys_ck", "xhci_ck", "ref_ck", "mcu_ck",
+		      "dma_ck";
+
+	status = "okay";
+};

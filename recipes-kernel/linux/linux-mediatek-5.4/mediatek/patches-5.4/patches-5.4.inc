@@ -107,10 +107,12 @@ SRC_URI_append = " \
     file://999-2011-clk-mtk-add-mt7981-support.patch \
     file://999-2012-clk-mtk-add-mt7988-support.patch \
     file://999-2013-clk-mtk-add-chg-shift-control.patch \
+    file://999-2014-clk-mtk-add-mt7987-support.patch.patch \
     file://999-2020-pinctrl-add-mt7986-driver.patch \
     file://999-2021-pinctrl-enable-mt7988-pinctrl-config.patch \
     file://999-2022-pinctrl-add-mt7981-driver.patch \
     file://999-2023-pinctrl-add-mt7988-pd-pulltype-support.patch \
+    file://999-2024-pinctrl-add-mt7987-driver.patch \
     file://999-2040-powerdomain-add-mt7988-support.patch \
     file://999-2050-watchdog-add-mt7986-assert.patch \
     file://999-2100-mt7986-trng-add-rng-support.patch \

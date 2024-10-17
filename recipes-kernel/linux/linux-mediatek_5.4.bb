@@ -33,6 +33,9 @@ SRC_URI_append_mt7988 += " \
 SRC_URI_append_mt7986 += " \
     file://mediatek/mt7986.cfg \
 "
+SRC_URI_append_mt7987 += " \
+    file://mediatek/mt7987.cfg \
+"
 SRC_URI_append_mt7986-32bit += " \
     file://mediatek/patches-32bit-5.4/mt7986-32bit.cfg \
     file://mediatek/patches-32bit-5.4/401-pinctrl-add-mt7986-driver-32bit.patch \
@@ -133,3 +136,4 @@ do_filogic_patches() {
 addtask filogic_patches after do_patch before do_compile
 
 KERNEL_MODULE_AUTOLOAD += "${@bb.utils.contains('DISTRO_FEATURES','logan','mtkhnat nf_flow_table_hw','',d)}"
+KERNEL_MODULE_AUTOLOAD_mt7987 += "air_en8811h "

@@ -1,0 +1,32 @@
+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+/*
+ * Copyright (C) 2023 MediaTek Inc.
+ * Author: Sam.Shih <sam.shih@mediatek.com>
+ */
+
+/dts-v1/;
+#include "mt7987a.dtsi"
+
+/ {
+	compatible = "mediatek,mt7987b", "mediatek,mt7987";
+
+	memory {
+		reg = <0 0x40000000 0 0x10000000>;
+	};
+
+	cpus {
+		/delete-node/ cpu@2;
+		/delete-node/ cpu@3;
+	};
+};
+
+&tphyu3port0 {
+	status = "okay";
+};
+
+&xhci {
+	mediatek,u3p-dis-msk=<0>;
+
+	phys = <&tphyu2port0 PHY_TYPE_USB2>,
+	       <&tphyu3port0 PHY_TYPE_USB3>;
+};
