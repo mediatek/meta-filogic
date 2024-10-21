@@ -1018,7 +1018,7 @@ mtk_hnat_ipv4_nf_pre_routing(void *priv, struct sk_buff *skb,
 	    !mtk_tnl_decap_offload) {
 		skb->dev->netdev_ops->ndo_flow_offload_check(&hw_path);
 
-		if (hw_path.flags & FLOW_OFFLOAD_PATH_TNL)
+		if (hw_path.flags & BIT(DEV_PATH_TNL))
 			skb_hnat_alg(skb) = 1;
 	}
 
@@ -1168,7 +1168,7 @@ static int hnat_ipv6_get_nexthop(struct sk_buff *skb,
 	struct neighbour *neigh = NULL;
 	struct dst_entry *dst = skb_dst(skb);
 
-	if (hw_path->flags & FLOW_OFFLOAD_PATH_PPPOE)
+	if (hw_path->flags & BIT(DEV_PATH_PPPOE))
 		return 0;
 
 	rcu_read_lock_bh();
@@ -1206,7 +1206,7 @@ static int hnat_ipv4_get_nexthop(struct sk_buff *skb,
 	struct rtable *rt = (struct rtable *)dst;
 	struct net_device *dev = (__force struct net_device *)out;
 
-	if (hw_path->flags & FLOW_OFFLOAD_PATH_PPPOE)
+	if (hw_path->flags & BIT(DEV_PATH_PPPOE))
 		return 0;
 
 	if (!skb_hnat_cdrt(skb) && dst && dst_xfrm(dst))
@@ -1294,8 +1294,8 @@ struct foe_entry ppe_fill_L2_info(struct foe_entry entry,
 struct foe_entry ppe_fill_info_blk(struct foe_entry entry,
 				   struct flow_offload_hw_path *hw_path)
 {
-	entry.bfib1.psn = (hw_path->flags & FLOW_OFFLOAD_PATH_PPPOE) ? 1 : 0;
-	entry.bfib1.vlan_layer += (hw_path->flags & FLOW_OFFLOAD_PATH_VLAN) ? 1 : 0;
+	entry.bfib1.psn = (hw_path->flags & BIT(DEV_PATH_PPPOE)) ? 1 : 0;
+	entry.bfib1.vlan_layer += (hw_path->flags & BIT(DEV_PATH_VLAN)) ? 1 : 0;
 	entry.bfib1.vpm = (entry.bfib1.vlan_layer) ? 1 : 0;
 	entry.bfib1.cah = 1;
 	entry.bfib1.time_stamp = (hnat_priv->data->version == MTK_HNAT_V2 ||
@@ -1390,7 +1390,7 @@ static inline int hnat_offload_engine_done(struct sk_buff *skb,
 {
 	struct dst_entry *dst = skb_dst(skb);
 
-	if ((skb_hnat_tops(skb) && !(hw_path->flags & FLOW_OFFLOAD_PATH_TNL))) {
+	if ((skb_hnat_tops(skb) && !(hw_path->flags & BIT(DEV_PATH_TNL)))) {
 		if (!tnl_toggle)
 			return -1;
 
@@ -2042,17 +2042,11 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 						 MTK_HNAT_V3) ?
 						 skb->mark & 0x7f : skb->mark & 0xf;
 #if defined(CONFIG_MEDIATEK_NETSYS_V3)
-					if ((IS_HQOS_UL_MODE && IS_WAN(dev)) ||
-					    (IS_HQOS_DL_MODE &&
-					     IS_LAN_GRP(dev)) ||
-					    (IS_PPPQ_MODE &&
-					     IS_PPPQ_PATH(dev, skb)))
-						entry.ipv4_hnapt.tport_id = NR_QDMA_TPORT;
-					else
-						entry.ipv4_hnapt.tport_id = 0;
-#else
-					entry.ipv4_hnapt.iblk2.fqos = 1;
+					entry.ipv4_hnapt.tport_id =
+						HQOS_FLAG(dev, skb, entry.ipv4_hnapt.iblk2.qid);
 #endif
+					entry.ipv4_hnapt.iblk2.fqos =
+						HQOS_FLAG(dev, skb, entry.ipv4_hnapt.iblk2.qid);
 				}
 
 				entry.ipv4_hnapt.bfib1.udp =
@@ -2114,7 +2108,7 @@ static unsigned int skb_to_hnat_info(struct sk_buff *skb,
 	/* Fill Layer2 Info.*/
 	entry = ppe_fill_L2_info(entry, hw_path);
 
-	if ((skb_hnat_tops(skb) && hw_path->flags & FLOW_OFFLOAD_PATH_TNL) ||
+	if ((skb_hnat_tops(skb) && hw_path->flags & BIT(DEV_PATH_TNL)) ||
 	    (!skb_hnat_cdrt(skb) && skb_hnat_is_encrypt(skb) &&
 	    skb_dst(skb) && dst_xfrm(skb_dst(skb))))
 		goto hnat_entry_skip_bind;
@@ -2259,13 +2253,13 @@ hnat_entry_bind:
 
 			if (FROM_EXT(skb) || skb_hnat_sport(skb) == NR_QDMA_PORT)
 				entry.ipv4_hnapt.iblk2.fqos = 0;
-			else
+			else {
 #if defined(CONFIG_MEDIATEK_NETSYS_V3)
 				entry.ipv4_hnapt.tport_id = HQOS_FLAG(dev, skb, qid) ?
 							    NR_QDMA_TPORT : 0;
-#else
-				entry.ipv4_hnapt.iblk2.fqos = HQOS_FLAG(dev, skb, qid) ? 1 : 0;
 #endif
+				entry.ipv4_hnapt.iblk2.fqos = HQOS_FLAG(dev, skb, qid) ? 1 : 0;
+			}
 		} else {
 			entry.ipv4_hnapt.iblk2.fqos = 0;
 		}
@@ -2312,7 +2306,7 @@ hnat_entry_bind:
 
 			if (FROM_EXT(skb) || skb_hnat_sport(skb) == NR_QDMA_PORT)
 				entry.ipv6_5t_route.iblk2.fqos = 0;
-			else
+			else {
 #if defined(CONFIG_MEDIATEK_NETSYS_V3)
 				switch (entry.bfib1.pkt_type) {
 				case IPV4_MAP_E:
@@ -2330,9 +2324,9 @@ hnat_entry_bind:
 						HQOS_FLAG(dev, skb, qid) ? NR_QDMA_TPORT : 0;
 					break;
 				}
-#else
-				entry.ipv6_5t_route.iblk2.fqos = HQOS_FLAG(dev, skb, qid) ? 1 : 0;
 #endif
+				entry.ipv6_5t_route.iblk2.fqos = HQOS_FLAG(dev, skb, qid) ? 1 : 0;
+			}
 		} else {
 			entry.ipv6_5t_route.iblk2.fqos = 0;
 		}
@@ -2551,6 +2545,7 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 			entry.ipv4_hnapt.winfo.wcid = skb_hnat_wc_id(skb);
 #if defined(CONFIG_MEDIATEK_NETSYS_V3)
 			entry.ipv4_hnapt.tport_id = IS_HQOS_DL_MODE ? NR_QDMA_TPORT : 0;
+			entry.ipv4_hnapt.iblk2.fqos = IS_HQOS_DL_MODE ? 1 : 0;
 			entry.ipv4_hnapt.iblk2.rxid = skb_hnat_rx_id(skb);
 			entry.ipv4_hnapt.iblk2.winfoi = 1;
 			entry.ipv4_hnapt.winfo_pao.usr_info =
@@ -2609,6 +2604,7 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 		entry.ipv6_hnapt.winfo_pao.hf = skb_hnat_hf(skb);
 		entry.ipv6_hnapt.winfo_pao.amsdu = skb_hnat_amsdu(skb);
 		entry.ipv6_hnapt.tport_id = IS_HQOS_DL_MODE ? NR_QDMA_TPORT : 0;
+		entry.ipv6_hnapt.iblk2.fqos = IS_HQOS_DL_MODE ? 1 : 0;
 	} else if (IS_L2_BRIDGE(&entry)) {
 		entry.l2_bridge.iblk2.dp = gmac_no;
 		entry.l2_bridge.iblk2.rxid = skb_hnat_rx_id(skb);
@@ -2625,6 +2621,7 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 		entry.l2_bridge.winfo_pao.is_sp = skb_hnat_is_sp(skb);
 		entry.l2_bridge.winfo_pao.hf = skb_hnat_hf(skb);
 		entry.l2_bridge.winfo_pao.amsdu = skb_hnat_amsdu(skb);
+		entry.l2_bridge.iblk2.fqos = IS_HQOS_DL_MODE ? 1 : 0;
 #endif
 	} else {
 		entry.ipv6_5t_route.iblk2.fqos = 0;
@@ -2641,6 +2638,7 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 				entry.ipv4_mape.winfo.bssid = skb_hnat_bss_id(skb);
 				entry.ipv4_mape.winfo.wcid = skb_hnat_wc_id(skb);
 				entry.ipv4_mape.tport_id = IS_HQOS_DL_MODE ? NR_QDMA_TPORT : 0;
+				entry.ipv4_mape.iblk2.fqos = IS_HQOS_DL_MODE ? 1 : 0;
 				entry.ipv4_mape.iblk2.rxid = skb_hnat_rx_id(skb);
 				entry.ipv4_mape.iblk2.winfoi = 1;
 				entry.ipv4_mape.winfo_pao.usr_info =
@@ -2662,6 +2660,7 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 				entry.ipv6_5t_route.winfo.bssid = skb_hnat_bss_id(skb);
 				entry.ipv6_5t_route.winfo.wcid = skb_hnat_wc_id(skb);
 				entry.ipv6_5t_route.tport_id = IS_HQOS_DL_MODE ? NR_QDMA_TPORT : 0;
+				entry.ipv6_5t_route.iblk2.fqos = IS_HQOS_DL_MODE ? 1 : 0;
 				entry.ipv6_5t_route.iblk2.rxid = skb_hnat_rx_id(skb);
 				entry.ipv6_5t_route.iblk2.winfoi = 1;
 				entry.ipv6_5t_route.winfo_pao.usr_info =
@@ -3281,7 +3280,7 @@ static unsigned int mtk_hnat_nf_post_routing(
 		out->netdev_ops->ndo_flow_offload_check(&hw_path);
 
 		out = (IS_GMAC1_MODE) ? hw_path.virt_dev : hw_path.dev;
-		if (hw_path.flags & FLOW_OFFLOAD_PATH_TNL && mtk_tnl_encap_offload) {
+		if (hw_path.flags & BIT(DEV_PATH_TNL) && mtk_tnl_encap_offload) {
 			if (ntohs(skb->protocol) == ETH_P_IP &&
 			    ip_hdr(skb)->protocol == IPPROTO_TCP) {
 				skb_hnat_set_tops(skb, hw_path.tnl_type + 1);
@@ -3309,7 +3308,7 @@ static unsigned int mtk_hnat_nf_post_routing(
 
 	if (is_virt_dev
 	    && !(skb_hnat_tops(skb) && skb_hnat_is_encap(skb)
-		 && (hw_path.flags & FLOW_OFFLOAD_PATH_TNL)))
+		 && (hw_path.flags & BIT(DEV_PATH_TNL))))
 		return 0;
 
 	if (debug_level >= 7)

@@ -57,6 +57,7 @@ SRC_URI_append = " \
     file://999-1715-v6.2-net-dsa-add-set-queue-mapping.patch \
     file://999-1716-v6.6-net-phy-add-phylink-pcs_enable-and-pcs_disable.patch;apply=no \
     file://999-1717-v5.12-net-phy-sfp-add-debugfs-support.patch \
+    file://999-1718-v5.15-net-netfilter-add-nf-hw-offload.patch \
     file://999-1719-v6.2-net-ptp-introduce-adjust-by-scaled-ppm.patch \
     file://999-1750-v5.18-net-macsec-get-ready-to-backport-from-5-18.patch \
     file://999-1751-01-v5.18-net-macsec-move-some-definitions-in-a-dedicated-header.patch \
@@ -188,10 +189,16 @@ SRC_URI_append = " \
     file://999-2621-xHCI-MT7986-USB-2.0-USBIF-compliance-toolkit.patch \
     file://999-2622-usb-add-embedded-Host-feature-support.patch \
     file://999-2700-netfilter_optional_tcp_window_check.patch \
+    file://999-2701-netfilter-nf_flow_table-support-hw-offload-through-v.patch \
+    file://999-2702-net-8021q-support-hardware-flow-table-offload.patch \
+    file://999-2703-net-bridge-support-hardware-flow-table-offload.patch \
     file://999-2704-en8811h-2p5gphy-support.patch \
+    file://999-2704-net-pppoe-support-hardware-flow-table-offload.patch \
     file://999-2705-hwnat_Kconfig_Makefile.patch \
+    file://999-2705-net-dsa-support-hardware-flow-table-offload.patch \
     file://999-2706-crypto-add-eip197-inside-secure-support.patch \
     file://999-2707-mtkhnat-ipv6-fix-pskb-expand-head-limitation.patch \
+    file://999-2708-mtkhnat-add-support-for-virtual-interface-acceleration.patch \
     file://999-2709-fix-race-inside-napi-enable.patch \
     file://999-2710-net-make-napi-disable-symmetric-with-enable.patch \
     file://999-2711-net-fix-premature-exit-from-napi-state-polling-in-napi-disable-v2.patch \
@@ -207,6 +214,7 @@ SRC_URI_append = " \
     file://999-2723-dt-bindings-phy-Add-PHY_TYPE_XPCS-definition.patch \
     file://999-2724-dt-bindings-phy-Add-DT-bindings-for-Xilinx-ZynqMP-PS.patch \
     file://999-2725-iwconfig-wireless-rate-fix.patch;apply=no \
+    file://999-2726-mtkhnat-tnl-interface-offload-check.patch \
     file://999-2727-net-phy-sfp-add-debug-info.patch.patch \
     file://999-2728-net-phy-aquantia-add-mib-read.patch \
     file://999-2730-net-phy-sfp-change-shared-mod-def0.patch \
