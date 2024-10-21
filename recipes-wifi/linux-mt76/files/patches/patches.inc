@@ -80,6 +80,7 @@ SRC_URI_append = " \
     file://1051-wifi-mt76-mt7915-set-channel-after-sta-is-associated.patch \
     file://1052-wifi-mt76-mt7915-Clear-private-driver-data-in-case-o.patch \
     file://1053-wifi-mt76-mt7915-fix-TX-RX-hang-without-SER-hw-bit-t.patch \
+    file://1054-wifi-mt76-mt7915-remove-rts-and-cts-protection-enabl.patch \
     file://2000-wifi-mt76-mt7915-wed-add-wed-tx-support.patch \
     file://2001-wifi-mt76-mt7915-wed-add-wds-support-when-wed-is-ena.patch \
     file://2002-wifi-mt76-mt7915-wed-add-fill-receive-path-to-report.patch \
