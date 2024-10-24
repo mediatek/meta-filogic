@@ -35,6 +35,8 @@ INCLUDE_FLAGS_ALL=" \
 	-I${S}/ddk/inc/crypto-eip/ddk/shdevxs \
 	-I${S}/ddk/inc/crypto-eip/ddk/slad \
 	-I${S}/ddk/inc/crypto-eip/ddk/slad/lkm \
+	-I${S}/ddk/inc/crypto-eip/ddk/shdevxs \
+	-I${S}/ddk/inc/crypto-eip/ddk/umdevxs \
 	-I${STAGING_KERNEL_BUILDDIR}/source/drivers/net/ethernet/mediatek/ \
 	-I${STAGING_KERNEL_BUILDDIR}/source/include \
 	"
@@ -83,7 +85,10 @@ EXTRA_OEMAKE = " \
 do_install_append() {
 	install -d ${D}/${base_libdir}/modules/${KERNEL_VERSION}/extra/
 	install -m 0755 ${S}/crypto-eip-inline.ko ${D}/${base_libdir}/modules/${KERNEL_VERSION}/
-	install -m 0755 ${S}/ddk/crypto-eip-ddk.ko ${D}/${base_libdir}/modules/${KERNEL_VERSION}/
+	install -m 0755 ${S}/ddk/build/ksupport/crypto-eip-ddk-ksupport.ko ${D}/${base_libdir}/modules/${KERNEL_VERSION}/
+	install -m 0755 ${S}/ddk/build/ctrl/crypto-eip-ddk-ctrl.ko ${D}/${base_libdir}/modules/${KERNEL_VERSION}/
+	install -m 0755 ${S}/ddk/build/app/crypto-eip-ddk-ctrl-app.ko ${D}/${base_libdir}/modules/${KERNEL_VERSION}/
+	install -m 0755 ${S}/ddk/build/engine/crypto-eip-ddk-engine.ko ${D}/${base_libdir}/modules/${KERNEL_VERSION}/
 	# copy firmware and install
 	install -d ${D}/${base_libdir}/firmware
 	install -m 0755 ${S}/../firmware/bin/firmware_eip207_ifpp.bin ${D}/${base_libdir}/firmware/
