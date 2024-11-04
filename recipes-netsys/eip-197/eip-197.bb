@@ -12,6 +12,11 @@ S = "${WORKDIR}/git/feed/kernel/crypto-eip/src"
 DEPENDS += "pce"
 DEPENDS += "${@bb.utils.contains('DISTRO_FEATURES', 'capwap-dtls', 'tops', '', d)}"
 
+# There is dependency issue in this package.
+# For now, we jsut disable parallel building as a workaround.
+PARALLEL_MAKE = ""
+BB_NUMBER_THREADS = "1"
+
 do_configure[noexec] = "1"
 
 # Include Paths
@@ -19,6 +24,8 @@ INCLUDE_FLAGS_ALL=" \
 	-I${S}/ddk/inc \
 	-I${S}/ddk/inc/crypto-eip/ddk \
 	-I${S}/ddk/inc/crypto-eip/ddk/configs \
+	-I${S}/ddk/inc/crypto-eip/ddk/shdevxs \
+	-I${S}/ddk/inc/crypto-eip/ddk/umdevxs \
 	-I${S}/ddk/inc/crypto-eip/ddk/device \
 	-I${S}/ddk/inc/crypto-eip/ddk/device/lkm \
 	-I${S}/ddk/inc/crypto-eip/ddk/device/lkm/of \
@@ -32,11 +39,8 @@ INCLUDE_FLAGS_ALL=" \
 	-I${S}/ddk/inc/crypto-eip/ddk/kit/ring \
 	-I${S}/ddk/inc/crypto-eip/ddk/libc \
 	-I${S}/ddk/inc/crypto-eip/ddk/log \
-	-I${S}/ddk/inc/crypto-eip/ddk/shdevxs \
 	-I${S}/ddk/inc/crypto-eip/ddk/slad \
 	-I${S}/ddk/inc/crypto-eip/ddk/slad/lkm \
-	-I${S}/ddk/inc/crypto-eip/ddk/shdevxs \
-	-I${S}/ddk/inc/crypto-eip/ddk/umdevxs \
 	-I${STAGING_KERNEL_BUILDDIR}/source/drivers/net/ethernet/mediatek/ \
 	-I${STAGING_KERNEL_BUILDDIR}/source/include \
 	"
