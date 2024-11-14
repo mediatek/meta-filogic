@@ -8,7 +8,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=751419260aa954499f7abaabaa882bbe"
 SECTION = "base"
 DEPENDS += "uci lua ubus libnl-tiny"
 
-SRCREV = "714e419919d00dd1b3cdce08d9f28a28b2de69ed"
+SRCREV = "b94f066e3f5839b8509483cdd8f4f582a45fa233"
 
 SRC_URI = "git://git.openwrt.org/project/iwinfo.git;branch=master \
            file://0002-fix-order-of-linker-cmdline-to-help-linking.patch \

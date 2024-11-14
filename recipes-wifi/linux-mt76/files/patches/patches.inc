@@ -81,6 +81,7 @@ SRC_URI_append = " \
     file://1052-wifi-mt76-mt7915-Clear-private-driver-data-in-case-o.patch \
     file://1053-wifi-mt76-mt7915-fix-TX-RX-hang-without-SER-hw-bit-t.patch \
     file://1054-wifi-mt76-mt7915-remove-rts-and-cts-protection-enabl.patch \
+    file://1055-wifi-mt76-testmode-add-interface-addition-deletion-c.patch \
     file://2000-wifi-mt76-mt7915-wed-add-wed-tx-support.patch \
     file://2001-wifi-mt76-mt7915-wed-add-wds-support-when-wed-is-ena.patch \
     file://2002-wifi-mt76-mt7915-wed-add-fill-receive-path-to-report.patch \
@@ -97,6 +98,7 @@ SRC_URI_append = " \
     file://2013-wifi-mt76-add-debugfs-for-tx-drop-counters.patch \
     file://2014-wifi-mt76-add-debugfs-for-rx-drop-counters.patch \
     file://2015-wifi-mt76-mt7915-support-backaward-compatiable.patch \
+    file://2016-wifi-mt76-mt7915-fix-key-used-after-free-issue.patch \
     file://2016-wifi-mt76-mt7915-refine-twt-mcu-update-flow.patch \
     file://9999-mt76-revert-for-backports-5.15-wireless-stack.patch \
     "

@@ -58,7 +58,7 @@ index 0ce7ecd..e1f598f 100644
  
  	/* TODO: make dynamic based on msg type */
 -	dev->mcu.timeout = 20 * HZ;
-+	dev->mcu.timeout = 3 * HZ;
++	dev->mcu.timeout = 10 * HZ;
  
  	seq = ++dev->mcu.msg_seq & 0xf;
  	if (!seq)
