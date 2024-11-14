@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: (GPL-2.0 OR MIT)
 
-#include "mt7987-netsys.dtsi"
-
 &mdio {
 	phy12: phy@12 {
 		compatible = "ethernet-phy-id03a2.a411";

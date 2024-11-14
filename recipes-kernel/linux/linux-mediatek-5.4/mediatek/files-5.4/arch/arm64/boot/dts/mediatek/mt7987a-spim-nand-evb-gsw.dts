@@ -2,7 +2,7 @@
 
 /dts-v1/;
 #include "mt7987a.dtsi"
-#include "mt7987-netsys-evb.dtsi"
+#include "mt7987-netsys-gmac123-evb.dtsi"
 #include "mt7987-spim-nand.dtsi"
 
 / {

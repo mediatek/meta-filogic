@@ -94,7 +94,6 @@ do_filogic_patches() {
     DISTRO_ccn34_build_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','ccn34','true','false',d)}"
     DISTRO_LAN_AS_WAN_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','lan0_as_wan','true','false',d)}"
         if [ $DISTRO_ccn34_build_ENABLED = 'true' ]; then
-            rm -rf ${WORKDIR}/mediatek/nf_hnat/999-40*.patch
             rm -rf ${WORKDIR}/mediatek/nf_hnat/999-41*.patch
             rm -rf ${WORKDIR}/mediatek/nf_hnat/999-45*.patch
         fi

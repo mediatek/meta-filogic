@@ -62,49 +62,6 @@
 	status = "okay";
 };
 
-&soc {
-	usbtphy: usb-phy@11c50000 {
-		compatible = "mediatek,mt7987",
-			     "mediatek,generic-tphy-v2";
-		#address-cells = <2>;
-		#size-cells = <2>;
-		ranges;
-		status = "okay";
-
-		tphyu2port0: usb-phy@11c50000 {
-			reg = <0 0x11c50000 0 0x700>;
-			clocks = <&infracfg_ao CK_INFRA_USB_UTMI_CK_P1>;
-			clock-names = "ref";
-			#phy-cells = <1>;
-
-			auto_load_valid;
-			nvmem-cells = <&u2_intr_p0>, <&u2_auto_load_valid_p0>;
-			nvmem-cell-names = "intr", "auto_load_valid";
-
-			status = "okay";
-		};
-
-		tphyu3port0: usb-phy@11c50700 {
-			reg = <0 0x11c50700 0 0x900>;
-			clocks = <&infracfg_ao CK_INFRA_USB_PIPE_CK_P1>;
-			clock-names = "ref";
-			#phy-cells = <1>;
-
-			auto_load_valid;
-			nvmem-cells = <&comb_intr_p0>,
-			      <&comb_rx_imp_p0>,
-			      <&comb_tx_imp_p0>,
-			      <&comb_auto_load_valid>;
-			nvmem-cell-names = "intr", "rx_imp", "tx_imp", "auto_load_valid";
-
-			/* MT7987: 4'b0010 default USB30 Don't change the '0' */
-			mediatek,syscon-type = <&topmisc 0x218 0>;
-
-			status = "disabled";
-		};
-	};
-};
-
 &spi1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&spic_pins>;
@@ -116,17 +73,6 @@
 };
 
 &uart0 {
-	interrupts = <GIC_SPI 123 IRQ_TYPE_LEVEL_HIGH>;
-	clocks = <&clkxtal>;
-	clock-names = "bus";
-	/delete-property/ assigned-clocks;
-	/delete-property/ assigned-clock-parents;
-	status = "okay";
-};
-
-&uart1 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&uart1_pins>;
 	status = "okay";
 };
 

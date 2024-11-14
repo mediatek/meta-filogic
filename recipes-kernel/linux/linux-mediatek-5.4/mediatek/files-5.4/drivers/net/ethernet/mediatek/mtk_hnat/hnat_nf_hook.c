@@ -277,9 +277,15 @@ void foe_clear_all_bind_entries(void)
 
 static void gmac_ppe_fwd_enable(struct net_device *dev)
 {
-	struct mtk_mac *mac = netdev_priv(dev);
+	struct net_device *master_dev = dev;
+	struct mtk_mac *mac;
 
-	if (IS_LAN(dev) || IS_GMAC1_MODE)
+	if (netdev_uses_dsa(master_dev))
+		hnat_dsa_get_port(&master_dev);
+
+	mac = netdev_priv(master_dev);
+
+	if (mac->id == MTK_GMAC1_ID)
 		set_gmac_ppe_fwd(NR_GMAC1_PORT, 1);
 	else if (mac->id == MTK_GMAC2_ID)
 		set_gmac_ppe_fwd(NR_GMAC2_PORT, 1);
@@ -352,6 +358,48 @@ int nf_hnat_netdevice_event(struct notifier_block *unused, unsigned long event,
 
 	return NOTIFY_DONE;
 }
+
+void foe_clear_crypto_entry(struct xfrm_selector sel)
+{
+	struct foe_entry *entry;
+	u32 prefix_d = ~0U;
+	u32 prefix_s = ~0U;
+	int i, hash_index;
+	int udp = 0;
+
+	if (sel.prefixlen_d != 0 && sel.prefixlen_d != 32)
+		prefix_d = htonl(prefix_d << (32 - sel.prefixlen_d));
+	if (sel.prefixlen_s != 0 && sel.prefixlen_s != 32)
+		prefix_s = htonl(prefix_s << (32 - sel.prefixlen_s));
+	if (sel.proto == IPPROTO_UDP)
+		udp = 1;
+
+	for (i = 0; i < CFG_PPE_NUM; i++) {
+		if (!hnat_priv->foe_table_cpu[i])
+			continue;
+
+		for (hash_index = 0; hash_index < hnat_priv->foe_etry_num; hash_index++) {
+			entry = hnat_priv->foe_table_cpu[i] + hash_index;
+
+			if (entry->bfib1.state == BIND && IS_IPV4_HNAPT(entry) &&
+			    !((htonl(entry->ipv4_hnapt.dip) ^ sel.daddr.a4) & prefix_d) &&
+			    !((htonl(entry->ipv4_hnapt.sip) ^ sel.saddr.a4) & prefix_s) &&
+			    !((entry->ipv4_hnapt.dport ^ sel.dport) & sel.dport_mask) &&
+			    !((entry->ipv4_hnapt.sport ^ sel.sport) & sel.sport_mask) &&
+			    entry->ipv4_hnapt.bfib1.udp == udp) {
+				memset(entry, 0, sizeof(*entry));
+				/* Clear HWNAT cache */
+				hnat_cache_ebl(1);
+				/* Wait for entry write done */
+				wmb();
+				if (debug_level >= 2)
+					pr_info("[%s]: delete entry idx = %d\n",
+						__func__, hash_index);
+			}
+		}
+	}
+}
+EXPORT_SYMBOL(foe_clear_crypto_entry);
 
 void foe_clear_entry(struct neighbour *neigh)
 {
@@ -2264,7 +2312,7 @@ hnat_entry_bind:
 			entry.ipv4_hnapt.iblk2.fqos = 0;
 		}
 	} else if (IS_L2_BRIDGE(&entry)) {
-		entry.l2_bridge.iblk2.dp = gmac;
+		entry.l2_bridge.iblk2.dp = gmac & 0xf;
 		entry.l2_bridge.iblk2.port_mg = 0;
 		if (qos_toggle) {
 			entry.l2_bridge.iblk2.qid = qid & 0x7f;
@@ -2606,7 +2654,7 @@ int mtk_sw_nat_hook_tx(struct sk_buff *skb, int gmac_no)
 		entry.ipv6_hnapt.tport_id = IS_HQOS_DL_MODE ? NR_QDMA_TPORT : 0;
 		entry.ipv6_hnapt.iblk2.fqos = IS_HQOS_DL_MODE ? 1 : 0;
 	} else if (IS_L2_BRIDGE(&entry)) {
-		entry.l2_bridge.iblk2.dp = gmac_no;
+		entry.l2_bridge.iblk2.dp = gmac_no & 0xf;
 		entry.l2_bridge.iblk2.rxid = skb_hnat_rx_id(skb);
 		entry.l2_bridge.iblk2.winfoi = 1;
 

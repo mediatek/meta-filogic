@@ -61,7 +61,7 @@
 
 #define MTK_HW_LRO_DMA_SIZE	64
 
-#define	MTK_MAX_LRO_RX_LENGTH		(4096 * 3)
+#define	MTK_MAX_LRO_RX_LENGTH		(4096 * 3 + MTK_MAX_RX_LENGTH)
 #define	MTK_MAX_LRO_IP_CNT		2
 #define	MTK_HW_LRO_TIMER_UNIT		1	/* 20 us */
 #define	MTK_HW_LRO_REFRESH_TIME		50000	/* 1 sec. */
@@ -74,6 +74,46 @@
 
 #define MTK_RSS_HASH_KEYSIZE		40
 #define MTK_RSS_MAX_INDIRECTION_TABLE	128
+
+/* Global Memroy Interface Control */
+#define MTK_GLO_MEM_CTRL		0x604
+
+/* Global Memory Data */
+#define MTK_GLO_MEM_DATA0		0x608
+#define MTK_GLO_MEM_DATA(x)		(MTK_GLO_MEM_DATA0 + (x * 0x4))
+
+/* Global Memory Access Info */
+#define MTK_GLO_MEM_ADDR		GENMASK(19, 0)
+#define MTK_GLO_MEM_IDX			GENMASK(29, 20)
+#define MTK_GLO_MEM_CMD			GENMASK(31, 30)
+
+#define MTK_GLO_MEM_WRITE		(1)
+#define MTK_GLO_MEM_READ		(2)
+
+/* HW LRO Memory Info */
+#define MTK_LRO_MEM_IDX			(0x4)
+#define MTK_LRO_MEM_CFG_BASE		(0)
+#define MTK_LRO_MEM_DATA_BASE		(64)
+#define MTK_LRO_MEM_DIP_BASE		(128)
+
+/* HW LRO CFG Info */
+#define MTK_RING_MAX_AGG_CNT		GENMASK(7, 0)
+#define MTK_RING_OPMODE			GENMASK(9, 8)
+#define MTK_RING_AGE_TIME		GENMASK(15, 0)
+#define MTK_RING_MAX_AGG_TIME_V2	GENMASK(31, 16)
+
+#define MTK_RING_AUTO_LERAN_MODE_V2	(3)
+
+/* HW LRO DATA Info */
+#define MTK_LRO_DATA_VLD		BIT(26)
+#define MTK_LRO_DATA_DIP_IDX		GENMASK(5, 0)
+#define MTK_LRO_DATA_DPORT		GENMASK(15, 0)
+#define MTK_LRO_DATA_SPORT		GENMASK(31, 16)
+
+/* HW LRO DIP Info */
+#define MTK_LRO_DIP_MODE		GENMASK(1, 0)
+#define MTK_LRO_IPV4			(1)
+#define MTK_LRO_IPV6			(2)
 
 /* Frame Engine Global Configuration */
 #define MTK_FE_GLO_CFG(x)	((x < 8) ? 0x0 : 0x24)
@@ -178,7 +218,7 @@
 #define PSE_FQFC_CFG1		0x100
 #define PSE_FQFC_CFG2		0x104
 #define PSE_NO_DROP_CFG		0x108
-#define PSE_PPE0_DROP		0x110
+#define PSE_PPE_DROP(x)		(0x110 + (x * 0x4))
 
 /* PSE Last FreeQ Page Request Control */
 #define PSE_DUMY_REQ		0x10C
@@ -261,7 +301,7 @@
 
 /* PDMA HW LRO Control Registers */
 #define BITS(m, n)			(~(BIT(m) - 1) & ((BIT(n) - 1) | BIT(n)))
-#define MTK_HW_LRO_DIP_NUM		(4)
+#define MTK_HW_LRO_DIP_NUM		(MTK_HAS_CAPS(eth->soc->caps, MTK_GLO_MEM_ACCESS) ? 8 : 4)
 #if defined(CONFIG_MEDIATEK_NETSYS_RX_V2) || defined(CONFIG_MEDIATEK_NETSYS_V3)
 #define MTK_MAX_RX_RING_NUM		(8)
 #define MTK_HW_LRO_RING_NUM		(4)
@@ -320,7 +360,7 @@
 #define MTK_CHK_DDONE		BIT(10)
 
 /* PDMA RX DMA Configuration Register */
-#define MTK_PDMA_LRO_SDL	(0x3000)
+#define MTK_PDMA_LRO_SDL	(0x3000 + MTK_MAX_RX_LENGTH)
 #define MTK_RX_CFG_SDL_OFFSET	(16)
 
 /* PDMA Reset Index Register */
@@ -1065,6 +1105,7 @@
 #define SGMII_AN_ABILITY	BIT(19)
 #define SGMII_AN_COMPLETE	BIT(21)
 #define SGMII_PCS_FAULT		BIT(23)
+#define SGMII_PCS_REF_CK_SEL	BIT(24)
 #define SGMII_AN_EXPANSION_CLR	BIT(30)
 
 /* Register to set SGMII speed */
@@ -1097,6 +1138,7 @@
 #define SGMII_CODE_SYNC_SET_EN		BIT(10)
 #define SGMII_SEND_AN_ERROR_EN		BIT(11)
 #define SGMII_IF_MODE_MASK		GENMASK(5, 1)
+#define SGMII_TRX_BUF_THR_MASK		GENMASK(31, 16)
 
 /* Register to reset SGMII design */
 #define SGMII_RESERVED_0	0x34
@@ -1615,6 +1657,7 @@ struct mtk_tx_ring {
 	void *dma_pdma;	/* For MT7628/88 PDMA handling */
 	dma_addr_t phys_pdma;
 	int cpu_idx;
+	bool in_sram;
 };
 
 /* PDMA rx ring mode */
@@ -1644,6 +1687,19 @@ struct mtk_rx_ring {
 	u16 calc_idx;
 	u32 crx_idx_reg;
 	u32 ring_no;
+	bool in_sram;
+};
+
+/* struct mtk_rx_ring -	This struct holds info describing a HW TX ring
+ * @phy_scratch_ring:	physical address of scratch_ring
+ * @scratch_ring:	Newer SoCs need memory for a second HW managed TX ring
+ * @scratch_head:	The scratch memory that scratch_ring points to.
+ */
+struct mtk_fq_ring {
+	dma_addr_t	phy_scratch_ring;
+	void		*scratch_ring;
+	void		*scratch_head[MTK_FQ_DMA_HEAD];
+	bool		in_sram;
 };
 
 /* struct mtk_rss_params -	This is the structure holding parameters
@@ -1685,6 +1741,7 @@ enum mkt_eth_capabilities {
 	MTK_INFRA_BIT,
 	MTK_SHARED_SGMII_BIT,
 	MTK_HWLRO_BIT,
+	MTK_GLO_MEM_ACCESS_BIT,
 	MTK_RSS_BIT,
 	MTK_SHARED_INT_BIT,
 	MTK_PDMA_INT_BIT,
@@ -1744,6 +1801,7 @@ enum mkt_eth_capabilities {
 #define MTK_INFRA		BIT_ULL(MTK_INFRA_BIT)
 #define MTK_SHARED_SGMII	BIT_ULL(MTK_SHARED_SGMII_BIT)
 #define MTK_HWLRO		BIT_ULL(MTK_HWLRO_BIT)
+#define MTK_GLO_MEM_ACCESS	BIT_ULL(MTK_GLO_MEM_ACCESS_BIT)
 #define MTK_RSS			BIT_ULL(MTK_RSS_BIT)
 #define MTK_SHARED_INT		BIT_ULL(MTK_SHARED_INT_BIT)
 #define MTK_PDMA_INT		BIT_ULL(MTK_PDMA_INT_BIT)
@@ -1886,6 +1944,7 @@ enum mkt_eth_capabilities {
 		       MTK_MUX_U3_GMAC23_TO_QPHY | MTK_U3_COPHY_V2 | \
 		       MTK_GMAC2_2P5GPHY_V2 | MTK_MUX_GMAC2_TO_2P5GPHY | MTK_RSS | \
 		       MTK_NETSYS_V3 | MTK_RSTCTRL_PPE1 | \
+		       MTK_HWLRO | MTK_GLO_MEM_ACCESS | \
 		       MTK_NETSYS_RX_V2 | MTK_36BIT_DMA | MTK_HWTSTAMP)
 
 struct mtk_tx_dma_desc_info {
@@ -2207,9 +2266,6 @@ struct gdm_monitor {
  * @rx_ring_qdma:	Pointer to the memory holding info about the QDMA RX ring
  * @tx_napi:		The TX NAPI struct
  * @rx_napi:		The RX NAPI struct
- * @scratch_ring:	Newer SoCs need memory for a second HW managed TX ring
- * @phy_scratch_ring:	physical address of scratch_ring
- * @scratch_head:	The scratch memory that scratch_ring points to.
  * @clks:		clock array for all clocks required
  * @mii_bus:		If there is a bus we need to create an instance for it
  * @pending_work:	The workqueue used to reset the dma ring
@@ -2235,6 +2291,7 @@ struct mtk_eth {
 	u8				hwver;
 	u32				msg_enable;
 	u32				pppq_toggle;
+	u64				sram_size;
 	unsigned long			sysclk;
 	struct regmap			*ethsys;
 	struct regmap                   *infra;
@@ -2247,13 +2304,11 @@ struct mtk_eth {
 	struct mtk_tx_ring		tx_ring[MTK_MAX_TX_RING_NUM];
 	struct mtk_rx_ring		rx_ring[MTK_MAX_RX_RING_NUM];
 	struct mtk_rx_ring		rx_ring_qdma;
+	struct mtk_fq_ring		fq_ring;
 	struct mtk_napi			tx_napi[MTK_TX_NAPI_NUM];
 	struct mtk_napi			rx_napi[MTK_RX_NAPI_NUM];
 	struct mtk_rss_params		rss_params;
-	void				*scratch_ring;
 	struct mtk_reset_event		reset_event;
-	dma_addr_t			phy_scratch_ring;
-	void				*scratch_head[MTK_FQ_DMA_HEAD];
 	struct clk			*clks[MTK_CLK_MAX];
 
 	struct mii_bus			*mii_bus;
@@ -2275,6 +2330,7 @@ struct mtk_eth {
 		struct wdma_monitor	wdma_monitor;
 		struct gdm_monitor	gdm_monitor;
 		u32			event;
+		bool			phy_disconnect;
 	} reset;
 
 	u32				rx_dma_l4_valid;
@@ -2298,6 +2354,9 @@ struct mtk_mac {
 	unsigned int			type;
 	int				speed;
 	int				phy_speed;
+	int				duplex;
+	bool				tx_pause;
+	bool				rx_pause;
 	struct device_node		*of_node;
 	struct phylink			*phylink;
 	struct phylink_config		phylink_config;

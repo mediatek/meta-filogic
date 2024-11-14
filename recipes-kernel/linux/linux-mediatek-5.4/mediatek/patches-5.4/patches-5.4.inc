@@ -173,6 +173,8 @@ SRC_URI_append = " \
     file://999-2501-cpufreq-Enable-clocks-and-regulators.patch \
     file://999-2502-cpufreq-add-mt7988a-spim-snand-support.patch \
     file://999-2503-cpufreq-mtk-vbining-add-mt7988-support.patch \
+    file://999-2504-cpufreq-refactor-plat-data-for-driver-extension.patch \
+    file://999-2505-cpufreq-add-mt7987-cpufreq-support.patch \
     file://999-2530-add-pmic-config.patch \
     file://999-2531-iio-add-zts8032-config.patch \
     file://999-2540-cmdline-boot-parameters.patch \

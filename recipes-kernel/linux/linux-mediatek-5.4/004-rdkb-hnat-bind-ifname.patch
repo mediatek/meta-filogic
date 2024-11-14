@@ -144,3 +144,19 @@ index e10e1e21..f2745594 100644
  	mtketh-max-gmac = <3>;
  	status = "okay";
  };
+diff --git a/arch/arm64/boot/dts/mediatek/mt7987-netsys-gmac123.dtsi b/arch/arm64/boot/dts/mediatek/mt7987-netsys-gmac123.dtsi
+index 5e4b126..00b1c42 100644
+--- a/arch/arm64/boot/dts/mediatek/mt7987-netsys-gmac123.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt7987-netsys-gmac123.dtsi
+@@ -160,9 +160,9 @@
+ };
+ 
+ &hnat {
+-	mtketh-wan = "eth1";
++	mtketh-wan = "erouter0";
+ 	mtketh-lan = "lan";
+-	mtketh-lan2 = "eth2";
++	mtketh-lan2 = "eth3";
+ 	mtketh-max-gmac = <3>;
+ 	mtketh-ppe-num = <2>;
+ 	status = "okay";

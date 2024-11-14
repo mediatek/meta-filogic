@@ -8,7 +8,7 @@
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 #include <dt-bindings/phy/phy.h>
 #include <dt-bindings/reset/ti-syscon.h>
-#include <dt-bindings/clock/mt7987-clk.h>
+#include <dt-bindings/clock/mediatek,mt7987-clk.h>
 #include <dt-bindings/pinctrl/mt65xx.h>
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/thermal/thermal.h>
@@ -27,6 +27,15 @@
 		clock-output-names = "clkxtal";
 	};
 
+	vproc: regulator-vproc {
+		compatible = "regulator-fixed";
+		regulator-name = "proc";
+		regulator-min-microvolt = <8500000>;
+		regulator-max-microvolt = <8500000>;
+		regulator-boot-on;
+		regulator-always-on;
+	};
+
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -36,6 +45,11 @@
 			enable-method = "psci";
 			next-level-cache = <&l2_cache>;
 			reg = <0x0>;
+			clocks = <&mcusys CK_MCU_BUS_DIV_SEL>,
+				 <&topckgen CK_TOP_CB_CKSQ_40M>,
+				 <&apmixedsys CK_APMIXED_ARM_LL>;
+			clock-names = "cpu", "intermediate", "armpll";
+			operating-points-v2 = <&cluster0_opp>;
 		};
 
 		cpu1: cpu@1 {
@@ -44,6 +58,11 @@
 			enable-method = "psci";
 			next-level-cache = <&l2_cache>;
 			reg = <0x1>;
+			clocks = <&mcusys CK_MCU_BUS_DIV_SEL>,
+				 <&topckgen CK_TOP_CB_CKSQ_40M>,
+				 <&apmixedsys CK_APMIXED_ARM_LL>;
+			clock-names = "cpu", "intermediate", "armpll";
+			operating-points-v2 = <&cluster0_opp>;
 		};
 
 		cpu2: cpu@2 {
@@ -52,6 +71,11 @@
 			enable-method = "psci";
 			next-level-cache = <&l2_cache>;
 			reg = <0x2>;
+			clocks = <&mcusys CK_MCU_BUS_DIV_SEL>,
+				 <&topckgen CK_TOP_CB_CKSQ_40M>,
+				 <&apmixedsys CK_APMIXED_ARM_LL>;
+			clock-names = "cpu", "intermediate", "armpll";
+			operating-points-v2 = <&cluster0_opp>;
 		};
 
 		cpu3: cpu@3 {
@@ -60,6 +84,32 @@
 			enable-method = "psci";
 			next-level-cache = <&l2_cache>;
 			reg = <0x3>;
+			clocks = <&mcusys CK_MCU_BUS_DIV_SEL>,
+				 <&topckgen CK_TOP_CB_CKSQ_40M>,
+				 <&apmixedsys CK_APMIXED_ARM_LL>;
+			clock-names = "cpu", "intermediate", "armpll";
+			operating-points-v2 = <&cluster0_opp>;
+		};
+
+		cluster0_opp: opp_table0 {
+			compatible = "operating-points-v2";
+			opp-shared;
+			opp00 {
+				opp-hz = /bits/ 64 <500000000>;
+				opp-microvolt = <850000>;
+			};
+			opp01 {
+				opp-hz = /bits/ 64 <1300000000>;
+				opp-microvolt = <850000>;
+			};
+			opp02 {
+				opp-hz = /bits/ 64 <1600000000>;
+				opp-microvolt = <850000>;
+			};
+			opp03 {
+				opp-hz = /bits/ 64 <2000000000>;
+				opp-microvolt = <850000>;
+			};
 		};
 
 		l2_cache: l2-cache {
@@ -76,6 +126,7 @@
 
 	clkitg: clkitg {
 		compatible = "simple-bus";
+		status = "disabled";
 	};
 
 	clksys: soc_clksys {
@@ -120,7 +171,7 @@
 
 		mcusys: mcusys@10400000 {
 			compatible = "mediatek,mt7987-mcusys", "syscon";
-			reg = <0 10400000 0 0x1000>;
+			reg = <0 0x10400000 0 0x1000>;
 			#clock-cells = <1>;
 		};
 
@@ -319,7 +370,7 @@
 
 			pcie1pereset {
 				gpio-hog;
-			    	gpios = <36 GPIO_ACTIVE_HIGH>;
+				gpios = <36 GPIO_ACTIVE_HIGH>;
 				output-high;
 			};
 		};
@@ -359,12 +410,13 @@
 				     "mediatek,mt6577-uart";
 			reg = <0 0x11000000 0 0x100>;
 			interrupts = <GIC_SPI 123 IRQ_TYPE_LEVEL_HIGH>;
-			clocks = <&infracfg_ao CK_INFRA_52M_UART0_CK>;
-			clock-names = "bus";
+			clocks = <&infracfg_ao CK_INFRA_52M_UART0_CK>,
+				 <&infracfg_ao CK_INFRA_66M_UART0_PCK>;
+			clock-names = "baud", "bus";
 			assigned-clocks = <&topckgen CK_TOP_UART_SEL>,
 					  <&infracfg_ao CK_INFRA_MUX_UART0_SEL>;
 			assigned-clock-parents = <&topckgen CK_TOP_CB_CKSQ_40M>,
-						 <&infracfg CK_INFRA_UART_O0>;
+						 <&topckgen CK_TOP_UART_SEL>;
 			status = "disabled";
 		};
 
@@ -373,12 +425,13 @@
 				     "mediatek,mt6577-uart";
 			reg = <0 0x11000100 0 0x100>;
 			interrupts = <GIC_SPI 124 IRQ_TYPE_LEVEL_HIGH>;
-			clocks = <&infracfg_ao CK_INFRA_52M_UART1_CK>;
-			clock-names = "bus";
+			clocks = <&infracfg_ao CK_INFRA_52M_UART1_CK>,
+				 <&infracfg_ao CK_INFRA_66M_UART1_PCK>;
+			clock-names = "baud", "bus";
 			assigned-clocks = <&topckgen CK_TOP_UART_SEL>,
 					  <&infracfg_ao CK_INFRA_MUX_UART1_SEL>;
 			assigned-clock-parents = <&topckgen CK_TOP_CB_CKSQ_40M>,
-						 <&infracfg CK_INFRA_UART_O1>;
+						 <&topckgen CK_TOP_UART_SEL>;
 			status = "disabled";
 		};
 
@@ -387,12 +440,13 @@
 				     "mediatek,mt6577-uart";
 			reg = <0 0x11000200 0 0x100>;
 			interrupts = <GIC_SPI 125 IRQ_TYPE_LEVEL_HIGH>;
-			clocks = <&infracfg_ao CK_INFRA_52M_UART2_CK>;
-			clock-names = "bus";
+			clocks = <&infracfg_ao CK_INFRA_52M_UART2_CK>,
+				 <&infracfg_ao CK_INFRA_66M_UART2_PCK>;
+			clock-names = "baud", "bus";
 			assigned-clocks = <&topckgen CK_TOP_UART_SEL>,
 					  <&infracfg_ao CK_INFRA_MUX_UART2_SEL>;
 			assigned-clock-parents = <&topckgen CK_TOP_CB_CKSQ_40M>,
-						 <&infracfg CK_INFRA_UART_O2>;
+						 <&topckgen CK_TOP_UART_SEL>;
 			status = "disabled";
 		};
 
@@ -420,6 +474,10 @@
 				 <&topckgen CK_TOP_SPI_SEL>,
 				 <&infracfg_ao CK_INFRA_104M_SPI0>,
 				 <&infracfg_ao CK_INFRA_66M_SPI0_HCK>;
+			assigned-clocks = <&topckgen CK_TOP_SPI_SEL>,
+					  <&infracfg_ao CK_INFRA_MUX_SPI0_SEL>;
+			assigned-clock-parents = <&topckgen CK_TOP_CB_M_D2>,
+						 <&topckgen CK_TOP_SPI_SEL>;
 			clock-names = "parent-clk", "sel-clk", "spi-clk", "spi-hclk";
 			status = "disabled";
 		};
@@ -432,6 +490,10 @@
 				 <&topckgen CK_TOP_SPI_SEL>,
 				 <&infracfg_ao CK_INFRA_104M_SPI1>,
 				 <&infracfg_ao CK_INFRA_66M_SPI1_HCK>;
+			assigned-clocks = <&topckgen CK_TOP_SPIM_MST_SEL>,
+					  <&infracfg_ao CK_INFRA_MUX_SPI1_SEL>;
+			assigned-clock-parents = <&topckgen CK_TOP_CB_M_D2>,
+						 <&topckgen CK_TOP_SPIM_MST_SEL>;
 			clock-names = "parent-clk", "sel-clk", "spi-clk", "spi-hclk";
 			status = "disabled";
 		};
@@ -444,6 +506,10 @@
 				<&topckgen CK_TOP_SPI_SEL>,
 				<&infracfg_ao CK_INFRA_104M_SPI2_BCK>,
 				<&infracfg_ao CK_INFRA_66M_SPI2_HCK>;
+			assigned-clocks = <&topckgen CK_TOP_SPI_SEL>,
+					  <&infracfg_ao CK_INFRA_MUX_SPI2_BCK_SEL>;
+			assigned-clock-parents = <&topckgen CK_TOP_CB_M_D2>,
+						 <&topckgen CK_TOP_SPI_SEL>;
 			clock-names = "parent-clk", "sel-clk", "spi-clk", "spi-hclk";
 			status = "disabled";
 		};
@@ -457,6 +523,44 @@
 			nvmem-cells = <&lvts_calibration>;
 			nvmem-cell-names = "e_data1";
 			status = "disabled";
+		};
+
+		usbtphy: usb-phy@11c50000 {
+			compatible = "mediatek,mt7987",
+				     "mediatek,generic-tphy-v2";
+			#address-cells = <2>;
+			#size-cells = <2>;
+			ranges;
+
+			tphyu2port0: usb-phy@11c50000 {
+				reg = <0 0x11c50000 0 0x700>;
+				clocks = <&infracfg_ao CK_INFRA_USB_UTMI_CK_P1>;
+				clock-names = "ref";
+				#phy-cells = <1>;
+
+				auto_load_valid;
+				nvmem-cells = <&u2_intr_p0>, <&u2_auto_load_valid_p0>;
+				nvmem-cell-names = "intr", "auto_load_valid";
+			};
+
+			tphyu3port0: usb-phy@11c50700 {
+				reg = <0 0x11c50700 0 0x900>;
+				clocks = <&infracfg_ao CK_INFRA_USB_PIPE_CK_P1>;
+				clock-names = "ref";
+				#phy-cells = <1>;
+
+				auto_load_valid;
+				nvmem-cells = <&comb_intr_p0>,
+					      <&comb_rx_imp_p0>,
+					      <&comb_tx_imp_p0>,
+					      <&comb_auto_load_valid>;
+				nvmem-cell-names = "intr", "rx_imp", "tx_imp", "auto_load_valid";
+
+				/* MT7987: 4'b0010 default USB30 Don't change the '0' */
+				mediatek,syscon-type = <&topmisc 0x218 0>;
+
+				status = "disabled";
+			};
 		};
 
 		xhci: xhci@11200000 {
@@ -492,9 +596,9 @@
 					  <&topckgen CK_TOP_A1SYS_SEL>,
 					  <&topckgen CK_TOP_AUD_L_SEL>,
 					  <&topckgen CK_TOP_A_TUNER_SEL>;
-			assigned-clock-parents = <&topckgen CK_TOP_CB_APLL2_196M>,
+			assigned-clock-parents = <&apmixedsys CK_APMIXED_APLL2>,
 						 <&topckgen CK_TOP_CB_APLL2_D4>,
-						 <&topckgen CK_TOP_CB_APLL2_196M>,
+						 <&apmixedsys CK_APMIXED_APLL2>,
 						 <&topckgen CK_TOP_CB_APLL2_D4>;
 			status = "disabled";
 		};
@@ -505,11 +609,13 @@
 				<0 0x11f50000 0 0x1000>;
 			interrupts = <GIC_SPI 143 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&topckgen CK_TOP_EMMC_200M_SEL>,
+				 <&infracfg_ao CK_INFRA_MSDC400>,
 				 <&infracfg_ao CK_INFRA_133M_MSDC_0_HCK>,
 				 <&infracfg_ao CK_INFRA_MSDC2_HCK>,
 				 <&infracfg_ao CK_INFRA_MSDC200_SRC>,
 				 <&infracfg_ao CK_INFRA_66M_MSDC_0_HCK>;
-			clock-names = "source", "axi_cg", "hclk", "source_cg", "ahb_cg";
+			clock-names = "source", "bus_clk", "axi_cg", "hclk",
+				      "source_cg", "ahb_cg";
 			status = "disabled";
 		};
 
@@ -671,5 +777,3 @@
 		ranges;
 	};
 };
-
-#include "mt7987-clkitg.dtsi"

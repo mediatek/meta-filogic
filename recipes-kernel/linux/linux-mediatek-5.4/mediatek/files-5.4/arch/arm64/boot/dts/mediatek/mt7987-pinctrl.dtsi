@@ -95,13 +95,13 @@
 
 	mdio0_pins: mdio0-pins {
 		mux {
-			function = "mdio";
+			function = "eth";
 			groups = "mdc_mdio";
 		};
 
 		conf {
 			groups = "mdc_mdio";
-			drive-strength = <MTK_DRIVE_10mA>;
+			drive-strength = <MTK_DRIVE_6mA>;
 		};
 	};
 

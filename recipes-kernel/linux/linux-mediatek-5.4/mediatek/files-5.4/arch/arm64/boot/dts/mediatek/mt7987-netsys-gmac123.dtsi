@@ -4,7 +4,7 @@
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 #include <dt-bindings/phy/phy.h>
 #include <dt-bindings/reset/ti-syscon.h>
-#include <dt-bindings/clock/mt7987-clk.h>
+#include <dt-bindings/clock/mediatek,mt7987-clk.h>
 #include <dt-bindings/pinctrl/mt65xx.h>
 
 &netsys {
@@ -27,7 +27,7 @@
 			     <GIC_SPI 198 IRQ_TYPE_LEVEL_HIGH>,
 			     <GIC_SPI 199 IRQ_TYPE_LEVEL_HIGH>;
 		clocks = <&ethsys CK_ETHDMA_FE_EN>,
-		         <&ethsys CK_ETHDMA_GP2_EN>,
+			 <&ethsys CK_ETHDMA_GP2_EN>,
 			 <&ethsys CK_ETHDMA_GP1_EN>,
 			 <&ethsys CK_ETHDMA_GP3_EN>,
 			 <&sgmiisys0 CK_SGM0_TX_EN>,
@@ -55,12 +55,14 @@
 		assigned-clocks = <&topckgen CK_TOP_NETSYS_2X_SEL>,
 				  <&topckgen CK_TOP_SGM_0_SEL>,
 				  <&topckgen CK_TOP_SGM_1_SEL>;
-		assigned-clock-parents = <&topckgen CK_TOP_CB_NET2_800M>,
-					 <&topckgen CK_TOP_CB_SGM_325M>,
-					 <&topckgen CK_TOP_CB_SGM_325M>;
+		assigned-clock-parents = <&apmixedsys CK_APMIXED_NET2PLL>,
+					 <&apmixedsys CK_APMIXED_SGMPLL>,
+					 <&apmixedsys CK_APMIXED_SGMPLL>;
 		mediatek,ethsys = <&ethsys>;
 		mediatek,sgmiisys = <&sgmiisys0>, <&sgmiisys1>;
 		mediatek,infracfg = <&topmisc>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&mdio0_pins>;
 		#reset-cells = <1>;
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -107,6 +109,7 @@
 				phy-mode = "2500base-x";
 				airoha,polarity = <1>;
 				airoha,surge = <0>;
+				airoha,phy-handle;
 			};
 
 			phy15: phy@15 {

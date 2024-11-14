@@ -695,7 +695,7 @@ static const struct function_desc mt7987_functions[] = {
 	{"pwm", mt7987_pwm_groups, ARRAY_SIZE(mt7987_pwm_groups)},
 	{"usb", mt7987_usb_groups, ARRAY_SIZE(mt7987_usb_groups)},
 	{"led", mt7987_led_groups, ARRAY_SIZE(mt7987_led_groups)},
-	{"ethernet", mt7987_ethernet_groups, ARRAY_SIZE(mt7987_ethernet_groups)},
+	{"eth", mt7987_ethernet_groups, ARRAY_SIZE(mt7987_ethernet_groups)},
 	{"spi", mt7987_spi_groups, ARRAY_SIZE(mt7987_spi_groups)},
 	{"flash", mt7987_flash_groups, ARRAY_SIZE(mt7987_flash_groups)},
 	{"i2c", mt7987_i2c_groups, ARRAY_SIZE(mt7987_i2c_groups)},
