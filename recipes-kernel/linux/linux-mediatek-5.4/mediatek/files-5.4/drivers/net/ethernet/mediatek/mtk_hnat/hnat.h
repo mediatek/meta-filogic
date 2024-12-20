@@ -107,6 +107,8 @@
 #define PPE_MIB_CAH_RDATA 0X160
 #define PPE_SB_FIFO_DBG 0x170
 #define PPE_SBW_CTRL 0x174
+#define PPE_SB_WED0_CNT 0x18C
+#define PPE_FLOW_CHK_STATUS 0x1B0
 
 #define GDMA1_FWD_CFG 0x500
 #define GDMA2_FWD_CFG 0x1500
@@ -135,7 +137,19 @@
 
 /*PPE_CAH_CTRL mask*/
 #define CAH_EN (0x1 << 0) /* RW */
+#define CAH_REQ (0x1 << 8) /* RW */
 #define CAH_X_MODE (0x1 << 9) /* RW */
+#define CAH_CMD (0x3 << 12) /* RW */
+#define CAH_DATA_SEL (0x3 << 18) /* RW */
+
+/*PPE_CAH_LINE_RW mask*/
+#define LINE_RW (0xffff << 0) /* RW */
+#define OFFSET_RW (0xff << 16) /* RW */
+
+/*PPE_CAH_TAG_SRH mask*/
+#define TAG_SRH (0xffff << 0) /* RW */
+#define SRH_LNUM (0x7fff << 16) /* RW */
+#define SRH_HIT (0x1 << 31) /* RW */
 
 /*PPE_UNB_AGE mask*/
 #define UNB_DLTA (0xff << 0) /* RW */
@@ -981,6 +995,17 @@ struct mtk_hnat {
 	bool nf_stat_en;
 	struct xlat_conf xlat;
 	spinlock_t		entry_lock;
+	spinlock_t		flow_entry_lock;
+	struct hlist_head *foe_flow[MAX_PPE_NUM];
+	int fe_irq2;
+};
+
+struct hnat_flow_entry {
+	struct hlist_node list;
+	struct foe_entry data;
+	unsigned long last_update;
+	u16 ppe_index;
+	u16 hash;
 };
 
 struct extdev_entry {
@@ -992,6 +1017,22 @@ struct tcpudphdr {
 	__be16 src;
 	__be16 dst;
 };
+
+#if defined(CONFIG_MEDIATEK_NETSYS_V3)
+struct ppe_flow_chk_status {
+	u32 entry : 15;
+	u32 sta : 1;
+	u32 state : 2;
+	u32 sp : 4;
+	u32 fp : 4;
+	u32 cah : 1;
+	u32 rmt : 1;
+	u32 psn : 1;
+	u32 dram : 1;
+	u32 resv : 1;
+	u32 valid : 1;
+};
+#endif
 
 enum FoeEntryState { INVALID = 0, UNBIND = 1, BIND = 2, FIN = 3 };
 
@@ -1184,6 +1225,7 @@ enum FoeIpAct {
 #define WAN_DEV_NAME hnat_priv->wan
 #define LAN_DEV_NAME hnat_priv->lan
 #define LAN2_DEV_NAME hnat_priv->lan2
+#define IS_ETH_GRP(dev) (IS_LAN_GRP(dev) || IS_WAN(dev))
 #define IS_WAN(dev) (!strncmp((dev)->name, WAN_DEV_NAME, strlen(WAN_DEV_NAME)))
 #define IS_LAN_GRP(dev) (IS_LAN(dev) | IS_LAN2(dev))
 #define IS_LAN(dev)								\
@@ -1218,12 +1260,21 @@ enum FoeIpAct {
 #define IS_GMAC1_MODE ((hnat_priv->gmac_num == 1) ? 1 : 0)
 #define IS_HQOS_MODE (qos_toggle == 1)
 #define IS_PPPQ_MODE (qos_toggle == 2)		/* Per Port Per Queue */
-#define IS_PPPQ_PATH(dev, skb) \
-	((IS_DSA_1G_LAN(dev) || IS_DSA_WAN(dev)) || \
-	 (FROM_WED(skb) && IS_DSA_LAN(dev)))
 #define IS_HQOS_DL_MODE (IS_HQOS_MODE && qos_dl_toggle)
 #define IS_HQOS_UL_MODE (IS_HQOS_MODE && qos_ul_toggle)
-#define MAX_PPPQ_PORT_NUM	6
+#define MAX_SWITCH_PORT_NUM		(6)
+#if defined(CONFIG_MEDIATEK_NETSYS_V3)
+#define MAX_PPPQ_QUEUE_NUM		(2 * MAX_SWITCH_PORT_NUM + 2)
+#define IS_PPPQ_PATH(dev, skb)						\
+	((IS_DSA_1G_LAN(dev) || IS_DSA_WAN(dev)) ||			\
+	 (FROM_WED(skb) && (IS_DSA_LAN(dev) ||				\
+			    is_eth_dev_speed_under(dev, SPEED_2500))))
+#else
+#define MAX_PPPQ_QUEUE_NUM		(2 * MAX_SWITCH_PORT_NUM)
+#define IS_PPPQ_PATH(dev, skb)				\
+	((IS_DSA_1G_LAN(dev) || IS_DSA_WAN(dev)) ||	\
+	 (FROM_WED(skb) && IS_DSA_LAN(dev)))
+#endif
 
 #define es(entry) (entry_state[entry->bfib1.state])
 #define ei(entry, end) (hnat_priv->foe_etry_num - (int)(end - entry))
@@ -1265,13 +1316,12 @@ enum FoeIpAct {
 #endif
 
 #define UDF_PINGPONG_IFIDX GENMASK(6, 0)
-#define UDF_HNAT_ENTRY_LOCKED BIT(7)
 
-#define HQOS_FLAG(dev, skb, qid)			\
-	((IS_HQOS_UL_MODE && IS_WAN(dev)) ||		\
-	 (IS_HQOS_DL_MODE && IS_LAN_GRP(dev)) ||	\
-	 (IS_PPPQ_MODE && (IS_PPPQ_PATH(dev, skb) ||	\
-			   qid >= MAX_PPPQ_PORT_NUM)))
+#define HQOS_FLAG(dev, skb, qid)				\
+	((IS_HQOS_UL_MODE && IS_WAN(dev)) ||			\
+	 (IS_HQOS_DL_MODE && IS_LAN_GRP(dev)) ||		\
+	 (IS_PPPQ_MODE && (IS_PPPQ_PATH(dev, skb) ||		\
+			   qid >= MAX_PPPQ_QUEUE_NUM)))
 
 #define HNAT_GMAC_FP(mac_id)						\
 	((IS_GMAC1_MODE || mac_id == MTK_GMAC1_ID) ? NR_GMAC1_PORT :	\
@@ -1281,41 +1331,6 @@ enum FoeIpAct {
 
 extern const struct of_device_id of_hnat_match[];
 extern struct mtk_hnat *hnat_priv;
-
-static inline int is_hnat_entry_locked(struct foe_entry *entry)
-{
-	u32 udf = 0;
-
-	if (IS_IPV4_GRP(entry) || IS_L2_BRIDGE(entry))
-		udf = entry->ipv4_hnapt.act_dp;
-	else
-		udf = entry->ipv6_5t_route.act_dp;
-
-	return !!(udf & UDF_HNAT_ENTRY_LOCKED);
-}
-
-static inline void hnat_set_entry_lock(struct foe_entry *entry, bool locked)
-{
-	if (IS_IPV4_GRP(entry) || IS_L2_BRIDGE(entry)) {
-		if (locked)
-			entry->ipv4_hnapt.act_dp |= UDF_HNAT_ENTRY_LOCKED;
-		else
-			entry->ipv4_hnapt.act_dp &= ~UDF_HNAT_ENTRY_LOCKED;
-	} else {
-		if (locked)
-			entry->ipv6_5t_route.act_dp |= UDF_HNAT_ENTRY_LOCKED;
-		else
-			entry->ipv6_5t_route.act_dp &= ~UDF_HNAT_ENTRY_LOCKED;
-	}
-	/* Ensure the lock has been written to the entry before return */
-	wmb();
-}
-
-static inline void hnat_check_release_entry_lock(struct foe_entry *entry)
-{
-	if (is_hnat_entry_locked(entry))
-		hnat_set_entry_lock(entry, false);
-}
 
 int hnat_dsa_fill_stag(const struct net_device *netdev,
 		       struct foe_entry *entry,
@@ -1340,6 +1355,9 @@ void hnat_unregister_nf_hooks(void);
 int whnat_adjust_nf_hooks(void);
 int mtk_hqos_ptype_cb(struct sk_buff *skb, struct net_device *dev,
 		      struct packet_type *pt, struct net_device *unused);
+int hnat_dump_cache_entry(u32 ppe_id, u32 hash);
+int hnat_dump_ppe_entry(u32 ppe_id, u32 hash);
+bool is_eth_dev_speed_under(const struct net_device *dev, u32 speed);
 extern int dbg_cpu_reason;
 extern int debug_level;
 extern int xlat_toggle;
@@ -1378,6 +1396,7 @@ uint32_t hnat_cpu_reason_cnt(struct sk_buff *skb);
 int hnat_enable_hook(void);
 int hnat_disable_hook(void);
 void hnat_cache_ebl(int enable);
+void hnat_cache_clr(u32 ppe_id);
 void hnat_qos_shaper_ebl(u32 id, u32 enable);
 void exclude_boundary_entry(struct foe_entry *foe_table_cpu);
 void set_gmac_ppe_fwd(int gmac_no, int enable);
@@ -1390,13 +1409,25 @@ u32 hnat_get_ppe_hash(struct foe_entry *entry);
 int mtk_ppe_get_xlat_v4_by_v6(struct in6_addr *ipv6, u32 *ipv4);
 int mtk_ppe_get_xlat_v6_by_v4(u32 *ipv4, struct in6_addr *ipv6,
 			      struct in6_addr *prefix);
+bool hnat_flow_entry_match(struct foe_entry *entry, struct foe_entry *data);
+void hnat_flow_entry_delete(struct hnat_flow_entry *flow_entry);
 
 struct hnat_accounting *hnat_get_count(struct mtk_hnat *h, u32 ppe_id,
 				       u32 index, struct hnat_accounting *diff);
 
-static inline u16 foe_timestamp(struct mtk_hnat *h)
+int mtk_hnat_skb_headroom_copy(struct sk_buff *new, struct sk_buff *old);
+static inline u16 foe_timestamp(struct mtk_hnat *h, bool mcast)
 {
-	return (readl(hnat_priv->fe_base + 0x0010)) & 0xffff;
+	u16 time_stamp;
+
+	if (mcast)
+		time_stamp = (readl(h->fe_base + 0x0010)) & 0xffff;
+	else if (h->data->version == MTK_HNAT_V2 || h->data->version == MTK_HNAT_V3)
+		time_stamp = readl(h->fe_base + 0x0010) & (0xFF);
+	else
+		time_stamp = readl(h->fe_base + 0x0010) & (0x7FFF);
+
+	return time_stamp;
 }
 
 #endif /* NF_HNAT_H */

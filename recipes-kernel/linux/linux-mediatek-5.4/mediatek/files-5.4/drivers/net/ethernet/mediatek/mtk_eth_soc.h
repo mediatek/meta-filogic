@@ -128,6 +128,7 @@
 #define MTK_FE_INT_STATUS	0x08
 #define MTK_FE_INT_STATUS2	0x28
 #define MTK_FE_INT_ENABLE	0x0C
+#define MTK_FE_INT_ENABLE2	0x2C
 #define MTK_FE_INT_FQ_EMPTY	BIT(8)
 #define MTK_FE_INT_TSO_FAIL	BIT(12)
 #define MTK_FE_INT_TSO_ILLEGAL	BIT(13)
@@ -136,6 +137,8 @@
 #define MTK_FE_INT_RFIFO_UF	BIT(19)
 #define MTK_GDM1_AF		BIT(28)
 #define MTK_GDM2_AF		BIT(29)
+#define MTK_FE_INT2_PPE0_FLOW_CHK	BIT(28)
+#define MTK_FE_INT2_PPE1_FLOW_CHK	BIT(29)
 #if defined(CONFIG_MEDIATEK_NETSYS_V2) || defined(CONFIG_MEDIATEK_NETSYS_V3)
 #define MTK_FE_IRQ_NUM		(4)
 #else
@@ -360,7 +363,7 @@
 #define MTK_CHK_DDONE		BIT(10)
 
 /* PDMA RX DMA Configuration Register */
-#define MTK_PDMA_LRO_SDL	(0x3000 + MTK_MAX_RX_LENGTH)
+#define MTK_PDMA_LRO_SDL	(0x3000)
 #define MTK_RX_CFG_SDL_OFFSET	(16)
 
 /* PDMA Reset Index Register */
@@ -1152,7 +1155,7 @@
 
 /* Register to power up QPHY */
 #define SGMSYS_QPHY_PWR_STATE_CTRL 0xe8
-#define	SGMII_PHYA_PWD		BIT(4)
+#define	SGMII_PHYA_PWD		(BIT(4) | BIT(3) | BIT(0))
 
 /* Register to QPHY wrapper control */
 #define SGMSYS_QPHY_WRAP_CTRL	0xec
@@ -2094,6 +2097,7 @@ struct mtk_sgmii_pcs {
 	struct mutex		reset_lock;
 	phy_interface_t		interface;
 	__ETHTOOL_DECLARE_LINK_MODE_MASK(advertising);
+	bool			link_poll_enable;
 	unsigned long		link_poll_expire;
 	unsigned int		mode;
 	u32			flags;
@@ -2132,6 +2136,7 @@ struct mtk_usxgmii_pcs {
 	struct mutex		regmap_lock;
 	struct mutex		reset_lock;
 	phy_interface_t		interface;
+	bool			link_poll_enable;
 	unsigned long		link_poll_expire;
 	unsigned int		mode;
 	u32			polarity;
@@ -2178,6 +2183,7 @@ struct mtk_phylink_priv {
 struct adma_monitor {
 	struct adma_rx_monitor {
 		u32		pre_drx[4];
+		u32		pre_fsm;
 		u16		pre_opq;
 		u8		hang_count;
 	} rx;
@@ -2219,7 +2225,8 @@ struct wdma_monitor {
 		u32		pre_crx[MTK_WDMA_CNT];
 		u32		pre_drx[MTK_WDMA_CNT];
 		u32		pre_opq[MTK_WDMA_CNT];
-		u8		hang_count[MTK_WDMA_CNT];
+		u8		hang_count_connsys[MTK_WDMA_CNT];
+		u8		hang_count_netsys[MTK_WDMA_CNT];
 	} rx;
 };
 
@@ -2330,7 +2337,7 @@ struct mtk_eth {
 		struct wdma_monitor	wdma_monitor;
 		struct gdm_monitor	gdm_monitor;
 		u32			event;
-		bool			phy_disconnect;
+		bool			rstctrl_eth;
 	} reset;
 
 	u32				rx_dma_l4_valid;

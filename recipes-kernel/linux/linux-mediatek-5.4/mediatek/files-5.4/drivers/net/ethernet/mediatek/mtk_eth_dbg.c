@@ -72,7 +72,7 @@ void qdma_qos_shaper_ebl(u32 id, bool enable)
 
 	mtk_w32(eth, (id / MTK_QTX_PER_PAGE), MTK_QDMA_PAGE);
 	if (enable) {
-		if (id < MAX_PPPQ_PORT_NUM) {
+		if (id < MAX_SWITCH_PORT_NUM) {
 			if (MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA_V1_4)) {
 				val = MTK_QTX_SCH_MIN_RATE_EN | MTK_QTX_SCH_MAX_RATE_EN_V2;
 				val |= FIELD_PREP(MTK_QTX_SCH_MIN_RATE_MAN_V2, 1) |
@@ -88,7 +88,7 @@ void qdma_qos_shaper_ebl(u32 id, bool enable)
 				       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_EXP, 6) |
 				       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_WEIGHT, 4);
 			}
-		} else {
+		} else if (id < MAX_SWITCH_PORT_NUM * 2) {
 			val = MTK_QTX_SCH_MIN_RATE_EN;
 			if (MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA_V1_4)) {
 				val |= FIELD_PREP(MTK_QTX_SCH_MIN_RATE_MAN_V2, 1) |
@@ -102,6 +102,22 @@ void qdma_qos_shaper_ebl(u32 id, bool enable)
 				       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_MAN, 0) |
 				       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_EXP, 0) |
 				       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_WEIGHT, 4);
+			}
+		} else {
+			if (MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA_V1_4)) {
+				val = MTK_QTX_SCH_MIN_RATE_EN | MTK_QTX_SCH_MAX_RATE_EN_V2;
+				val |= FIELD_PREP(MTK_QTX_SCH_MIN_RATE_MAN_V2, 1) |
+				       FIELD_PREP(MTK_QTX_SCH_MIN_RATE_EXP_V2, 4) |
+				       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_MAN_V2, 25) |
+				       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_EXP_V2, 5) |
+				       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_WEIGHT_V2, 10);
+			} else {
+				val = MTK_QTX_SCH_MIN_RATE_EN | MTK_QTX_SCH_MAX_RATE_EN;
+				val |= FIELD_PREP(MTK_QTX_SCH_MIN_RATE_MAN, 1) |
+				       FIELD_PREP(MTK_QTX_SCH_MIN_RATE_EXP, 4) |
+				       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_MAN, 25) |
+				       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_EXP, 5) |
+				       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_WEIGHT, 10);
 			}
 		}
 
@@ -117,7 +133,7 @@ void qdma_qos_disable(void)
 	u32 num_of_sch = !MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA_V1_1) ? 4 : 2;
 	u32 val, i;
 
-	for (i = 0; i < 2 * MAX_PPPQ_PORT_NUM; i++) {
+	for (i = 0; i < MAX_PPPQ_QUEUE_NUM; i++) {
 		qdma_qos_shaper_ebl(i, false);
 		mtk_w32(eth,
 			FIELD_PREP(MTK_QTX_CFG_HW_RESV_CNT_OFFSET, 4) |
@@ -141,7 +157,7 @@ void qdma_qos_pppq_ebl(u32 enable)
 	u32 num_of_sch = !MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA_V1_1) ? 4 : 2;
 	u32 val, i;
 
-	for (i = 0; i < 2 * MAX_PPPQ_PORT_NUM; i++) {
+	for (i = 0; i < MAX_PPPQ_QUEUE_NUM; i++) {
 		if (enable)
 			qdma_qos_shaper_ebl(i, true);
 		else
@@ -854,7 +870,7 @@ static ssize_t mtketh_debugfs_reset(struct file *file, const char __user *ptr,
 		case 1:
 			if (atomic_read(&force) == 1) {
 				eth->reset.event = MTK_FE_START_RESET;
-				eth->reset.phy_disconnect = false;
+				eth->reset.rstctrl_eth = false;
 				schedule_work(&eth->pending_work);
 			} else
 				pr_info(" stat:disable\n");
@@ -865,7 +881,7 @@ static ssize_t mtketh_debugfs_reset(struct file *file, const char __user *ptr,
 		case 3:
 			if (atomic_read(&force) == 1) {
 				eth->reset.event = MTK_FE_STOP_TRAFFIC;
-				eth->reset.phy_disconnect = false;
+				eth->reset.rstctrl_eth = false;
 				schedule_work(&eth->pending_work);
 			} else
 				pr_info(" device resetting !!!\n");
@@ -879,7 +895,7 @@ static ssize_t mtketh_debugfs_reset(struct file *file, const char __user *ptr,
 		case 6:
 			if (atomic_read(&force) == 1) {
 				eth->reset.event = MTK_FE_START_RESET;
-				eth->reset.phy_disconnect = true;
+				eth->reset.rstctrl_eth = true;
 				schedule_work(&eth->pending_work);
 			} else
 				pr_info(" stat:disable\n");
@@ -887,7 +903,7 @@ static ssize_t mtketh_debugfs_reset(struct file *file, const char __user *ptr,
 		case 7:
 			if (atomic_read(&force) == 1) {
 				eth->reset.event = MTK_FE_STOP_TRAFFIC;
-				eth->reset.phy_disconnect = true;
+				eth->reset.rstctrl_eth = true;
 				schedule_work(&eth->pending_work);
 			} else
 				pr_info(" stat:disable\n");
@@ -896,13 +912,13 @@ static ssize_t mtketh_debugfs_reset(struct file *file, const char __user *ptr,
 			pr_info("Usage: echo [level] > /sys/kernel/debug/mtketh/reset\n");
 			pr_info("Commands:   [level]\n");
 			pr_info("		0	disable FE force reset\n");
-			pr_info("		1	trigger FE and WDMA force reset without PHY disconnect\n");
+			pr_info("		1	trigger FE and WDMA force reset without ETH reset\n");
 			pr_info("		2	enable FE force reset\n");
-			pr_info("		3	trigger FE force reset without PHY disconnect\n");
+			pr_info("		3	trigger FE force reset without ETH reset\n");
 			pr_info("		4	enable reset info dump\n");
 			pr_info("		5	disable reset info dump\n");
-			pr_info("		6	trigger FE and WDMA force reset with PHY disconnect\n");
-			pr_info("		7	trigger FE reset force with PHY disconnect\n");
+			pr_info("		6	trigger FE and WDMA force reset with ETH reset\n");
+			pr_info("		7	trigger FE reset force with ETH reset\n");
 			break;
 	}
 	return count;
@@ -1170,6 +1186,162 @@ static ssize_t pse_info_write(struct file *file, const char __user *buffer,
 	return len;
 }
 
+void usxgmii_link_poll_info(void)
+{
+	pr_info("Usage: echo [port] [option] > /sys/kernel/debug/mtketh/usxgmii_link_poll\n");
+	pr_info("              0~1      1      Enable link poll\n");
+	pr_info("                       0      Disable link poll (only for SI measurement)\n");
+}
+
+int usxgmii_link_poll_read(struct seq_file *m, void *private)
+{
+	struct mtk_eth *eth = m->private;
+	struct mtk_usxgmii *ss = eth->usxgmii;
+	int i;
+
+	if (!ss)
+		return -ENODEV;
+
+	for (i = 0; i < 2; i++) {
+		pr_info("usxgmii%d link poll is %s now!\n",
+			i, ss->pcs[i].link_poll_enable ? "Enable" : "Disable");
+	}
+
+	return 0;
+}
+
+static int usxgmii_link_poll_open(struct inode *inode, struct file *file)
+{
+	return single_open(file, usxgmii_link_poll_read, inode->i_private);
+}
+
+static ssize_t usxgmii_link_poll_write(struct file *file, const char __user *buffer,
+				       size_t count, loff_t *off)
+{
+	struct seq_file *m = file->private_data;
+	struct mtk_eth *eth = m->private;
+	struct mtk_usxgmii *ss = eth->usxgmii;
+	long arg0 = 0, arg1 = 0;
+	char buf[32];
+	char *p_buf;
+	char *p_token = NULL;
+	char *p_delimiter = " \t";
+	u32 len = count;
+	int ret;
+
+	if (!ss)
+		return -ENODEV;
+
+	if (len >= sizeof(buf)) {
+		pr_info("input handling fail!\n");
+		return -1;
+	}
+
+	if (copy_from_user(buf, buffer, len))
+		return -EFAULT;
+
+	buf[len] = '\0';
+
+	p_buf = buf;
+	p_token = strsep(&p_buf, p_delimiter);
+	if (!p_token)
+		arg0 = 0;
+	else
+		ret = kstrtol(p_token, 10, &arg0);
+
+	p_token = strsep(&p_buf, p_delimiter);
+	if (!p_token)
+		arg1 = 0;
+	else
+		ret = kstrtol(p_token, 10, &arg1);
+
+	if ((arg0 >= 0 && arg0 <= 1) &&
+	    (arg1 >= 0 && arg1 <= 1))
+		ss->pcs[arg0].link_poll_enable = arg1;
+	else
+		usxgmii_link_poll_info();
+
+	return len;
+}
+
+void sgmii_link_poll_info(void)
+{
+	pr_info("Usage: echo [port] [option] > /sys/kernel/debug/mtketh/sgmii_link_poll\n");
+	pr_info("              0~1      1      Enable link poll\n");
+	pr_info("                       0      Disable link poll (only for SI measurement)\n");
+}
+
+int sgmii_link_poll_read(struct seq_file *m, void *private)
+{
+	struct mtk_eth *eth = m->private;
+	struct mtk_sgmii *ss = eth->sgmii;
+	int i;
+
+	if (!ss)
+		return -ENODEV;
+
+	for (i = 0; i < 2; i++) {
+		pr_info("sgmii%d link poll is %s now!\n",
+			i, ss->pcs[i].link_poll_enable ? "Enable" : "Disable");
+	}
+
+	return 0;
+}
+
+static int sgmii_link_poll_open(struct inode *inode, struct file *file)
+{
+	return single_open(file, sgmii_link_poll_read, inode->i_private);
+}
+
+static ssize_t sgmii_link_poll_write(struct file *file, const char __user *buffer,
+				     size_t count, loff_t *off)
+{
+	struct seq_file *m = file->private_data;
+	struct mtk_eth *eth = m->private;
+	struct mtk_sgmii *ss = eth->sgmii;
+	long arg0 = 0, arg1 = 0;
+	char buf[32];
+	char *p_buf;
+	char *p_token = NULL;
+	char *p_delimiter = " \t";
+	u32 len = count;
+	int ret;
+
+	if (!ss)
+		return -ENODEV;
+
+	if (len >= sizeof(buf)) {
+		pr_info("input handling fail!\n");
+		return -1;
+	}
+
+	if (copy_from_user(buf, buffer, len))
+		return -EFAULT;
+
+	buf[len] = '\0';
+
+	p_buf = buf;
+	p_token = strsep(&p_buf, p_delimiter);
+	if (!p_token)
+		arg0 = 0;
+	else
+		ret = kstrtol(p_token, 10, &arg0);
+
+	p_token = strsep(&p_buf, p_delimiter);
+	if (!p_token)
+		arg1 = 0;
+	else
+		ret = kstrtol(p_token, 10, &arg1);
+
+	if ((arg0 >= 0 && arg0 <= 1) &&
+	    (arg1 >= 0 && arg1 <= 1))
+		ss->pcs[arg0].link_poll_enable = arg1;
+	else
+		sgmii_link_poll_info();
+
+	return len;
+}
+
 static const struct file_operations fops_reg_w = {
 	.owner = THIS_MODULE,
 	.open = simple_open,
@@ -1199,6 +1371,24 @@ static const struct file_operations fops_pse_info = {
 	.read = seq_read,
 	.llseek = seq_lseek,
 	.write = pse_info_write,
+	.release = single_release,
+};
+
+static const struct file_operations fops_usxgmii_link_poll = {
+	.owner = THIS_MODULE,
+	.open = usxgmii_link_poll_open,
+	.read = seq_read,
+	.llseek = seq_lseek,
+	.write = usxgmii_link_poll_write,
+	.release = single_release,
+};
+
+static const struct file_operations fops_sgmii_link_poll = {
+	.owner = THIS_MODULE,
+	.open = sgmii_link_poll_open,
+	.read = seq_read,
+	.llseek = seq_lseek,
+	.write = sgmii_link_poll_write,
 	.release = single_release,
 };
 
@@ -1243,6 +1433,10 @@ int mtketh_debugfs_init(struct mtk_eth *eth)
 			    eth_debug.root, eth, &mtketh_debug_fops);
 	debugfs_create_file("phy_reg_w", S_IFREG | S_IWUSR,
 			    eth_debug.root, eth,  &fops_reg_w);
+	debugfs_create_file("usxgmii_link_poll", 0444,
+			    eth_debug.root, eth,  &fops_usxgmii_link_poll);
+	debugfs_create_file("sgmii_link_poll", 0444,
+			    eth_debug.root, eth,  &fops_sgmii_link_poll);
 	debugfs_create_file("reset", S_IFREG | S_IWUSR,
 			    eth_debug.root, eth,  &fops_eth_reset);
 	debugfs_create_file("eth_debug_level", 0444,

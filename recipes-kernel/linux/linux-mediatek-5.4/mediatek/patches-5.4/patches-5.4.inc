@@ -59,6 +59,10 @@ SRC_URI_append = " \
     file://999-1717-v5.12-net-phy-sfp-add-debugfs-support.patch \
     file://999-1718-v5.15-net-netfilter-add-nf-hw-offload.patch \
     file://999-1719-v6.2-net-ptp-introduce-adjust-by-scaled-ppm.patch \
+    file://999-1720-v5.13-net-phy-add-genphy_c45_pma_suspend-resume.patch \
+    file://999-1721-v6.9-net-phy-add-2.5g-and-5g-related-PMA-and-PCS-speed-constants.patch \
+    file://999-1722-v6.10-net-phy-realtek-add-rtl8221b-series.patch \
+    file://999-1723-v5.6-net-phy-add-sanity-check-to-read_mmd.patch \
     file://999-1750-v5.18-net-macsec-get-ready-to-backport-from-5-18.patch \
     file://999-1751-01-v5.18-net-macsec-move-some-definitions-in-a-dedicated-header.patch \
     file://999-1752-02-v5.18-net-macsec-introduce-the-macsec_context-structure.patch \
@@ -120,6 +124,7 @@ SRC_URI_append = " \
     file://999-2101-Add-trngv2-driver-support.patch \
     file://999-2102-trng-Add-trng-support-for-mt7988.patch \
     file://999-2103-drivers-char-tpm-Add-calibration-example-for-SPI-TPM-module.patch \
+    file://999-2104-trng-Add-trng-support-for-mt7987.patch \
     file://999-2110-i2c-busses-add-mt7986-support.patch \
     file://999-2111-i2c-busses-add-mt7981-support.patch \
     file://999-2120-auxadc-add-auxadc-32k-clk.patch \
@@ -239,6 +244,7 @@ SRC_URI_append = " \
     file://999-2742-drivers-net-dsa-mxl862xx.patch \
     file://999-2743-drivers-net-dsa-mxl862xx-kernel-compatible.patch;apply=no \
     file://999-2744-drivers-net-phy-mxl862xx-mxl-gpy.patch \
+    file://999-2745-mtk-gso-skb-headroom-copy.patch \
     file://999-2800-misc-add-mtk-platform.patch \
     file://999-2850-fips-140-3-compliance.patch \
     file://999-2900-dts-mt7622-enable-new-mtk-snand-for-ubi.patch \
