@@ -3,7 +3,7 @@ SECTION = "applications"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=751419260aa954499f7abaabaa882bbe"
 
-DEPENDS += "libnl-tiny"
+DEPENDS += "libnl-tiny util-linux "
 RDEPENDS_${PN} += "bash"
 inherit pkgconfig cmake
 

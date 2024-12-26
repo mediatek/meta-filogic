@@ -139,12 +139,11 @@ create_hostapdConf() {
 	devidx=0
 	phyidx=0
         vap_per_radio=8
-        radio_num="$(iw list | grep Wiphy | wc -l)"
+        radio_num="$(iw list | grep Idx | wc -l)"
 
-        for _dev in /sys/class/ieee80211/*; do
-		[ -e "$_dev" ] || continue
+        for (( radio_idx=0; radio_idx<$radio_num; radio_idx++ )); do
 
-		dev="${_dev##*/}"
+        dev=phy0
 
         band="$(uci get wireless.radio${phyidx}.band)"
         channel="$(uci get wireless.radio${phyidx}.channel)"
@@ -184,7 +183,7 @@ create_hostapdConf() {
                 if [ -n $ifname ] && [[ $vapstat -eq "1" ]]; then
                     if [ $i = 0 ]; then
                         ## first interface in this phy
-                        iw phy phy0 interface add $ifname type __ap > /dev/null
+                        iw phy phy0 interface add $ifname type __ap radios $radio_idx > /dev/null
                     fi
                     touch /nvram/hostapd-acl$ifidx
                     touch /nvram/hostapd$ifidx.psk
@@ -192,7 +191,7 @@ create_hostapdConf() {
                     if [ $phyidx = $ifidx ]; then
                         touch /tmp/phy0-wifi$ifidx
                     fi
-                    hostapd_cli -i global raw ADD bss_config=$dev:/nvram/hostapd"$ifidx".conf
+                    hostapd_cli -i global raw ADD bss_config=phy0.$radio_idx:/nvram/hostapd"$ifidx".conf
 		fi
 	    done
             devidx=$(($devidx + 1))
@@ -218,12 +217,12 @@ create_hostapdConf() {
         sed -i "/^interface=.*/c\interface=wifi$devidx" /nvram/hostapd"$devidx".conf
         sed -i "/^bssid=/c\bssid=$MAC" /nvram/hostapd"$devidx".conf
         echo "wpa_psk_file=/nvram/hostapd$devidx.psk" >> /nvram/hostapd"$devidx".conf
-        iw phy phy0 interface add wifi$devidx type __ap > /dev/null
+        iw phy phy0 interface add wifi$devidx type __ap radios $radio_idx > /dev/null
         touch /nvram/hostapd-acl$devidx
         touch /nvram/hostapd$devidx.psk
         touch /nvram/hostapd-deny$devidx
         touch /tmp/phy0-wifi$devidx
-        hostapd_cli -i global raw ADD bss_config=$dev:/nvram/hostapd"$devidx".conf && echo -e "wifi"$devidx"=1" >> /nvram/vap-status
+        hostapd_cli -i global raw ADD bss_config=phy0.$radio_idx:/nvram/hostapd"$devidx".conf && echo -e "wifi"$devidx"=1" >> /nvram/vap-status
         devidx=$(($devidx + 1))
         phyidx=$(($phyidx + 1))
 		

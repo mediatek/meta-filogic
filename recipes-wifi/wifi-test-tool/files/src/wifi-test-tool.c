@@ -343,7 +343,7 @@ int set_interface_bssid(int phy_index, int offset, mac_address_t *bssid, char *s
     char mac_file[64] = {0};
     char mac_address[20] = {0};
 
-    sprintf(mac_file, "/sys/class/ieee80211/phy%d/macaddress", phy_index);
+    sprintf(mac_file, "/sys/class/ieee80211/phy%d/macaddress", single_wiphy ? 0 : phy_index);
     f = fopen(mac_file, "r");
     if (f == NULL)
         return -1;
@@ -354,6 +354,8 @@ int set_interface_bssid(int phy_index, int offset, mac_address_t *bssid, char *s
         mac_addr_aton(&(*bssid)[0], setmacaddr);
     else
         mac_addr_aton(&(*bssid)[0], mac_address);
+    if (single_wiphy)
+        (*bssid)[5] += phy_index;
     (*bssid)[0] += offset*2;
     return 0;
 }

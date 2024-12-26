@@ -5,6 +5,7 @@ ADD_DEFINITIONS(-Os -Wall --std=gnu99 -g3)
 
 ADD_EXECUTABLE(atenl main.c eth.c hqa.c nl.c eeprom.c util.c)
 TARGET_LINK_LIBRARIES(atenl nl-tiny)
+TARGET_LINK_LIBRARIES(atenl blkid)
 
 SET(CMAKE_INSTALL_PREFIX /usr)
 

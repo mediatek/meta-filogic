@@ -34,6 +34,8 @@ function iface_start(phydev, iface, macaddr_list)
 		wdev_config[field] = iface.config[field];
 	if (!wdev_config.macaddr)
 		wdev_config.macaddr = phydev.macaddr_next();
+	if (wdev_config.mld_allowed_phy_bitmap)
+		wdev_config.mld_radio_mask = wdev_config.mld_allowed_phy_bitmap;
 
 	wpas.data.iface_phy[ifname] = phy;
 	wdev_remove(ifname);

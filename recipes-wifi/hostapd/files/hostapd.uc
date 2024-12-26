@@ -187,6 +187,7 @@ function __iface_pending_next(pending, state, ret, data)
 			let err = phydev.wdev_add(bss.ifname, {
 				mode: "ap",
 				radio: phydev.radio,
+				mld_radio_mask: bss.mld_radio_mask,
 			});
 			if (err) {
 				hostapd.printf(`Failed to create ${bss.ifname} on phy ${phy}: ${err}`);
@@ -209,7 +210,7 @@ function __iface_pending_next(pending, state, ret, data)
 		}
 		pending.call("wpa_supplicant", "phy_set_state", {
 			phy: bss.mld_ap ? "phy0" : phydev.phy,
-			radio: phydev.radio,
+			radio: bss.mld_ap ? 0 : phydev.radio,
 			stop: true
 		});
 		return "wpas_stopped";
@@ -223,10 +224,10 @@ function __iface_pending_next(pending, state, ret, data)
 				radio: phydev.radio,
 				stop: false
 			});
-		} else if (iface.is_mld_finished()) {
+		} else if (!iface || iface.is_mld_finished()) {
 			pending.call("wpa_supplicant", "phy_set_state", {
 				phy: "phy0",
-				radio: phydev.radio,
+				radio: 0,
 				stop: false
 			});
 		}
@@ -768,9 +769,6 @@ function iface_load_config(phy, radio, filename)
 		    val[0] == "mbssid")
 			config[substr(val[0], 1)] = int(val[1]);
 
-		if (val[0] == "#single_hw")
-			config["single_hw"] = int(val[1]);
-
 		push(config.radio.data, line);
 	}
 
@@ -792,6 +790,9 @@ function iface_load_config(phy, radio, filename)
 
 		if (val[0] == "mld_primary" && int(val[1]) == 1)
 			bss.mld_primary = 1;
+
+		if (val[0] == "mld_radio_mask" && int(val[1]))
+			bss.mld_radio_mask = int(val[1]);
 
 		if (val[0] == "nas_identifier")
 			bss.nasid = val[1];
