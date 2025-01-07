@@ -30,8 +30,14 @@ mkdir -p /rdklogs
 $MOUNT -t proc proc -o rw,nosuid,nodev,noexec,noatime /proc
 $MOUNT -t sysfs sysfs -o rw,nosuid,nodev,noexec,noatime /sys
 $MOUNT -n -t tmpfs tmpfs -o rw,nosuid,nodev,noexec,noatime /rdklogs
+dual_boot=$(cat /sys/module/boot_param/parameters/dual_boot 2>/dev/null)
+rootfs_data="$(cat /sys/module/boot_param/parameters/rootfs_data_part)"
 
-data_ubivol="$( nand_find_volume ubi0 rootfs_data )"
+if  [ x"${dual_boot}" != xY ]; then
+	rootfs_data="rootfs_data"
+fi
+
+data_ubivol="$( nand_find_volume ubi0 ${rootfs_data})"
 
 [ -z "$CONSOLE" ] && CONSOLE="/dev/console"
 mkdir -p /mnt
@@ -42,8 +48,8 @@ if [ -f "/overlay/upper/reset-default" ]; then
 	v "Proceed with reset to default"
 	$UMOUNT /overlay
 	rootfs_data_length=$(cat /sys/class/ubi/$data_ubivol/data_bytes)
-	ubirmvol /dev/ubi0 -N rootfs_data
-	ubimkvol /dev/ubi0 -N rootfs_data -s $rootfs_data_length
+	ubirmvol /dev/ubi0 -N ${rootfs_data}
+	ubimkvol /dev/ubi0 -N ${rootfs_data} -s $rootfs_data_length
 	$MOUNT -n -t ubifs /dev/$data_ubivol -o rw,noatime /overlay
 fi
 
