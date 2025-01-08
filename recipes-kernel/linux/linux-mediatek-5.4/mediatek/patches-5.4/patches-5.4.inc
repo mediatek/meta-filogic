@@ -174,6 +174,7 @@ SRC_URI_append = " \
     file://999-2377-integrate-ONFI-and-CASN-manipulation.patch \
     file://999-2378-Add-CASN-support-for-SPI-NAND.patch \
     file://999-2380-fix-dirty-race-between-do_tmpfile.patch \
+    file://999-2381-mtdsplit-dm-verity.patch;apply=no \
     file://999-2500-cpufreq-add-the-missing-platform-driver-unregister.patch \
     file://999-2501-cpufreq-Enable-clocks-and-regulators.patch \
     file://999-2502-cpufreq-add-mt7988a-spim-snand-support.patch \
@@ -249,4 +250,7 @@ SRC_URI_append = " \
     file://999-2850-fips-140-3-compliance.patch \
     file://999-2900-dts-mt7622-enable-new-mtk-snand-for-ubi.patch \
     file://999-2901-dts-mt7622-remove-cooling-device.patch \
+    file://999-2910-dm-verity-redo-hash-for-safexel-sha256.patch;apply=no \
+    file://999-2911-dm-support-get-device-by-part-uuid-and-label.patch;apply=no \
+    file://999-2912-dm-expose-create-parameter-to-sysfs.patch;apply=no \
     "

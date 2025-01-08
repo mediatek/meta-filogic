@@ -1865,9 +1865,8 @@ static bool mtk_rx_get_desc(struct mtk_eth *eth, struct mtk_rx_dma_v2 *rxd,
 	return true;
 }
 
-static void *mtk_max_lro_buf_alloc(gfp_t gfp_mask)
+static void *mtk_max_buf_alloc(unsigned int size, gfp_t gfp_mask)
 {
-	unsigned int size = mtk_max_frag_size(MTK_MAX_LRO_RX_LENGTH);
 	unsigned long data;
 
 	data = __get_free_pages(gfp_mask | __GFP_COMP | __GFP_NOWARN,
@@ -2688,7 +2687,7 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
 		if (ring->frag_size <= PAGE_SIZE)
 			new_data = napi_alloc_frag(ring->frag_size);
 		else
-			new_data = mtk_max_lro_buf_alloc(GFP_ATOMIC);
+			new_data = mtk_max_buf_alloc(ring->frag_size, GFP_ATOMIC);
 		if (unlikely(!new_data)) {
 			netdev->stats.rx_dropped++;
 			goto release_desc;
@@ -3262,7 +3261,7 @@ static int mtk_rx_alloc(struct mtk_eth *eth, int ring_no, int rx_flag)
 		if (ring->frag_size <= PAGE_SIZE)
 			ring->data[i] = napi_alloc_frag(ring->frag_size);
 		else
-			ring->data[i] = mtk_max_lro_buf_alloc(GFP_ATOMIC);
+			ring->data[i] = mtk_max_buf_alloc(ring->frag_size, GFP_ATOMIC);
 		if (!ring->data[i])
 			return -ENOMEM;
 	}
@@ -4195,12 +4194,16 @@ static void mtk_tx_timeout(struct net_device *dev)
 {
 	struct mtk_mac *mac = netdev_priv(dev);
 	struct mtk_eth *eth = mac->hw;
+	bool pse_fc = false;
 
 	eth->netdev[mac->id]->stats.tx_errors++;
 	netif_err(eth, tx_err, dev,
 		  "transmit timed out\n");
 
-	if (atomic_read(&reset_lock) == 0)
+	if (MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA))
+		pse_fc = eth->reset.qdma_monitor.tx.pse_fc;
+
+	if (atomic_read(&reset_lock) == 0 && pse_fc == false)
 		schedule_work(&eth->pending_work);
 }
 
@@ -4743,17 +4746,20 @@ static int mtk_stop(struct net_device *dev)
 
 	for (i = 0; i < MTK_TX_NAPI_NUM; i++) {
 		mtk_tx_irq_disable(eth, MTK_TX_DONE_INT(i));
+		napi_synchronize(&eth->tx_napi[i].napi);
 		napi_disable(&eth->tx_napi[i].napi);
 		if (MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA))
 			break;
 	}
 
 	mtk_rx_irq_disable(eth, MTK_RX_DONE_INT(0));
+	napi_synchronize(&eth->rx_napi[0].napi);
 	napi_disable(&eth->rx_napi[0].napi);
 
 	if (MTK_HAS_CAPS(eth->soc->caps, MTK_RSS)) {
 		for (i = 0; i < MTK_RX_RSS_NUM; i++) {
 			mtk_rx_irq_disable(eth, MTK_RX_DONE_INT(MTK_RSS_RING(i)));
+			napi_synchronize(&eth->rx_napi[MTK_RSS_RING(i)].napi);
 			napi_disable(&eth->rx_napi[MTK_RSS_RING(i)].napi);
 		}
 	}
@@ -4761,6 +4767,7 @@ static int mtk_stop(struct net_device *dev)
 	if (MTK_HAS_CAPS(eth->soc->caps, MTK_HWLRO)) {
 		for (i = 0; i < MTK_HW_LRO_RING_NUM; i++) {
 			mtk_rx_irq_disable(eth, MTK_RX_DONE_INT(MTK_HW_LRO_RING(i)));
+			napi_synchronize(&eth->rx_napi[MTK_HW_LRO_RING(i)].napi);
 			napi_disable(&eth->rx_napi[MTK_HW_LRO_RING(i)].napi);
 		}
 	}

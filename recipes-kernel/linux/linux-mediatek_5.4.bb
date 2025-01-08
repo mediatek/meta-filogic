@@ -72,12 +72,6 @@ require ${PN}-${PV}/mediatek/patches-5.4/patches-5.4.inc
 SRC_URI_remove_mt7986-32bit = " \
     file://999-2020-pinctrl-add-mt7986-driver.patch \
     "
-SRC_URI_append_secureboot += " \
-    file://0404-mtdsplit-dm-verity.patch;apply=no \
-    file://0800-dm-verity-redo-hash-for-safexel-sha256.patch;apply=no \
-    file://0801-dm-support-get-device-by-part-uuid-and-label.patch;apply=no \
-    file://0802-dm-expose-create-parameter-to-sysfs.patch;apply=no \
-"    
 require linux-mediatek.inc
 
 do_patch_prepend () {
@@ -90,7 +84,6 @@ do_filogic_patches() {
     cd ${S}
     DISTRO_FlowBlock_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','flow_offload','true','false',d)}"
     DISTRO_logan_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','logan','true','false',d)}"
-    DISTRO_secure_boot_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','secure_boot','true','false',d)}"
     DISTRO_ccn34_build_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','ccn34','true','false',d)}"
     DISTRO_LAN_AS_WAN_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','lan0_as_wan','true','false',d)}"
         if [ $DISTRO_ccn34_build_ENABLED = 'true' ]; then
@@ -114,12 +107,10 @@ do_filogic_patches() {
             patch -p1 < ${WORKDIR}/999-2725-iwconfig-wireless-rate-fix.patch
             patch -p1 < ${WORKDIR}/999-2739-drivers_net_ethernet_mediatek_hnat.patch
             patch -p1 < ${WORKDIR}/999-2743-drivers-net-dsa-mxl862xx-kernel-compatible.patch
-            if [ $DISTRO_secure_boot_ENABLED = 'true' ]; then
-                patch -p1 < ${WORKDIR}/0404-mtdsplit-dm-verity.patch
-                patch -p1 < ${WORKDIR}/0800-dm-verity-redo-hash-for-safexel-sha256.patch
-                patch -p1 < ${WORKDIR}/0801-dm-support-get-device-by-part-uuid-and-label.patch
-                patch -p1 < ${WORKDIR}/0802-dm-expose-create-parameter-to-sysfs.patch
-            fi
+            patch -p1 < ${WORKDIR}/999-2381-mtdsplit-dm-verity.patch
+            patch -p1 < ${WORKDIR}/999-2910-dm-verity-redo-hash-for-safexel-sha256.patch
+            patch -p1 < ${WORKDIR}/999-2911-dm-support-get-device-by-part-uuid-and-label.patch
+            patch -p1 < ${WORKDIR}/999-2912-dm-expose-create-parameter-to-sysfs.patch
             if [ $DISTRO_FlowBlock_ENABLED = 'true' ]; then
                 for i in ${WORKDIR}/mediatek/flow_patch/*.patch; do patch -p1 < $i; done
             fi
