@@ -33,6 +33,7 @@ EOF
 # $1 ... .its filename
 # $2 ... Section bit type: imagestart - image section start
 #                          confstart  - configuration section start
+#                          rootstart  - rootstart section start
 #                          sectend    - section end
 #                          fitend     - fitimage end
 #
@@ -48,6 +49,12 @@ EOF
 		cat << EOF >> ${1}
 
         configurations {
+EOF
+	;;
+	rootstart)
+		cat << EOF >> ${1}
+
+        rootfs {
 EOF
 	;;
 	sectend)
@@ -343,7 +350,13 @@ fitimage_assemble_sb() {
 	fitimage_emit_fit_header ${1}
 
 	#
-	# Step 1: Prepare a kernel image section.
+	# Step 1: Prepare a rootfs section
+	#
+	fitimage_emit_section_maint ${1} rootstart
+	fitimage_emit_section_maint ${1} sectend
+
+	#
+	# Step 2: Prepare a kernel image section.
 	#
 	fitimage_emit_section_maint ${1} imagestart
 
@@ -351,7 +364,7 @@ fitimage_assemble_sb() {
 	fitimage_emit_section_kernel ${1} "${kernelcount}" linux.bin "${linux_comp}"
 
 	#
-	# Step 2: Prepare a DTB image section
+	# Step 3: Prepare a DTB image section
 	#
 
 	if [ -z "${EXTERNAL_KERNEL_DEVICETREE}" ] && [ -n "${KERNEL_DEVICETREE}" ]; then
@@ -383,7 +396,7 @@ fitimage_assemble_sb() {
 	fi
 
 	#
-	# Step 3: Prepare a setup section. (For x86)
+	# Step 4: Prepare a setup section. (For x86)
 	#
 	if [ -e arch/${ARCH}/boot/setup.bin ]; then
 		setupcount=1
@@ -391,7 +404,7 @@ fitimage_assemble_sb() {
 	fi
 
 	#
-	# Step 4: Prepare a ramdisk section.
+	# Step 5: Prepare a ramdisk section.
 	#
 	if [ "x${ramdiskcount}" = "x1" ] ; then
 		# Find and use the first initramfs image archive type we find
@@ -414,7 +427,7 @@ fitimage_assemble_sb() {
 	fi
 
 	#
-	# Step 5: Prepare a configurations section
+	# Step 6: Prepare a configurations section
 	#
 	fitimage_emit_section_maint ${1} confstart
 
@@ -436,7 +449,7 @@ fitimage_assemble_sb() {
 	fitimage_emit_section_maint ${1} fitend
 
 	#
-	# Step 6: Sign the image and add public key to U-Boot dtb
+	# Step 7: Sign the image and add public key to U-Boot dtb
 	#
 
 	uboot-mkimage \
