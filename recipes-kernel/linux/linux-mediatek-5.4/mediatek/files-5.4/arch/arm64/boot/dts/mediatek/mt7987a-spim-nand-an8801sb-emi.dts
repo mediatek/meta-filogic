@@ -24,12 +24,14 @@
 			label = "reset";
 			linux,code = <KEY_RESTART>;
 			gpios = <&pio 1 GPIO_ACTIVE_LOW>;
+			debounce-interval = <10>;
 		};
 
 		wps {
 			label = "wps";
 			linux,code = <KEY_WPS_BUTTON>;
 			gpios = <&pio 0 GPIO_ACTIVE_LOW>;
+			debounce-interval = <10>;
 		};
 	};
 };
@@ -55,6 +57,6 @@
 };
 
 &wmcpu_emi{
-	reg = <0 0x50000000 0 0x00A00000>;
+	reg = <0 0x60000000 0 0x00A00000>;
 };
 

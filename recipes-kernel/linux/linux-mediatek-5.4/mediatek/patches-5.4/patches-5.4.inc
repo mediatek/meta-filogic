@@ -105,6 +105,7 @@ SRC_URI_append = " \
     file://999-1802-v6.4-backport-pinctrl-pinconf-setting-combo.patch \
     file://999-1803-v6.6-pinctrl-spinlock.patch \
     file://999-1804-v6.4-leds-pwm-multicolor.patch \
+    file://999-1805-v6.6-backport-mtk-devapc.patch \
     file://999-1900-v6.3-lib-add-Dhrystone-benchmark-test.patch \
     file://999-2000-show_model_name_in_cpuinfo_on_arm64.patch \
     file://999-2001-kgdb-add-interrupt-control.patch \
@@ -172,6 +173,7 @@ SRC_URI_append = " \
     file://999-2375-spi-update-driver.patch \
     file://999-2376-drivers-spi-mt65xx-add-dts-buswidth-flow.patch \
     file://999-2377-integrate-ONFI-and-CASN-manipulation.patch \
+    file://999-2377-spi-nor-fix-3byte-4byte-rwmode.patch \
     file://999-2378-Add-CASN-support-for-SPI-NAND.patch \
     file://999-2380-fix-dirty-race-between-do_tmpfile.patch \
     file://999-2381-mtdsplit-dm-verity.patch;apply=no \
@@ -185,6 +187,7 @@ SRC_URI_append = " \
     file://999-2531-iio-add-zts8032-config.patch \
     file://999-2540-cmdline-boot-parameters.patch \
     file://999-2550-dual-image-mount-rootfs.patch \
+    file://999-2560-devapc-add-mt7987-support.patch \
     file://999-2600-pcie-add-pcie-gen3-upstream-driver.patch \
     file://999-2601-pcie-add-multi-MSI-support.patch \
     file://999-2610-tphy-support-type-switch-by-pericfg.patch \

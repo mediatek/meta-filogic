@@ -232,10 +232,10 @@
 		#size-cells = <2>;
 		ranges;
 
-		wmcpu_emi: wmcpu-reserved@4f000000 {
+		wmcpu_emi: wmcpu-reserved@60000000 {
 			compatible = "mediatek,wmcpu-reserved";
 			no-map;
-			reg = <0 0x4f000000 0 0x00100000>;
+			reg = <0 0x60000000 0 0x00100000>;
 		};
 	};
 
@@ -775,6 +775,12 @@
 				reg  = <0x8cc 1>;
 				bits = <1 5>;
 			};
+		};
+
+		devapc: devapc@1a110000 {
+			compatible = "mediatek,mt7987-devapc";
+			reg = <0 0x1a110000 0 0x1000>;
+			interrupts = <GIC_SPI 174 IRQ_TYPE_LEVEL_HIGH>;
 		};
 	};
 
