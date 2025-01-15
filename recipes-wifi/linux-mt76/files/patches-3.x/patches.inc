@@ -146,4 +146,5 @@ SRC_URI_append = " \
     file://0144-mtk-mt76-use-compile-flag-to-disable-some-wed-change.patch \
     file://0145-mtk-mt76-mt7996-for-build-pass.patch \
     file://0146-mtk-wifi-mt76-revert-page_poll-for-kernel-5.4.patch \
+    file://0150-cp-mtk-mt76-mt7996-replace-band-idx-with-radio-idx-in-v.patch \
     "

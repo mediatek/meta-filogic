@@ -149,4 +149,8 @@ SRC_URI_append = " \
     file://0147-mtk-hostapd-check-PMKSA-cache-of-all-links-for-STA-M.patch \
     file://0148-mtk-hostapd-set-radio_mask-when-adding-interface.patch \
     file://0149-mtk-hostapd-reset-bss-scan_link-after-getting-survey.patch \
+    file://0150-cp-mtk-hostapd-change-vendor-cmd-band-idx-into-radio-id.patch \
+    file://0151-cp-mtk-hostapd-replace-band-idx-with-radio-idx-in-ucode.patch \
+    file://0152-cp-mtk-hostapd-remove-band-idx-from-hostapd.patch \
+    file://0153-cp-mtk-hostapd-WPS-use-passphrase-over-psk-file.patch \
     "

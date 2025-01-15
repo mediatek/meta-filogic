@@ -67,6 +67,17 @@ SRC_URI_append = " \
     file://bp-0003-ACS-introduce-acs_adjust_secondary.patch \
     file://bp-0004-ACS-Allow-selecting-a-better-channel-when-using-40-8.patch \
     file://bp-0005-PEAP-client-Update-Phase-2-authentication-requiremen.patch \
+    file://bp-0006-RADIUS-Allow-Message-Authenticator-attribute-as-the-.patch \
+    file://bp-0007-RADIUS-server-Place-Message-Authenticator-attribute-.patch \
+    file://bp-0008-eapol_test-Move-Message-Authenticator-attribute-to-b.patch \
+    file://bp-0009-hostapd-Move-Message-Authenticator-attribute-to-be-t.patch \
+    file://bp-0010-RADIUS-DAS-Move-Message-Authenticator-attribute-to-b.patch \
+    file://bp-0011-Require-Message-Authenticator-in-Access-Reject-even-.patch \
+    file://bp-0012-RADIUS-Require-Message-Authenticator-attribute-in-MA.patch \
+    file://bp-0013-RADIUS-Check-Message-Authenticator-if-it-is-present-.patch \
+    file://bp-0014-SAE-Check-for-invalid-Rejected-Groups-element-length.patch \
+    file://bp-0015-SAE-Check-for-invalid-Rejected-Groups-element-length.patch \
+    file://bp-0016-SAE-Reject-invalid-Rejected-Groups-element-in-the-pa.patch \
     file://mtk-0001-hostapd-mtk-Add-neighbor-report-and-BSS-Termination-.patch \
     file://mtk-0002-hostapd-mtk-print-sae-groups-by-hostapd-ctrl.patch \
     file://mtk-0003-hostapd-mtk-add-support-for-runtime-set-in-band-disc.patch \
@@ -115,7 +126,7 @@ SRC_URI_append = " \
     file://mtk-0047-hostapd-mtk-Check-the-bridge-after-ioctl-SIOCBRADDIF_new.patch \
     file://mtk-0047-hostapd-mtk-add-support-for-channel-switching-to-dfs.patch \
     file://mtk-0048-hostapd-mtk-add-support-for-channel-switching-with-c.patch \
-    file://mtk-0049-hostapd-mtk-Add-DFS-offchan-channel-switch.patch \
+    file://mtk-0049-hostapd-mtk-Add-DFS-offchain-control-support.patch \
     file://mtk-0050-hostapd-mtk-Add-txpower-vendor-command.patch \
     file://mtk-0050-hostapd-mtk-add-support-for-removeing-the-main-BSS.patch \
     file://mtk-0051-hostapd-mtk-Update-Wide-Bandwidth-Channel-Switch-element.patch \
@@ -124,4 +135,5 @@ SRC_URI_append = " \
     file://mtk-0053-hostapd-mtk-add-no_beacon-vendor-command-for-cert.patch \
     file://mtk-0054-hostapd-mtk-Add-support-for-gtk-rekeying-in-hostapd-.patch \
     file://mtk-0055-hostapd-mtk-fix-failure-of-BSS-wise-QoS-map-setting.patch \
+    file://mtk-0056-mtk-hostapd-add-background-radar-standalone-mode.patch \
     "
