@@ -48,7 +48,6 @@ u32 hw_lro_timestamp_flush_cnt[MTK_HW_LRO_RING_NUM];
 u32 hw_lro_norule_flush_cnt[MTK_HW_LRO_RING_NUM];
 u32 mtk_hwlro_stats_ebl;
 u32 dbg_show_level;
-u32 cur_rss_num;
 int eth_debug_level;
 
 static struct proc_dir_entry *proc_hw_lro_stats, *proc_hw_lro_auto_tlb,
@@ -1774,6 +1773,55 @@ static const struct file_operations switch_count_fops = {
 	.release = single_release
 };
 
+void mac_mib_dump(struct seq_file *seq, u32 gdm_id)
+{
+	struct mtk_eth *eth = g_eth;
+
+	PRINT_FORMATTED_MAC_MIB64(seq, TX_UC_PKT_CNT);
+	PRINT_FORMATTED_MAC_MIB64(seq, TX_UC_BYTE_CNT);
+	PRINT_FORMATTED_MAC_MIB64(seq, TX_MC_PKT_CNT);
+	PRINT_FORMATTED_MAC_MIB64(seq, TX_MC_BYTE_CNT);
+	PRINT_FORMATTED_MAC_MIB64(seq, TX_BC_PKT_CNT);
+	PRINT_FORMATTED_MAC_MIB64(seq, TX_BC_BYTE_CNT);
+
+	PRINT_FORMATTED_MAC_MIB64(seq, RX_UC_PKT_CNT);
+	PRINT_FORMATTED_MAC_MIB64(seq, RX_UC_BYTE_CNT);
+	PRINT_FORMATTED_MAC_MIB64(seq, RX_MC_PKT_CNT);
+	PRINT_FORMATTED_MAC_MIB64(seq, RX_MC_BYTE_CNT);
+	PRINT_FORMATTED_MAC_MIB64(seq, RX_BC_PKT_CNT);
+	PRINT_FORMATTED_MAC_MIB64(seq, RX_BC_BYTE_CNT);
+}
+
+int mac_cnt_read(struct seq_file *seq, void *v)
+{
+	int i;
+
+	seq_puts(seq, "+------------------------------------+\n");
+	seq_puts(seq, "|              <<GMAC>>              |\n");
+
+	for (i = MTK_GMAC1_ID; i < MTK_GMAC_ID_MAX; i++) {
+		mac_mib_dump(seq, i);
+		seq_puts(seq, "|                                    |\n");
+	}
+
+	seq_puts(seq, "+------------------------------------+\n");
+
+	return 0;
+}
+
+static int mac_count_open(struct inode *inode, struct file *file)
+{
+	return single_open(file, mac_cnt_read, 0);
+}
+
+static const struct file_operations mac_count_fops = {
+	.owner = THIS_MODULE,
+	.open = mac_count_open,
+	.read = seq_read,
+	.llseek = seq_lseek,
+	.release = single_release
+};
+
 void xfi_mib_dump(struct seq_file *seq, u32 gdm_id)
 {
 	struct mtk_eth *eth = g_eth;
@@ -2235,6 +2283,8 @@ static int mtk_rss_set_indr_tbl(struct mtk_eth *eth, int num)
 ssize_t rss_ctrl_write(struct file *file, const char __user *buffer,
 		       size_t count, loff_t *data)
 {
+	struct mtk_eth *eth = g_eth;
+	struct mtk_rss_params *rss_params = &eth->rss_params;
 	char buf[32];
 	char *p_buf;
 	char *p_token = NULL;
@@ -2261,14 +2311,17 @@ ssize_t rss_ctrl_write(struct file *file, const char __user *buffer,
 		ret = kstrtol(p_token, 10, &num);
 
 	if (!mtk_rss_set_indr_tbl(g_eth, num))
-		cur_rss_num = num;
+		rss_params->rss_num = num;
 
 	return count;
 }
 
 int rss_ctrl_read(struct seq_file *seq, void *v)
 {
-	pr_info("ADMA is using %d-RSS.\n", cur_rss_num);
+	struct mtk_eth *eth = g_eth;
+	struct mtk_rss_params *rss_params = &eth->rss_params;
+
+	pr_info("ADMA is using %d-RSS.\n", rss_params->rss_num);
 	return 0;
 }
 
@@ -3089,7 +3142,7 @@ static const struct file_operations reset_event_fops = {
 
 
 struct proc_dir_entry *proc_reg_dir;
-static struct proc_dir_entry *proc_esw_cnt, *proc_xfi_cnt,
+static struct proc_dir_entry *proc_esw_cnt, *proc_mac_cnt, *proc_xfi_cnt,
 			     *proc_dbg_regs, *proc_reset_event;
 
 int debug_proc_init(struct mtk_eth *eth)
@@ -3120,6 +3173,13 @@ int debug_proc_init(struct mtk_eth *eth)
 		pr_notice("!! FAIL to create %s PROC !!\n", PROCREG_ESW_CNT);
 
 	if (MTK_HAS_CAPS(g_eth->soc->caps, MTK_NETSYS_V3)) {
+		proc_mac_cnt =
+		    proc_create(PROCREG_MAC_CNT, 0,
+				proc_reg_dir, &mac_count_fops);
+		if (!proc_mac_cnt)
+			pr_notice("!! FAIL to create %s PROC !!\n",
+				  PROCREG_MAC_CNT);
+
 		proc_xfi_cnt =
 		    proc_create(PROCREG_XFI_CNT, 0,
 				proc_reg_dir, &xfi_count_fops);
@@ -3140,8 +3200,6 @@ int debug_proc_init(struct mtk_eth *eth)
 		if (!proc_rss_ctrl)
 			pr_info("!! FAIL to create %s PROC !!\n",
 				PROCREG_RSS_CTRL);
-
-		cur_rss_num = g_eth->soc->rss_num;
 	}
 
 	if (g_eth->hwlro) {
@@ -3178,6 +3236,9 @@ void debug_proc_exit(void)
 
 	if (proc_esw_cnt)
 		remove_proc_entry(PROCREG_ESW_CNT, proc_reg_dir);
+
+	if (proc_mac_cnt)
+		remove_proc_entry(PROCREG_MAC_CNT, proc_reg_dir);
 
 	if (proc_xfi_cnt)
 		remove_proc_entry(PROCREG_XFI_CNT, proc_reg_dir);

@@ -249,6 +249,7 @@ SRC_URI_append = " \
     file://999-2743-drivers-net-dsa-mxl862xx-kernel-compatible.patch;apply=no \
     file://999-2744-drivers-net-phy-mxl862xx-mxl-gpy.patch \
     file://999-2745-mtk-gso-skb-headroom-copy.patch \
+    file://999-2746-net-macvlan-support-hardware-flow-table-offload.patch \
     file://999-2800-misc-add-mtk-platform.patch \
     file://999-2850-fips-140-3-compliance.patch \
     file://999-2900-dts-mt7622-enable-new-mtk-snand-for-ubi.patch \

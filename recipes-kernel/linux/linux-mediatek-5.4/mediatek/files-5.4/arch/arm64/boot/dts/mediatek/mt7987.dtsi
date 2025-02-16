@@ -58,6 +58,7 @@
 				 <&apmixedsys CK_APMIXED_ARM_LL>;
 			clock-names = "cpu", "intermediate", "armpll";
 			operating-points-v2 = <&cluster0_opp>;
+			#cooling-cells = <2>;
 		};
 
 		cpu1: cpu@1 {
@@ -232,10 +233,10 @@
 		#size-cells = <2>;
 		ranges;
 
-		wmcpu_emi: wmcpu-reserved@60000000 {
+		wmcpu_emi: wmcpu-reserved@50000000 {
 			compatible = "mediatek,wmcpu-reserved";
 			no-map;
-			reg = <0 0x60000000 0 0x00100000>;
+			reg = <0 0x50000000 0 0x00100000>;
 		};
 	};
 
@@ -255,6 +256,12 @@
 					temperature = <120000>;
 					hysteresis = <2000>;
 					type = "hot";
+				};
+
+				cpu_trip_active2: active2 {
+					temperature = <120000>;
+					hysteresis = <2000>;
+					type = "active";
 				};
 
 				cpu_trip_active1: active1 {
@@ -277,6 +284,13 @@
 			};
 
 			cooling-maps {
+				cpu-active-hot {
+					cooling-device = <&cpu0
+						THERMAL_NO_LIMIT
+						THERMAL_NO_LIMIT>;
+					trip = <&cpu_trip_active2>;
+				};
+
 				cpu-active-high {
 					cooling-device = <&fan 2 2>;
 					trip = <&cpu_trip_active1>;
