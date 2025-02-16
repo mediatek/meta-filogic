@@ -147,4 +147,5 @@ SRC_URI_append = " \
     file://0145-mtk-mt76-mt7996-for-build-pass.patch \
     file://0146-mtk-wifi-mt76-revert-page_poll-for-kernel-5.4.patch \
     file://0150-cp-mtk-mt76-mt7996-replace-band-idx-with-radio-idx-in-v.patch \
+    file://0151-cp-mtk-mt76-mt7996-fix-and-refactor-air-monitor.patch \
     "

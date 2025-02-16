@@ -103,5 +103,6 @@ SRC_URI_append = " \
     file://2016-wifi-mt76-mt7915-fix-key-used-after-free-issue.patch \
     file://2016-wifi-mt76-mt7915-refine-twt-mcu-update-flow.patch \
     file://2017-wifi-mt76-mt7915-add-sanity-check-to-prevent-invalid.patch \
+    file://2018-wifi-mt76-mt7915-add-debugfs-knob-to-control-ps-ther.patch \
     file://9999-mt76-revert-for-backports-5.15-wireless-stack.patch \
     "

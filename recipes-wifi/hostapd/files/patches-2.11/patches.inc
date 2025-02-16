@@ -153,4 +153,5 @@ SRC_URI_append = " \
     file://0151-cp-mtk-hostapd-replace-band-idx-with-radio-idx-in-ucode.patch \
     file://0152-cp-mtk-hostapd-remove-band-idx-from-hostapd.patch \
     file://0153-cp-mtk-hostapd-WPS-use-passphrase-over-psk-file.patch \
+    file://0154-cp-mtk-hostapd-add-link-id-for-air-monitor.patch \
     "

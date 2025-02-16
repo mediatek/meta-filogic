@@ -34,8 +34,6 @@ function iface_start(phydev, iface, macaddr_list)
 		wdev_config[field] = iface.config[field];
 	if (!wdev_config.macaddr)
 		wdev_config.macaddr = phydev.macaddr_next();
-	if (wdev_config.mld_allowed_phy_bitmap)
-		wdev_config.mld_radio_mask = wdev_config.mld_allowed_phy_bitmap;
 
 	wpas.data.iface_phy[ifname] = phy;
 	wdev_remove(ifname);
@@ -70,7 +68,7 @@ function prepare_config(config, radio)
 	return { config };
 }
 
-function set_config(config_name, phy_name, radio, num_global_macaddr, config_list)
+function set_config(config_name, phy_name, radio, num_global_macaddr, macaddr_base, config_list)
 {
 	let phy = wpas.data.config[config_name];
 
@@ -85,6 +83,7 @@ function set_config(config_name, phy_name, radio, num_global_macaddr, config_lis
 
 	phy.radio = radio;
 	phy.num_global_macaddr = num_global_macaddr;
+	phy.macaddr_base = macaddr_base;
 
 	let values = [];
 	for (let config in config_list)
@@ -108,7 +107,10 @@ function start_pending(phy_name)
 	}
 
 	let macaddr_list = wpas.data.macaddr_list[phy_name];
-	phydev.macaddr_init(macaddr_list, { num_global: phy.num_global_macaddr });
+	phydev.macaddr_init(macaddr_list, {
+		num_global: phy.num_global_macaddr,
+		macaddr_base: phy.macaddr_base,
+	});
 
 	for (let ifname in phy.data)
 		iface_start(phydev, phy.data[ifname]);
@@ -212,6 +214,7 @@ let main_obj = {
 			phy: "",
 			radio: 0,
 			num_global_macaddr: 0,
+			macaddr_base: "",
 			config: [],
 			defer: true,
 		},
@@ -223,7 +226,7 @@ let main_obj = {
 			wpas.printf(`Set new config for phy ${phy}`);
 			try {
 				if (req.args.config)
-					set_config(phy, req.args.phy, req.args.radio, req.args.num_global_macaddr, req.args.config);
+					set_config(phy, req.args.phy, req.args.radio, req.args.num_global_macaddr, req.args.macaddr_base, req.args.config);
 
 				if (!req.args.defer)
 					start_pending(phy);
@@ -312,12 +315,12 @@ function iface_event(type, name, data) {
 	ubus.call("service", "event", { type: `wpa_supplicant.${name}.${type}`, data: {} });
 }
 
-function iface_hostapd_notify(phy, ifname, iface, state, link_id)
+function iface_hostapd_notify(phy, ifname, iface, state)
 {
 	let ubus = wpas.data.ubus;
+	let status = iface.status();
 	let msg = { phy: phy };
 
-	wpas.printf(`ucode: mtk: wpa_s in state ${state} notifies hostapd`);
 	switch (state) {
 	case "DISCONNECTED":
 	case "AUTHENTICATING":
@@ -329,14 +332,9 @@ function iface_hostapd_notify(phy, ifname, iface, state, link_id)
 		msg.up = true;
 		break;
 	case "COMPLETED":
-		let status = iface.status(link_id);
 		msg.up = true;
 		msg.frequency = status.frequency;
 		msg.sec_chan_offset = status.sec_chan_offset;
-		msg.ch_width = status.ch_width;
-		msg.bw320_offset = status.bw320_offset;
-		msg.radio_idx = status.radio_idx;
-		msg.punct_bitmap = status.punct_bitmap;
 		break;
 	default:
 		return;
@@ -353,11 +351,7 @@ function iface_channel_switch(phy, ifname, iface, info)
 		csa: true,
 		csa_count: info.csa_count ? info.csa_count - 1 : 0,
 		frequency: info.frequency,
-		ch_width: info.ch_width,
-		bw320_offset: info.bw320_offset,
-		radio_idx: info.radio_idx,
 		sec_chan_offset: info.sec_chan_offset,
-		punct_bitmap: info.punct_bitmap,
 	};
 	ubus.call("hostapd", "apsta_state", msg);
 }
@@ -376,24 +370,12 @@ return {
 	},
 	state: function(ifname, iface, state) {
 		let phy = wpas.data.iface_phy[ifname];
-		let ret = iface.get_valid_links();
-		let link_id = 0, valid_links = ret.valid_links;
 		if (!phy) {
 			wpas.printf(`no PHY for ifname ${ifname}`);
 			return;
 		}
 
-		if (valid_links) {
-			while (valid_links) {
-				if (valid_links & 1)
-					iface_hostapd_notify(phy, ifname, iface, state, link_id);
-
-				link_id++;
-				valid_links >>= 1;
-			}
-		} else {
-			iface_hostapd_notify(phy, ifname, iface, state, -1);
-		}
+		iface_hostapd_notify(phy, ifname, iface, state);
 
 		if (state != "COMPLETED")
 			return;
@@ -419,7 +401,7 @@ return {
 			return;
 		}
 
-		if (ev == "CH_SWITCH_STARTED" || ev == "LINK_CH_SWITCH_STARTED")
+		if (ev == "CH_SWITCH_STARTED")
 			iface_channel_switch(phy, ifname, iface, info);
 	}
 };

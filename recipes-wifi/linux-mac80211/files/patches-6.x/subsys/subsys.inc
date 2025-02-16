@@ -1,5 +1,6 @@
 #patch subsys (come from openwrt/lede/target/linux/mediatek)
 SRC_URI_append = " \
+    file://0000-step-to-wireless-next-2024-10-25-tag.patch \
     file://0001-sync-patches-build.patch \
     file://0002-sync-patches-subsys.patch \
     file://0003-sync-patches-ath.patch \
