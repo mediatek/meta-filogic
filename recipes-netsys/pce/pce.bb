@@ -6,7 +6,7 @@ inherit module
 
 DEPENDS += "virtual/kernel"
 
-SRC_URI = "git://gerrit.mediatek.inc/openwrt/feeds/mtk_openwrt_feeds;protocol=https;branch=master;destsuffix=git"
+SRC_URI = "git://git01.mediatek.com/openwrt/feeds/mtk-openwrt-feeds;protocol=https;branch=master;destsuffix=git"
 SRCREV = "${AUTOREV}"
 
 S = "${WORKDIR}/git/feed/kernel/pce/src"
