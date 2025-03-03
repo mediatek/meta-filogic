@@ -10,19 +10,21 @@ SRC_URI = " \
     git://git@github.com/openwrt/mt76.git;protocol=https;branch=master \
     file://COPYING;subdir=git \
     "
-SRC_URI += " \
-    file://src \
-    "
-
-
 
 DEPENDS += "virtual/kernel"
 DEPENDS += "linux-mac80211"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches-${PV}:"
-FILESEXTRAPATHS_prepend := "${THISDIR}/src:"
+PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6-6', 'kernel6-6-patches', 'patches-${PV}', d)}"
+FW_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6-6', 'kernel6-6-src', 'src', d)}"
 
-require files/patches-${PV}/patches.inc
+SRC_URI += " \
+    file://${FW_SRC} \
+    "
+
+FILESEXTRAPATHS_prepend := "${THISDIR}/files/${PATCH_SRC}:"
+FILESEXTRAPATHS_prepend := "${THISDIR}/${FW_SRC}:"
+
+require files/${PATCH_SRC}/patches.inc
 
 S = "${WORKDIR}/git"
 
@@ -75,16 +77,19 @@ do_install() {
 
 do_install_append () {
     install -d ${D}/${base_libdir}/firmware/mediatek/mt7996
-    install -m 644 ${WORKDIR}/src/firmware/mt7996/mt7996*.* ${D}${base_libdir}/firmware/mediatek/mt7996
-    install -m 644 ${WORKDIR}/src/firmware/mt7996/mt7992*.* ${D}${base_libdir}/firmware/mediatek/mt7996
+    install -m 644 ${WORKDIR}/${FW_SRC}/firmware/mt7996/mt7996*.* ${D}${base_libdir}/firmware/mediatek/mt7996
+    install -m 644 ${WORKDIR}/${FW_SRC}/firmware/mt7996/mt7992*.* ${D}${base_libdir}/firmware/mediatek/mt7996
 }
 
 do_install_append_mt7988 () {
-    install -d ${D}/${base_libdir}/firmware/mediatek/
+    IS_KERNEL_V6="${@bb.utils.contains('DISTRO_FEATURES','kernel6-6','true','false',d)}"
+    if [ $IS_KERNEL_V6 = 'false' ]; then
+        install -d ${D}/${base_libdir}/firmware/mediatek/
 
-    install -m 644 ${WORKDIR}/src/firmware/mtk_wo_0.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mtk_wo_1.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mtk_wo_2.bin ${D}${base_libdir}/firmware/mediatek/
+        install -m 644 ${WORKDIR}/src/firmware/mtk_wo_0.bin ${D}${base_libdir}/firmware/mediatek/
+        install -m 644 ${WORKDIR}/src/firmware/mtk_wo_1.bin ${D}${base_libdir}/firmware/mediatek/
+        install -m 644 ${WORKDIR}/src/firmware/mtk_wo_2.bin ${D}${base_libdir}/firmware/mediatek/
+    fi
 }
 
 FILES_${PN} += "${base_libdir}/firmware/mediatek/*"

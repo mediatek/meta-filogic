@@ -7,25 +7,24 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 inherit module
 
 PV = "6.12.6"
+SRC_URI[sha256sum] = "28ec39425a1b3270e1422d92a8131a6a3d8919cc13e8ee250c315e55d922ba68"
+
+require version.inc
 
 SRC_URI = " \
     http://mirror2.openwrt.org/sources/backports-${PV}.tar.xz \
     file://config \
     file://0001-rdkb-fix_build_issue-mac80211-without_depmod.patch;apply=no \
     "
-SRC_URI[sha256sum] = "28ec39425a1b3270e1422d92a8131a6a3d8919cc13e8ee250c315e55d922ba68"
+
 
 DEPENDS += "virtual/kernel"
 DEPENDS += "bison-native coreutils-native flex-native"
+PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6-6', 'kernel6-6-patches', 'patches-6.x', d)}"
 
-#FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches-6.x/build:"
-FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches-6.x/subsys:"
+FILESEXTRAPATHS_prepend := "${THISDIR}/files/${PATCH_SRC}/subsys:"
 
-#require files/patches-6.x/build/build.inc
-require files/patches-6.x/subsys/subsys.inc
-
-SRC_URI_remove = "${@bb.utils.contains('DISTRO_FEATURES', 'flow_offload', '', 'file://mtk-0014-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-id.patch', d)}"
-SRC_URI_remove = "${@bb.utils.contains('DISTRO_FEATURES', 'flow_offload', '', 'file://mtk-0015-mac80211-mtk-register-.ndo_setup_tc-to-support-wifi2.patch', d)}"
+require files/${PATCH_SRC}/subsys/subsys.inc
 
 S = "${WORKDIR}/backports-${PV}"
 

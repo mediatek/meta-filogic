@@ -7,21 +7,25 @@ LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://hostapd/README;md5=0e430ef1be3d6eebf257cf493fc7661d"
 
 DEPENDS = "dbus libnl-tiny ubus ucode udebug"
+PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6-6', 'kernel6-6-patches', 'patches-${PV}', d)}"
+
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
-FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches-${PV}:"
+FILESEXTRAPATHS_prepend := "${THISDIR}/files/${PATCH_SRC}:"
 
 SRCREV ?= "96e48a05aa0a82e91e3cab75506297e433e253d0"
+require version.inc
+
 SRC_URI = "git://w1.fi/hostap.git;protocol=https;branch=main \
            file://wpa-supplicant.sh \
            file://wpa_supplicant.conf \
            file://wpa_supplicant.conf-sane \
            file://99_wpa_supplicant \
            file://wpa_supplicant-full.config \
-           file://src-${PV} \
+           ${@bb.utils.contains('DISTRO_FEATURES','kernel6-6','','file://src-${PV}',d)} \
            file://002-rdkb-add-ucode-support.patch;apply=no \
 	   file://003-fix_wpa_supplicant_build_issue.patch;apply=no \
            "
-require files/patches-${PV}/patches.inc
+require files/${PATCH_SRC}/patches.inc
 
 S = "${WORKDIR}/git"
 

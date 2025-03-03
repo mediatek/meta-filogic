@@ -1,0 +1,1 @@
+SRCREV_kernel6-6 = "96e48a05aa0a82e91e3cab75506297e433e253d0"

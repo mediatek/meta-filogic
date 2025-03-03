@@ -1,1 +1,2 @@
 SRCREV_mt7990 = "ecca0e77b4bce629ec1f79d83bbd14a68f919188"
+SRCREV_kernel6-6 = "a22d59e4ad50c89326342a0736cd2c1ba32e8a0b"

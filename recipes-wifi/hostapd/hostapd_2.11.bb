@@ -9,10 +9,15 @@ DEPENDS_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'telemetry2_0', 'tele
 LDFLAGS_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'telemetry2_0', ' -ltelemetry_msgsender ', '', d)}"
 RDEPENDS_${PN} += "gawk ucode udebug"
 
+PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6-6', 'kernel6-6-patches', 'patches-${PV}', d)}"
+
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
-FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches-${PV}:"
+FILESEXTRAPATHS_prepend := "${THISDIR}/files/${PATCH_SRC}:"
 
 SRCREV ?= "96e48a05aa0a82e91e3cab75506297e433e253d0"
+
+require version.inc
+
 SRC_URI = " \
     git://w1.fi/hostap.git;protocol=https;branch=main \
     file://hostapd-full.config \
@@ -32,10 +37,10 @@ SRC_URI = " \
     file://wifi-detect.uc \
     file://mac80211.uc \
     file://board.json \
-    file://src-${PV} \
+    ${@bb.utils.contains('DISTRO_FEATURES','kernel6-6','','file://src-${PV}',d)} \
     file://002-rdkb-add-ucode-support.patch;apply=no \
 "
-require files/patches-${PV}/patches.inc
+require files/${PATCH_SRC}/patches.inc
 
 B = "${WORKDIR}/git/hostapd"
 S = "${WORKDIR}/git"

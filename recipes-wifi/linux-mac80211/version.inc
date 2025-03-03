@@ -1,0 +1,2 @@
+PV_kernel6-6 = "6.12.6"
+SRC_URI_kernel6-6[sha256sum] = "28ec39425a1b3270e1422d92a8131a6a3d8919cc13e8ee250c315e55d922ba68"
