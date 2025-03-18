@@ -436,6 +436,9 @@ function convert_channel {
     local control_ch=$(echo $1 | sed s/:/' '/g | cut -d " " -f 1)
     local band=$(echo $1 | sed s/:/' '/g | cut -d " " -f 2)
     local pri_sel=$(echo $1 | sed s/:/' '/g | cut -d " " -f 3)
+    local center_ch2=$(echo $1 | sed s/:/' '/g | cut -d " " -f 4)
+    local fast_cal=$(echo $1 | sed s/:/' '/g | cut -d " " -f 5)
+    local fast_cal_type="none"
     local ctrl_band_idx=$(get_config "ATECTRLBANDIDX" ${iwpriv_file})
     local bw=$(get_config "ATETXBW" ${iwpriv_file} | cut -d ":" -f 1)
     local bw_str="20"
@@ -469,6 +472,18 @@ function convert_channel {
 
     if [[ $1 == *":"* ]] && [ -n "${pri_sel}" ]; then
         do_cmd "mt76-test phy${phy_idx} set tx_pri_sel=${pri_sel}"
+    fi
+
+    if [[ $1 == *":"* ]] && [ -n "${fast_cal}" ]; then
+        case ${fast_cal} in
+            "200000")
+                fast_cal_type="rx_verify"
+                ;;
+            "400000")
+                fast_cal_type="power_cal"
+                ;;
+        esac
+        do_cmd "mt76-test phy${phy_idx} set fast_cal=${fast_cal_type}"
     fi
 
     if [[ $1 != *":"* ]] || [ "${band}" = "0" ]; then
@@ -527,11 +542,13 @@ function convert_rxstat {
     local res=$(do_cmd "mt76-test ${interface} dump stats")
     local mdrdy=$(echo "${res}" | grep "rx_packets" | cut -d "=" -f 2)
     local fcs_error=$(echo "${res}" | grep "rx_fcs_error" | cut -d "=" -f 2)
+    local rx_ok=$(echo "${res}" | grep "rx_success" | cut -d "=" -f 2)
+    local rssi=$(echo "${res}" | grep "last_rssi" | cut -d "=" -f 2 | sed 's/,/ /g')
     local rcpi=$(echo "${res}" | grep "last_rcpi" | cut -d "=" -f 2 | sed 's/,/ /g')
     local ib_rssi=$(echo "${res}" | grep "last_ib_rssi" | cut -d "=" -f 2 | sed 's/,/ /g')
     local wb_rssi=$(echo "${res}" | grep "last_wb_rssi" | cut -d "=" -f 2 | sed 's/,/ /g')
-    local rx_ok=$(expr ${mdrdy} - ${fcs_error})
 
+    write_dmesg "rssi: ${rssi}"
     write_dmesg "rcpi: ${rcpi}"
     write_dmesg "fagc rssi ib: ${ib_rssi}"
     write_dmesg "fagc rssi wb: ${wb_rssi}"
@@ -974,6 +991,10 @@ function do_ate_work() {
             do_cmd "mt76-test ${interface} set state=dpd_clean"
             do_cmd "atenl -i ${interface} -c \"eeprom precal dpd clean\""
             ;;
+        "RXGAINCAL")
+            do_cmd "mt76-test ${interface} set state=rx_gain_cal"
+            do_cmd "atenl -i ${interface} -c \"eeprom rx gain sync\""
+            ;;
         *)
             print_debug "skip ${ate_cmd}"
             ;;
@@ -1271,7 +1292,7 @@ if [ "${cmd_type}" = "set" ]; then
             convert_ibf ${cmd} ${param}
             skip=1
             ;;
-        "bufferMode")
+        "bufferMode"|"buffermode")
             if [ "${param}" = "2" ]; then
                 do_cmd "atenl -i ${interface} -c \"eeprom update buffermode\""
             fi

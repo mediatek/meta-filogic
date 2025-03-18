@@ -1045,6 +1045,16 @@ atenl_nl_ibf_profile_update_all(struct atenl *an, struct atenl_data *data,
 	return 0;
 }
 
+void
+atenl_get_rx_gain_cal_result(struct atenl *an)
+{
+	if (!is_connac3(an))
+		return;
+
+	atenl_eeprom_read_from_driver(an, MT_EE_DO_RX_GAIN_CAL, 1);
+	atenl_eeprom_read_from_driver(an, MT_EE_RX_GAIN_CAL, MT_EE_CAL_RX_GAIN_SIZE);
+}
+
 #define NL_OPS_GROUP(cmd, ...)	[HQA_CMD_##cmd] = { __VA_ARGS__ }
 static const struct atenl_nl_ops nl_ops[] = {
 	NL_OPS_GROUP(SET_TX_PATH, .set=MT76_TM_ATTR_TX_ANTENNA),
@@ -1578,4 +1588,43 @@ start:
 out:
 	unl_free(&nl_priv.unl);
 	return ret;
+}
+
+static int atenl_nl_get_wiphy_cb(struct nl_msg *msg, void *arg)
+{
+	struct atenl_nl_priv *nl_priv = (struct atenl_nl_priv *)arg;
+	struct nlattr *tb_msg[NL80211_ATTR_MAX + 1];
+	struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
+	struct atenl *an = nl_priv->an;
+
+	nla_parse(tb_msg, NL80211_ATTR_MAX, genlmsg_attrdata(gnlh, 0),
+		  genlmsg_attrlen(gnlh, 0), NULL);
+
+	if (!tb_msg[NL80211_ATTR_WIPHY])
+		return NL_STOP;
+
+	if (tb_msg[NL80211_ATTR_WIPHY_RADIOS])
+		an->is_single_wiphy = true;
+
+	return NL_SKIP;
+}
+
+int atenl_nl_get_wiphy(struct atenl *an)
+{
+	struct atenl_nl_priv nl_priv = {.an = an};
+	struct nl_msg *msg;
+
+	if (unl_genl_init(&nl_priv.unl, "nl80211") < 0) {
+		atenl_err("Failed to connect to nl80211\n");
+		return 2;
+	}
+
+	msg = unl_genl_msg(&(nl_priv.unl), NL80211_CMD_GET_WIPHY, true);
+	nla_put_flag(msg, NL80211_ATTR_SPLIT_WIPHY_DUMP);
+	nl_priv.msg = msg;
+	unl_genl_request(&(nl_priv.unl), msg, atenl_nl_get_wiphy_cb, (void *)&nl_priv);
+
+	unl_free(&nl_priv.unl);
+
+	return 0;
 }

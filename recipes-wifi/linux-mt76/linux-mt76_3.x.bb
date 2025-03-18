@@ -79,6 +79,7 @@ do_install_append () {
     install -d ${D}/${base_libdir}/firmware/mediatek/mt7996
     install -m 644 ${WORKDIR}/${FW_SRC}/firmware/mt7996/mt7996*.* ${D}${base_libdir}/firmware/mediatek/mt7996
     install -m 644 ${WORKDIR}/${FW_SRC}/firmware/mt7996/mt7992*.* ${D}${base_libdir}/firmware/mediatek/mt7996
+    install -m 644 ${WORKDIR}/${FW_SRC}/firmware/mt7996/mt7990*.* ${D}${base_libdir}/firmware/mediatek/mt7996
 }
 
 do_install_append_mt7988 () {

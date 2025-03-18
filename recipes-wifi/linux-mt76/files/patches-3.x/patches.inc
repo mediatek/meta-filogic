@@ -148,4 +148,8 @@ SRC_URI_append = " \
     file://0146-mtk-wifi-mt76-revert-page_poll-for-kernel-5.4.patch \
     file://0150-cp-mtk-mt76-mt7996-replace-band-idx-with-radio-idx-in-v.patch \
     file://0151-cp-mtk-mt76-mt7996-fix-and-refactor-air-monitor.patch \
+    file://0152-cp-mtk-mt76-mt7996-config-rxfilter-to-drop-other-unicas.patch \
+    file://0153-cp-mtk-mt76-fix-kernel-warning-for-of_node_put-during-m.patch \
+    file://0154-cp-mtk-mt76-mt7996-add-5T5R-support-for-testmode-RX.patch \
+    file://0155-cp-mtk-mt76-mt7990-add-mt7987-wed-hw-path-support.patch\
     "

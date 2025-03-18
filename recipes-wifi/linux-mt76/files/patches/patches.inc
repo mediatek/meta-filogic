@@ -84,6 +84,7 @@ SRC_URI_append = " \
     file://1053-wifi-mt76-mt7915-fix-TX-RX-hang-without-SER-hw-bit-t.patch \
     file://1054-wifi-mt76-mt7915-remove-rts-and-cts-protection-enabl.patch \
     file://1055-wifi-mt76-testmode-add-interface-addition-deletion-c.patch \
+    file://1056-wifi-mt76-testmode-fix-rx-stats-issue.patch \
     file://2000-wifi-mt76-mt7915-wed-add-wed-tx-support.patch \
     file://2001-wifi-mt76-mt7915-wed-add-wds-support-when-wed-is-ena.patch \
     file://2002-wifi-mt76-mt7915-wed-add-fill-receive-path-to-report.patch \
