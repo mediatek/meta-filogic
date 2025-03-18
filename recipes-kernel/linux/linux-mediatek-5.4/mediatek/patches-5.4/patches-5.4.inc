@@ -58,6 +58,7 @@ SRC_URI_append = " \
     file://999-1716-v6.6-net-phy-add-phylink-pcs_enable-and-pcs_disable.patch;apply=no \
     file://999-1717-v5.12-net-phy-sfp-add-debugfs-support.patch \
     file://999-1718-v5.15-net-netfilter-add-nf-hw-offload.patch \
+    file://999-1718-v6.6-net-netfilter-add-nft-hw-offload.patch \
     file://999-1719-v6.2-net-ptp-introduce-adjust-by-scaled-ppm.patch \
     file://999-1720-v5.13-net-phy-add-genphy_c45_pma_suspend-resume.patch \
     file://999-1721-v6.9-net-phy-add-2.5g-and-5g-related-PMA-and-PCS-speed-constants.patch \
@@ -134,6 +135,7 @@ SRC_URI_append = " \
     file://999-2132-add-pwm-feature-in-mt7988-project.patch \
     file://999-2133-pwm-mediatek-add-longer-period-support.patch \
     file://999-2134-add-pwm-gpio-support.patch \
+    file://999-2135-add-pwm-feature-for-mt7987.patch \
     file://999-2140-mtk-thermal-add-lvts-support.patch \
     file://999-2150-sound-add-some-helpers-to-control-mtk_memif.patch \
     file://999-2151-sound-refine-hw-params-and-hw-prepare.patch \
@@ -154,6 +156,7 @@ SRC_URI_append = " \
     file://999-2342-drivers-mtd-spi-nor-Add-support-EN25QX256A-2S.patch \
     file://999-2343-mtd-spinand-gigadevice-Add-support-for-F50L1G41LB.patch \
     file://999-2344-mtd-spinand-Add-support-fudanmicro.patch \
+    file://999-2345-mtd-spinor-support-mx25l12833f-mx25l25645g.patch \
     file://999-2350-nvmem-core-Add-functions-to-make-number-reading-easy.patch \
     file://999-2351-nvmem-mtk-efuse-support-minimum-one-byte-access-stri.patch \
     file://999-2361-add-spimem-support-to-mtk-spi.patch \

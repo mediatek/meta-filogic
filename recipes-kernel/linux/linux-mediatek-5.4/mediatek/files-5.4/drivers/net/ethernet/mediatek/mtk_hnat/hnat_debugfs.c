@@ -2247,7 +2247,7 @@ int __mcast_table_dump(struct seq_file *m, void *private, u32 ppe_id)
 	max = h->pmcast->max_entry;
 	pr_info("============================\n");
 	pr_info("PPE_ID = %d\n", ppe_id);
-	pr_info("MAC | VID | PortMask | QosPortMask\n");
+	pr_info("[ID]: MAC | VID | PortMask | QosPortMask\n");
 	for (i = 0; i < max; i++) {
 		if (i < 0x10) {
 			reg = h->ppe_base[ppe_id] + PPE_MCAST_H_0 + i * 8;
@@ -2255,24 +2255,29 @@ int __mcast_table_dump(struct seq_file *m, void *private, u32 ppe_id)
 			reg = h->ppe_base[ppe_id] + PPE_MCAST_L_0 + i * 8;
 			mcast_l.addr = readl(reg);
 		} else {
-			reg = h->fe_base + PPE_MCAST_H_10 + (i - 0x10) * 8;
+			reg = hnat_priv->ppe_base[ppe_id] + PPE_MCAST_H_10 + (i - 0x10) * 8;
 			mcast_h.u.value = readl(reg);
-			reg = h->fe_base + PPE_MCAST_L_10 + (i - 0x10) * 8;
+			reg = hnat_priv->ppe_base[ppe_id] + PPE_MCAST_L_10 + (i - 0x10) * 8;
 			mcast_l.addr = readl(reg);
 		}
-		pr_info("%08x %d %c%c%c%c %c%c%c%c (QID=%d, mc_mpre_sel=%d)\n",
+		if (mcast_l.addr == 0)
+			continue;
+		pr_info("[%d]: %08x %d %c%c%c%c%c %c%c%c%c%c (QID=%d, mc_mpre_sel=%d)\n",
+			i,
 			mcast_l.addr,
 			mcast_h.u.info.mc_vid,
+			(mcast_h.u.info.mc_px_en & 0x10) ? '1' : '-',
 			(mcast_h.u.info.mc_px_en & 0x08) ? '1' : '-',
 			(mcast_h.u.info.mc_px_en & 0x04) ? '1' : '-',
 			(mcast_h.u.info.mc_px_en & 0x02) ? '1' : '-',
 			(mcast_h.u.info.mc_px_en & 0x01) ? '1' : '-',
+			(mcast_h.u.info.mc_px_qos_en & 0x10) ? '1' : '-',
 			(mcast_h.u.info.mc_px_qos_en & 0x08) ? '1' : '-',
 			(mcast_h.u.info.mc_px_qos_en & 0x04) ? '1' : '-',
 			(mcast_h.u.info.mc_px_qos_en & 0x02) ? '1' : '-',
 			(mcast_h.u.info.mc_px_qos_en & 0x01) ? '1' : '-',
 			mcast_h.u.info.mc_qos_qid +
-			((mcast_h.u.info.mc_qos_qid54) << 4),
+			((mcast_h.u.info.mc_qos_qid64) << 4),
 			mcast_h.u.info.mc_mpre_sel);
 	}
 
@@ -3233,23 +3238,12 @@ static ssize_t hnat_static_entry_write(struct file *file,
 	if (hash == -1)
 		hash = hnat_get_ppe_hash(&entry);
 
-#if defined(CONFIG_MEDIATEK_NETSYS_V3)
-	if (CFG_PPE_NUM == 3) {
-		switch (entry.ipv4_hnapt.bfib1.sp) {
-		case NR_GMAC1_PORT:
-			ppe_id = 0;
-			break;
-		case NR_GMAC2_PORT:
-			ppe_id = 1;
-			break;
-		case NR_GMAC3_PORT:
-			ppe_id = 2;
-			break;
-		default:
-			break;
-		}
-	}
-#endif
+	if ((CFG_PPE_NUM >= 3) && (entry.ipv4_hnapt.bfib1.sp == NR_GMAC3_PORT))
+		ppe_id = 2;
+	else if ((CFG_PPE_NUM >= 2) && (entry.ipv4_hnapt.bfib1.sp == NR_GMAC2_PORT))
+		ppe_id = 1;
+	else
+		ppe_id = 0;
 
 	foe = &hnat_priv->foe_table_cpu[ppe_id][hash];
 	while ((foe->ipv4_hnapt.bfib1.state == BIND) && (coll < 4)) {
