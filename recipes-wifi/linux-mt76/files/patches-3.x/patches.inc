@@ -152,4 +152,5 @@ SRC_URI_append = " \
     file://0153-cp-mtk-mt76-fix-kernel-warning-for-of_node_put-during-m.patch \
     file://0154-cp-mtk-mt76-mt7996-add-5T5R-support-for-testmode-RX.patch \
     file://0155-cp-mtk-mt76-mt7990-add-mt7987-wed-hw-path-support.patch\
+    file://0156-cp-mtk-mt76-mt7990-fix-MT7996_WTBL_BMC_SIZE-for-mt7990.patch\
     "
