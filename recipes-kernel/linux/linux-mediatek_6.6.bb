@@ -35,14 +35,12 @@ SRC_URI_append += " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'mt76', 'file://rdkb_cfg/mac80211.cfg', 'file://rdkb_cfg/nf_hnat.cfg', d)} \
     file://rdkb_cfg/prplmesh.cfg \
     file://rdkb_cfg/filogic_rdkb.cfg \
+    file://rdkb_cfg/bridge_netfilter.cfg \
     ${@bb.utils.contains('DISTRO_FEATURES','emmc','file://rdkb_cfg/emmc.cfg','',d)} \
     ${@bb.utils.contains('DISTRO_FEATURES','ccn34','file://rdkb_cfg/tops.cfg','',d)} \
     ${@bb.utils.contains('DISTRO_FEATURES','ccn34','file://rdkb_cfg/eip-197.cfg','',d)} \
 "
 
-SRC_URI_append += " \
-    ${@bb.utils.contains('DISTRO_FEATURES','flow_offload','file://rdkb_cfg/bridge_netfilter.cfg','',d)} \
-"
 
 require ${PN}-${PV}/generic/backport-6.6/backport-6.6.inc
 
