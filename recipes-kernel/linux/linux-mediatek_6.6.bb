@@ -77,9 +77,7 @@ do_filogic_patches() {
         fi
         if [ ! -e patch_applied ]; then
             patch -p1 < ${WORKDIR}/001-rdkb-eth-mtk-change-ifname-for.patch
-            if [ $DISTRO_LAN_AS_WAN_ENABLED = 'true' ]; then
-                patch -p1 < ${WORKDIR}/002-bpi_r4-lan0_as_wan.patch
-            fi
+
             patch -p1 < ${WORKDIR}/863-arm64-dts-mt7986-add-sound-wm8960.patch
             patch -p1 < ${WORKDIR}/999-2000-arm64-dts-mt7988-move-phys-to-sgmiipcs-and-usxgmiisy.patch
 

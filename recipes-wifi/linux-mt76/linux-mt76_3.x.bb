@@ -77,9 +77,20 @@ do_install() {
 
 do_install_append () {
     install -d ${D}/${base_libdir}/firmware/mediatek/mt7996
-    install -m 644 ${WORKDIR}/${FW_SRC}/firmware/mt7996/mt7996*.* ${D}${base_libdir}/firmware/mediatek/mt7996
-    install -m 644 ${WORKDIR}/${FW_SRC}/firmware/mt7996/mt7992*.* ${D}${base_libdir}/firmware/mediatek/mt7996
-    install -m 644 ${WORKDIR}/${FW_SRC}/firmware/mt7996/mt7990*.* ${D}${base_libdir}/firmware/mediatek/mt7996
+    IS_MT7996="${@bb.utils.contains('DISTRO_FEATURES','mt7996','true','false',d)}"
+    IS_MT7992="${@bb.utils.contains('DISTRO_FEATURES','mt7992','true','false',d)}"
+    IS_MT7990="${@bb.utils.contains('DISTRO_FEATURES','mt7990','true','false',d)}"
+    if [ $IS_MT7996 = 'true' ]; then
+            install -m 644 ${WORKDIR}/${FW_SRC}/firmware/mt7996/mt7996*.* ${D}${base_libdir}/firmware/mediatek/mt7996
+    fi
+
+    if [ $IS_MT7992 = 'true' ]; then
+            install -m 644 ${WORKDIR}/${FW_SRC}/firmware/mt7996/mt7992*.* ${D}${base_libdir}/firmware/mediatek/mt7996
+    fi
+
+    if [ $IS_MT7990 = 'true' ]; then
+            install -m 644 ${WORKDIR}/${FW_SRC}/firmware/mt7996/mt7990*.* ${D}${base_libdir}/firmware/mediatek/mt7996
+    fi
 }
 
 do_install_append_mt7988 () {
