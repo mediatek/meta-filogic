@@ -6,6 +6,8 @@ SECTION = "libs"
 
 SRC_URI = "git://git.openwrt.org/project/libnl-tiny.git"
 SRCREV = "965c4bf49658342ced0bd6e7cb069571b4a1ddff"
+SRCREV_kernel6-6 = "c0df580adbd4d555ecc1962dbe88e91d75b67a4e"
+
 PV = "git${SRCPV}"
 
 inherit cmake pkgconfig

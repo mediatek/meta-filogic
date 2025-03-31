@@ -10,9 +10,10 @@ LDFLAGS_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'telemetry2_0', ' -lt
 RDEPENDS_${PN} += "gawk ucode udebug"
 
 PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6-6', 'kernel6-6-patches', 'patches-${PV}', d)}"
-
+UC_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6-6', 'kernel6-6-uc-files', 'uc-files', d)}"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files/${PATCH_SRC}:"
+FILESEXTRAPATHS_prepend := "${THISDIR}/files/${UC_SRC}:"
 
 SRCREV ?= "96e48a05aa0a82e91e3cab75506297e433e253d0"
 
@@ -30,15 +31,13 @@ SRC_URI = " \
     file://hostapd-init-EHT.sh \
     file://mac80211-EHT.sh \
     file://init-uci-config.service \
-    file://hostapd.uc \
-    file://common.uc \
-    file://wdev.uc \
-    file://wpa_supplicant.uc \
+    file://${UC_SRC} \
     file://wifi-detect.uc \
     file://mac80211.uc \
     file://board.json \
     ${@bb.utils.contains('DISTRO_FEATURES','kernel6-6','','file://src-${PV}',d)} \
     file://002-rdkb-add-ucode-support.patch;apply=no \
+    file://003-rdkb-hostapd-add-bitfield.o-in-Makefile.patch;apply=no \
 "
 require files/${PATCH_SRC}/patches.inc
 
@@ -85,12 +84,14 @@ do_configure_append() {
     echo "CONFIG_EHT_OVERRIDES=y" >> ${B}/.config
     echo "CONFIG_P2P_MANAGER=y" >> ${B}/.config
     echo "CONFIG_DEBUG_LINUX_TRACING=y" >> ${B}/.config
+    echo "CONFIG_CTRL_IFACE_MIB=y" >> ${B}/.config
 }
 
 do_filogic_patches() {
     cd ${S}
         if [ ! -e patch_applied ]; then
             patch -p1 < ${WORKDIR}/002-rdkb-add-ucode-support.patch
+            patch -p1 < ${WORKDIR}/003-rdkb-hostapd-add-bitfield.o-in-Makefile.patch
             touch patch_applied
         fi
 }
@@ -115,10 +116,10 @@ do_install() {
          install -m 0755 ${WORKDIR}/hostapd-init-EHT.sh ${D}${base_libdir}/rdk/hostapd-init.sh
          install -m 0644 ${WORKDIR}/init-uci-config.service ${D}${systemd_unitdir}/system
          install -m 0755 ${WORKDIR}/mac80211-EHT.sh ${D}${sbindir}/mac80211.sh
-         install -m 0755 ${WORKDIR}/hostapd.uc ${D}${datadir}/hostap
-         install -m 0755 ${WORKDIR}/wdev.uc ${D}${datadir}/hostap
-         install -m 0755 ${WORKDIR}/common.uc ${D}${datadir}/hostap
-         install -m 0755 ${WORKDIR}/wpa_supplicant.uc ${D}${datadir}/hostap
+         install -m 0755 ${WORKDIR}/${UC_SRC}/hostapd.uc ${D}${datadir}/hostap
+         install -m 0755 ${WORKDIR}/${UC_SRC}/wdev.uc ${D}${datadir}/hostap
+         install -m 0755 ${WORKDIR}/${UC_SRC}/common.uc ${D}${datadir}/hostap
+         install -m 0755 ${WORKDIR}/${UC_SRC}/wpa_supplicant.uc ${D}${datadir}/hostap
          install -m 0755 ${WORKDIR}/wifi-detect.uc ${D}${datadir}/hostap
          install -m 0755 ${WORKDIR}/mac80211.uc ${D}${datadir}/hostap
 }

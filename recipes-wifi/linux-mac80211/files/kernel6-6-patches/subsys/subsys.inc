@@ -1,14 +1,13 @@
 #patch subsys (come from openwrt/lede/target/linux/mediatek)
 SRC_URI_append = " \
-    file://0000-step-to-wireless-next-2024-10-25-tag.patch \
-    file://0001-sync-patches-build.patch \
-    file://0002-sync-patches-subsys.patch \
-    file://0003-sync-patches-ath.patch \
-    file://0004-sync-patches-ath5k.patch \
-    file://0005-sync-patches-ath9k.patch \
-    file://0006-sync-patches-ath10k.patch \
-    file://0007-sync-patches-rt2x00.patch \
-    file://0008-wifi-mac80211-Support-EHT-1024-aggregation-size-in-T.patch \
+    file://0001-step-to-wireless-next-2025-01-17-tag.patch \
+    file://0002-sync-patches-build.patch \
+    file://0003-sync-patches-subsys.patch \
+    file://0004-sync-patches-ath.patch \
+    file://0005-sync-patches-ath5k.patch \
+    file://0006-sync-patches-ath9k.patch \
+    file://0007-sync-patches-ath10k.patch \
+    file://0008-sync-patches-rt2x00.patch \
     file://0009-mtk-mac80211-do-not-setup-twt-when-twt-responder-is-.patch \
     file://0010-mtk-cfg80211-extend-CAC-time-for-weather-radar-chann.patch \
     file://0011-mtk-mac80211-it-s-invalid-case-when-frag_threshold-i.patch \
@@ -58,34 +57,48 @@ SRC_URI_append = " \
     file://0055-mtk-mac80211-Add-support-for-EMLSR-support.patch \
     file://0056-mtk-mac80211-set-max_amsdu_len-for-link_sta.patch \
     file://0057-mtk-mac80211-legacy-AP-scan-request-should-contain-v.patch \
-    file://0058-mtk-mac80211-do-not-check-pre-CAC-allowed-for-scan.patch \
-    file://0059-mtk-mac80211-add-mlo-probe-client-support.patch \
-    file://0060-mtk-mac80211-rework-radar-notify-for-MLO.patch \
-    file://0061-mtk-mac80211-add-DFS-CAC-countdown-in-CSA-flow.patch \
-    file://0062-mtk-mac80211-add-mlo-related-debugfs-knob.patch \
-    file://0063-mtk-mac80211-Add-exported-function-for-SoftMAC-drive.patch \
-    file://0064-mtk-mac80211-add-link-information-when-dump-station.patch \
-    file://0065-mtk-mac80211-add-new-argument-link_id-in-set_bitrate.patch \
-    file://0066-mtk-mac80211-add-new-rc-changed-enum-for-wifi7-cert.patch \
-    file://0067-mtk-mac80211-do-not-check-radar-required-for-remain-.patch \
-    file://0068-mtk-mac80211-Add-ba_disable-debugfs-to-disable-ba.patch \
-    file://0069-mtk-mac80211-fix-incorrect-VIF-assignment-for-IEEE-8.patch \
-    file://0070-mtk-mac80211-Add-STA-site-link-add-support.patch \
-    file://0071-mtk-mac80211-Fix-channel-switch-punct-bitmap-would-b.patch \
-    file://0072-mtk-mac80211-add-ieee80211_links_removed-to-support-.patch \
-    file://0073-mtk-mac80211-add-A-TTLM-support.patch \
-    file://0074-mtk-mac80211-add-SCS-capa-definition.patch \
-    file://0075-mtk-mac80211-add-STA-A-TTLM-support.patch \
-    file://0076-mtk-mac80211-fix-ieee80211_mgmt_tx.patch \
-    file://0077-mtk-mac80211-add-CU-event-notification-support.patch \
-    file://0078-mtk-mac80211-Add-TSF-offset-event-support.patch \
-    file://0079-mtk-wifi-fix-eht-mcs-nss-size-calculation.patch \
-    file://0080-mtk-mac80211-Add-vht-operating-mode-notification-ven.patch \
-    file://0081-mtk-nl80211-fix-wrong-link_id-when-assigning-chandef.patch \
-    file://0082-mtk-mac80211-add-per-link-txpower-config.patch \
-    file://0083-mtk-mac80211-do-not-set-AP_VLAN-device-off-until-all.patch \
-    file://0084-mtk-mac80211-Fix-CAC-event-call-trace.patch \
-    file://0085-tmp-disable-ndo_fill_receive_path-ops-for-6.6.patch \
-    file://0086-mtk-mac80211-relax-the-DFS-restrictions-for-scanning.patch \
-    file://0087-mtk-mac80211-fix-cross-link-csa-issue.patch \
+    file://0058-mtk-mac80211-add-mlo-probe-client-support.patch \
+    file://0059-mtk-mac80211-rework-radar-notify-for-MLO.patch \
+    file://0060-mtk-mac80211-add-DFS-CAC-countdown-in-CSA-flow.patch \
+    file://0061-mtk-mac80211-add-mlo-related-debugfs-knob.patch \
+    file://0062-mtk-mac80211-Add-exported-function-for-SoftMAC-drive.patch \
+    file://0063-mtk-mac80211-add-link-information-when-dump-station.patch \
+    file://0064-mtk-mac80211-add-new-argument-link_id-in-set_bitrate.patch \
+    file://0065-mtk-mac80211-add-new-rc-changed-enum-for-wifi7-cert.patch \
+    file://0066-mtk-mac80211-Add-ba_disable-debugfs-to-disable-ba.patch \
+    file://0067-mtk-mac80211-fix-incorrect-VIF-assignment-for-IEEE-8.patch \
+    file://0068-mtk-mac80211-Add-STA-site-link-add-support.patch \
+    file://0069-mtk-mac80211-Fix-channel-switch-punct-bitmap-would-b.patch \
+    file://0070-mtk-mac80211-add-ieee80211_links_removed-to-support-.patch \
+    file://0071-mtk-mac80211-add-A-TTLM-support.patch \
+    file://0072-mtk-mac80211-add-SCS-capa-definition.patch \
+    file://0073-mtk-mac80211-add-STA-A-TTLM-support.patch \
+    file://0074-mtk-mac80211-fix-ieee80211_mgmt_tx.patch \
+    file://0075-mtk-mac80211-add-CU-event-notification-support.patch \
+    file://0076-mtk-mac80211-Add-TSF-offset-event-support.patch \
+    file://0077-mtk-wifi-fix-eht-mcs-nss-size-calculation.patch \
+    file://0078-mtk-mac80211-Add-vht-operating-mode-notification-ven.patch \
+    file://0079-mtk-nl80211-fix-wrong-link_id-when-assigning-chandef.patch \
+    file://0080-mtk-mac80211-do-not-set-AP_VLAN-device-off-until-all.patch \
+    file://0081-mtk-mac80211-Fix-CAC-event-call-trace.patch \
+    file://0082-tmp-disable-ndo_fill_receive_path-ops-for-6.6.patch \
+    file://0083-mtk-mac80211-fix-cross-link-csa-issue.patch \
+    file://0084-mtk-mac80211-use-link_conf-instead-of-sdata-vif.bss_.patch \
+    file://0085-mtk-mac80211-re-define-BIT-7-in-capability-informati.patch \
+    file://0086-mtk-mac80211-add-per-link-txpower-config.patch \
+    file://0087-mtk-mac80211-refactor-struct-cfg80211_ttlm_params.patch \
+    file://0088-mtk-mac80211-set-single-STA-s-TTLM-on-AP-MLD.patch \
+    file://0089-mtk-mac80211-pass-valid-links-to-mt7996-when-update-.patch \
+    file://0090-mtk-mac80211-refactor-STA-set-Neg-TTLM.patch \
+    file://0091-mac80211-mtk-add-support-QoS-prgram-related-bit-in-e.patch \
+    file://0092-mtk-mac80211-retransmit-4addr-nullfunc-if-the-ACK-is.patch \
+    file://0093-mtk-mac80211-sync-from-felix.patch \
+    file://0094-mtk-mac80211-fixup-felix-add-missing-radio-assignmen.patch \
+    file://0095-mtk-mac80211-fixup-felix-use-cfg80211_chandef_create.patch \
+    file://0096-mtk-mac80211-fixup-felix-refactor-ieee80211_radar_de.patch \
+    file://0097-mtk-mac80211-fixup-felix-add-roc-started-flag.patch \
+    file://0098-mtk-mac80211-fixup-felix-refactor-the-radar-conditio.patch \
+    file://0099-mtk-mac80211-add-support-for-EPCS.patch \
+    file://0100-mtk-mac80211-update-scan-req-to-skip-prohibited-band.patch \
+    file://0101-mtk-mac80211-relax-the-DFS-restrictions-for-scanning.patch \
     "

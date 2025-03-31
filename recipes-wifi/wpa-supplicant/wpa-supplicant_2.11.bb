@@ -40,9 +40,12 @@ EXTRA_OEMAKE = "'LIBDIR=${libdir}' 'INCDIR=${includedir}' 'BINDIR=${sbindir}'"
 
 do_filogic_patches() {
     cd ${S}
+	IS_KERNEL_V6="${@bb.utils.contains('DISTRO_FEATURES','kernel6-6','true','false',d)}"
         if [ ! -e patch_applied ]; then
             patch -p1 < ${WORKDIR}/002-rdkb-add-ucode-support.patch
-	    patch -p1 < ${WORKDIR}/003-fix_wpa_supplicant_build_issue.patch
+	    if [ $IS_KERNEL_V6 = 'false' ]; then
+		patch -p1 < ${WORKDIR}/003-fix_wpa_supplicant_build_issue.patch
+	    fi
             touch patch_applied
         fi
 }
