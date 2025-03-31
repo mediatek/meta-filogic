@@ -30,15 +30,22 @@
 #include "mtk_eth_dbg.h"
 #include "mtk_wed_regs.h"
 
-u32 hw_lro_agg_num_cnt[MTK_MAX_RX_RING_NUM - 1][MTK_HW_LRO_MAX_AGG_CNT + 1];
-u32 hw_lro_agg_size_cnt[MTK_MAX_RX_RING_NUM - 1][16];
-u32 hw_lro_tot_agg_cnt[MTK_MAX_RX_RING_NUM - 1];
-u32 hw_lro_tot_flush_cnt[MTK_MAX_RX_RING_NUM - 1];
-u32 hw_lro_agg_flush_cnt[MTK_MAX_RX_RING_NUM - 1];
-u32 hw_lro_age_flush_cnt[MTK_MAX_RX_RING_NUM - 1];
-u32 hw_lro_seq_flush_cnt[MTK_MAX_RX_RING_NUM - 1];
-u32 hw_lro_timestamp_flush_cnt[MTK_MAX_RX_RING_NUM - 1];
-u32 hw_lro_norule_flush_cnt[MTK_MAX_RX_RING_NUM - 1];
+enum mt753x_presence {
+	MT753X_ABSENT = 0,
+	MT753X_PRESENT = 1,
+	MT753X_UNKNOWN = 0xffff,
+};
+
+enum mt753x_presence mt753x_presence = MT753X_UNKNOWN;
+u32 hw_lro_agg_num_cnt[MTK_MAX_RX_RING_NUM][MTK_HW_LRO_MAX_AGG_CNT + 1];
+u32 hw_lro_agg_size_cnt[MTK_MAX_RX_RING_NUM][16];
+u32 hw_lro_tot_agg_cnt[MTK_MAX_RX_RING_NUM];
+u32 hw_lro_tot_flush_cnt[MTK_MAX_RX_RING_NUM];
+u32 hw_lro_agg_flush_cnt[MTK_MAX_RX_RING_NUM];
+u32 hw_lro_age_flush_cnt[MTK_MAX_RX_RING_NUM];
+u32 hw_lro_seq_flush_cnt[MTK_MAX_RX_RING_NUM];
+u32 hw_lro_timestamp_flush_cnt[MTK_MAX_RX_RING_NUM];
+u32 hw_lro_norule_flush_cnt[MTK_MAX_RX_RING_NUM];
 u32 mtk_hwlro_stats_ebl;
 u32 dbg_show_level;
 
@@ -212,12 +219,21 @@ static ssize_t qdma_queue_show(struct file *file, char __user *user_buf,
 		scheduler = FIELD_GET(MTK_QTX_SCH_TX_SEL, qtx_sch);
 
 	min_rate_en = FIELD_GET(MTK_QTX_SCH_MIN_RATE_EN, qtx_sch);
-	min_rate = FIELD_GET(MTK_QTX_SCH_MIN_RATE_MAN, qtx_sch);
-	min_rate_exp = FIELD_GET(MTK_QTX_SCH_MIN_RATE_EXP, qtx_sch);
-	max_rate_en = FIELD_GET(MTK_QTX_SCH_MAX_RATE_EN, qtx_sch);
-	max_weight = FIELD_GET(MTK_QTX_SCH_MAX_RATE_WEIGHT, qtx_sch);
-	max_rate = FIELD_GET(MTK_QTX_SCH_MAX_RATE_MAN, qtx_sch);
-	max_rate_exp = FIELD_GET(MTK_QTX_SCH_MAX_RATE_EXP, qtx_sch);
+	if (mtk_is_netsys_v3_or_greater(eth) && (eth->soc->caps != MT7988_CAPS)) {
+		min_rate = FIELD_GET(MTK_QTX_SCH_MIN_RATE_MAN_V3, qtx_sch);
+		min_rate_exp = FIELD_GET(MTK_QTX_SCH_MIN_RATE_EXP_V3, qtx_sch);
+		max_rate_en = FIELD_GET(MTK_QTX_SCH_MAX_RATE_EN_V3, qtx_sch);
+		max_weight = FIELD_GET(MTK_QTX_SCH_MAX_RATE_WEIGHT_V3, qtx_sch);
+		max_rate = FIELD_GET(MTK_QTX_SCH_MAX_RATE_MAN_V3, qtx_sch);
+		max_rate_exp = FIELD_GET(MTK_QTX_SCH_MAX_RATE_EXP_V3, qtx_sch);
+	} else {
+		min_rate = FIELD_GET(MTK_QTX_SCH_MIN_RATE_MAN, qtx_sch);
+		min_rate_exp = FIELD_GET(MTK_QTX_SCH_MIN_RATE_EXP, qtx_sch);
+		max_rate_en = FIELD_GET(MTK_QTX_SCH_MAX_RATE_EN, qtx_sch);
+		max_weight = FIELD_GET(MTK_QTX_SCH_MAX_RATE_WEIGHT, qtx_sch);
+		max_rate = FIELD_GET(MTK_QTX_SCH_MAX_RATE_MAN, qtx_sch);
+		max_rate_exp = FIELD_GET(MTK_QTX_SCH_MAX_RATE_EXP, qtx_sch);
+	}
 
 	while (min_rate_exp--)
 		min_rate *= 10;
@@ -294,7 +310,7 @@ static ssize_t qdma_queue_write(struct file *file, const char __user *buf,
 
 	line[length] = '\0';
 
-	if (mtk_is_netsys_v2_or_greater(eth)) {
+	if (mtk_is_netsys_v3_or_greater(eth)) {
 		if (max_rate > 10000000 || max_rate < 0 ||
 		    min_rate > 10000000 || min_rate < 0)
 			return -EINVAL;
@@ -321,13 +337,23 @@ static ssize_t qdma_queue_write(struct file *file, const char __user *buf,
 
 	if (min_enable)
 		qtx_sch |= MTK_QTX_SCH_MIN_RATE_EN;
-	qtx_sch |= FIELD_PREP(MTK_QTX_SCH_MIN_RATE_MAN, min_rate);
-	qtx_sch |= FIELD_PREP(MTK_QTX_SCH_MIN_RATE_EXP, min_exp);
-	if (max_enable)
-		qtx_sch |= MTK_QTX_SCH_MAX_RATE_EN;
-	qtx_sch |= FIELD_PREP(MTK_QTX_SCH_MAX_RATE_WEIGHT, weight);
-	qtx_sch |= FIELD_PREP(MTK_QTX_SCH_MAX_RATE_MAN, max_rate);
-	qtx_sch |= FIELD_PREP(MTK_QTX_SCH_MAX_RATE_EXP, max_exp);
+	if (mtk_is_netsys_v3_or_greater(eth) && (eth->soc->caps != MT7988_CAPS)) {
+		qtx_sch |= FIELD_PREP(MTK_QTX_SCH_MIN_RATE_MAN_V3, min_rate);
+		qtx_sch |= FIELD_PREP(MTK_QTX_SCH_MIN_RATE_EXP_V3, min_exp);
+		if (max_enable)
+			qtx_sch |= MTK_QTX_SCH_MAX_RATE_EN_V3;
+		qtx_sch |= FIELD_PREP(MTK_QTX_SCH_MAX_RATE_WEIGHT_V3, weight);
+		qtx_sch |= FIELD_PREP(MTK_QTX_SCH_MAX_RATE_MAN_V3, max_rate);
+		qtx_sch |= FIELD_PREP(MTK_QTX_SCH_MAX_RATE_EXP_V3, max_exp);
+	} else {
+		qtx_sch |= FIELD_PREP(MTK_QTX_SCH_MIN_RATE_MAN, min_rate);
+		qtx_sch |= FIELD_PREP(MTK_QTX_SCH_MIN_RATE_EXP, min_exp);
+		if (max_enable)
+			qtx_sch |= MTK_QTX_SCH_MAX_RATE_EN;
+		qtx_sch |= FIELD_PREP(MTK_QTX_SCH_MAX_RATE_WEIGHT, weight);
+		qtx_sch |= FIELD_PREP(MTK_QTX_SCH_MAX_RATE_MAN, max_rate);
+		qtx_sch |= FIELD_PREP(MTK_QTX_SCH_MAX_RATE_EXP, max_exp);
+	}
 	mtk_w32(eth, qtx_sch, soc->reg_map->qdma.qtx_sch +
 			      (id % MTK_QTX_PER_PAGE) * MTK_QTX_OFFSET);
 
@@ -356,7 +382,7 @@ int mt798x_iomap(void)
 {
 	struct device_node *np = NULL;
 
-	np = of_find_node_by_name(NULL, "switch0");
+	np = of_find_compatible_node(NULL, NULL, "mediatek,mt7988-switch");
 	if (np) {
 		eth_debug.base = of_iomap(np, 0);
 		if (!eth_debug.base) {
@@ -415,6 +441,35 @@ u32 mt7530_mdio_r32(struct mtk_eth *eth, u32 reg)
 	mutex_unlock(&eth->mii_bus->mdio_lock);
 
 	return (high << 16) | (low & 0xffff);
+}
+
+static enum mt753x_presence mt753x_sw_detect(struct mtk_eth *eth)
+{
+	struct device_node *np;
+	u32 sw_id;
+	u32 rev;
+
+	/* mt7988 with built-in 7531 */
+	np = of_find_compatible_node(NULL, NULL, "mediatek,mt7988-switch");
+	if (np) {
+		of_node_put(np);
+		return MT753X_PRESENT;
+	}
+	/* external 753x */
+	rev = mt7530_mdio_r32(eth, 0x781c);
+	sw_id = (rev & 0xffff0000) >> 16;
+	if (sw_id == 0x7530 || sw_id == 0x7531)
+		return MT753X_PRESENT;
+
+	return MT753X_ABSENT;
+}
+
+static enum mt753x_presence mt7530_exist(struct mtk_eth *eth)
+{
+	if (mt753x_presence == MT753X_UNKNOWN)
+		mt753x_presence = mt753x_sw_detect(eth);
+
+	return mt753x_presence;
 }
 
 void mtk_switch_w32(struct mtk_eth *eth, u32 val, unsigned int reg)
@@ -534,6 +589,7 @@ static int mtketh_mt7530sw_debug_show(struct seq_file *m, void *private)
 		return 0;
 	}
 
+	mt798x_iomap();
 	for (i = 0 ; i < ARRAY_SIZE(ranges) ; i++) {
 		for (offset = ranges[i].start;
 		     offset <= ranges[i].end; offset += 4) {
@@ -542,6 +598,7 @@ static int mtketh_mt7530sw_debug_show(struct seq_file *m, void *private)
 				   offset, data);
 		}
 	}
+	mt798x_iounmap();
 
 	return 0;
 }
@@ -600,11 +657,13 @@ static ssize_t mtketh_mt7530sw_debugfs_write(struct file *file,
 	if (kstrtoul(token, 16, (unsigned long *)&value))
 		return -EINVAL;
 
+	mt798x_iomap();
 	pr_info("%s:phy=%d, reg=0x%lx, val=0x%lx\n", __func__,
 		0x1f, reg, value);
 	mt7530_mdio_w32(eth, reg, value);
 	pr_info("%s:phy=%d, reg=0x%lx, val=0x%x confirm..\n", __func__,
 		0x1f, reg, mt7530_mdio_r32(eth, reg));
+	mt798x_iounmap();
 
 	return len;
 }
@@ -1082,6 +1141,54 @@ static const struct proc_ops switch_count_fops = {
 	.proc_release = single_release
 };
 
+void mac_mib_dump(struct seq_file *seq, u32 gdm_id)
+{
+	struct mtk_eth *eth = g_eth;
+
+	PRINT_FORMATTED_MAC_MIB64(seq, TX_UC_PKT_CNT);
+	PRINT_FORMATTED_MAC_MIB64(seq, TX_UC_BYTE_CNT);
+	PRINT_FORMATTED_MAC_MIB64(seq, TX_MC_PKT_CNT);
+	PRINT_FORMATTED_MAC_MIB64(seq, TX_MC_BYTE_CNT);
+	PRINT_FORMATTED_MAC_MIB64(seq, TX_BC_PKT_CNT);
+	PRINT_FORMATTED_MAC_MIB64(seq, TX_BC_BYTE_CNT);
+
+	PRINT_FORMATTED_MAC_MIB64(seq, RX_UC_PKT_CNT);
+	PRINT_FORMATTED_MAC_MIB64(seq, RX_UC_BYTE_CNT);
+	PRINT_FORMATTED_MAC_MIB64(seq, RX_MC_PKT_CNT);
+	PRINT_FORMATTED_MAC_MIB64(seq, RX_MC_BYTE_CNT);
+	PRINT_FORMATTED_MAC_MIB64(seq, RX_BC_PKT_CNT);
+	PRINT_FORMATTED_MAC_MIB64(seq, RX_BC_BYTE_CNT);
+}
+
+int mac_cnt_read(struct seq_file *seq, void *v)
+{
+	int i;
+
+	seq_puts(seq, "+------------------------------------+\n");
+	seq_puts(seq, "|              <<GMAC>>              |\n");
+
+	for (i = MTK_GMAC1_ID; i < MTK_GMAC_ID_MAX; i++) {
+		mac_mib_dump(seq, i);
+		seq_puts(seq, "|                                    |\n");
+	}
+
+	seq_puts(seq, "+------------------------------------+\n");
+
+	return 0;
+}
+
+static int mac_count_open(struct inode *inode, struct file *file)
+{
+	return single_open(file, mac_cnt_read, 0);
+}
+
+static const struct proc_ops mac_count_fops = {
+	.proc_open = mac_count_open,
+	.proc_read = seq_read,
+	.proc_lseek = seq_lseek,
+	.proc_release = single_release
+};
+
 void xfi_mib_dump(struct seq_file *seq, u32 gdm_id)
 {
 	struct mtk_eth *eth = g_eth;
@@ -1230,26 +1337,32 @@ static const struct proc_ops hwtx_ring_fops = {
 int rx_ring_read(struct seq_file *seq, void *v)
 {
 	struct mtk_eth *eth = g_eth;
-	struct mtk_rx_ring *ring = &g_eth->rx_ring[0];
+	struct mtk_rx_ring *ring;
 	struct mtk_rx_dma_v2 *rx_ring;
-	int i = 0;
+	int i = 0, j = 0;
 
-	seq_printf(seq, "next to read: %d\n",
-		   NEXT_DESP_IDX(ring->calc_idx, eth->soc->rx.dma_size));
-	for (i = 0; i < eth->soc->rx.dma_size; i++) {
-		rx_ring = ring->dma + i * eth->soc->rx.desc_size;
+	for (j = 0; j < MTK_MAX_RX_RING_NUM; j++) {
+		ring = &eth->rx_ring[j];
+		if (!ring->dma)
+			continue;
 
-		seq_printf(seq, "%d: %08x %08x %08x %08x", i,
-			   rx_ring->rxd1, rx_ring->rxd2,
-			   rx_ring->rxd3, rx_ring->rxd4);
+		seq_printf(seq, "[Ring%d] next to read: %d\n", j,
+			   NEXT_DESP_IDX(ring->calc_idx, eth->soc->rx.dma_size));
+		for (i = 0; i < ring->dma_size; i++) {
+			rx_ring = ring->dma + i * eth->soc->rx.desc_size;
 
-		if (mtk_is_netsys_v2_or_greater(eth)) {
-			seq_printf(seq, " %08x %08x %08x %08x",
-				   rx_ring->rxd5, rx_ring->rxd6,
-				   rx_ring->rxd7, rx_ring->rxd8);
+			seq_printf(seq, "%04d: %08x %08x %08x %08x", i,
+				   rx_ring->rxd1, rx_ring->rxd2,
+				   rx_ring->rxd3, rx_ring->rxd4);
+
+			if (mtk_is_netsys_v3_or_greater(eth)) {
+				seq_printf(seq, " %08x %08x %08x %08x",
+					   rx_ring->rxd5, rx_ring->rxd6,
+					   rx_ring->rxd7, rx_ring->rxd8);
+			}
+
+			seq_puts(seq, "\n");
 		}
-
-		seq_puts(seq, "\n");
 	}
 
 	return 0;
@@ -1283,6 +1396,7 @@ int dbg_regs_read(struct seq_file *seq, void *v)
 {
 	struct mtk_eth *eth = g_eth;
 	const struct mtk_reg_map *reg_map = eth->soc->reg_map;
+	u32 i;
 
 	seq_puts(seq, "   <<DEBUG REG DUMP>>\n");
 
@@ -1338,6 +1452,28 @@ int dbg_regs_read(struct seq_file *seq, void *v)
 		   mtk_r32(eth, reg_map->pdma.pcrx_ptr));
 	seq_printf(seq, "| PDMA_DRX_IDX	: %08x |\n",
 		   mtk_r32(eth, reg_map->pdma.pdrx_ptr));
+	if (MTK_HAS_CAPS(eth->soc->caps, MTK_RSS)) {
+		for (i = 1; i < eth->soc->rss_num; i++) {
+			seq_printf(seq, "| PDMA_CRX_IDX%d	: %08x |\n", i,
+				   mtk_r32(eth, reg_map->pdma.pcrx_ptr +
+					   i * MTK_QRX_OFFSET));
+			seq_printf(seq, "| PDMA_DRX_IDX%d	: %08x |\n", i,
+				   mtk_r32(eth, reg_map->pdma.pdrx_ptr +
+					   i * MTK_QRX_OFFSET));
+		}
+	}
+	if (MTK_HAS_CAPS(eth->soc->caps, MTK_HWLRO)) {
+		for (i = 0; i < MTK_HW_LRO_RING_NUM; i++) {
+			seq_printf(seq, "| PDMA_CRX_IDX%d	: %08x |\n",
+				   MTK_HW_LRO_RING(i),
+				   mtk_r32(eth, reg_map->pdma.pcrx_ptr +
+					   MTK_HW_LRO_RING(i) * MTK_QRX_OFFSET));
+			seq_printf(seq, "| PDMA_DRX_IDX%d	: %08x |\n",
+				   MTK_HW_LRO_RING(i),
+				   mtk_r32(eth, reg_map->pdma.pdrx_ptr +
+					   MTK_HW_LRO_RING(i) * MTK_QRX_OFFSET));
+		}
+	}
 	seq_printf(seq, "| QDMA_CTX_IDX	: %08x |\n",
 		   mtk_r32(eth, reg_map->qdma.ctx_ptr));
 	seq_printf(seq, "| QDMA_DTX_IDX	: %08x |\n",
@@ -1379,6 +1515,21 @@ int dbg_regs_read(struct seq_file *seq, void *v)
 	if (mtk_is_netsys_v3_or_greater(eth)) {
 		seq_printf(seq, "| MAC_P3_FSM	: %08x |\n",
 			   mtk_r32(eth, MTK_MAC_FSM(2)));
+	}
+
+	if (mtk_is_netsys_v3_or_greater(eth)) {
+		seq_printf(seq, "| XMAC_P1_MCR	: %08x |\n",
+			   mtk_r32(eth, MTK_XMAC_MCR(1)));
+		seq_printf(seq, "| XMAC_P1_STS	: %08x |\n",
+			   mtk_r32(eth, MTK_HAS_CAPS(eth->soc->caps, MTK_XGMAC_V2) ?
+					MTK_XMAC_STS(1) : MTK_XGMAC_STS(1)));
+		if (MTK_HAS_CAPS(eth->soc->caps, MTK_GMAC3_USXGMII)) {
+			seq_printf(seq, "| XMAC_P2_MCR	: %08x |\n",
+				   mtk_r32(eth, MTK_XMAC_MCR(2)));
+			seq_printf(seq, "| XMAC_P2_STS	: %08x |\n",
+				   mtk_r32(eth, MTK_HAS_CAPS(eth->soc->caps, MTK_XGMAC_V2) ?
+						MTK_XMAC_STS(2) : MTK_XGMAC_STS(2)));
+		}
 	}
 
 	if (mtk_is_netsys_v2_or_greater(eth)) {
@@ -1432,7 +1583,7 @@ void hw_lro_stats_update(u32 ring_no, struct mtk_rx_dma_v2 *rxd)
 	struct mtk_eth *eth = g_eth;
 	u32 idx, agg_cnt, agg_size;
 
-	if (mtk_is_netsys_v2_or_greater(eth)) {
+	if (mtk_is_netsys_v3_or_greater(eth)) {
 		idx = ring_no - 4;
 		agg_cnt = FIELD_GET(RX_DMA_GET_AGG_CNT_V2, rxd->rxd6);
 	} else {
@@ -1440,7 +1591,7 @@ void hw_lro_stats_update(u32 ring_no, struct mtk_rx_dma_v2 *rxd)
 		agg_cnt = FIELD_GET(RX_DMA_GET_AGG_CNT, rxd->rxd2);
 	}
 
-	if (idx >= MTK_MAX_RX_RING_NUM - 1)
+	if (idx >= MTK_HW_LRO_RING_NUM)
 		return;
 
 	agg_size = RX_DMA_GET_PLEN0(rxd->rxd2);
@@ -1456,7 +1607,7 @@ void hw_lro_flush_stats_update(u32 ring_no, struct mtk_rx_dma_v2 *rxd)
 	struct mtk_eth *eth = g_eth;
 	u32 idx, flush_reason;
 
-	if (mtk_is_netsys_v2_or_greater(eth)) {
+	if (mtk_is_netsys_v3_or_greater(eth)) {
 		idx = ring_no - 4;
 		flush_reason = FIELD_GET(RX_DMA_GET_FLUSH_RSN_V2, rxd->rxd6);
 	} else {
@@ -1464,7 +1615,7 @@ void hw_lro_flush_stats_update(u32 ring_no, struct mtk_rx_dma_v2 *rxd)
 		flush_reason = FIELD_GET(RX_DMA_GET_REV, rxd->rxd2);
 	}
 
-	if (idx >= MTK_MAX_RX_RING_NUM - 1)
+	if (idx >= MTK_HW_LRO_RING_NUM)
 		return;
 
 	if ((flush_reason & 0x7) == MTK_HW_LRO_AGG_FLUSH)
@@ -1733,7 +1884,7 @@ int hwlro_agg_cnt_ctrl(int cnt)
 	const struct mtk_reg_map *reg_map = eth->soc->reg_map;
 	int i;
 
-	for (i = 1; i < MTK_MAX_RX_RING_NUM; i++)
+	for (i = 1; i <= MTK_HW_LRO_RING_NUM; i++)
 		SET_PDMA_RXRING_MAX_AGG_CNT(eth, i, cnt);
 
 	return 0;
@@ -1745,7 +1896,7 @@ int hwlro_agg_time_ctrl(int time)
 	const struct mtk_reg_map *reg_map = eth->soc->reg_map;
 	int i;
 
-	for (i = 1; i < MTK_MAX_RX_RING_NUM; i++)
+	for (i = 1; i <= MTK_HW_LRO_RING_NUM; i++)
 		SET_PDMA_RXRING_AGG_TIME(eth, i, time);
 
 	return 0;
@@ -1757,7 +1908,7 @@ int hwlro_age_time_ctrl(int time)
 	const struct mtk_reg_map *reg_map = eth->soc->reg_map;
 	int i;
 
-	for (i = 1; i < MTK_MAX_RX_RING_NUM; i++)
+	for (i = 1; i <= MTK_HW_LRO_RING_NUM; i++)
 		SET_PDMA_RXRING_AGE_TIME(eth, i, time);
 	return 0;
 }
@@ -1765,6 +1916,7 @@ int hwlro_age_time_ctrl(int time)
 int hwlro_threshold_ctrl(int bandwidth)
 {
 	struct mtk_eth *eth = g_eth;
+	const struct mtk_reg_map *reg_map = eth->soc->reg_map;
 
 	SET_PDMA_LRO_BW_THRESHOLD(eth, bandwidth);
 
@@ -1779,7 +1931,7 @@ int hwlro_ring_enable_ctrl(int enable)
 
 	pr_info("[%s] %s HW LRO rings\n", __func__, (enable) ? "Enable" : "Disable");
 
-	for (i = 1; i < MTK_MAX_RX_RING_NUM; i++)
+	for (i = 1; i <= MTK_HW_LRO_RING_NUM; i++)
 		SET_PDMA_RXRING_VALID(eth, i, enable);
 
 	return 0;
@@ -1843,6 +1995,7 @@ ssize_t hw_lro_auto_tlb_write(struct file *file, const char __user *buffer,
 void hw_lro_auto_tlb_dump_v1(struct seq_file *seq, u32 index)
 {
 	struct mtk_eth *eth = g_eth;
+	const struct mtk_reg_map *reg_map = eth->soc->reg_map;
 	struct mtk_lro_alt_v1 alt;
 	__be32 addr;
 	u32 tlb_info[9];
@@ -1902,6 +2055,7 @@ void hw_lro_auto_tlb_dump_v1(struct seq_file *seq, u32 index)
 void hw_lro_auto_tlb_dump_v2(struct seq_file *seq, u32 index)
 {
 	struct mtk_eth *eth = g_eth;
+	const struct mtk_reg_map *reg_map = eth->soc->reg_map;
 	struct mtk_lro_alt_v2 alt;
 	u32 score = 0, ipv4 = 0;
 	u32 ipv6[4] = { 0 };
@@ -1909,10 +2063,10 @@ void hw_lro_auto_tlb_dump_v2(struct seq_file *seq, u32 index)
 	int i;
 
 	/* read valid entries of the auto-learn table */
-	mtk_w32(eth, index << MTK_LRO_ALT_INDEX_OFFSET, MTK_LRO_ALT_DBG);
+	mtk_w32(eth, index << MTK_LRO_ALT_INDEX_OFFSET, reg_map->pdma.lro_alt_dbg);
 
 	for (i = 0; i < 11; i++)
-		tlb_info[i] = mtk_r32(eth, MTK_LRO_ALT_DBG_DATA);
+		tlb_info[i] = mtk_r32(eth, reg_map->pdma.lro_alt_dbg_data);
 
 	memcpy(&alt, tlb_info, sizeof(struct mtk_lro_alt_v2));
 
@@ -1970,6 +2124,95 @@ void hw_lro_auto_tlb_dump_v2(struct seq_file *seq, u32 index)
 	}
 }
 
+void hw_lro_auto_tlb_dump_v3(struct seq_file *seq, u32 index)
+{
+	struct mtk_eth *eth = g_eth;
+	u32 val, sport, dport, vld, dip_idx, mode;
+	u32 ipv6[4] = { 0 };
+	u32 ipv4 = 0;
+	int ret;
+
+	/* dump the LRO_DATA table for the specific entry */
+	val = FIELD_PREP(MTK_GLO_MEM_IDX, MTK_LRO_MEM_IDX);
+	val |= FIELD_PREP(MTK_GLO_MEM_ADDR, MTK_LRO_MEM_DATA_BASE + index);
+	val |= FIELD_PREP(MTK_GLO_MEM_CMD, MTK_GLO_MEM_READ);
+	mtk_w32(eth, val, MTK_GLO_MEM_CTRL);
+	/* check if the GLO_MEM access is successful */
+	ret = FIELD_GET(MTK_GLO_MEM_CMD, mtk_r32(eth, MTK_GLO_MEM_CTRL));
+	if (ret != 0) {
+		pr_warn("GLO_MEM read/write error\n");
+		return;
+	}
+
+	/* dump the valid entries of the auto-learn table */
+	vld = FIELD_GET(MTK_LRO_DATA_VLD, mtk_r32(eth, MTK_GLO_MEM_DATA(6)));
+	if (vld) {
+		if (index < 5)
+			seq_printf(seq,
+				   "\n===== TABLE Entry: %d (onging) =====\n",
+				   index);
+		else
+			seq_printf(seq,
+				   "\n===== TABLE Entry: %d (candidate) =====\n",
+				   index);
+
+		/* determine the DIP index for the specific entry */
+		dip_idx = FIELD_GET(MTK_LRO_DATA_DIP_IDX, mtk_r32(eth, MTK_GLO_MEM_DATA(5)));
+		/* switch to the LRO_DIP table for the specific DIP index */
+		val = FIELD_PREP(MTK_GLO_MEM_IDX, MTK_LRO_MEM_IDX);
+		val |= FIELD_PREP(MTK_GLO_MEM_ADDR, MTK_LRO_MEM_DIP_BASE + dip_idx);
+		val |= FIELD_PREP(MTK_GLO_MEM_CMD, MTK_GLO_MEM_READ);
+		mtk_w32(eth, val, MTK_GLO_MEM_CTRL);
+		/* determine the mode for the specific DIP index */
+		mode = FIELD_GET(MTK_LRO_DIP_MODE, mtk_r32(eth, MTK_GLO_MEM_DATA(4)));
+		/* dump the SIP and DIP */
+		if (mode == MTK_LRO_DIP_IPV4) {
+			val = FIELD_PREP(MTK_GLO_MEM_IDX, MTK_LRO_MEM_IDX);
+			val |= FIELD_PREP(MTK_GLO_MEM_ADDR, MTK_LRO_MEM_DATA_BASE + index);
+			val |= FIELD_PREP(MTK_GLO_MEM_CMD, MTK_GLO_MEM_READ);
+			mtk_w32(eth, val, MTK_GLO_MEM_CTRL);
+			ipv4 = mtk_r32(eth, MTK_GLO_MEM_DATA(1));
+			seq_printf(seq, "SIP = 0x%x: (IPv4)\n", ipv4);
+			val = FIELD_PREP(MTK_GLO_MEM_IDX, MTK_LRO_MEM_IDX);
+			val |= FIELD_PREP(MTK_GLO_MEM_ADDR, MTK_LRO_MEM_DIP_BASE + dip_idx);
+			val |= FIELD_PREP(MTK_GLO_MEM_CMD, MTK_GLO_MEM_READ);
+			mtk_w32(eth, val, MTK_GLO_MEM_CTRL);
+			ipv4 = mtk_r32(eth, MTK_GLO_MEM_DATA(0));
+			seq_printf(seq, "DIP = 0x%x: (IPv4)\n", ipv4);
+		} else if (mode == MTK_LRO_DIP_IPV6) {
+			val = FIELD_PREP(MTK_GLO_MEM_IDX, MTK_LRO_MEM_IDX);
+			val |= FIELD_PREP(MTK_GLO_MEM_ADDR, MTK_LRO_MEM_DATA_BASE + index);
+			val |= FIELD_PREP(MTK_GLO_MEM_CMD, MTK_GLO_MEM_READ);
+			mtk_w32(eth, val, MTK_GLO_MEM_CTRL);
+			ipv6[3] = mtk_r32(eth, MTK_GLO_MEM_DATA(4));
+			ipv6[2] = mtk_r32(eth, MTK_GLO_MEM_DATA(3));
+			ipv6[1] = mtk_r32(eth, MTK_GLO_MEM_DATA(2));
+			ipv6[0] = mtk_r32(eth, MTK_GLO_MEM_DATA(1));
+			seq_printf(seq, "SIP = 0x%x:0x%x:0x%x:0x%x (IPv6)\n",
+				   ipv6[3], ipv6[2], ipv6[1], ipv6[0]);
+			val = FIELD_PREP(MTK_GLO_MEM_IDX, MTK_LRO_MEM_IDX);
+			val |= FIELD_PREP(MTK_GLO_MEM_ADDR, MTK_LRO_MEM_DIP_BASE + dip_idx);
+			val |= FIELD_PREP(MTK_GLO_MEM_CMD, MTK_GLO_MEM_READ);
+			mtk_w32(eth, val, MTK_GLO_MEM_CTRL);
+			ipv6[3] = mtk_r32(eth, MTK_GLO_MEM_DATA(3));
+			ipv6[2] = mtk_r32(eth, MTK_GLO_MEM_DATA(2));
+			ipv6[1] = mtk_r32(eth, MTK_GLO_MEM_DATA(1));
+			ipv6[0] = mtk_r32(eth, MTK_GLO_MEM_DATA(0));
+			seq_printf(seq, "DIP = 0x%x:0x%x:0x%x:0x%x (IPv6)\n",
+				   ipv6[3], ipv6[2], ipv6[1], ipv6[0]);
+		}
+
+		/* dump the SPORT and DPORT */
+		val = FIELD_PREP(MTK_GLO_MEM_IDX, MTK_LRO_MEM_IDX);
+		val |= FIELD_PREP(MTK_GLO_MEM_ADDR, MTK_LRO_MEM_DATA_BASE + index);
+		val |= FIELD_PREP(MTK_GLO_MEM_CMD, MTK_GLO_MEM_READ);
+		mtk_w32(eth, val, MTK_GLO_MEM_CTRL);
+		sport = FIELD_GET(MTK_LRO_DATA_SPORT, mtk_r32(eth, MTK_GLO_MEM_DATA(0)));
+		dport = FIELD_GET(MTK_LRO_DATA_DPORT, mtk_r32(eth, MTK_GLO_MEM_DATA(0)));
+		seq_printf(seq, "TCP SPORT = %d | TCP DPORT = %d\n", sport, dport);
+	}
+}
+
 int hw_lro_auto_tlb_read(struct seq_file *seq, void *v)
 {
 	struct mtk_eth *eth = g_eth;
@@ -1989,9 +2232,13 @@ int hw_lro_auto_tlb_read(struct seq_file *seq, void *v)
 	seq_puts(seq, "[4] = hwlro_ring_enable_ctrl\n");
 	seq_puts(seq, "[5] = hwlro_stats_enable_ctrl\n\n");
 
-	if (mtk_is_netsys_v2_or_greater(eth)) {
-		for (i = 1; i <= 8; i++)
-			hw_lro_auto_tlb_dump_v2(seq, i);
+	if (mtk_is_netsys_v3_or_greater(eth)) {
+		for (i = 1; i <= 8; i++) {
+			if (MTK_HAS_CAPS(eth->soc->caps, MTK_GLO_MEM_ACCESS))
+				hw_lro_auto_tlb_dump_v3(seq, i);
+			else
+				hw_lro_auto_tlb_dump_v2(seq, i);
+		}
 	} else {
 		/* Read valid entries of the auto-learn table */
 		mtk_w32(eth, 0, MTK_FE_ALT_CF8);
@@ -2010,24 +2257,34 @@ int hw_lro_auto_tlb_read(struct seq_file *seq, void *v)
 	/* Read the agg_time/age_time/agg_cnt of LRO rings */
 	seq_puts(seq, "\nHW LRO Ring Settings\n");
 
-	for (i = 1; i < MTK_MAX_RX_RING_NUM; i++) {
-		reg_op1 = mtk_r32(eth, MTK_LRO_CTRL_DW1_CFG(i));
-		reg_op2 = mtk_r32(eth, MTK_LRO_CTRL_DW2_CFG(i));
-		reg_op3 = mtk_r32(eth, MTK_LRO_CTRL_DW3_CFG(i));
+	for (i = 1; i <= MTK_HW_LRO_RING_NUM; i++) {
+		if (MTK_HAS_CAPS(eth->soc->caps, MTK_GLO_MEM_ACCESS)) {
+			reg_val = FIELD_PREP(MTK_GLO_MEM_IDX, MTK_LRO_MEM_IDX);
+			reg_val |= FIELD_PREP(MTK_GLO_MEM_ADDR, MTK_LRO_MEM_CFG_BASE + i);
+			reg_val |= FIELD_PREP(MTK_GLO_MEM_CMD, MTK_GLO_MEM_READ);
+			mtk_w32(eth, reg_val, MTK_GLO_MEM_CTRL);
+			agg_cnt = FIELD_GET(MTK_RING_MAX_AGG_CNT,
+					    mtk_r32(eth, MTK_GLO_MEM_DATA(1)));
+			agg_time = FIELD_GET(MTK_RING_MAX_AGG_TIME_V2,
+					     mtk_r32(eth, MTK_GLO_MEM_DATA(0)));
+			age_time = FIELD_GET(MTK_RING_AGE_TIME,
+					     mtk_r32(eth, MTK_GLO_MEM_DATA(0)));
+		} else {
+			reg_op1 = mtk_r32(eth, MTK_LRO_CTRL_DW1_CFG(i));
+			reg_op2 = mtk_r32(eth, MTK_LRO_CTRL_DW2_CFG(i));
+			reg_op3 = mtk_r32(eth, MTK_LRO_CTRL_DW3_CFG(i));
+
+			agg_cnt = ((reg_op3 & 0x3) << 6) |
+				   ((reg_op2 >> MTK_LRO_RING_AGG_CNT_L_OFFSET) & 0x3f);
+			agg_time = (reg_op2 >> MTK_LRO_RING_AGG_TIME_OFFSET) & 0xffff;
+			age_time = ((reg_op2 & 0x3f) << 10) |
+				    ((reg_op1 >> MTK_LRO_RING_AGE_TIME_L_OFFSET) & 0x3ff);
+		}
 		reg_op4 = mtk_r32(eth, MTK_PDMA_LRO_CTRL_DW2);
 
-		agg_cnt =
-		    ((reg_op3 & 0x3) << 6) |
-		    ((reg_op2 >> MTK_LRO_RING_AGG_CNT_L_OFFSET) & 0x3f);
-		agg_time = (reg_op2 >> MTK_LRO_RING_AGG_TIME_OFFSET) & 0xffff;
-		age_time =
-		    ((reg_op2 & 0x3f) << 10) |
-		    ((reg_op1 >> MTK_LRO_RING_AGE_TIME_L_OFFSET) & 0x3ff);
 		seq_printf(seq,
 			   "Ring[%d]: MAX_AGG_CNT=%d, AGG_TIME=%d, AGE_TIME=%d, Threshold=%d\n",
-			   !(mtk_is_netsys_v2_or_greater(eth)) ?
-			   i : i+3,
-			   agg_cnt, agg_time, age_time, reg_op4);
+			   MTK_HW_LRO_RING(i), agg_cnt, agg_time, age_time, reg_op4);
 	}
 
 	seq_puts(seq, "\n");
@@ -2049,7 +2306,7 @@ static const struct proc_ops hw_lro_auto_tlb_fops = {
 };
 
 struct proc_dir_entry *proc_reg_dir;
-static struct proc_dir_entry *proc_esw_cnt, *proc_xfi_cnt,
+static struct proc_dir_entry *proc_esw_cnt, *proc_mac_cnt, *proc_xfi_cnt,
 			     *proc_dbg_regs, *proc_reset_event;
 
 int debug_proc_init(struct mtk_eth *eth)
@@ -2080,6 +2337,13 @@ int debug_proc_init(struct mtk_eth *eth)
 		pr_notice("!! FAIL to create %s PROC !!\n", PROCREG_ESW_CNT);
 
 	if (mtk_is_netsys_v3_or_greater(g_eth)) {
+		proc_mac_cnt =
+		    proc_create(PROCREG_MAC_CNT, 0,
+				proc_reg_dir, &mac_count_fops);
+		if (!proc_mac_cnt)
+			pr_notice("!! FAIL to create %s PROC !!\n",
+				  PROCREG_MAC_CNT);
+
 		proc_xfi_cnt =
 		    proc_create(PROCREG_XFI_CNT, 0,
 				proc_reg_dir, &xfi_count_fops);
@@ -2126,6 +2390,9 @@ void debug_proc_exit(void)
 
 	if (proc_esw_cnt)
 		remove_proc_entry(PROCREG_ESW_CNT, proc_reg_dir);
+
+	if (proc_mac_cnt)
+		remove_proc_entry(PROCREG_MAC_CNT, proc_reg_dir);
 
 	if (proc_xfi_cnt)
 		remove_proc_entry(PROCREG_XFI_CNT, proc_reg_dir);

@@ -119,10 +119,35 @@ SRC_URI_append = " \
     file://946-arm64-dts-mt7986-move-dlm-in-a-dedicated-node.patch \
     file://950-smartrg-i2c-led-driver.patch \
     file://960-asus-hack-u-boot-ignore-mtdparts.patch \
+    file://999-1700-v6.8-net-phy-2p5g-eee-backport-read-support-link-mode-from-PMA.patch \
+    file://999-1701-v6.8-net-phy-2p5g-eee-backport-ethtool-Add-forced-speed-to-supported-link-modes-map.patch \
+    file://999-1702-v6.8-net-phy-2p5g-eee-backport-untangle-the-linkmode-and-ethtool-headers.patch \
+    file://999-1703-v6.9-net-phy-2p5g-eee-backport-ethtool-switch-EEE-netlink-interface-to-use-EEE-linkmode-bitmaps.patch \
+    file://999-1704-v6.9-net-phy-2p5g-eee-backport-net-phy-add-support-for-the-EEE-2-registers.patch \
+    file://999-1705-v6.9-net-phy-2p5g-eee-backport-net-phy-Add-BaseT1-auto-negotiation-constants.patch \
+    file://999-1706-v6.9-net-phy-2p5g-eee-backport-net-phy-Support-100-1000BT1-linkmode-advertisements.patch \
+    file://999-1707-v6.9-net-phy-2p5g-eee-backport-net-phy-c45-detect-100-1000BASE-T1-linkmode-advertis.patch \
+    file://999-1708-v6.9-net-phy-2p5g-eee-backport-net-phy-simplify-genphy_c45_ethtool_set_eee.patch \
+    file://999-1709-v6.9-net-phy-2p5g-eee-backport-net-ethernet-Rework-EEE.patch \
+    file://999-1710-v6.9-net-phy-2p5g-eee-backport-net-phy-add-and-use-helper-phy_advertise_eee_all.patch \
+    file://999-1711-v6.9-net-phy-2p5g-eee-backport-net-phy-respect-cached-advertising-when-re-enabling-EEE.patch \
+    file://999-1712-v6.13-net-phy-2p5g-eee-backport-net-phy-remove-genphy_config_eee_advert.patch \
+    file://999-1713-v6.13-net-phy-2p5g-eee-backport-net-simplify-eeecfg_mac_can_tx_lpi.patch \
+    file://999-1714-v6.13-net-phy-2p5g-eee-backport-net-phy-c45-don-t-use-temporary-linkmode-bitmaps-in-genphy_c45_ethtool_get_eee.patch \
+    file://999-1715-v6.13-net-phy-2p5g-eee-backport-net-phy-switch-eee_broken_modes-to-linkmode-bitmap-and-add-accessor.patch \
+    file://999-1716-v6.13-net-phy-2p5g-eee-backport-net-phy-fix-phylib-s-dual-eee_enabled.patch \
+    file://999-1717-v6.9-net-phy-2p5g-phy-backport-net-phy-simplify-a-check-in-phy_check_link_status.patch \
+    file://999-1718-v6.12-net-phy-2p5g-phy-backport-net-phy-Add-phy-library-support-to-check-supported-list-when-autoneg-is-enabled.patch \
+    file://999-1719-v6.12-net-phy-2p5g-phy-backport-net-phy-Check-for-read-errors-in-SIOCGMIIREG.patch \
+    file://999-1720-v6.13-net-phy-2p5g-phy-backport-net-phy-ensure-that-genphy_c45_an_config_eee_aneg-se.patch \
+    file://999-1721-v6.13-net-phy-2p5g-eee-backport-net-phy-fix-phy_ethtool_set_eee-incorrectly-enabling.patch \
+    file://999-1722-v6.14-net-phy-2p5g-eee-backport-net-phylib-eee-cleanups.patch \
+    file://999-1723-v6.10-net-phy-sfp-allow-use-2500base-X-for-2500base-T-modules.patch \
     file://999-2000-arm64-dts-mt7988-move-phys-to-sgmiipcs-and-usxgmiisy.patch;apply=no \
     file://999-2100-thermal-mediatek-add-mt7988-lvts-support.patch \
     file://999-2601-net-pcs-mtk-lynxi-add-pextp-reset.patch \
     file://999-2602-net-pcs-mtk_usxgmii-add-pextp-reset.patch \
+    file://999-2603-net-pcs-mtk-lynxi-add-1000BASEX-autoneg.patch \
     file://999-2700-crypto-add-eip197-inside-secure-support-for-kernel-6.6.patch \
     file://999-2700-net-ethernet-mtk_eth_soc-add-mdio-reset-delay.patch \
     file://999-2701-net-ethernet-mtk_eth_soc-remove-pextp-reset.patch \
@@ -135,15 +160,36 @@ SRC_URI_append = " \
     file://999-2708-net-ethernet-mtk_eth_soc-support-ethernet-passive-mu.patch \
     file://999-2709-net-ethernet-mtk_eth_soc-add-rss-lro-reg.patch \
     file://999-2710-net-ethernet-mtk_eth_soc-add-rss-support.patch \
+    file://999-2711-net-ethernet-mtk_eth_soc-add-lro-support.patch \
+    file://999-2712-net-ethernet-mtk_eth_soc-refactor-SER-monitor.patch \
+    file://999-2713-net-ethernet-mtk_eth_soc-add-EEE-support-for-GMAC.patch \
+    file://999-2714-net-fix-eee-struct-for-mtk-eth-soc-and-net-dsa-due-to-eee-backport.patch \
+    file://999-2715-net-ethernet-mtk_eth_soc-add-mt7987-support.patch \
+    file://999-2716-net-ethernet-mtk_eth_soc-convert-cap_bit-in-mtk_eth_.patch \
+    file://999-2717-net-ethernet-mtk_eth_soc-add-GLO_MEM-support-for-lro.patch \
     file://999-2733-add-netlink-support-for-dsa.patch \
     file://999-2746-mt7531-dsa-iphy-fine-tuning.patch \
+    file://999-2747-crypto-eth-inline.patch \
     file://999-2750-net-phy-aquantia-move-frmware-load-to-config_init.patch \
     file://999-2751-net-phy-aquantia-add-mib-debugfs.patch \
     file://999-2752-net-phy-aquantia-add-cux3410.patch \
     file://999-2753-net-phy-sfp-support-additional-RollBall-modules.patch \
     file://999-2754-net-phy-sfp-support-shared-mod-def0-gpio.patch \
     file://999-2755-add-mt753x-gsw-support.patch \
+    file://999-2756-net-dsa-change-mt753x-agetime-setting-method.patch \
+    file://999-2757-net-dsa-add-netlink-support-for-an8855.patch;apply=no \
+    file://999-2758-net-dsa-add-assisted-learning.patch \
+    file://999-2760-net-phy-mediatek-add-i2p5g-support-for-mt7987.patch \
+    file://999-2761-net-phy-check-an-complete-during-get-lpa-eee.patch \
+    file://999-2762-net-phy-sfp-add-debug-information.patch \
+    file://999-2763-net-phy-marvell-add-features-callback-for-88E1111.patch \
+    file://999-2764-net-phy-sfp-add-some-FS-copper-SFP-fixes.patch \
+    file://999-2765-net-phy-sfp-add-some-checksum-fail-SFP-war.patch \
     file://999-2800-trng-driver-porting.patch \
+    file://999-clk-01-clk-mediatek-add-mt7987-clock-drivers-support.patch \
+    file://999-clk-01-clk-mediatek-mark-some-mt7987-clks-as-critical.patch \
+    file://999-cpufreq-01-cpufreq-add-support-to-adjust-cpu-volt-by-efuse-cali.patch \
+    file://999-cpufreq-02-mediatek-enable-using-efuse-cali-data-for-mt7988-cpu-volt.patch;apply=no \
     file://999-dual-boot-01-do-not-auto-mount-ubi-rootfs.patch \
     file://999-dual-boot-02-ubi-allow-no-default-rootdev.patch \
     file://999-dual-boot-03-fitblk-do-not-split-rootfs_data-if-required.patch \
@@ -151,6 +197,8 @@ SRC_URI_append = " \
     file://999-pcie-02-pcie-mediatek-gen3-Add-PCIe-IRQ-affinity-support.patch \
     file://999-pcie-03-pcie-mediatek-gen3-Add-WIFI-HW-reset-flow.patch \
     file://999-pcie-04-pcie-mediatek-gen3-Add-soft-off-and-soft-on-API.patch \
+    file://999-pinctrl-01-pinctrl-mediatek-add-mt7987-pinctrl-support.patch \
+    file://999-serial-01-tty-serial-8250-fix-clock-setting-for-mediatek-serial.patch \
     file://999-tphy-01-phy-mtk-tphy-Add-PCIe-2-lane-efuse-support.patch \
     file://999-tphy-02-phy-mtk-tphy-add-auto-load-valid-check-mechanism.patch \
     file://999-tphy-03-phy-mtk-tphy-one-setting-of-TTSSC-Freq-Dev-for-all-IC-cases.patch \

@@ -254,6 +254,7 @@ SRC_URI_append = " \
     file://790-56-v6.11-net-dsa-mt7530-add-support-for-bridge-port-isolation.patch \
     file://791-v6.11-01-net-phy-aquantia-move-priv-and-hw-stat-to-header.patch \
     file://791-v6.11-02-net-phy-aquantia-add-support-for-PHY-LEDs.patch \
+    file://792-v6.16-igc-enable-HW-vlan-tag-insertion-stripping-by-defaul.patch \
     file://795-v6.7-16-r8152-use-napi_gro_frags.patch \
     file://798-v6.10-net-phy-air_en8811h-Add-the-Airoha-EN8811H-PHY-drive.patch \
     file://799-v6.10-net-phy-air_en8811h-fix-some-error-codes.patch \
@@ -270,9 +271,6 @@ SRC_URI_append = " \
     file://817-v6.9-of-property-Make-no-port-node-found-output-a-debug.patch \
     file://818-v6.8-of-device-Export-of_device_make_bus_id.patch \
     file://819-v6.8-0001-nvmem-Move-of_nvmem_layout_get_container-in-another-.patch \
-    file://819-v6.8-0002-nvmem-Create-a-header-for-internal-sharing.patch \
-    file://819-v6.8-0003-nvmem-Simplify-the-add_cells-hook.patch \
-    file://819-v6.8-0004-nvmem-Move-and-rename-fixup_cell_info.patch \
     file://819-v6.8-0005-nvmem-core-Rework-layouts-to-become-regular-devices.patch \
     file://819-v6.8-0006-nvmem-core-Expose-cells-through-sysfs.patch \
     file://819-v6.8-0007-nvmem-stm32-add-support-for-STM32MP25-BSEC-to-contro.patch \

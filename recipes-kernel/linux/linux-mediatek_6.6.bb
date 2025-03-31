@@ -7,8 +7,8 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/mediatek/flow_patch:"
 
 KBRANCH ?= "linux-6.6.y"
 
-LINUX_VERSION ?= "6.6.79"
-SRCREV_machine ?= "c0249d3a0c3cf082d56f4285647ddba19ef604a7"
+LINUX_VERSION ?= "6.6.83"
+SRCREV_machine ?= "594a1dd5138a6bbaa1697e5648cce23d2520eba9"
 KMETA = "kernel-meta"
 SRCREV_meta ?= "dff911ce87fe7b9944c6058907f079ddb0f3e840"
 
@@ -80,6 +80,8 @@ do_filogic_patches() {
 
             patch -p1 < ${WORKDIR}/863-arm64-dts-mt7986-add-sound-wm8960.patch
             patch -p1 < ${WORKDIR}/999-2000-arm64-dts-mt7988-move-phys-to-sgmiipcs-and-usxgmiisy.patch
+            patch -p1 < ${WORKDIR}/999-2757-net-dsa-add-netlink-support-for-an8855.patch
+            patch -p1 < ${WORKDIR}/999-cpufreq-02-mediatek-enable-using-efuse-cali-data-for-mt7988-cpu-volt.patch
 
             if [ $DISTRO_FlowBlock_ENABLED = 'true' ]; then
                 for i in ${WORKDIR}/mediatek/flow_patch/*.patch; do patch -p1 < $i; done

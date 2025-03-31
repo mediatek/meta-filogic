@@ -50,11 +50,6 @@
 	};
 };
 
-&eth {
-	pinctrl-0 = <&mdio0_pins>;
-	pinctrl-names = "default";
-};
-
 &gmac0 {
 	status = "okay";
 };
@@ -213,11 +208,11 @@
 };
 
 &ssusb0 {
-	status = "disabled";
+	status = "okay";
 };
 
 &ssusb1 {
-	status = "disabled";
+	status = "okay";
 };
 
 &tphy {
