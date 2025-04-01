@@ -22,7 +22,7 @@ SRC_URI = " \
     file://generic/defconfig \
     file://001-rdkb-eth-mtk-change-ifname-for.patch;apply=no \
     file://004-rdkb-hnat-bind-ifname.patch;apply=no \
-    file://002-bpi_r4-lan0_as_wan.patch;apply=no \
+    file://003-rdkb-refactor-bpi-r4-dts.patch;apply=no \
     "
 SRC_URI_append_filogic += " \
     file://mediatek/filogic.cfg \
@@ -77,6 +77,7 @@ do_filogic_patches() {
         fi
         if [ ! -e patch_applied ]; then
             patch -p1 < ${WORKDIR}/001-rdkb-eth-mtk-change-ifname-for.patch
+            patch -p1 < ${WORKDIR}/003-rdkb-refactor-bpi-r4-dts.patch
 
             patch -p1 < ${WORKDIR}/863-arm64-dts-mt7986-add-sound-wm8960.patch
             patch -p1 < ${WORKDIR}/999-2000-arm64-dts-mt7988-move-phys-to-sgmiipcs-and-usxgmiisy.patch
