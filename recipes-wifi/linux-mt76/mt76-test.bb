@@ -1,6 +1,6 @@
 DESCRIPTION = "mt76-test"
 SECTION = "applications"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://../COPYING;md5=c188eeeb69c0a05d0545816f1458a0c9"
 
 DEPENDS += "libnl-tiny linux-mac80211"
@@ -24,10 +24,10 @@ DEPENDS += "virtual/kernel"
 DEPENDS += "linux-mac80211"
 DEPENDS += "linux-mt76"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 
-CFLAGS_append = " -I=${includedir}/libnl-tiny -I${STAGING_KERNEL_BUILDDIR}/usr/include/mac80211/uapi "
+CFLAGS:append = " -I=${includedir}/libnl-tiny -I${STAGING_KERNEL_BUILDDIR}/usr/include/mac80211/uapi "
 
 S = "${WORKDIR}/git/tools"
 PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES','wifi_eht','${WORKDIR}/patches-3.x','${WORKDIR}/patches',d)}"

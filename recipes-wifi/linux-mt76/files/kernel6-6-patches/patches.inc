@@ -1,5 +1,5 @@
 #patch patches (come from openwrt/lede/target/linux/mediatek)
-SRC_URI_append = " \
+SRC_URI:append = " \
     file://0001-mtk-mt76-mt7996-update-callback-to-.link_sta_rc_upda.patch \
     file://0002-mtk-mt76-mt7990-add-a-macro-to-represent-decive-id.patch \
     file://0003-mtk-mt76-mt7996-remove-mt7996_mac_enable_rtscts.patch \

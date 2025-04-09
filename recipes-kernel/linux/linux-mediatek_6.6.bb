@@ -1,9 +1,9 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}:"
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/generic/backport-6.6:"
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/generic/pending-6.6:"
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/generic/hack-6.6:"
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/mediatek/patches-6.6:"
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/mediatek/flow_patch:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}-${PV}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}-${PV}/generic/backport-6.6:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}-${PV}/generic/pending-6.6:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}-${PV}/generic/hack-6.6:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}-${PV}/mediatek/patches-6.6:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}-${PV}/mediatek/flow_patch:"
 
 KBRANCH ?= "linux-6.6.y"
 
@@ -12,7 +12,7 @@ SRCREV_machine ?= "594a1dd5138a6bbaa1697e5648cce23d2520eba9"
 KMETA = "kernel-meta"
 SRCREV_meta ?= "dff911ce87fe7b9944c6058907f079ddb0f3e840"
 
-DEPENDS_append = " kern-tools-native xz-native bc-native"
+DEPENDS:append = " kern-tools-native xz-native bc-native"
 
 SRC_URI = " \
     git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git;protocol=https;branch=${KBRANCH};name=machine \
@@ -24,11 +24,11 @@ SRC_URI = " \
     file://004-rdkb-hnat-bind-ifname.patch;apply=no \
     file://003-rdkb-refactor-bpi-r4-dts.patch;apply=no \
     "
-SRC_URI_append_filogic += " \
+SRC_URI:append_filogic += " \
     file://mediatek/filogic.cfg \
 "
 
-SRC_URI_append += " \
+SRC_URI:append += " \
     file://rdkb_cfg/iptables.cfg \
     file://rdkb_cfg/turris_rdkb.cfg \
     file://rdkb_cfg/openvswitch.cfg \
@@ -45,11 +45,11 @@ SRC_URI_append += " \
 require ${PN}-${PV}/generic/backport-6.6/backport-6.6.inc
 
 require ${PN}-${PV}/generic/pending-6.6/pending-6.6.inc
-SRC_URI_remove = " \
+SRC_URI:remove = " \
     file://530-jffs2_make_lzma_available.patch \
     "
 require ${PN}-${PV}/generic/hack-6.6/hack-6.6.inc
-SRC_URI_remove = " \
+SRC_URI:remove = " \
     file://531-debloat_lzma.patch \
     "
 require ${PN}-${PV}/mediatek/patches-6.6/patches-6.6.inc
@@ -59,7 +59,7 @@ require linux-mediatek6-6.inc
 
 export DTC_FLAGS = '-@'
 
-do_patch_prepend () {
+do_patch:prepend () {
     cp -Rfp ${WORKDIR}/generic/files/* ${S}/
 	cp -Rfp ${WORKDIR}/mediatek/files/* ${S}/
     cp -Rfp ${WORKDIR}/mediatek/files-6.6/* ${S}/

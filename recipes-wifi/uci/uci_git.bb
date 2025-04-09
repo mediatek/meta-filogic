@@ -1,11 +1,11 @@
 DESCRIPTION = "Unified Configuration Interface (UCI)"
 SECTION = "libs"
-LICENSE_NAME = "${@bb.utils.contains('DISTRO_CODENAME', 'dunfell', 'LGPL-2.1', 'LGPL-2.1-only', d)}"
+LICENSE_NAME = "${@bb.utils.contains('DISTRO_CODENAME', 'dunfell', 'LGPL-2.1-only', 'LGPL-2.1-only', d)}"
 LICENSE = "${LICENSE_NAME}"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/${LICENSE_NAME};md5=1a6d268fd218675ffea8be556788b780"
 
 SRC_URI = " \
-    git://git.openwrt.org/project/uci.git \
+    git://git.openwrt.org/project/uci.git;branch=master \
 "
 
 SRCREV = "f84f49f00fb70364f58b4cce72f1796a7190d370"
@@ -16,11 +16,11 @@ S = "${WORKDIR}/git"
 
 DEPENDS += "libubox"
 
-INSANE_SKIP_${PN} += "dev-deps"
+INSANE_SKIP:${PN} += "dev-deps"
 FILES_SOLIBSDEV = ""
 
-FILES_${PN}-dev = "${includedir}/*"
-FILES_${PN} = "${bindir}/uci ${libdir}/libuci.so"
+FILES:${PN}-dev = "${includedir}/*"
+FILES:${PN} = "${bindir}/uci ${libdir}/libuci.so"
 
 inherit cmake
 

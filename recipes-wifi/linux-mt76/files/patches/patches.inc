@@ -1,5 +1,5 @@
 #patch patches (come from openwrt/lede/target/linux/mediatek)
-SRC_URI_append = " \
+SRC_URI:append = " \
     file://0001-wifi-mt76-fix-incorrect-HE-TX-GI-report.patch \
     file://0002-wifi-mt76-mt7915-add-pc-stack-dump-for-WM-s-coredump.patch \
     file://0003-wifi-mt76-mt7915-move-temperature-margin-check-to-mt.patch \

@@ -1,6 +1,6 @@
 DESCRIPTION = "Mediatek Wireless Drivers"
 SECTION = "kernel/modules"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=c188eeeb69c0a05d0545816f1458a0c9"
 
 inherit module
@@ -21,8 +21,8 @@ SRC_URI += " \
     file://${FW_SRC} \
     "
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files/${PATCH_SRC}:"
-FILESEXTRAPATHS_prepend := "${THISDIR}/${FW_SRC}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files/${PATCH_SRC}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${FW_SRC}:"
 
 require files/${PATCH_SRC}/patches.inc
 
@@ -75,7 +75,7 @@ do_install() {
     install -m 0644 ${B}/mt7996/mt7996e.ko ${D}/lib/modules/${KERNEL_VERSION}/updates/drivers/net/wireless/mediatek/mt76/
 }
 
-do_install_append () {
+do_install:append () {
     install -d ${D}/${base_libdir}/firmware/mediatek/mt7996
     IS_MT7996="${@bb.utils.contains('DISTRO_FEATURES','mt7996','true','false',d)}"
     IS_MT7992="${@bb.utils.contains('DISTRO_FEATURES','mt7992','true','false',d)}"
@@ -93,7 +93,7 @@ do_install_append () {
     fi
 }
 
-do_install_append_mt7988 () {
+do_install:append_mt7988 () {
     IS_KERNEL_V6="${@bb.utils.contains('DISTRO_FEATURES','kernel6-6','true','false',d)}"
     if [ $IS_KERNEL_V6 = 'false' ]; then
         install -d ${D}/${base_libdir}/firmware/mediatek/
@@ -104,15 +104,15 @@ do_install_append_mt7988 () {
     fi
 }
 
-FILES_${PN} += "${base_libdir}/firmware/mediatek/*"
+FILES:${PN} += "${base_libdir}/firmware/mediatek/*"
 
 # Make linux-mt76 depend on all of the split-out packages.
-python populate_packages_prepend () {
+python populate_packages:prepend () {
     firmware_pkgs = oe.utils.packages_filter_out_system(d)
-    d.appendVar('RDEPENDS_linux-mt76', ' ' + ' '.join(firmware_pkgs))
+    d.appendVar('RDEPENDS:linux-mt76', ' ' + ' '.join(firmware_pkgs))
 }
 
-#RPROVIDES_${PN} += "kernel-module-${PN}-${KERNEL_VERSION}"
-#RPROVIDES_${PN} += "kernel-module-${PN}-connac-lib-${KERNEL_VERSION}"
+#RPROVIDES:${PN} += "kernel-module-${PN}-${KERNEL_VERSION}"
+#RPROVIDES:${PN} += "kernel-module-${PN}-connac-lib-${KERNEL_VERSION}"
 
 KERNEL_MODULE_AUTOLOAD += "mt7996e"

@@ -1,6 +1,6 @@
 SUMMARY = "Init filogic "
 SECTION = "applications"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=751419260aa954499f7abaabaa882bbe"
 
 S = "${WORKDIR}"
@@ -11,17 +11,17 @@ SRC_URI = " \
     file://COPYING \
     "
 
-RDEPENDS_${PN} += "bash"
+RDEPENDS:${PN} += "bash"
 
 SYSTEMD_PACKAGES = "${PN}"
-SYSTEMD_SERVICE_${PN} = " init-IPv6.service"
-SYSTEMD_SERVICE_${PN} += " init-Lanbridge.service"
-SYSTEMD_SERVICE_${PN} += " init-PPPQ.service"
-SYSTEMD_SERVICE_${PN} += " usb-mount@.service"
-FILES_${PN} += "{systemd_unitdir}/system/init-IPv6.service"
-FILES_${PN} += "{systemd_unitdir}/system/init-Lanbridge.service"
-FILES_${PN} += "{systemd_unitdir}/system/init-PPPQ.service"
-FILES_${PN} += "{systemd_unitdir}/system/usb-mount@.service"
+SYSTEMD_SERVICE:${PN} = " init-IPv6.service"
+SYSTEMD_SERVICE:${PN} += " init-Lanbridge.service"
+SYSTEMD_SERVICE:${PN} += " init-PPPQ.service"
+SYSTEMD_SERVICE:${PN} += " usb-mount@.service"
+FILES:${PN} += "{systemd_unitdir}/system/init-IPv6.service"
+FILES:${PN} += "{systemd_unitdir}/system/init-Lanbridge.service"
+FILES:${PN} += "{systemd_unitdir}/system/init-PPPQ.service"
+FILES:${PN} += "{systemd_unitdir}/system/usb-mount@.service"
 
 do_install() {
     install -d ${D}${sbindir}

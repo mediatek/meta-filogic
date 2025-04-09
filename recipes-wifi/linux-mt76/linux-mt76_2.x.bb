@@ -1,6 +1,6 @@
 DESCRIPTION = "Mediatek Wireless Drivers"
 SECTION = "kernel/modules"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=c188eeeb69c0a05d0545816f1458a0c9"
 
 inherit module
@@ -19,12 +19,12 @@ SRC_URI += " \
 DEPENDS += "virtual/kernel"
 DEPENDS += "linux-mac80211"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches:"
-FILESEXTRAPATHS_prepend := "${THISDIR}/src:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files/patches:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/src:"
 
 require files/patches/patches.inc
-SRC_URI_append += "file://5000-mt76-add-internal-wed_tiny-header-file.patch"
-SRC_URI_append += "file://5001-mt76-mt7915-disable-wed.patch"
+SRC_URI:append += "file://5000-mt76-add-internal-wed_tiny-header-file.patch"
+SRC_URI:append += "file://5001-mt76-mt7915-disable-wed.patch"
 
 S = "${WORKDIR}/git"
 
@@ -77,7 +77,7 @@ do_install() {
     install -m 0644 ${B}/mt7915/mt7915e.ko ${D}/lib/modules/${KERNEL_VERSION}/updates/drivers/net/wireless/mediatek/mt76/mt7915/
 }
 
-do_install_append () {
+do_install:append () {
     install -d ${D}/${base_libdir}/firmware/mediatek/
 
     install -m 644 ${WORKDIR}/src/firmware/mt7915_rom_patch.bin ${D}${base_libdir}/firmware/mediatek/
@@ -92,7 +92,7 @@ do_install_append () {
     install -m 644 ${WORKDIR}/src/firmware/mt7916_eeprom.bin ${D}${base_libdir}/firmware/mediatek/
 }
 
-do_install_append_mt7986 () {
+do_install:append_mt7986 () {
     install -d ${D}/${base_libdir}/firmware/mediatek/
 
     install -m 644 ${WORKDIR}/src/firmware/mt7986_rom_patch.bin ${D}${base_libdir}/firmware/mediatek/
@@ -108,15 +108,15 @@ do_install_append_mt7986 () {
     install -m 644 ${WORKDIR}/src/firmware/mt7986_wo_1.bin ${D}${base_libdir}/firmware/mediatek/
 }
 
-FILES_${PN} += "${base_libdir}/firmware/mediatek/*"
+FILES:${PN} += "${base_libdir}/firmware/mediatek/*"
 
 # Make linux-mt76 depend on all of the split-out packages.
-python populate_packages_prepend () {
+python populate_packages:prepend () {
     firmware_pkgs = oe.utils.packages_filter_out_system(d)
-    d.appendVar('RDEPENDS_linux-mt76', ' ' + ' '.join(firmware_pkgs))
+    d.appendVar('RDEPENDS:linux-mt76', ' ' + ' '.join(firmware_pkgs))
 }
 
-#RPROVIDES_${PN} += "kernel-module-${PN}-${KERNEL_VERSION}"
-#RPROVIDES_${PN} += "kernel-module-${PN}-connac-lib-${KERNEL_VERSION}"
+#RPROVIDES:${PN} += "kernel-module-${PN}-${KERNEL_VERSION}"
+#RPROVIDES:${PN} += "kernel-module-${PN}-connac-lib-${KERNEL_VERSION}"
 
 KERNEL_MODULE_AUTOLOAD += "mt7915e"

@@ -17,10 +17,10 @@ do_install() {
     install -m 644 ${WORKDIR}/EthMD32.DSP.bin ${D}${base_libdir}/firmware/
 }
 
-FILES_${PN} += "${base_libdir}/firmware/*"
+FILES:${PN} += "${base_libdir}/firmware/*"
 
 # Make Mediatek-eth-firmware depend on all of the split-out packages.
-python populate_packages_prepend () {
+python populate_packages:prepend () {
     firmware_pkgs = oe.utils.packages_filter_out_system(d)
-    d.appendVar('RDEPENDS_mediatek-eth-firmware', ' ' + ' '.join(firmware_pkgs))
+    d.appendVar('RDEPENDS:mediatek-eth-firmware', ' ' + ' '.join(firmware_pkgs))
 }

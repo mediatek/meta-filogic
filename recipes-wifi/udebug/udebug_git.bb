@@ -4,7 +4,7 @@ LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=751419260aa954499f7abaabaa882bbe"
 
 SRC_URI = " \
-    git://git.openwrt.org/project/udebug.git;protocol=https \
+    git://git.openwrt.org/project/udebug.git;protocol=https;branch=master \
     file://udebug.config \
     file://udebug.init \
     file://COPYING;subdir=git \
@@ -18,11 +18,11 @@ S = "${WORKDIR}/git"
 
 DEPENDS += "libnl-tiny libubox ubus ucode"
 
-INSANE_SKIP_${PN} += "file-rdeps dev-deps dev-so"
+INSANE_SKIP:${PN} += "file-rdeps dev-deps dev-so"
 FILES_SOLIBSDEV = ""
 
-FILES_${PN}-dev = "${includedir}/*"
-FILES_${PN} = "${sbindir}/* ${libdir}/*.so* ${libdir}/ucode/*"
+FILES:${PN}-dev = "${includedir}/*"
+FILES:${PN} = "${sbindir}/* ${libdir}/*.so* ${libdir}/ucode/*"
 
 inherit cmake pkgconfig python3native  
 

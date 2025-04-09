@@ -1,9 +1,9 @@
 SUMMARY = "HAL for RDK CCSP components"
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://../../LICENSE;md5=175792518e4ac015ab6696d16c4f607e"
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 PROVIDES = "hal-fwupgrade"
-RPROVIDES_${PN} = "hal-fwupgrade"
+RPROVIDES:${PN} = "hal-fwupgrade"
 
 DEPENDS += "ccsp-common-library halinterface"
 DEPENDS_kirkstone += " rdkb-halif-fwupgrade"
@@ -18,7 +18,7 @@ SRCREV_FORMAT = "fwupgradehal"
 S = "${WORKDIR}/git/src/fwupgrade"
 
 CFLAGS += "-DFEATURE_SUPPORT_RDKLOG"
-CFLAGS_append = " -I=${includedir}/ccsp "
+CFLAGS:append = " -I=${includedir}/ccsp "
 
 inherit autotools coverity
 

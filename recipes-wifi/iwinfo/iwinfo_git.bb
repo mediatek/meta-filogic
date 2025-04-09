@@ -36,4 +36,4 @@ do_install() {
 }
 
 FILES_SOLIBSDEV = ""
-FILES_${PN} += "${libdir}/libiwinfo.so ${libdir}/lua/iwinfo.so"
+FILES:${PN} += "${libdir}/libiwinfo.so ${libdir}/lua/iwinfo.so"

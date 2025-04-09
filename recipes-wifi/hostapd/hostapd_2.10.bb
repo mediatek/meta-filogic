@@ -5,12 +5,12 @@ LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://hostapd/README;md5=c905478466c90f1cefc0df987c40e172"
 
 DEPENDS = "libnl openssl ubus"
-DEPENDS_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'telemetry2_0', 'telemetry', '', d)}"
-LDFLAGS_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'telemetry2_0', ' -ltelemetry_msgsender ', '', d)}"
-RDEPENDS_${PN} += "gawk"
+DEPENDS:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'telemetry2_0', 'telemetry', '', d)}"
+LDFLAGS:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'telemetry2_0', ' -ltelemetry_msgsender ', '', d)}"
+RDEPENDS:${PN} += "gawk"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
-FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files/patches:"
 
 SRCREV ?= "b704dc72ef824dfdd96674b90179b274d1d38105"
 SRC_URI = " \
@@ -36,11 +36,11 @@ S = "${WORKDIR}/git"
 inherit update-rc.d systemd pkgconfig features_check
 INITSCRIPT_NAME = "hostapd"
 
-SYSTEMD_AUTO_ENABLE_${PN} = "enable"
-SYSTEMD_SERVICE_${PN} = "hostapd.service"
-SYSTEMD_SERVICE_${PN} += " init-uci-config.service"
+SYSTEMD_AUTO_ENABLE:${PN} = "enable"
+SYSTEMD_SERVICE:${PN} = "hostapd.service"
+SYSTEMD_SERVICE:${PN} += " init-uci-config.service"
 
-do_unpack_append() {
+do_unpack:append() {
     bb.build.exec_func('do_copy_openwrt_src', d)
 }
 
@@ -48,7 +48,7 @@ do_copy_openwrt_src() {
     cp -Rfp ${WORKDIR}/src/* ${S}/
 }
 
-do_configure_append() {
+do_configure:append() {
     install -m 0644 ${WORKDIR}/hostapd-full.config ${B}/.config
 
     echo "CONFIG_MBO=y" >> ${B}/.config
@@ -101,7 +101,7 @@ do_install() {
          install -m 0755 ${WORKDIR}/mac80211.sh ${D}${sbindir}
 }
 
-FILES_${PN} += " \
+FILES:${PN} += " \
                 ${systemd_unitdir}/system/hostapd.service \
                 ${sysconfdir}/hostapd-2G.conf \
                 ${sysconfdir}/hostapd-5G.conf \

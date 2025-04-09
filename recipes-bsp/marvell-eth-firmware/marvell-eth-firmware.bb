@@ -20,10 +20,10 @@ do_install() {
     install -m 644 ${WORKDIR}/AQR-G4_v5.7.0-AQR_EVB_Generic_X3410_StdCfg_MDISwap_USX_ID46316_VER2148.cld  ${D}${base_libdir}/firmware/
 }
 
-FILES_${PN} += "${base_libdir}/firmware/"
+FILES:${PN} += "${base_libdir}/firmware/"
 
 # Make marvell-eth-firmware depend on all of the split-out packages.
-python populate_packages_prepend () {
+python populate_packages:prepend () {
     firmware_pkgs = oe.utils.packages_filter_out_system(d)
-    d.appendVar('RDEPENDS_marvell-eth-firmware', ' ' + ' '.join(firmware_pkgs))
+    d.appendVar('RDEPENDS:marvell-eth-firmware', ' ' + ' '.join(firmware_pkgs))
 }

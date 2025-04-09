@@ -1,5 +1,5 @@
 #patch subsys (come from openwrt/lede/target/linux/mediatek)
-SRC_URI_append = " \
+SRC_URI:append = " \
     file://110-mac80211_keep_keys_on_stop_ap.patch \
     file://120-cfg80211_allow_perm_addr_change.patch \
     file://150-disable_addr_notifier.patch \

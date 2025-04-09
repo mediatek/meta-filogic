@@ -9,8 +9,8 @@ LIC_FILES_CHKSUM = "file://hostapd/README;md5=0e430ef1be3d6eebf257cf493fc7661d"
 DEPENDS = "dbus libnl-tiny ubus ucode udebug"
 PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6-6', 'kernel6-6-patches', 'patches-${PV}', d)}"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
-FILESEXTRAPATHS_prepend := "${THISDIR}/files/${PATCH_SRC}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files/${PATCH_SRC}:"
 
 SRCREV ?= "96e48a05aa0a82e91e3cab75506297e433e253d0"
 require version.inc
@@ -59,7 +59,7 @@ do_configure () {
 	rm -f wpa_supplicant/*.d wpa_supplicant/dbus/*.d
 }
 
-do_configure_append () {
+do_configure:append () {
 	# from Openwrt defconfig
 	install -m 0644 ${WORKDIR}/wpa_supplicant-full.config wpa_supplicant/.config
 
@@ -167,5 +167,5 @@ SYSTEMD_AUTO_ENABLE = "disable"
 
 # move from cmf
 FILES_SOLIBSDEV = ""
-FILES_${PN} += "${libdir}/libwpa_client.so"
+FILES:${PN} += "${libdir}/libwpa_client.so"
 

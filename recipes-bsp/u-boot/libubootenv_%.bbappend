@@ -2,7 +2,7 @@ SUMMARY = "U-Boot bootloader fw_printenv/setenv utilities"
 
 
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI += " file://fw_env.config \
              file://fw_env_emmc.config \
         "
@@ -11,7 +11,7 @@ SRC_URI += " file://fw_env.config \
 
 
 
-do_install_append () {
+do_install:append () {
 	install -d ${D}${sysconfdir}
 	if ${@bb.utils.contains('DISTRO_FEATURES','emmc','true','false',d)}; then
 		install -m 0644 ${WORKDIR}/fw_env_emmc.config ${D}${sysconfdir}/fw_env.config

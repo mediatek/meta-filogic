@@ -1,7 +1,7 @@
 DESCRIPTION = "Linux backports"
 HOMEPAGE = "https://backports.wiki.kernel.org"
 SECTION = "kernel/modules"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 inherit module
@@ -18,15 +18,15 @@ SRC_URI[sha256sum] = "5227d3c35ccebacfaee6b8180b3a87b9910f3c94ee768ebc5c0fef3c86
 DEPENDS += "virtual/kernel"
 DEPENDS += "bison-native coreutils-native flex-native"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches/build:"
-FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches/subsys:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files/patches/build:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files/patches/subsys:"
 
 require files/patches/build/build.inc
 require files/patches/subsys/subsys.inc
 
-SRC_URI_remove = "${@bb.utils.contains('DISTRO_FEATURES', 'flow_offload', '', 'file://mtk-9900-mac80211-mtk-mask-kernel-version-limitation-and-fill.patch', d)}"
-SRC_URI_remove = "${@bb.utils.contains('DISTRO_FEATURES', 'flow_offload', '', 'file://mtk-9901-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-id.patch', d)}"
-SRC_URI_remove = "${@bb.utils.contains('DISTRO_FEATURES', 'flow_offload', '', 'file://mtk-9902-mac80211-mtk-add-support-for-letting-drivers-registe.patch', d)}"
+SRC_URI:remove = "${@bb.utils.contains('DISTRO_FEATURES', 'flow_offload', '', 'file://mtk-9900-mac80211-mtk-mask-kernel-version-limitation-and-fill.patch', d)}"
+SRC_URI:remove = "${@bb.utils.contains('DISTRO_FEATURES', 'flow_offload', '', 'file://mtk-9901-mac80211-mtk-add-fill-receive-path-ops-to-get-wed-id.patch', d)}"
+SRC_URI:remove = "${@bb.utils.contains('DISTRO_FEATURES', 'flow_offload', '', 'file://mtk-9902-mac80211-mtk-add-support-for-letting-drivers-registe.patch', d)}"
 
 S = "${WORKDIR}/backports-${PV}-1"
 
@@ -52,7 +52,7 @@ do_configure () {
     oe_runmake allnoconfig
 }
 
-do_install_prepend () {
+do_install:prepend () {
     mkdir -p \
 	${STAGING_KERNEL_BUILDDIR}/usr/include/mac80211 \
 	${STAGING_KERNEL_BUILDDIR}/usr/include/mac80211-backport \
@@ -65,7 +65,7 @@ do_install_prepend () {
     rm -f ${STAGING_KERNEL_BUILDDIR}/usr/include/mac80211-backport/linux/module.h
 }
 
-do_install_append() {
+do_install:append() {
     # Module
     cat ${D}/usr/include/linux-mac80211/Module.symvers >> ${TMPDIR}/work-shared/${MACHINE}/kernel-build-artifacts/Module.symvers
 }

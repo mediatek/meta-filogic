@@ -1,6 +1,6 @@
 DESCRIPTION = "mt76-vendor"
 SECTION = "applications"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=c188eeeb69c0a05d0545816f1458a0c9"
 
 DEPENDS += "libnl-tiny"
@@ -14,5 +14,5 @@ SRC_URI = " \
 
 S = "${WORKDIR}/git/src"
 
-CFLAGS_append = " -I=${includedir}/libnl-tiny "
+CFLAGS:append = " -I=${includedir}/libnl-tiny "
 

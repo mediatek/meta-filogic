@@ -1,5 +1,5 @@
 SUMMARY = "Mediatek EIP-197 Driver"
-LICENSE = "GPL-2.0"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/GPL-2.0;md5=801f80980d171dd6425610833a22dbe6"
 
 inherit module
@@ -86,7 +86,7 @@ EXTRA_OEMAKE = " \
 	modules \
 	"
 
-do_install_append() {
+do_install:append() {
 	install -d ${D}/${base_libdir}/modules/${KERNEL_VERSION}/extra/
 	install -m 0755 ${S}/crypto-eip-inline.ko ${D}/${base_libdir}/modules/${KERNEL_VERSION}/
 	install -m 0755 ${S}/ddk/build/ksupport/crypto-eip-ddk-ksupport.ko ${D}/${base_libdir}/modules/${KERNEL_VERSION}/
@@ -101,4 +101,4 @@ do_install_append() {
 	install -m 0755 ${S}/../firmware/bin/firmware_eip207_opue.bin ${D}/${base_libdir}/firmware/
 }
 
-FILES_${PN} += "${base_libdir}/firmware/*"
+FILES:${PN} += "${base_libdir}/firmware/*"

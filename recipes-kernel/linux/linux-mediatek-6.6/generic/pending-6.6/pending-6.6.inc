@@ -1,5 +1,5 @@
 #patch pending-6.6 (come from openwrt/lede/target/linux/mediatek)
-SRC_URI_append = " \
+SRC_URI:append = " \
     file://100-compiler.h-only-include-asm-rwonce.h-for-kernel-code.patch \
     file://102-MIPS-only-process-negative-stack-offsets-on-stack-tr.patch \
     file://103-kbuild-export-SUBARCH.patch \

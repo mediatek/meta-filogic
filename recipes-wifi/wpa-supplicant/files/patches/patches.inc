@@ -1,5 +1,5 @@
 #patch patches (come from openwrt/lede/target/linux/mediatek)
-SRC_URI_append = " \
+SRC_URI:append = " \
     file://001-wolfssl-init-RNG-with-ECC-key.patch \
     file://010-mesh-Allow-DFS-channels-to-be-selected-if-dfs-is-ena.patch \
     file://011-mesh-use-deterministic-channel-on-channel-switch.patch \

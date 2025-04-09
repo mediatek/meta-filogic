@@ -1,5 +1,5 @@
 #patch pending-5.4 (come from openwrt/lede/target/linux/mediatek)
-SRC_URI_append = " \
+SRC_URI:append = " \
     file://0931-w1-gpio-fix-problem-with-platfom-data-in-w1-gpio.patch \
     file://102-MIPS-only-process-negative-stack-offsets-on-stack-tr.patch \
     file://103-MIPS-select-CPU_MIPS64-for-remaining-MIPS64-CPUs.patch \

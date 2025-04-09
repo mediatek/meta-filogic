@@ -1,6 +1,6 @@
 SUMMARY = "Init filogic "
 SECTION = "applications"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=751419260aa954499f7abaabaa882bbe"
 
 S = "${WORKDIR}"
@@ -13,9 +13,9 @@ SRC_URI = " \
     "
 
 SYSTEMD_PACKAGES = "${PN}"
-SYSTEMD_AUTO_ENABLE_${PN} = "disable"
-SYSTEMD_SERVICE_${PN} = " MACSec.service"
-FILES_${PN} += "{systemd_unitdir}/system/MACSec.service"
+SYSTEMD_AUTO_ENABLE:${PN} = "disable"
+SYSTEMD_SERVICE:${PN} = " MACSec.service"
+FILES:${PN} += "{systemd_unitdir}/system/MACSec.service"
 
 do_install() {
     install -d ${D}${sbindir}

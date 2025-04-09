@@ -1,5 +1,5 @@
 #patch backport-5.4 (come from openwrt/lede/target/linux/mediatek)
-SRC_URI_append = " \
+SRC_URI:append = " \
     file://010-Kbuild-don-t-hardcode-path-to-awk-in-scripts-ld-vers.patch \
     file://011-kbuild-export-SUBARCH.patch \
     file://030-modpost-add-a-helper-to-get-data-pointed-by-a-symbol.patch \

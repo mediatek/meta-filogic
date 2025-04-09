@@ -1,5 +1,5 @@
 #patch build (come from openwrt/lede/target/linux/mediatek)
-SRC_URI_append = " \
+SRC_URI:append = " \
     file://000-fix_kconfig.patch \
     file://001-fix_build.patch \
     file://002-change_allconfig.patch \

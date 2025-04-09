@@ -1,5 +1,5 @@
 SUMMARY = "Firmwares for EIP-197 Upstream Lookaside Driver"
-LICENSE = "GPL-2.0"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/GPL-2.0;md5=801f80980d171dd6425610833a22dbe6"
 
 SRC_URI = " \
@@ -21,4 +21,4 @@ do_install() {
 	install -m 0755 ${THISDIR}/files/src/firmware/ifpp.bin ${D}/${base_libdir}/firmware/inside-secure/eip197_minifw/
 }
 
-FILES_${PN} += "${base_libdir}/firmware/inside-secure/eip197_minifw/*"
+FILES:${PN} += "${base_libdir}/firmware/inside-secure/eip197_minifw/*"

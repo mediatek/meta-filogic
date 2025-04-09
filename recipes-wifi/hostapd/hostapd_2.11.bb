@@ -5,15 +5,15 @@ LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://hostapd/README;md5=0e430ef1be3d6eebf257cf493fc7661d"
 
 DEPENDS = "libnl-tiny openssl ubus ucode udebug"
-DEPENDS_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'telemetry2_0', 'telemetry', '', d)}"
-LDFLAGS_append = " ${@bb.utils.contains('DISTRO_FEATURES', 'telemetry2_0', ' -ltelemetry_msgsender ', '', d)}"
-RDEPENDS_${PN} += "gawk ucode udebug"
+DEPENDS:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'telemetry2_0', 'telemetry', '', d)}"
+LDFLAGS:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'telemetry2_0', ' -ltelemetry_msgsender ', '', d)}"
+RDEPENDS:${PN} += "gawk ucode udebug"
 
 PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6-6', 'kernel6-6-patches', 'patches-${PV}', d)}"
 UC_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6-6', 'kernel6-6-uc-files', 'uc-files', d)}"
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
-FILESEXTRAPATHS_prepend := "${THISDIR}/files/${PATCH_SRC}:"
-FILESEXTRAPATHS_prepend := "${THISDIR}/files/${UC_SRC}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files/${PATCH_SRC}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files/${UC_SRC}:"
 
 SRCREV ?= "96e48a05aa0a82e91e3cab75506297e433e253d0"
 
@@ -47,13 +47,13 @@ S = "${WORKDIR}/git"
 inherit update-rc.d systemd pkgconfig features_check
 INITSCRIPT_NAME = "hostapd"
 
-SYSTEMD_AUTO_ENABLE_${PN} = "enable"
-SYSTEMD_SERVICE_${PN} = "hostapd.service"
-SYSTEMD_SERVICE_${PN} += " init-uci-config.service"
-INSANE_SKIP_${PN} += "file-rdeps"
+SYSTEMD_AUTO_ENABLE:${PN} = "enable"
+SYSTEMD_SERVICE:${PN} = "hostapd.service"
+SYSTEMD_SERVICE:${PN} += " init-uci-config.service"
+INSANE_SKIP:${PN} += "file-rdeps"
 
 
-do_configure_append() {
+do_configure:append() {
     install -m 0644 ${WORKDIR}/hostapd-full.config ${B}/.config
 
     echo "CONFIG_MBO=y" >> ${B}/.config
@@ -124,7 +124,7 @@ do_install() {
          install -m 0755 ${WORKDIR}/mac80211.uc ${D}${datadir}/hostap
 }
 
-FILES_${PN} += " \
+FILES:${PN} += " \
                 ${systemd_unitdir}/system/hostapd.service \
                 ${sysconfdir}/hostapd-2G-EHT.conf \
                 ${sysconfdir}/hostapd-5G-EHT.conf \

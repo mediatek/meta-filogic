@@ -67,17 +67,17 @@
 # - professional sub-contract and customization services
 #
 ################################################################################
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 inherit ${@d.getVar('DISTRO', True) == 'rdk' and 'systemd' or 'base'}
 
-SRC_URI_append_rdk += "\
+SRC_URI:append_rdk += "\
     file://ubusd.service \
 "
 
-SYSTEMD_SERVICE_${PN}_rdk = "ubusd.service"
+SYSTEMD_SERVICE:${PN}_rdk = "ubusd.service"
 
-do_install_append_rdk() {
+do_install:append_rdk() {
     # Install systemd unit files
     install -d ${D}${systemd_unitdir}/system
     install -m 0644 ${WORKDIR}/ubusd.service ${D}${systemd_unitdir}/system

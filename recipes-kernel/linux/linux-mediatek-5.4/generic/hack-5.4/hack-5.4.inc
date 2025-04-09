@@ -1,5 +1,5 @@
 #patch hack-5.4 (come from openwrt/lede/target/linux/mediatek)
-SRC_URI_append = " \
+SRC_URI:append = " \
     file://204-module_strip.patch \
     file://210-darwin_scripts_include.patch \
     file://211-darwin-uuid-typedef-clash.patch \

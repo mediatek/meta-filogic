@@ -1,6 +1,6 @@
 SUMMARY = "mtk factory read and write"
 SECTION = "applications"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=751419260aa954499f7abaabaa882bbe"
 
 S = "${WORKDIR}"
@@ -15,8 +15,8 @@ SRC_URI = " \
     "
 
 SYSTEMD_PACKAGES = "${PN}"
-SYSTEMD_SERVICE_${PN} = " init-MacAddr.service"
-FILES_${PN} += "{systemd_unitdir}/system/init-MacAddr.service"
+SYSTEMD_SERVICE:${PN} = " init-MacAddr.service"
+FILES:${PN} += "{systemd_unitdir}/system/init-MacAddr.service"
 
 do_install() {
     install -d ${D}${sbindir}

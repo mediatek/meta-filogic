@@ -1,5 +1,5 @@
 #patch patches-6.6 (come from openwrt/lede/target/linux/mediatek)
-SRC_URI_append = " \
+SRC_URI:append = " \
     file://100-dts-update-mt7622-rfb1.patch \
     file://101-dts-update-mt7629-rfb.patch \
     file://103-mt7623-enable-arch-timer.patch \

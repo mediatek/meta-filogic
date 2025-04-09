@@ -1,6 +1,6 @@
 SUMMARY = "a linux kernel server which implements SMB3 protocol in kernel space for sharing files over network"
 SECTION = "Drivers"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=751419260aa954499f7abaabaa882bbe"
 
 inherit module
@@ -8,7 +8,7 @@ inherit module
 DEPENDS = "virtual/kernel"
 
 SRC_URI = " \
-    git://git@github.com/cifsd-team/ksmbd.git;protocol=https;tag=${PV} \
+    git://git@github.com/cifsd-team/ksmbd.git;protocol=https;tag=${PV};branch=master \
     file://COPYING;subdir=git \
     "
 

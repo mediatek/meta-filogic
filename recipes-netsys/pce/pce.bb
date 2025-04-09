@@ -1,5 +1,5 @@
 SUMMARY = "Mediatek PCE Driver"
-LICENSE = "GPL-2.0"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/GPL-2.0;md5=801f80980d171dd6425610833a22dbe6"
 
 inherit module
@@ -31,7 +31,7 @@ do_configure[noexec] = "1"
 MAKE_TARGETS = "modules"
 do_make_scripts[depends] += "virtual/kernel:do_shared_workdir"
 
-do_install_append() {
+do_install:append() {
 	# Install header files for depedency modules
 	cp -r ${S}/inc/pce ${STAGING_KERNEL_BUILDDIR}/source/include
 

@@ -7,8 +7,8 @@ LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://hostapd/README;md5=c905478466c90f1cefc0df987c40e172"
 
 DEPENDS = "dbus libnl ubus"
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
-FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files/patches:"
 
 SRCREV ?= "b704dc72ef824dfdd96674b90179b274d1d38105"
 SRC_URI = "git://w1.fi/hostap.git;protocol=https;branch=main \
@@ -33,7 +33,7 @@ CVE_PRODUCT = "wpa_supplicant"
 
 EXTRA_OEMAKE = "'LIBDIR=${libdir}' 'INCDIR=${includedir}' 'BINDIR=${sbindir}'"
 
-do_unpack_append() {
+do_unpack:append() {
     bb.build.exec_func('do_copy_openwrt_src', d)
 }
 
@@ -58,7 +58,7 @@ do_configure () {
 	rm -f wpa_supplicant/*.d wpa_supplicant/dbus/*.d
 }
 
-do_configure_append () {
+do_configure:append () {
 	# from Openwrt defconfig
 	install -m 0644 ${WORKDIR}/wpa_supplicant-full.config wpa_supplicant/.config
 
@@ -153,5 +153,5 @@ SYSTEMD_AUTO_ENABLE = "disable"
 
 # move from cmf
 FILES_SOLIBSDEV = ""
-FILES_${PN} += "${libdir}/libwpa_client.so"
+FILES:${PN} += "${libdir}/libwpa_client.so"
 

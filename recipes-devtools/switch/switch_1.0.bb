@@ -1,6 +1,6 @@
 SUMMARY = "Command to config switch"
 SECTION = "applications"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=751419260aa954499f7abaabaa882bbe"
 
 
@@ -14,7 +14,7 @@ SRC_URI = " \
 
 S = "${WORKDIR}/git/src"
 
-CFLAGS_prepend = " \
+CFLAGS:prepend = " \
     -D_GNU_SOURCE \
     -I${STAGING_INCDIR}/libnl3 \
     -I${S} \

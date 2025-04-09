@@ -1,5 +1,5 @@
 #patch patches (come from openwrt/lede/target/linux/mediatek)
-SRC_URI_append = " \
+SRC_URI:append = " \
     file://0001-sync-2024-10-02-openwrt-src-folder.patch \
     file://0002-sync-2024-10-02-openwrt-patches-folder.patch \
     file://0003-hostapd-afcd-add-AFC-daemon-support.patch \

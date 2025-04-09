@@ -1,6 +1,6 @@
 SUMMARY = "firmware upgrade tool"
 SECTION = "applications"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=751419260aa954499f7abaabaa882bbe"
 
 S = "${WORKDIR}"
@@ -17,7 +17,7 @@ SRC_URI = " \
 
 
 
-FILES_${PN} += " \
+FILES:${PN} += " \
             /lib/upgrade \
             "
 

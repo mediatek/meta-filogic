@@ -7,14 +7,14 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=07c4f6dea3845b02a18dc00c8c87699c"
 SRC_URI = "https://www.kernel.org/pub/software/network/${BPN}/${BP}.tar.xz"
 SRC_URI[sha256sum] = "57f8e7721cf5a880c13ae0c202edbb21092a060d45f9e9c59bcd2a8272bfa456"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files/patches:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files/patches:"
 require files/patches/patches.inc
 
 inherit bin_package allarch ${@bb.utils.contains("DISTRO_FEATURES", "kirkstone", "python3native", "pythonnative", d)}
 
 S = "${WORKDIR}/${PN}-${PV}"
 
-do_install_prepend() {
+do_install:prepend() {
     (python ${S}/db2fw.py ${S}/regulatory.db ${S}/db.txt)
 }
 

@@ -1,5 +1,5 @@
 #patch patches (come from openwrt/lede/target/linux/mediatek)
-SRC_URI_append = " \
+SRC_URI:append = " \
     file://0001-step-to-hostapd-2025-02-15-version.patch \
     file://0002-sync-2025-02-12-openwrt-src-folder.patch \
     file://0003-sync-2025-02-12-openwrt-patches-folder.patch \

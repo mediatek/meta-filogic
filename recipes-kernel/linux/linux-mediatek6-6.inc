@@ -1,6 +1,6 @@
 DESCRIPTION = "Linux Kernel for Mediatek SoCs"
 SECTION = "kernel"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 
 COMPATIBLE_MACHINE = "^filogic$"
 

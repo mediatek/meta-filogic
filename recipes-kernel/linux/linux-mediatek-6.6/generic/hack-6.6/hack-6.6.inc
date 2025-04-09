@@ -1,5 +1,5 @@
 #patch hack-6.6 (come from openwrt/lede/target/linux/mediatek)
-SRC_URI_append = " \
+SRC_URI:append = " \
     file://200-tools_portability.patch \
     file://204-module_strip.patch \
     file://205-kconfig-abort-configuration-on-unset-symbol.patch \

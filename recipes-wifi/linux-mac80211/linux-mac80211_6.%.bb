@@ -1,7 +1,7 @@
 DESCRIPTION = "Linux backports"
 HOMEPAGE = "https://backports.wiki.kernel.org"
 SECTION = "kernel/modules"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 inherit module
@@ -22,7 +22,7 @@ DEPENDS += "virtual/kernel"
 DEPENDS += "bison-native coreutils-native flex-native"
 PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6-6', 'kernel6-6-patches', 'patches-6.x', d)}"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files/${PATCH_SRC}/subsys:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files/${PATCH_SRC}/subsys:"
 
 require files/${PATCH_SRC}/subsys/subsys.inc
 
@@ -50,7 +50,7 @@ do_configure () {
     oe_runmake allnoconfig
 }
 
-do_install_prepend () {
+do_install:prepend () {
     mkdir -p \
 	${STAGING_KERNEL_BUILDDIR}/usr/include/mac80211 \
 	${STAGING_KERNEL_BUILDDIR}/usr/include/mac80211-backport \
@@ -63,7 +63,7 @@ do_install_prepend () {
     rm -f ${STAGING_KERNEL_BUILDDIR}/usr/include/mac80211-backport/linux/module.h
 }
 
-do_install_append() {
+do_install:append() {
     # Module
     cat ${D}/usr/include/linux-mac80211/Module.symvers >> ${TMPDIR}/work-shared/${MACHINE}/kernel-build-artifacts/Module.symvers
 }

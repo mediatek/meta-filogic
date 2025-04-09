@@ -1,5 +1,5 @@
 #patch patches (come from openwrt/lede/target/linux/mediatek)
-SRC_URI_append = " \
+SRC_URI:append = " \
     file://0001-iw-refactor-frequency-help.patch \
     file://0002-iw-add-puncturing-support.patch \
     file://0003-util-clarify-comment-about-parsed-pointer.patch \

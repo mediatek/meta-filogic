@@ -1,5 +1,5 @@
 #patch patches-5.4 (come from openwrt/lede/target/linux/mediatek)
-SRC_URI_append = " \
+SRC_URI:append = " \
     file://0001-v5.7-spi-make-spi-max-frequency-optional.patch \
     file://0002-v5.7-spi-add-support-for-mediatek-spi-nor-controller.patch \
     file://0003-switch-add-mt7531.patch \
@@ -260,4 +260,5 @@ SRC_URI_append = " \
     file://999-2910-dm-verity-redo-hash-for-safexel-sha256.patch;apply=no \
     file://999-2911-dm-support-get-device-by-part-uuid-and-label.patch;apply=no \
     file://999-2912-dm-expose-create-parameter-to-sysfs.patch;apply=no \
+    file://999-4100-mtk-tunnel-offload-support.patch;apply=no \
     "

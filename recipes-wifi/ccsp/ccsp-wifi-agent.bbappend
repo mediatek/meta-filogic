@@ -1,8 +1,8 @@
-FILESEXTRAPATHS_append := "${THISDIR}/files:"
+FILESEXTRAPATHS:append := "${THISDIR}/files:"
 
-CFLAGS_append += " -DWIFI_HAL_VERSION_3 -DCONFIG_DFS -D_WIFI_AX_SUPPORT_ -D_PLATFORM_TURRIS_ "
+CFLAGS:append += " -DWIFI_HAL_VERSION_3 -DCONFIG_DFS -D_WIFI_AX_SUPPORT_ -D_PLATFORM_TURRIS_ "
 
-SRC_URI_append += " \
+SRC_URI:append += " \
     file://Fix-dmcli-can-not-set-password.patch;apply=no \
 "
 

@@ -1,6 +1,6 @@
 DESCRIPTION = "Hardware-QoS-tool"
 SECTION = "applications"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=751419260aa954499f7abaabaa882bbe"
 
 DEPENDS += "libnl-tiny uci"
@@ -14,9 +14,9 @@ SRC_URI = " \
 
 S = "${WORKDIR}/git/src"
 
-CFLAGS_append = " -luci "
+CFLAGS:append = " -luci "
 
-do_install_append() {
+do_install:append() {
     install -d ${D}${sysconfdir}
     install -d ${D}${sysconfdir}/config
     install -m 0755 ${WORKDIR}/git/src/mtkhnat.config ${D}${sysconfdir}/config/mtkhnat

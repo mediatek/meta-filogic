@@ -1,5 +1,5 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
-SRC_URI_append = " \
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
+SRC_URI:append = " \
         file://sta-network.patch;apply=no \
         file://add_undefined_dfs_function.patch;apply=no \
         file://0001-Add-owe-mode.patch;apply=no \
@@ -31,4 +31,4 @@ do_filogic_patches() {
 }
 addtask filogic_patches after do_unpack before do_compile
 
-CFLAGS_append = " -DWIFI_HAL_VERSION_3"
+CFLAGS:append = " -DWIFI_HAL_VERSION_3"

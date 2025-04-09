@@ -1,5 +1,5 @@
 #patch backport-6.6 (come from openwrt/lede/target/linux/mediatek)
-SRC_URI_append = " \
+SRC_URI:append = " \
     file://0080-v6.9-smp-Avoid-setup_max_cpus_namespace_collision_shadowing.patch \
     file://065-v6.10-compiler_types.h-Define-__retain.patch \
     file://066-v6.10-bpf-Harden-__bpf_kfunc-against-linker-removal.patch \

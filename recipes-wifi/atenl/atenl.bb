@@ -17,7 +17,7 @@ SRC_URI = " \
 
 S = "${WORKDIR}/git/src"
 
-CFLAGS_append = " -I=${includedir}/libnl-tiny "
+CFLAGS:append = " -I=${includedir}/libnl-tiny "
 
 do_mtk_patches() {
 	cd ${S}/../
@@ -29,7 +29,7 @@ do_mtk_patches() {
 }
 addtask mtk_patches after do_patch before do_configure
 
-do_install_append() {
+do_install:append() {
     install -d ${D}${sbindir}
     install -m 0755 ${WORKDIR}/git/ated.sh ${D}${sbindir}/ated
     install -m 0755 ${WORKDIR}/git/iwpriv.sh ${D}${sbindir}/iwpriv

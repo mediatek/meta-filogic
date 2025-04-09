@@ -23,10 +23,10 @@ do_install_mt7987() {
     install -m 644 ${WORKDIR}/mt7987/* ${D}${base_libdir}/firmware/mediatek/mt7987/
 }
 
-FILES_${PN} += "${base_libdir}/firmware/mediatek/*"
+FILES:${PN} += "${base_libdir}/firmware/mediatek/*"
 
 # Make Mediatek-eth-firmware depend on all of the split-out packages.
-python populate_packages_prepend () {
+python populate_packages:prepend () {
     firmware_pkgs = oe.utils.packages_filter_out_system(d)
-    d.appendVar('RDEPENDS_mediatek-eth-firmware', ' ' + ' '.join(firmware_pkgs))
+    d.appendVar('RDEPENDS:mediatek-eth-firmware', ' ' + ' '.join(firmware_pkgs))
 }

@@ -18,11 +18,11 @@ SRC_URI[sha256sum] = "3f2db22ad41c675242b98ae3942dbf3112548c60a42ff739210f2de4e9
 
 PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'wifi_eht', 'patches-mlo', 'patches', d)}"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PATCH_SRC}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PATCH_SRC}:"
 require ${PATCH_SRC}/patches.inc
 
-SRC_URI_remove = "${@bb.utils.contains('DISTRO_FEATURES', 'wifi_eht', 'file://001-nl80211_h_sync.patch', '', d)}"
-SRC_URI_remove = "${@bb.utils.contains('DISTRO_FEATURES', 'wifi_eht', 'file://120-antenna_gain.patch', '', d)}"
+SRC_URI:remove = "${@bb.utils.contains('DISTRO_FEATURES', 'wifi_eht', 'file://001-nl80211_h_sync.patch', '', d)}"
+SRC_URI:remove = "${@bb.utils.contains('DISTRO_FEATURES', 'wifi_eht', 'file://120-antenna_gain.patch', '', d)}"
 
 inherit pkgconfig
 

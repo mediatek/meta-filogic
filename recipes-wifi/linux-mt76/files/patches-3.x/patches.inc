@@ -1,5 +1,5 @@
 #patch patches (come from openwrt/lede/target/linux/mediatek)
-SRC_URI_append = " \
+SRC_URI:append = " \
     file://0001-wifi-mt76-add-support-for-allocating-a-phy-without-h.patch \
     file://0002-mtk-mt76-mt7996-update-callback-to-.link_sta_rc_upda.patch \
     file://0003-mtk-mt76-mt7996-add-max-mpdu-len-capability.patch \

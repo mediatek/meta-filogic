@@ -1,13 +1,13 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
-SRC_URI_append = " file://init_readonlyfs.sh \
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
+SRC_URI:append = " file://init_readonlyfs.sh \
                    file://init_readonlyfs-emmc.sh \
                    file://kernelv6-init_readonlyfs.sh \
                    file://kernelv6-init_readonlyfs-emmc.sh \
                  "
-FILES_${PN} += " /overlay \
+FILES:${PN} += " /overlay \
                /rom \"
 
-do_install_append() {
+do_install:append() {
        if ${@bb.utils.contains('DISTRO_FEATURES','kernel_in_ubi','true','false',d)}; then
               install -d ${D}/overlay
               install -d ${D}/rom
@@ -29,4 +29,4 @@ do_install_append() {
        fi
 }
 
-FILES_${PN} += " ${rootlibexecdir}/init_readonlyfs.sh "
+FILES:${PN} += " ${rootlibexecdir}/init_readonlyfs.sh "

@@ -1,6 +1,6 @@
 SUMMARY = "fitblk firmware release tool"
 SECTION = "applications"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=c188eeeb69c0a05d0545816f1458a0c9"
 
 SRC_URI = " \
@@ -21,6 +21,6 @@ do_install() {
     install -m 0755 ${S}/fit.sh ${D}/lib/upgrade
 }
 
-FILES_${PN} += " \
+FILES:${PN} += " \
             /lib/upgrade \
             "
