@@ -255,9 +255,13 @@ SRC_URI:append = " \
     file://791-v6.11-01-net-phy-aquantia-move-priv-and-hw-stat-to-header.patch \
     file://791-v6.11-02-net-phy-aquantia-add-support-for-PHY-LEDs.patch \
     file://792-v6.16-igc-enable-HW-vlan-tag-insertion-stripping-by-defaul.patch \
+    file://793-01-v6.11-net-dsa-qca8k-do-not-write-port-mask-twice-in-bridge.patch \
+    file://793-02-v6.11-net-dsa-qca8k-factor-out-bridge-join-leave-logic.patch \
+    file://793-03-v6.11-net-dsa-qca8k-add-support-for-bridge-port-isolation.patch \
     file://795-v6.7-16-r8152-use-napi_gro_frags.patch \
-    file://798-v6.10-net-phy-air_en8811h-Add-the-Airoha-EN8811H-PHY-drive.patch \
-    file://799-v6.10-net-phy-air_en8811h-fix-some-error-codes.patch \
+    file://798-v6.10-01-net-phy-air_en8811h-Add-the-Airoha-EN8811H-PHY-drive.patch \
+    file://798-v6.10-02-net-phy-air_en8811h-fix-some-error-codes.patch \
+    file://798-v6.10-03-net-phy-air_en8811h-reset-netdev-rules-when-LED-is-s.patch \
     file://800-v6.9-0001-dt-bindings-leds-Add-FUNCTION-defines-for-per-band-W.patch \
     file://800-v6.9-0002-dt-bindings-leds-Add-LED_FUNCTION_WAN_ONLINE-for-Int.patch \
     file://810-v6.11-hwmon-g672-add-support-for-g761.patch \

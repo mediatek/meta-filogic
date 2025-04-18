@@ -7,8 +7,8 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}-${PV}/mediatek/flow_patch:"
 
 KBRANCH ?= "linux-6.6.y"
 
-LINUX_VERSION ?= "6.6.83"
-SRCREV_machine ?= "594a1dd5138a6bbaa1697e5648cce23d2520eba9"
+LINUX_VERSION ?= "6.6.86"
+SRCREV_machine ?= "3fa1ea3ede181bf11c329df056840b04ec2e3dca"
 KMETA = "kernel-meta"
 SRCREV_meta ?= "dff911ce87fe7b9944c6058907f079ddb0f3e840"
 

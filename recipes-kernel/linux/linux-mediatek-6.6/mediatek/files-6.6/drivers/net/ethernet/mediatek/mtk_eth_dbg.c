@@ -947,88 +947,90 @@ err_copy:
 	return -EFAULT;
 }
 
-static void gdm_reg_dump_v3(struct mtk_eth *eth, u32 gdm_id, u32 mib_base)
+static void gdm_reg_dump_v3(struct seq_file *seq, struct mtk_eth *eth,
+			    u32 gdm_id, u32 mib_base)
 {
-	pr_info("| GDMA%d_RX_GBCNT  : %010u (Rx Good Bytes)	|\n",
-		gdm_id, mtk_r32(eth, mib_base));
-	pr_info("| GDMA%d_RX_GPCNT  : %010u (Rx Good Pkts)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x08));
-	pr_info("| GDMA%d_RX_OERCNT : %010u (overflow error)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x10));
-	pr_info("| GDMA%d_RX_FERCNT : %010u (FCS error)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x14));
-	pr_info("| GDMA%d_RX_SERCNT : %010u (too short)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x18));
-	pr_info("| GDMA%d_RX_LERCNT : %010u (too long)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x1C));
-	pr_info("| GDMA%d_RX_CERCNT : %010u (checksum error)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x20));
-	pr_info("| GDMA%d_RX_FCCNT  : %010u (flow control)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x24));
-	pr_info("| GDMA%d_RX_VDPCNT : %010u (VID drop)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x28));
-	pr_info("| GDMA%d_RX_PFCCNT : %010u (priority flow control)\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x2C));
-	pr_info("| GDMA%d_TX_GBCNT  : %010u (Tx Good Bytes)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x40));
-	pr_info("| GDMA%d_TX_GPCNT  : %010u (Tx Good Pkts)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x48));
-	pr_info("| GDMA%d_TX_SKIPCNT: %010u (abort count)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x50));
-	pr_info("| GDMA%d_TX_COLCNT : %010u (collision count)|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x54));
-	pr_info("| GDMA%d_TX_OERCNT : %010u (overflow error)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x58));
-	pr_info("| GDMA%d_TX_FCCNT  : %010u (flow control)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x60));
-	pr_info("| GDMA%d_TX_PFCCNT : %010u (priority flow control)\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x64));
-	pr_info("|						|\n");
+	seq_printf(seq, "| GDMA%d_RX_GBCNT  : %010u (Rx Good Bytes)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base));
+	seq_printf(seq, "| GDMA%d_RX_GPCNT  : %010u (Rx Good Pkts)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x08));
+	seq_printf(seq, "| GDMA%d_RX_OERCNT : %010u (overflow error)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x10));
+	seq_printf(seq, "| GDMA%d_RX_FERCNT : %010u (FCS error)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x14));
+	seq_printf(seq, "| GDMA%d_RX_SERCNT : %010u (too short)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x18));
+	seq_printf(seq, "| GDMA%d_RX_LERCNT : %010u (too long)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x1C));
+	seq_printf(seq, "| GDMA%d_RX_CERCNT : %010u (checksum error)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x20));
+	seq_printf(seq, "| GDMA%d_RX_FCCNT  : %010u (flow control)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x24));
+	seq_printf(seq, "| GDMA%d_RX_VDPCNT : %010u (VID drop)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x28));
+	seq_printf(seq, "| GDMA%d_RX_PFCCNT : %010u (priority flow control)\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x2C));
+	seq_printf(seq, "| GDMA%d_TX_GBCNT  : %010u (Tx Good Bytes)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x40));
+	seq_printf(seq, "| GDMA%d_TX_GPCNT  : %010u (Tx Good Pkts)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x48));
+	seq_printf(seq, "| GDMA%d_TX_SKIPCNT: %010u (abort count)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x50));
+	seq_printf(seq, "| GDMA%d_TX_COLCNT : %010u (collision count)|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x54));
+	seq_printf(seq, "| GDMA%d_TX_OERCNT : %010u (overflow error)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x58));
+	seq_printf(seq, "| GDMA%d_TX_FCCNT  : %010u (flow control)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x60));
+	seq_printf(seq, "| GDMA%d_TX_PFCCNT : %010u (priority flow control)\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x64));
+	seq_puts(seq, "|						|\n");
 }
 
-static void gdm_reg_dump_v2(struct mtk_eth *eth, u32 gdm_id, u32 mib_base)
+static void gdm_reg_dump_v2(struct seq_file *seq, struct mtk_eth *eth,
+			    u32 gdm_id, u32 mib_base)
 {
-	pr_info("| GDMA%d_RX_GBCNT  : %010u (Rx Good Bytes)	|\n",
-		gdm_id, mtk_r32(eth, mib_base));
-	pr_info("| GDMA%d_RX_GPCNT  : %010u (Rx Good Pkts)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x08));
-	pr_info("| GDMA%d_RX_OERCNT : %010u (overflow error)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x10));
-	pr_info("| GDMA%d_RX_FERCNT : %010u (FCS error)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x14));
-	pr_info("| GDMA%d_RX_SERCNT : %010u (too short)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x18));
-	pr_info("| GDMA%d_RX_LERCNT : %010u (too long)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x1C));
-	pr_info("| GDMA%d_RX_CERCNT : %010u (checksum error)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x20));
-	pr_info("| GDMA%d_RX_FCCNT  : %010u (flow control)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x24));
-	pr_info("| GDMA%d_TX_SKIPCNT: %010u (abort count)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x28));
-	pr_info("| GDMA%d_TX_COLCNT : %010u (collision count)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x2C));
-	pr_info("| GDMA%d_TX_GBCNT  : %010u (Tx Good Bytes)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x30));
-	pr_info("| GDMA%d_TX_GPCNT  : %010u (Tx Good Pkts)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x38));
-	pr_info("|						|\n");
+	seq_printf(seq, "| GDMA%d_RX_GBCNT  : %010u (Rx Good Bytes)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base));
+	seq_printf(seq, "| GDMA%d_RX_GPCNT  : %010u (Rx Good Pkts)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x08));
+	seq_printf(seq, "| GDMA%d_RX_OERCNT : %010u (overflow error)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x10));
+	seq_printf(seq, "| GDMA%d_RX_FERCNT : %010u (FCS error)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x14));
+	seq_printf(seq, "| GDMA%d_RX_SERCNT : %010u (too short)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x18));
+	seq_printf(seq, "| GDMA%d_RX_LERCNT : %010u (too long)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x1C));
+	seq_printf(seq, "| GDMA%d_RX_CERCNT : %010u (checksum error)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x20));
+	seq_printf(seq, "| GDMA%d_RX_FCCNT  : %010u (flow control)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x24));
+	seq_printf(seq, "| GDMA%d_TX_SKIPCNT: %010u (abort count)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x28));
+	seq_printf(seq, "| GDMA%d_TX_COLCNT : %010u (collision count)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x2C));
+	seq_printf(seq, "| GDMA%d_TX_GBCNT  : %010u (Tx Good Bytes)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x30));
+	seq_printf(seq, "| GDMA%d_TX_GPCNT  : %010u (Tx Good Pkts)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x38));
+	seq_puts(seq, "|						|\n");
 }
 
-static void gdm_cnt_read(struct mtk_eth *eth)
+static void gdm_cnt_read(struct seq_file *seq, struct mtk_eth *eth)
 {
 	const struct mtk_reg_map *reg_map = eth->soc->reg_map;
 	struct mtk_hw_stats *hw_stats;
 	u32 i, mib_base;
 
-	pr_info("\n			<<CPU>>\n");
-	pr_info("			   |\n");
-	pr_info("+-----------------------------------------------+\n");
-	pr_info("|		  <<PSE>>		        |\n");
-	pr_info("+-----------------------------------------------+\n");
-	pr_info("			   |\n");
-	pr_info("+-----------------------------------------------+\n");
-	pr_info("|		  <<GDMA>>		        |\n");
+	seq_puts(seq, "\n			<<CPU>>\n");
+	seq_puts(seq, "			   |\n");
+	seq_puts(seq, "+-----------------------------------------------+\n");
+	seq_puts(seq, "|		  <<PSE>>		        |\n");
+	seq_puts(seq, "+-----------------------------------------------+\n");
+	seq_puts(seq, "			   |\n");
+	seq_puts(seq, "+-----------------------------------------------+\n");
+	seq_puts(seq, "|		  <<GDMA>>		        |\n");
 
 	for (i = 0; i < MTK_MAX_DEVS; i++) {
 		if (!eth->mac[i] || !eth->mac[i]->hw_stats)
@@ -1039,12 +1041,12 @@ static void gdm_cnt_read(struct mtk_eth *eth)
 		mib_base = reg_map->gdm1_cnt + hw_stats->reg_offset * i;
 
 		if (mtk_is_netsys_v3_or_greater(eth))
-			gdm_reg_dump_v3(eth, i + 1, mib_base);
+			gdm_reg_dump_v3(seq, eth, i + 1, mib_base);
 		else
-			gdm_reg_dump_v2(eth, i + 1, mib_base);
+			gdm_reg_dump_v2(seq, eth, i + 1, mib_base);
 	}
 
-	pr_info("+-----------------------------------------------+\n");
+	seq_puts(seq, "+-----------------------------------------------+\n");
 }
 
 void dump_each_port(struct seq_file *seq, struct mtk_eth *eth, u32 base)
@@ -1071,7 +1073,7 @@ int esw_cnt_read(struct seq_file *seq, void *v)
 {
 	struct mtk_eth *eth = g_eth;
 
-	gdm_cnt_read(eth);
+	gdm_cnt_read(seq, eth);
 
 	if (!mt7530_exist(eth))
 		return 0;
@@ -1545,10 +1547,16 @@ int dbg_regs_read(struct seq_file *seq, void *v)
 			   mtk_r32(eth, MTK_FE_CDM5_FSM));
 		seq_printf(seq, "| FE_CDM6_FSM	: %08x |\n",
 			   mtk_r32(eth, MTK_FE_CDM6_FSM));
+		seq_printf(seq, "| FE_CDM7_FSM	: %08x |\n",
+			   mtk_r32(eth, MTK_FE_CDM7_FSM));
 		seq_printf(seq, "| FE_GDM1_FSM	: %08x |\n",
 			   mtk_r32(eth, MTK_FE_GDM1_FSM));
 		seq_printf(seq, "| FE_GDM2_FSM	: %08x |\n",
 			   mtk_r32(eth, MTK_FE_GDM2_FSM));
+		if (mtk_is_netsys_v3_or_greater(eth)) {
+			seq_printf(seq, "| FE_GDM3_FSM	: %08x |\n",
+				   mtk_r32(eth, MTK_FE_GDM3_FSM));
+		}
 		seq_printf(seq, "| SGMII_EFUSE	: %08x |\n",
 			   mtk_dbg_r32(MTK_SGMII_EFUSE));
 		seq_printf(seq, "| SGMII0_RX_CNT : %08x |\n",
@@ -1857,7 +1865,7 @@ int hw_lro_stats_read_wrapper(struct seq_file *seq, void *v)
 {
 	struct mtk_eth *eth = g_eth;
 
-	if (mtk_is_netsys_v2_or_greater(eth))
+	if (mtk_is_netsys_v3_or_greater(eth))
 		hw_lro_stats_read_v2(seq, v);
 	else
 		hw_lro_stats_read_v1(seq, v);
@@ -2284,7 +2292,7 @@ int hw_lro_auto_tlb_read(struct seq_file *seq, void *v)
 
 		seq_printf(seq,
 			   "Ring[%d]: MAX_AGG_CNT=%d, AGG_TIME=%d, AGE_TIME=%d, Threshold=%d\n",
-			   MTK_HW_LRO_RING(i), agg_cnt, agg_time, age_time, reg_op4);
+			   MTK_HW_LRO_RING(i - 1), agg_cnt, agg_time, age_time, reg_op4);
 	}
 
 	seq_puts(seq, "\n");

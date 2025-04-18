@@ -10,7 +10,6 @@ SRC_URI:append = " \
     file://142-jffs2-add-splice-ops.patch \
     file://150-bridge_allow_receiption_on_disabled_port.patch \
     file://151-net-bridge-do-not-send-arp-replies-if-src-and-target.patch \
-    file://155-usbnet-restore-usb%d-name-exception-for-local-mac-addresses.patch \
     file://190-rtc-rs5c372-support_alarms_up_to_1_week.patch \
     file://191-rtc-rs5c372-let_the_alarm_to_be_used_as_wakeup_source.patch \
     file://203-kallsyms_uncompressed.patch \
@@ -132,7 +131,6 @@ SRC_URI:append = " \
     file://739-05-net-pcs-add-driver-for-MediaTek-USXGMII-PCS.patch \
     file://740-net-phy-motorcomm-Add-missing-include.patch \
     file://741-net-phy-broadcom-update-dependency-condition.patch \
-    file://742-net-phy-air_en8811h-reset-netdev-rules-when-LED-is-s.patch \
     file://780-ARM-kirkwood-add-missing-linux-if_ether.h-for-ETH_AL.patch \
     file://790-bus-mhi-core-add-SBL-state-callback.patch \
     file://791-tg3-Fix-DMA-allocations-on-57766-devices.patch \

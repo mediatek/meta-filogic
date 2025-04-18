@@ -41,6 +41,22 @@ SRC_URI:append:mt7988d = " \
 	file://mt7988d-rfb-eth0-gsw.dtso \
 "
 
+SRC_URI:append:mt7987 = " \
+	file://mt7987-spim-nand.dtso \
+	file://mt7987-spim-nor.dtso \
+	file://mt7987-emmc.dtso \
+	file://mt7987-sd.dtso \
+	file://mt7987-netsys-eth0-an8801sb.dtso \
+	file://mt7987-netsys-eth0-an8855.dtso \
+	file://mt7987-netsys-eth0-e2p5g.dtso \
+	file://mt7987-netsys-eth0-mt7531.dtso \
+	file://mt7987-netsys-eth1-i2p5g.dtso \
+	file://mt7987-netsys-eth2-an8801sb.dtso \
+	file://mt7987-netsys-eth2-e2p5g.dtso \
+	file://mt7987-netsys-eth2-sfp.dtso \
+	file://mt7987-netsys-eth2-usb.dtso \
+"
+
 SRC_URI:append:bpi4 = " \
 	file://mt7988a-bananapi-bpi-r4-emmc.dtso \
 	file://mt7988a-bananapi-bpi-r4-rtc.dtso \

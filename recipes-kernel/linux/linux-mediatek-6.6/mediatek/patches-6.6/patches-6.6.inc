@@ -145,11 +145,16 @@ SRC_URI:append = " \
     file://999-1723-v6.10-net-phy-sfp-allow-use-2500base-X-for-2500base-T-modules.patch \
     file://999-2000-arm64-dts-mt7988-move-phys-to-sgmiipcs-and-usxgmiisy.patch;apply=no \
     file://999-2100-thermal-mediatek-add-mt7988-lvts-support.patch \
+    file://999-2101-thermal-mediatek-add-mt7987-lvts-support.patch \
     file://999-2601-net-pcs-mtk-lynxi-add-pextp-reset.patch \
     file://999-2602-net-pcs-mtk_usxgmii-add-pextp-reset.patch \
     file://999-2603-net-pcs-mtk-lynxi-add-1000BASEX-autoneg.patch \
+    file://999-2604-net-pcs-mtk_lynxi-add-mt7987-support.patch \
+    file://999-2605-net-pcs-mtk-lynxi-add-autoneg-off.patch \
+    file://999-2606-net-pcs-mtk-lynxi-correct-power-down-setting.patch \
     file://999-2700-crypto-add-eip197-inside-secure-support-for-kernel-6.6.patch \
     file://999-2700-net-ethernet-mtk_eth_soc-add-mdio-reset-delay.patch \
+    file://999-2701-crypto-add-aead-3des-md5.patch \
     file://999-2701-net-ethernet-mtk_eth_soc-remove-pextp-reset.patch \
     file://999-2702-net-ethernet-mtk_eth_soc-revise-xgmac-force-mode.patch \
     file://999-2703-net-ethernet-mtk_eth_soc-revise-hardware-configurati.patch \
@@ -167,6 +172,7 @@ SRC_URI:append = " \
     file://999-2715-net-ethernet-mtk_eth_soc-add-mt7987-support.patch \
     file://999-2716-net-ethernet-mtk_eth_soc-convert-cap_bit-in-mtk_eth_.patch \
     file://999-2717-net-ethernet-mtk_eth_soc-add-GLO_MEM-support-for-lro.patch \
+    file://999-2718-net-ethernet-mtk_eth_soc-correct-the-max-weight-of-t.patch \
     file://999-2733-add-netlink-support-for-dsa.patch \
     file://999-2746-mt7531-dsa-iphy-fine-tuning.patch \
     file://999-2747-crypto-eth-inline.patch \
@@ -185,6 +191,8 @@ SRC_URI:append = " \
     file://999-2763-net-phy-marvell-add-features-callback-for-88E1111.patch \
     file://999-2764-net-phy-sfp-add-some-FS-copper-SFP-fixes.patch \
     file://999-2765-net-phy-sfp-add-some-checksum-fail-SFP-war.patch \
+    file://999-2766-net-phy-airoha-add-an8801sb.patch \
+    file://999-2767-net-phy-air_en8811h-update-to-v2.0.3.patch \
     file://999-2800-trng-driver-porting.patch \
     file://999-clk-01-clk-mediatek-add-mt7987-clock-drivers-support.patch \
     file://999-clk-01-clk-mediatek-mark-some-mt7987-clks-as-critical.patch \

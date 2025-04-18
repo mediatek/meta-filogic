@@ -12,6 +12,7 @@
 #include <dt-bindings/pinctrl/mt65xx.h>
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/thermal/thermal.h>
+#include <dt-bindings/reset/mediatek,mt7987-resets.h>
 #include <dt-bindings/regulator/richtek,rt5190a-regulator.h>
 
 / {
@@ -147,6 +148,7 @@
 			compatible = "mediatek,mt7987-infracfg", "syscon";
 			reg = <0 0x10001000 0 0x1000>;
 			#clock-cells = <1>;
+			#reset-cells = <1>;
 		};
 
 		topckgen: topckgen@1001b000 {
@@ -164,17 +166,35 @@
 		sgmiisys0: syscon@10060000 {
 			compatible = "mediatek,mt7987-sgmiisys",
 				     "mediatek,mt7987-sgmiisys0",
-				     "syscon";
+				     "syscon",
+				     "simple-mfd";
 			reg = <0 0x10060000 0 0x1000>;
 			#clock-cells = <1>;
+
+			sgmiipcs0: pcs {
+				compatible = "mediatek,mt7987-sgmii";
+				clocks = <&topckgen CLK_TOP_SGM_0_SEL>,
+					 <&sgmiisys0 CLK_SGM0_TX_EN>,
+					 <&sgmiisys0 CLK_SGM0_RX_EN>;
+				clock-names = "sgmii_sel", "sgmii_tx", "sgmii_rx";
+			};
 		};
 
 		sgmiisys1: syscon@10070000 {
 			compatible = "mediatek,mt7987-sgmiisys",
 				     "mediatek,mt7987-sgmiisys1",
-				     "syscon";
+				     "syscon",
+				     "simple-mfd";
 			reg = <0 0x10070000 0 0x1000>;
 			#clock-cells = <1>;
+
+			sgmiipcs1: pcs {
+				compatible = "mediatek,mt7987-sgmii";
+				clocks = <&topckgen CLK_TOP_SGM_1_SEL>,
+					 <&sgmiisys1 CLK_SGM1_TX_EN>,
+					 <&sgmiisys1 CLK_SGM1_RX_EN>;
+				clock-names = "sgmii_sel", "sgmii_tx", "sgmii_rx";
+			};
 		};
 
 		mcusys: mcusys@10400000 {
@@ -235,10 +255,11 @@
 	};
 
 	thermal-zones {
-		thermal_zone0: soc_thermal {
+		cpu_thermal: cpu-thermal {
 			polling-delay-passive = <1000>;
 			polling-delay = <1000>;
 			thermal-sensors = <&lvts 0>;
+
 			trips {
 				cpu_trip_crit: crit {
 					temperature = <125000>;
@@ -252,53 +273,44 @@
 					type = "hot";
 				};
 
-				cpu_trip_active1: active1 {
+				cpu_trip_active_high: active-high {
 					temperature = <115000>;
 					hysteresis = <2000>;
 					type = "active";
 				};
 
-				cpu_trip_active0: active0 {
+				cpu_trip_active_med: active-med {
 					temperature = <85000>;
 					hysteresis = <2000>;
 					type = "active";
 				};
 
-				cpu_trip_passive: passive {
+				cpu_trip_active_low: active-low {
 					temperature = <40000>;
 					hysteresis = <2000>;
-					type = "passive";
+					type = "active";
 				};
 			};
 
 			cooling-maps {
 				cpu-active-high {
-					cooling-device = <&fan 2 2>;
-					trip = <&cpu_trip_active1>;
+				/* active: set fan to cooling level 2 */
+					cooling-device = <&fan 3 3>;
+					trip = <&cpu_trip_active_high>;
 				};
 
 				cpu-active-low {
-					cooling-device = <&fan 1 1>;
-					trip = <&cpu_trip_active0>;
+				/* active: set fan to cooling level 1 */
+					cooling-device = <&fan 2 2>;
+					trip = <&cpu_trip_active_med>;
 				};
 
 				cpu-passive {
-					cooling-device = <&fan 0 0>;
-					trip = <&cpu_trip_passive>;
+				/* passive: set fan to cooling level 0 */
+					cooling-device = <&fan 1 1>;
+					trip = <&cpu_trip_active_low>;
 				};
 			};
-		};
-
-		thermal_zone1: mcusys_thermal {
-			polling-delay-passive = <1000>;
-			polling-delay = <1000>;
-			thermal-sensors = <&lvts 1>;
-		};
-
-		thermal_zone2: eth2p5g_thermal {
-			polling-delay-passive = <1000>;
-			polling-delay = <1000>;
-			thermal-sensors = <&lvts 2>;
 		};
 	};
 
@@ -369,12 +381,6 @@
 			interrupts = <GIC_SPI 225 IRQ_TYPE_LEVEL_HIGH>;
 			interrupt-parent = <&gic>;
 			#interrupt-cells = <2>;
-
-			pcie1pereset {
-				gpio-hog;
-				gpios = <36 GPIO_ACTIVE_HIGH>;
-				output-high;
-			};
 		};
 
 		boottrap: boottrap@1001f6f0 {
@@ -521,13 +527,14 @@
 		};
 
 		lvts: lvts@1100a000 {
-			compatible = "mediatek,mt7987-lvts";
-			#thermal-sensor-cells = <1>;
+			compatible = "mediatek,mt7987-lvts-ap";
 			reg = <0 0x1100a000 0 0x1000>;
 			clocks = <&infracfg CLK_INFRA_26M_THERM_SYSTEM>;
 			clock-names = "lvts_clk";
+			resets = <&infracfg MT7987_INFRA_RST1_THERM_CTRL_SWRST>;
 			nvmem-cells = <&lvts_calibration>;
-			nvmem-cell-names = "e_data1";
+			nvmem-cell-names = "lvts-calib-data-1";
+			#thermal-sensor-cells = <1>;
 			status = "disabled";
 		};
 
@@ -543,19 +550,16 @@
 				clocks = <&infracfg CLK_INFRA_USB_UTMI_CK_P1>;
 				clock-names = "ref";
 				#phy-cells = <1>;
-
 				auto_load_valid;
 				nvmem-cells = <&u2_intr_p0>,
 					      <&u2_auto_load_valid_p0>;
 				nvmem-cell-names = "intr", "auto_load_valid";
 			};
-
 			tphyu3port0: usb-phy@11c50700 {
 				reg = <0 0x11c50700 0 0x900>;
 				clocks = <&infracfg CLK_INFRA_USB_PIPE_CK_P1>;
 				clock-names = "ref";
 				#phy-cells = <1>;
-
 				auto_load_valid;
 				nvmem-cells = <&comb_intr_p0>,
 					      <&comb_rx_imp_p0>,
@@ -563,24 +567,33 @@
 					      <&comb_auto_load_valid>;
 				nvmem-cell-names = "intr", "rx_imp", "tx_imp",
 						   "auto_load_valid";
-
-				/* MT7987: 4'b0010 default USB30
-				 * Don't change the '0'
-				 */
 				mediatek,syscon-type = <&topmisc 0x218 0>;
-
 				status = "disabled";
 			};
 		};
 
-		xhci: xhci@11200000 {
+		ssusb: usb@11200000 {
 			compatible = "mediatek,mt7987-xhci",
-				"mediatek,mtk-xhci";
+				     "mediatek,mtk-xhci";
 			reg = <0 0x11200000 0 0x2e00>,
-			<0 0x11203e00 0 0x0100>;
+			      <0 0x11203e00 0 0x0100>;
 			reg-names = "mac", "ippc";
 			interrupts = <GIC_SPI 172 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&infracfg CLK_INFRA_USB_SYS_CK_P1>,
+				 <&infracfg CLK_INFRA_USB_XHCI_CK_P1>,
+				 <&infracfg CLK_INFRA_USB_CK_P1>,
+				 <&infracfg CLK_INFRA_66M_USB_HCK_CK_P1>,
+				 <&infracfg CLK_INFRA_133M_USB_HCK_CK_P1>;
+			clock-names = "sys_ck",
+				      "xhci_ck",
+				      "ref_ck",
+				      "mcu_ck",
+				      "dma_ck";
+			#address-cells = <2>;
+			#size-cells = <2>;
+			phys = <&tphyu2port0 PHY_TYPE_USB2>;
 			usb2-lpm-disable;
+			mediatek,u3p-dis-msk=<1>;
 			status = "disabled";
 		};
 
@@ -655,9 +668,8 @@
 		};
 
 		pcie0: pcie@11280000 {
-			compatible = "mediatek,mt7988-pcie",
-				     "mediatek,mt7987-pcie",
-				     "mediatek,mt7986-pcie";
+			compatible = "mediatek,mt7987-pcie",
+				     "mediatek,mt8192-pcie";
 			device_type = "pci";
 			#address-cells = <3>;
 			#size-cells = <2>;
@@ -673,9 +685,10 @@
 			clocks = <&infracfg CLK_INFRA_PCIE_PIPE_P0>,
 				 <&infracfg CLK_INFRA_PCIE_GFMUX_TL_P0>,
 				 <&infracfg CLK_INFRA_PCIE_PERI_26M_CK_P0>,
-				 <&infracfg CLK_INFRA_133M_PCIE_CK_P0>;
+				 <&infracfg CLK_INFRA_133M_PCIE_CK_P0>,
+				 <&topckgen CLK_TOP_PEXTP_TL_SEL>;
 			clock-names = "pl_250m", "tl_26m", "peri_26m",
-				      "top_133m";
+				      "top_133m", "pextp_clk";
 			status = "disabled";
 			#interrupt-cells = <1>;
 			interrupt-map-mask = <0 0 0 0x7>;
@@ -692,8 +705,9 @@
 
 		pcie1: pcie@11290000 {
 			compatible = "mediatek,mt7988-pcie",
-				     "mediatek,mt7987-pcie",
-				     "mediatek,mt7986-pcie";
+				     "mediatek,mt7988-pcie",
+				     "mediatek,mt7986-pcie",
+				     "mediatek,mt8192-pcie";
 			device_type = "pci";
 			#address-cells = <3>;
 			#size-cells = <2>;
@@ -709,9 +723,10 @@
 			clocks = <&infracfg CLK_INFRA_PCIE_PIPE_P1>,
 				 <&infracfg CLK_INFRA_PCIE_GFMUX_TL_P1>,
 				 <&infracfg CLK_INFRA_PCIE_PERI_26M_CK_P1>,
-				 <&infracfg CLK_INFRA_133M_PCIE_CK_P1>;
+				 <&infracfg CLK_INFRA_133M_PCIE_CK_P1>,
+				 <&topckgen CLK_TOP_PEXTP_TL_P1_SEL>;
 			clock-names = "pl_250m", "tl_26m", "peri_26m",
-				      "top_133m";
+				      "top_133m", "pextp_clk";
 			status = "disabled";
 			#interrupt-cells = <1>;
 			interrupt-map-mask = <0 0 0 0x7>;
@@ -760,27 +775,27 @@
 				bits = <0 1>;
 			};
 
-			comb_rx_imp_p0: usb3-rx-imp@8ec {
+			comb_rx_imp_p0: usb3-rx-imp@8ec,1 {
 				reg = <0x8ec 1>;
 				bits = <0 5>;
 			};
 
-			comb_tx_imp_p0: usb3-tx-imp@8ec {
+			comb_tx_imp_p0: usb3-tx-imp@8ec,2 {
 				reg = <0x8ec 2>;
 				bits = <5 5>;
 			};
 
-			comb_intr_p0: usb3-intr@8ec {
-				reg = <0x8ec 2>;
-				bits = <10 6>;
+			comb_intr_p0: usb3-intr@8ec,3 {
+				reg = <0x8ed 1>;
+				bits = <2 6>;
 			};
 
-			u2_auto_load_valid_p0: usb2-alv-p0@8cc {
+			u2_auto_load_valid_p0: usb2-alv-p0@8cc,1 {
 				reg  = <0x8cc 1>;
 				bits = <0 1>;
 			};
 
-			u2_intr_p0: usb2-intr-p0@8cc {
+			u2_intr_p0: usb2-intr-p0@8cc,2 {
 				reg  = <0x8cc 1>;
 				bits = <1 5>;
 			};
