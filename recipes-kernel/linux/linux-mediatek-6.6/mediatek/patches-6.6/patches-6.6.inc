@@ -146,6 +146,9 @@ SRC_URI:append = " \
     file://999-2000-arm64-dts-mt7988-move-phys-to-sgmiipcs-and-usxgmiisy.patch;apply=no \
     file://999-2100-thermal-mediatek-add-mt7988-lvts-support.patch \
     file://999-2101-thermal-mediatek-add-mt7987-lvts-support.patch \
+    file://999-2133-pwm-mediatek-add-longer-period-support.patch \
+    file://999-2135-add-pwm-feature-for-mt7987.patch \
+    file://999-2136-add-pwm-hw-breathing-light-feature.patch \
     file://999-2601-net-pcs-mtk-lynxi-add-pextp-reset.patch \
     file://999-2602-net-pcs-mtk_usxgmii-add-pextp-reset.patch \
     file://999-2603-net-pcs-mtk-lynxi-add-1000BASEX-autoneg.patch \

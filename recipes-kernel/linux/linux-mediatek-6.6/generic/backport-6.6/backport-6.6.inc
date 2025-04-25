@@ -88,11 +88,11 @@ SRC_URI:append = " \
     file://722-v6.10-dt-bindings-arm-qcom-ids-Add-SoC-ID-for-IPQ5321.patch \
     file://734-v6.8-net-phy-bcm54612e-add-suspend-resume.patch \
     file://740-v6.10-net-stmmac-dwmac-ipq806x-account-for-rgmii-txid-rxid.patch \
-    file://751-01-STABLE-net-ethernet-mediatek-split-tx-and-rx-fields-in-mtk_.patch \
-    file://751-02-STABLE-net-ethernet-mediatek-use-QDMA-instead-of-ADMAv2-on-.patch \
+    file://751-01-v6.8-net-ethernet-mediatek-split-tx-and-rx-fields-in-mtk_.patch \
+    file://751-02-v6.8-net-ethernet-mediatek-use-QDMA-instead-of-ADMAv2-on-.patch \
     file://751-03-v6.4-net-ethernet-mtk_eth_soc-improve-keeping-track-of-of.patch \
     file://751-04-v6.4-net-ethernet-mediatek-fix-ppe-flow-accounting-for-L2.patch \
-    file://752-03-v6.6-net-ethernet-mtk_eth_soc-rely-on-mtk_pse_port-defini.patch \
+    file://752-03-v6.7-net-ethernet-mtk_eth_soc-rely-on-mtk_pse_port-defini.patch \
     file://752-05-v6.7-net-ethernet-mtk_wed-do-not-assume-offload-callbacks.patch \
     file://752-06-v6.7-net-ethernet-mtk_wed-introduce-versioning-utility-ro.patch \
     file://752-07-v6.7-net-ethernet-mtk_wed-do-not-configure-rx-offload-if-.patch \
@@ -124,7 +124,7 @@ SRC_URI:append = " \
     file://763-v6.10-net-dsa-introduce-dsa_phylink_to_port.patch \
     file://764-v6.10-net-dsa-allow-DSA-switch-drivers-to-provide-their-ow.patch \
     file://765-v6.9-net-phy-aquantia-add-support-for-AQR114C-PHY-ID.patch \
-    file://770-net-introduce-napi_is_scheduled-helper.patch \
+    file://770-v6.7-net-introduce-napi_is_scheduled-helper.patch \
     file://771-v6.7-01-net-stmmac-improve-TX-timer-arm-logic.patch \
     file://771-v6.7-02-net-stmmac-move-TX-timer-arm-after-DMA-enable.patch \
     file://771-v6.7-03-net-stmmac-increase-TX-coalesce-timer-to-5ms.patch \
@@ -175,6 +175,13 @@ SRC_URI:append = " \
     file://780-47-v6.14-r8169-adjust-version-numbering-for-RTL8126.patch \
     file://780-48-v6.14-r8169-add-support-for-RTL8125D-rev.b.patch \
     file://780-49-v6.14-r8169-add-support-for-RTL8125BP-rev.b.patch \
+    file://780-50-v6.15-r8169-make-Kconfig-option-for-LED-support-user-visib.patch \
+    file://780-51-v6.15-r8169-don-t-scan-PHY-addresses-0.patch \
+    file://780-52-v6.15-r8169-add-support-for-Intel-Killer-E5000.patch \
+    file://780-53-v6.15-r8169-add-PHY-c45-ops-for-MDIO_MMD_VENDOR2-registers.patch \
+    file://780-54-v6.15-r8169-increase-max-jumbo-packet-size-on-RTL8125-RTL8.patch \
+    file://780-55-v6.15-r8169-enable-RTL8168H-RTL8168EP-RTL8168FP-ASPM-suppo.patch \
+    file://780-56-v6.15-r8169-disable-RTL8126-ZRX-DC-timeout.patch \
     file://781-01-v6.9-net-phy-realtek-add-support-for-RTL8126A-integrated-.patch \
     file://781-02-v6.9-net-phy-realtek-use-generic-MDIO-constants.patch \
     file://781-03-v6.9-net-phy-realtek-add-5Gbps-support-to-rtl822x_config_.patch \
@@ -201,6 +208,13 @@ SRC_URI:append = " \
     file://781-24-v6.14-net-phy-move-realtek-PHY-driver-to-its-own-subdirect.patch \
     file://781-25-v6.14-net-phy-realtek-add-hwmon-support-for-temp-sensor-on.patch \
     file://781-26-v6.14-net-phy-realtek-HWMON-support-for-standalone-version.patch \
+    file://781-27-v6.15-net-phy-realtek-make-HWMON-support-a-user-visible-Kc.patch \
+    file://781-28-v6.15-net-phy-realtek-use-string-choices-helpers.patch \
+    file://781-29-v6.15-net-phy-realtek-improve-mmd-register-access-for-inte.patch \
+    file://781-30-v6.15-net-phy-realtek-switch-from-paged-to-MMD-ops-in-rtl8.patch \
+    file://781-31-v6.15-net-phy-realtek-add-helper-RTL822X_VND2_C22_REG.patch \
+    file://781-32-v6.15-net-phy-realtek-add-defines-for-shadowed-c45-standar.patch \
+    file://781-33-v6.15-net-phy-realtek-disable-PHY-mode-EEE.patch \
     file://790-01-v6.7-net-dsa-mt7530-Convert-to-platform-remove-callback-r.patch \
     file://790-02-v6.7-net-dsa-mt753x-remove-mt753x_phylink_pcs_link_up.patch \
     file://790-03-v6.7-net-dsa-mt7530-replace-deprecated-strncpy-with-ethto.patch \
@@ -350,4 +364,5 @@ SRC_URI:append = " \
     file://900-v6.11-net-free_netdev-exit-earlier-if-dummy.patch \
     file://901-v6.13-net-dsa-mv88e6xxx-Support-LED-control.patch \
     file://903-v6.12-Bluetooth-btsdio-Do-not-bind-to-non-removable-CYW437.patch \
+    file://910-v6.13-pmdomain-core-add-dummy-release-function-to-genpd-de.patch \
     "
