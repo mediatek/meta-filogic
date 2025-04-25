@@ -1,2 +1,2 @@
-PV_kernel6-6 = "6.12.6"
-SRC_URI_kernel6-6[sha256sum] = "28ec39425a1b3270e1422d92a8131a6a3d8919cc13e8ee250c315e55d922ba68"
+PV_kernel6-6 = "6.14-rc7"
+SHASUM-kernelv6 = "d81c67ca24cbf41fd8d7eaa32aedeb238b5db83ea2139bbaa8ebe532b39e0ab4"

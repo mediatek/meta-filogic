@@ -21,4 +21,5 @@ SRC_URI:append = " \
     file://0019-iw-add-link_id-for-offchannel-operation.patch \
     file://0020-mtk-iw-dump-per-radio-antenna_mask.patch \
     file://0021-iw-add-radio-mask-for-scanning.patch \
+    file://0022-sync-nl80211.h.patch \
     "

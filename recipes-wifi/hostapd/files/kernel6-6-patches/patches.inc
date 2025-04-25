@@ -175,14 +175,39 @@ SRC_URI:append = " \
     file://0173-mtk-wpa_s-fix-MLD-connection-issue-when-WPS-is-used.patch \
     file://0174-mtk-hostapd-allow-only-new-association-to-enter-WPA-.patch \
     file://0175-mtk-hostapd-add-support-for-EPCS.patch \
-    file://0176-fix-nl80211_copy.h.patch \
-    file://0177-mtk-hostapd-fix-RNR-unsync-issue-after-channel-switc.patch \
+    file://0176-mtk-hostapd-fix-RNR-unsync-issue-after-channel-switc.patch \
+    file://0177-mtk-hostapd-update-preference-val-of-neighbor-report.patch \
     file://0178-mtk-hostapd-update-preference-val-of-neighbor-report.patch \
-    file://0179-mtk-hostapd-update-preference-val-of-neighbor-report.patch \
-    file://0180-mtk-hostapd-add-new-argument-mbo_cert-for-hostapd_cl.patch \
-    file://0181-mtk-wpa_s-also-allow-AKM24-SAE-EXT-when-wps_cred_add.patch \
-    file://0182-mtk-hostapd-make-sure-all-BSSes-are-MLD-enabled-when.patch \
-    file://0183-Revert-mtk-hostapd-make-sure-all-BSSes-are-MLD-enabl.patch \
-    file://0184-fixup-mtk-hostapd-Add-txpower-vendor-command.patch \
-    file://0185-mtk-hostapd-prevent-use-after-free-on-i802_bss.patch \
+    file://0179-mtk-hostapd-add-new-argument-mbo_cert-for-hostapd_cl.patch \
+    file://0180-mtk-wpa_s-also-allow-AKM24-SAE-EXT-when-wps_cred_add.patch \
+    file://0181-mtk-hostapd-rework-add-txpower-vendor-command.patch \
+    file://0182-mtk-hostapd-prevent-use-after-free-on-i802_bss.patch \
+    file://0183-mtk-hostapd-fix-aid-allocation.patch \
+    file://0184-mtk-hostapd-send-beacon-request-to-STA-s-MLD-address.patch \
+    file://0185-mtk-hostapd-remove-interface-count-check-from-hostap.patch \
+    file://0186-mtk-hostapd-properly-reset-ret-value-so-that-followi.patch \
+    file://0187-mtk-hostapd-keep-processing-remaining-link-s-in-asso.patch \
+    file://0188-mtk-hostapd-support-handle-mscs-protocol.patch \
+    file://0189-mtk-hostapd-add-hostapd_eid_wmm_len.patch \
+    file://0190-mtk-hostapd-include-vendor-element-in-MBSSID-nontran.patch \
+    file://0191-mtk-hostapd-refactor-MTK-configuration-options-in-ho.patch \
+    file://0192-mtk-hostapd-refactor-for-mld-active_links.patch \
+    file://0193-mtk-hostapd-prevent-repeatly-adding-link-to-MLD.patch \
+    file://0194-mtk-hostapd-ucode-fix-Extender-MLD-setup-when-backgr.patch \
+    file://0195-mtk-hostapd-update-freq-on-i802_bss-s-link-only-afte.patch \
+    file://0196-mtk-hostapd-support-delete-mscs-policy-for-the-speci.patch \
+    file://0197-mtk-hostapd-FT-Add-FT-MIC-calculation-support-mlo.patch \
+    file://0198-mtk-hostapd-FT-Add-rrb-frame-support-mld-address.patch \
+    file://0199-mtk-hostapd-fix-set-key-fail-when-11v-mbss-is-enable.patch \
+    file://0200-mtk-hostapd-include-BPCC-in-MLE-STA-control-when-han.patch \
+    file://0201-mtk-hostapd-prevent-repeating-beacon-set-in-handle_a.patch \
+    file://0202-mtk-hostapd-FT-Use-primary-wpa_auth-to-handle-rrb-in.patch \
+    file://0203-mtk-hostapd-Add-support-for-printing-eml_cap-using-h.patch \
+    file://0204-hostapd-mtk-drop-contiguous-association-frame-before.patch \
+    file://0205-mtk-hostapd-refactor-BSS-color-change-collision-dete.patch \
+    file://0206-mtk-hostapd-sync-nl80211_copy.h.patch \
+    file://0207-mtk-hostapd-fix-get-set-edcca-vendor-command-for-sin.patch \
+    file://0208-mtk-hostapd-add-802.1X-support-AP-MLD.patch \
+    file://0209-mtk-hostapd-add-support-to-dump-STA-Neg-TTLM-status.patch \
+    file://0210-mtk-hostapd-prevent-NULL-pointer-access-in-hostapd_f.patch \
     "

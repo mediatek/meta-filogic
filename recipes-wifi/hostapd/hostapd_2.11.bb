@@ -37,7 +37,6 @@ SRC_URI = " \
     file://board.json \
     ${@bb.utils.contains('DISTRO_FEATURES','kernel6-6','','file://src-${PV}',d)} \
     file://002-rdkb-add-ucode-support.patch;apply=no \
-    file://003-rdkb-hostapd-add-bitfield.o-in-Makefile.patch;apply=no \
 "
 require files/${PATCH_SRC}/patches.inc
 
@@ -91,7 +90,6 @@ do_filogic_patches() {
     cd ${S}
         if [ ! -e patch_applied ]; then
             patch -p1 < ${WORKDIR}/002-rdkb-add-ucode-support.patch
-            patch -p1 < ${WORKDIR}/003-rdkb-hostapd-add-bitfield.o-in-Makefile.patch
             touch patch_applied
         fi
 }
