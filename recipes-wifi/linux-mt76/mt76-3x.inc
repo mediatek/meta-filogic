@@ -1,2 +1,4 @@
 SRCREV_mt7990 = "ecca0e77b4bce629ec1f79d83bbd14a68f919188"
 SRCREV_kernel6-6 = "be28ef77e330fdee28054214c798f028ddfbbc02"
+PKG_YEAR_kernel6-6="25"
+PKG_MONTH_kernel6-6="04"

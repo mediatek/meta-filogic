@@ -5,6 +5,9 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=c188eeeb69c0a05d0545816f1458a0c9"
 
 inherit module
 
+PKG_YEAR="24"
+PKG_MONTH="10"
+
 require mt76-3x.inc
 SRC_URI = " \
     git://git@github.com/openwrt/mt76.git;protocol=https;branch=master \
@@ -28,6 +31,7 @@ require files/${PATCH_SRC}/patches.inc
 
 S = "${WORKDIR}/git"
 
+ADDITIONAL_CFLAGS="-DPKG_YEAR=${PKG_YEAR} -DPKG_MONTH=${PKG_MONTH}"
 
 NOSTDINC_FLAGS = " \
     -I${B} \
@@ -57,6 +61,7 @@ EXTRA_OEMAKE = " \
     M=${S} \
     ${PKG_MAKE_FLAGS} \
     NOSTDINC_FLAGS="${NOSTDINC_FLAGS}" \
+    ADDITIONAL_CFLAGS="${ADDITIONAL_CFLAGS}" \
     "
 
 MAKE_TARGETS = "modules"
