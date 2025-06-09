@@ -25,6 +25,8 @@ SRC_URI:append = " \
     file://410-v6.13-05-block-add-support-for-partition-table-defined-in-OF.patch \
     file://411-v6.7-mtd-spinand-add-support-for-FORESEE-F35SQA002G.patch \
     file://412-v6.14-mtd-spinand-add-support-for-FORESEE-F35SQA001G.patch \
+    file://421-01-v6.16-spi-bcm63xx-spi-fix-shared-reset.patch \
+    file://421-02-v6.16-spi-bcm63xx-hsspi-fix-shared-reset.patch \
     file://600-v6.10-net-Remove-conditional-threaded-NAPI-wakeup-based-on.patch \
     file://601-v6.10-net-Allow-to-use-SMP-threads-for-backlog-NAPI.patch \
     file://602-v6.10-net-Use-backlog-NAPI-to-clean-up-the-defer_list.patch \
@@ -86,6 +88,7 @@ SRC_URI:append = " \
     file://720-v6.9-net-mdio-ipq4019-add-support-for-clock-frequency-pro.patch \
     file://721-v6.7-net-phy-aquantia-drop-wrong-endianness-conversion-fo.patch \
     file://722-v6.10-dt-bindings-arm-qcom-ids-Add-SoC-ID-for-IPQ5321.patch \
+    file://725-01-v6.16-net-dsa-tag_brcm-legacy-fix-pskb_may_pull-length.patch \
     file://734-v6.8-net-phy-bcm54612e-add-suspend-resume.patch \
     file://740-v6.10-net-stmmac-dwmac-ipq806x-account-for-rgmii-txid-rxid.patch \
     file://751-01-v6.8-net-ethernet-mediatek-split-tx-and-rx-fields-in-mtk_.patch \
@@ -182,6 +185,15 @@ SRC_URI:append = " \
     file://780-54-v6.15-r8169-increase-max-jumbo-packet-size-on-RTL8125-RTL8.patch \
     file://780-55-v6.15-r8169-enable-RTL8168H-RTL8168EP-RTL8168FP-ASPM-suppo.patch \
     file://780-56-v6.15-r8169-disable-RTL8126-ZRX-DC-timeout.patch \
+    file://780-57-v6.16-r8169-add-helper-rtl_csi_mod-for-accessing-extended.patch \
+    file://780-58-v6.16-r8169-add-helper-rtl8125_phy_param.patch \
+    file://780-59-v6.16-r8169-refactor-chip-version-detection.patch \
+    file://780-60-v6.16-r8169-add-RTL_GIGA_MAC_VER_LAST-to-facilitate-adding.patch \
+    file://780-61-v6.16-r8169-use-pci_prepare_to_sleep-in-rtl_shutdown.patch \
+    file://780-62-v6.16-r8169-merge-chip-versions-70-and-71-RTL8126A.patch \
+    file://780-63-v6.16-r8169-merge-chip-versions-64-and-65-RTL8125D.patch \
+    file://780-64-v6.16-r8169-merge-chip-versions-52-and-53-RTL8117.patch \
+    file://780-65-v6.16-r8169-add-support-for-RTL8127A.patch \
     file://781-01-v6.9-net-phy-realtek-add-support-for-RTL8126A-integrated-.patch \
     file://781-02-v6.9-net-phy-realtek-use-generic-MDIO-constants.patch \
     file://781-03-v6.9-net-phy-realtek-add-5Gbps-support-to-rtl822x_config_.patch \
@@ -215,6 +227,19 @@ SRC_URI:append = " \
     file://781-31-v6.15-net-phy-realtek-add-helper-RTL822X_VND2_C22_REG.patch \
     file://781-32-v6.15-net-phy-realtek-add-defines-for-shadowed-c45-standar.patch \
     file://781-33-v6.15-net-phy-realtek-disable-PHY-mode-EEE.patch \
+    file://781-34-v6.16-net-phy-realtek-Add-support-for-WOL-magic-packet-on.patch \
+    file://781-35-v6.16-net-phy-realtek-remove-unsed-RTL821x_PHYSR-macros.patch \
+    file://781-36-v6.16-net-phy-realtek-Clean-up-RTL821x-ExtPage-access.patch \
+    file://781-37-v6.16-net-phy-realtek-add-RTL8211F-register-defines.patch \
+    file://781-38-v6.16-net-phy-realtek-Group-RTL82-macro-definitions.patch \
+    file://781-39-v6.16-net-phy-realtek-use-__set_bit-in-rtl8211f_led_hw_con.patch \
+    file://781-40-v6.16-net-phy-realtek-Add-support-for-PHY-LEDs-on-RTL8211E.patch \
+    file://781-41-v6.16-net-phy-realtek-add-RTL8127-internal-PHY.patch \
+    file://785-01-v6.8-net-sfp-rework-the-RollBall-PHY-waiting-code.patch \
+    file://785-02-v6.8-net-sfp-fix-PHY-discovery-for-FS-SFP-10G-T-module.patch \
+    file://785-03-v6.10-net-sfp-update-comment-for-FS-SFP-10G-T-quirk.patch \
+    file://785-04-v6.10-net-sfp-enhance-quirk-for-Fibrestore-2.5G-copper-SFP-module.patch \
+    file://785-05-v6.15-net-sfp-add-quirk-for-FS-SFP-10GM-T-copper-SFP-module.patch \
     file://790-01-v6.7-net-dsa-mt7530-Convert-to-platform-remove-callback-r.patch \
     file://790-02-v6.7-net-dsa-mt753x-remove-mt753x_phylink_pcs_link_up.patch \
     file://790-03-v6.7-net-dsa-mt7530-replace-deprecated-strncpy-with-ethto.patch \
@@ -364,5 +389,13 @@ SRC_URI:append = " \
     file://900-v6.11-net-free_netdev-exit-earlier-if-dummy.patch \
     file://901-v6.13-net-dsa-mv88e6xxx-Support-LED-control.patch \
     file://903-v6.12-Bluetooth-btsdio-Do-not-bind-to-non-removable-CYW437.patch \
+    file://906-01-v6.7-crypto-jitter-add-RCTAPT-support-for-different-OSRs.patch \
+    file://906-02-v6.7-crypto-jitter-Allow-configuration-of-memory-size.patch \
+    file://906-03-v6.7-crypto-jitter-Allow-configuration-of-oversampling-rate.patch \
+    file://906-04-v6.7-crypto-jitter-reuse-allocated-entropy-collector.patch \
+    file://906-05-v6.7-crypto-jitter-use-permanent-health-test-storage.patch \
+    file://906-06-v6.7-crypto-jitterentropy-Hide-esoteric-Kconfig-options-under.patch \
+    file://906-07-v6.10-crypto-jitter-Use-kvfree_sensitive-to-fix-Coccinelle.patch \
+    file://906-08-v6.12-crypto-jitter-set-default-OSR-to-3.patch \
     file://910-v6.13-pmdomain-core-add-dummy-release-function-to-genpd-de.patch \
     "

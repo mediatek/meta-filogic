@@ -1,5 +1,7 @@
 #!/bin/sh
 
+source /sbin/flowtable.sh
+
 OPTIMIZED_FOR="$1"
 CPU_LIST=`cat /proc/interrupts | sed -n '1p'`
 NUM_OF_CPU=0; for i in $CPU_LIST; do NUM_OF_CPU=`expr $NUM_OF_CPU + 1`; done;
@@ -13,6 +15,7 @@ WIFI_RADIO1=0
 WIFI_RADIO2=0
 WIFI_RADIO3=0
 WED_ENABLE=0
+NFT_ENABLE=1
 
 WIFI_MODULE_LIST='mt7915e mt7996e'
 
@@ -25,7 +28,8 @@ get_if_info()
 	do
 		if [[ "$vif" == "eth"* ]] ||  \
 		[[ "$vif" == "lan"* ]] || [[ "$vif" == "wan"* ]] || \
-		[[ "$vif" == "wlan"* ]] || [[ "$vif" == "phy"* ]]; then
+		[[ "$vif" == "wlan"* ]] || [[ "$vif" == "phy"* ]] || \
+		[[ "$vif" == *"mld"* ]]; then
 			RPS_IF_LIST="$RPS_IF_LIST $vif"
 		fi
 	done;
@@ -108,30 +112,20 @@ MT7988()
 	wifi2_irq_pcie1=
 
 	if [[ "$WED_ENABLE" -eq "1" ]]; then
-		dbg2 "WED_ENABLE ON irq/iptable setting"
-		#TCP Binding
-		iptables -D FORWARD -p tcp -m conntrack --ctstate RELATED,ESTABLISHED -j FLOWOFFLOAD --hw
-		iptables -I FORWARD -p tcp -m conntrack --ctstate RELATED,ESTABLISHED -j FLOWOFFLOAD --hw
-		ip6tables -D FORWARD -p tcp -m conntrack --ctstate RELATED,ESTABLISHED -j FLOWOFFLOAD --hw
-		ip6tables -I FORWARD -p tcp -m conntrack --ctstate RELATED,ESTABLISHED -j FLOWOFFLOAD --hw
-		#UDP Binding
-		iptables -D FORWARD -p udp -j FLOWOFFLOAD --hw
-		iptables -I FORWARD -p udp -j FLOWOFFLOAD --hw
-		ip6tables -D FORWARD -p udp -j FLOWOFFLOAD --hw
-		ip6tables -I FORWARD -p udp -j FLOWOFFLOAD --hw
-		#Multicast skip Binding
-		iptables -D FORWARD -m pkttype --pkt-type multicast -j ACCEPT
-		iptables -I FORWARD -m pkttype --pkt-type multicast -j ACCEPT
-		ip6tables -D FORWARD -m pkttype --pkt-type multicast -j ACCEPT
-		ip6tables -I FORWARD -m pkttype --pkt-type multicast -j ACCEPT
-
+		if [[ "$NFT_ENABLE" -eq "1" ]]; then
+			dbg2 "WED_ENABLE ON irq/nftables setting"
+			nftables_flowoffload_enable
+		else
+			dbg2 "WED_ENABLE ON irq/iptable setting"
+			iptables_flowoffload_enable
+		fi
 	else
 		dbg2 "WED_ENABLE OFF irq/iptable seting"
 	fi
 
 	for vif in $NET_IF_LIST;
 	do
-		if [[ "$vif" == "wlan"* ]] || [[ "$vif" == "phy"* ]]; then
+		if [[ "$vif" == "wlan"* ]] || [[ "$vif" == "phy"* ]] || [[ "$vif" == *"mld"* ]]; then
 			WIFI_IF_LIST="$WIFI_IF_LIST $vif"
 		fi
 	done;
@@ -145,10 +139,10 @@ MT7988()
 		CPU2_AFFINITY="$eth_irq_rx2"
 		CPU3_AFFINITY="$eth_irq_rx3"
 
-		CPU0_RPS="$RPS_IF_LIST"
-		CPU1_RPS="$RPS_IF_LIST"
-		CPU2_RPS="$RPS_IF_LIST"
-		CPU3_RPS="$RPS_IF_LIST"
+		CPU0_RPS=""
+		CPU1_RPS=""
+		CPU2_RPS=""
+		CPU3_RPS=""
 	else
 		#we bound all wifi card to cpu0 and bound eth to cpu
 		CPU0_AFFINITY=""
@@ -184,22 +178,13 @@ MT7986()
 	wifi3_irq=
 
 	if [[ "$WED_ENABLE" -eq "1" ]]; then
-		dbg2 "WED_ENABLE ON irq/iptable setting"
-		#TCP Binding
-		iptables -D FORWARD -p tcp -m conntrack --ctstate RELATED,ESTABLISHED -j FLOWOFFLOAD --hw
-		iptables -I FORWARD -p tcp -m conntrack --ctstate RELATED,ESTABLISHED -j FLOWOFFLOAD --hw
-		ip6tables -D FORWARD -p tcp -m conntrack --ctstate RELATED,ESTABLISHED -j FLOWOFFLOAD --hw
-		ip6tables -I FORWARD -p tcp -m conntrack --ctstate RELATED,ESTABLISHED -j FLOWOFFLOAD --hw
-		#UDP Binding
-		iptables -D FORWARD -p udp -j FLOWOFFLOAD --hw
-		iptables -I FORWARD -p udp -j FLOWOFFLOAD --hw
-		ip6tables -D FORWARD -p udp -j FLOWOFFLOAD --hw
-		ip6tables -I FORWARD -p udp -j FLOWOFFLOAD --hw
-		#Multicast skip Binding
-		iptables -D FORWARD -m pkttype --pkt-type multicast -j ACCEPT
-		iptables -I FORWARD -m pkttype --pkt-type multicast -j ACCEPT
-		ip6tables -D FORWARD -m pkttype --pkt-type multicast -j ACCEPT
-		ip6tables -I FORWARD -m pkttype --pkt-type multicast -j ACCEPT
+		if [[ "$NFT_ENABLE" -eq "1" ]]; then
+			dbg2 "WED_ENABLE ON irq/nftables setting"
+			nftables_flowoffload_enable
+		else
+			dbg2 "WED_ENABLE ON irq/iptables setting"
+			iptables_flowoffload_enable
+		fi
 
 		#AX6000 AX7800 - SOC
 		if [[ "$WIFI_RADIO1" -eq "1" ]]; then
@@ -281,26 +266,13 @@ MT7981()
 
 	#AX3000
 	if [[ "$WED_ENABLE" -eq "1" ]]; then
-		dbg2 "WED_ENABLE ON irq/iptable setting"
-		#TCP Binding
-		iptables -D FORWARD -p tcp -m conntrack --ctstate	\
-				RELATED,ESTABLISHED -j FLOWOFFLOAD --hw
-		iptables -I FORWARD -p tcp -m conntrack --ctstate	\
-				RELATED,ESTABLISHED -j FLOWOFFLOAD --hw
-		ip6tables -D FORWARD -p tcp -m conntrack --ctstate	\
-				RELATED,ESTABLISHED -j FLOWOFFLOAD --hw
-		ip6tables -I FORWARD -p tcp -m conntrack --ctstate	\
-				RELATED,ESTABLISHED -j FLOWOFFLOAD --hw
-		#UDP Binding
-		iptables -D FORWARD -p udp -j FLOWOFFLOAD --hw
-		iptables -I FORWARD -p udp -j FLOWOFFLOAD --hw
-		ip6tables -D FORWARD -p udp -j FLOWOFFLOAD --hw
-		ip6tables -I FORWARD -p udp -j FLOWOFFLOAD --hw
-		#Multicast skip Binding
-		iptables -D FORWARD -m pkttype --pkt-type multicast -j ACCEPT
-		iptables -I FORWARD -m pkttype --pkt-type multicast -j ACCEPT
-		ip6tables -D FORWARD -m pkttype --pkt-type multicast -j ACCEPT
-		ip6tables -I FORWARD -m pkttype --pkt-type multicast -j ACCEPT
+		if [[ "$NFT_ENABLE" -eq "1" ]]; then
+			dbg2 "WED_ENABLE ON irq/nftables setting"
+			nftables_flowoffload_enable
+		else
+			dbg2 "WED_ENABLE ON irq/iptable setting"
+			iptables_flowoffload_enable
+		fi
 
 		if [[ "$WIFI_RADIO1" -eq "1" ]]; then
 			wifi1_irq=237
@@ -429,7 +401,8 @@ set_rps_cpu_bitmap()
 		eval rps_list=\$CPU${num}_RPS
 		dbg2 "# CPU$num: rps_list=$rps_list"
 		for i in $rps_list; do
-			var=${VAR_PREFIX}_${i//-/_}
+			var=${VAR_PREFIX}_${i//'-'/_}
+			var=${var//'.'/_}
 			eval ifval=\$$var
 			dbg2 "[var val before] \$$var=$ifval"
 			if [ -z "$ifval" ]; then
@@ -449,7 +422,8 @@ set_rps_cpus()
 {
 	dbg2 "# Setup rps of the interfaces, $RPS_IF_LIST."
 	for i in $RPS_IF_LIST; do
-		var=${VAR_PREFIX}_${i//-/_}
+		var=${VAR_PREFIX}_${i//'-'/_}
+		var=${var//'.'/_}
 		eval cpu_map=\$$var
 		if [ -d /sys/class/net/$i ]; then
 			if [ ! -z $cpu_map ]; then
@@ -481,6 +455,18 @@ set_smp_affinity()
 			fi
 		done
 		num=`expr $num + 1`
+	done
+}
+
+# Improve SW path peak throughput by disabling the GRO fraglist feature.
+disable_gro_fraglist()
+{
+	for iface in /sys/class/net/*; do
+		iface=$(basename "$iface")
+
+		if ethtool -k "$iface" | grep -q "rx-gro-list"; then
+			ethtool -K "$iface" rx-gro-list off
+		fi
 	done
 }
 
@@ -516,4 +502,5 @@ setup_model
 set_rps_cpu_bitmap
 set_rps_cpus $DEFAULT_RPS
 set_smp_affinity
+disable_gro_fraglist
 #end of file

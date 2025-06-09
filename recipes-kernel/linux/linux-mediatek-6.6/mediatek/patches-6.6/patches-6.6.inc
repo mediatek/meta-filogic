@@ -67,6 +67,7 @@ SRC_URI:append = " \
     file://611-pcie-mediatek-gen3-PERST-for-100ms.patch \
     file://613-netfilter-optional-tcp-window-check.patch \
     file://615-phy-phy-mtk-xsphy-support-type-switch-by-pericfg.patch \
+    file://700-arm64-kernel-add-memdump-on-panic.patch \
     file://710-pci-pcie-mediatek-add-support-for-coherent-DMA.patch \
     file://721-dts-mt7622-mediatek-fix-300mhz.patch \
     file://722-remove-300Hz-to-prevent-freeze.patch \
@@ -155,12 +156,13 @@ SRC_URI:append = " \
     file://999-2604-net-pcs-mtk_lynxi-add-mt7987-support.patch \
     file://999-2605-net-pcs-mtk-lynxi-add-autoneg-off.patch \
     file://999-2606-net-pcs-mtk-lynxi-correct-power-down-setting.patch \
+    file://999-2607-net-pcs-mtk-lynxi-add-individual-polarity-control.patch \
+    file://999-2608-net-pcs-mtk-lynxi-add-phya-tx-rx-clock-path.patch \
     file://999-2700-crypto-add-eip197-inside-secure-support-for-kernel-6.6.patch \
     file://999-2700-net-ethernet-mtk_eth_soc-add-mdio-reset-delay.patch \
     file://999-2701-crypto-add-aead-3des-md5.patch \
     file://999-2701-net-ethernet-mtk_eth_soc-remove-pextp-reset.patch \
     file://999-2702-net-ethernet-mtk_eth_soc-revise-xgmac-force-mode.patch \
-    file://999-2703-net-ethernet-mtk_eth_soc-revise-hardware-configurati.patch \
     file://999-2704-net-ethernet-mtk_eth_soc-revise-mdc-divider-configur.patch \
     file://999-2705-net-ethernet-mtk_eth_soc-support-proprietary-debugfs.patch \
     file://999-2706-net-ethernet-mtk_eth_soc-support-forced-reset-contro.patch \
@@ -175,8 +177,14 @@ SRC_URI:append = " \
     file://999-2715-net-ethernet-mtk_eth_soc-add-mt7987-support.patch \
     file://999-2716-net-ethernet-mtk_eth_soc-convert-cap_bit-in-mtk_eth_.patch \
     file://999-2717-net-ethernet-mtk_eth_soc-add-GLO_MEM-support-for-lro.patch \
-    file://999-2718-net-ethernet-mtk_eth_soc-correct-the-max-weight-of-t.patch \
+    file://999-2719-net-ethernet-mtk_eth_soc-change-napi-poll-weight.patch \
+    file://999-2720-net-ethernet-mtk_eth_soc-refactor-PSE-PPE-port-link-.patch \
+    file://999-2721-net-ethernet-mtk_eth_soc-add-ETH-ports-link-down-flo.patch \
+    file://999-2722-net-ethernet-mtk_eth_soc-add-HQoS-configuration-restore.patch \
+    file://999-2723-net-ethernet-mtk_eth_soc-revise-hardware-configuration-for-mt7987.patch \
+    file://999-2724-net-ethernet-mtk_eth_soc-add-mtk_validate_sram_range.patch \
     file://999-2733-add-netlink-support-for-dsa.patch \
+    file://999-2738-net-pptp-bypass-seq-check.patch \
     file://999-2746-mt7531-dsa-iphy-fine-tuning.patch \
     file://999-2747-crypto-eth-inline.patch \
     file://999-2750-net-phy-aquantia-move-frmware-load-to-config_init.patch \
@@ -187,7 +195,8 @@ SRC_URI:append = " \
     file://999-2755-add-mt753x-gsw-support.patch \
     file://999-2756-net-dsa-change-mt753x-agetime-setting-method.patch \
     file://999-2757-net-dsa-add-netlink-support-for-an8855.patch;apply=no \
-    file://999-2758-net-dsa-add-assisted-learning.patch \
+    file://999-2758-net-dsa-add-mxl862xx-special-tag-support.patch \
+    file://999-2759-net-dsa-add-mxl862xx-dsa-driver.patch \
     file://999-2760-net-phy-mediatek-add-i2p5g-support-for-mt7987.patch \
     file://999-2761-net-phy-check-an-complete-during-get-lpa-eee.patch \
     file://999-2762-net-phy-sfp-add-debug-information.patch \
@@ -195,21 +204,31 @@ SRC_URI:append = " \
     file://999-2764-net-phy-sfp-add-some-FS-copper-SFP-fixes.patch \
     file://999-2765-net-phy-sfp-add-some-checksum-fail-SFP-war.patch \
     file://999-2766-net-phy-airoha-add-an8801sb.patch \
-    file://999-2767-net-phy-air_en8811h-update-to-v2.0.3.patch \
+    file://999-2767-net-phy-air_en8811h-update-to-v2.0.4.patch \
+    file://999-2768-net-phy-add-an8855-gsw-support.patch \
+    file://999-2769-net-phy-aquantia-add-software-reset-to-aqr107_probe.patch \
+    file://999-2770-net-phy-add-mxl862xx-built-in-phy-support.patch \
     file://999-2800-trng-driver-porting.patch \
     file://999-clk-01-clk-mediatek-add-mt7987-clock-drivers-support.patch \
     file://999-clk-01-clk-mediatek-mark-some-mt7987-clks-as-critical.patch \
+    file://999-clk-02-clk-mediatek-mark-sej-mt7988-clks-as-critical.patch \
     file://999-cpufreq-01-cpufreq-add-support-to-adjust-cpu-volt-by-efuse-cali.patch \
     file://999-cpufreq-02-mediatek-enable-using-efuse-cali-data-for-mt7988-cpu-volt.patch;apply=no \
     file://999-dual-boot-01-do-not-auto-mount-ubi-rootfs.patch \
     file://999-dual-boot-02-ubi-allow-no-default-rootdev.patch \
     file://999-dual-boot-03-fitblk-do-not-split-rootfs_data-if-required.patch \
+    file://999-fitblk-01-parse-and-mount-ramdisk.patch \
     file://999-pcie-01-pcie-mediatek-gen3-Add-PCIe-max-link-width-adjustment.patch \
     file://999-pcie-02-pcie-mediatek-gen3-Add-PCIe-IRQ-affinity-support.patch \
     file://999-pcie-03-pcie-mediatek-gen3-Add-WIFI-HW-reset-flow.patch \
     file://999-pcie-04-pcie-mediatek-gen3-Add-soft-off-and-soft-on-API.patch \
     file://999-pinctrl-01-pinctrl-mediatek-add-mt7987-pinctrl-support.patch \
     file://999-serial-01-tty-serial-8250-fix-clock-setting-for-mediatek-serial.patch \
+    file://999-spi-01-fix-calibration-message.patch \
+    file://999-spi-nand-01-integrate-ONFI-and-CASN-manipulation.patch \
+    file://999-spi-nand-02-Add-CASN-support.patch \
+    file://999-spi-nor-01-fix-3B-4B-calibration.patch \
+    file://999-spi-nor-02-fix-or-add-devices.patch \
     file://999-tphy-01-phy-mtk-tphy-Add-PCIe-2-lane-efuse-support.patch \
     file://999-tphy-02-phy-mtk-tphy-add-auto-load-valid-check-mechanism.patch \
     file://999-tphy-03-phy-mtk-tphy-one-setting-of-TTSSC-Freq-Dev-for-all-IC-cases.patch \

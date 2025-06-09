@@ -5,15 +5,11 @@
 
 / {
 	fragment@0 {
-		target-path = "/soc_netsys/ethernet@15100000";
+		target = <&gmac2>;
 		__overlay__ {
-			gmac2: mac@2 {
-				compatible = "mediatek,eth-mac";
-				reg = <2>;
-				phy-mode = "2500base-x";
-				phy-handle = <&phy11>;
-				pcs-handle = <&sgmiipcs1>;
-			};
+			phy-mode = "2500base-x";
+			phy-handle = <&phy11>;
+			status = "okay";
 		};
 	};
 
@@ -35,8 +31,6 @@
 				compatible = "ethernet-phy-id03a2.a411";
 				reg = <11>;
 				phy-mode = "2500base-x";
-				airoha,polarity = <1>;
-				airoha,surge = <0>;
 				airoha,phy-handle;
 			};
 		};

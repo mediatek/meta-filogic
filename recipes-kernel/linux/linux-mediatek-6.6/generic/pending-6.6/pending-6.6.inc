@@ -76,7 +76,6 @@ SRC_URI:append = " \
     file://610-netfilter_match_bypass_default_checks.patch \
     file://611-netfilter_match_bypass_default_table.patch \
     file://612-netfilter_match_reduce_memory_access.patch \
-    file://620-net_sched-codel-do-not-defer-queue-length-update.patch \
     file://630-packet_socket_type.patch \
     file://640-net-bridge-fix-switchdev-host-mdb-entry-updates.patch \
     file://641-net-bridge-switchdev-Don-t-drop-packets-between-port.patch \
@@ -112,7 +111,6 @@ SRC_URI:append = " \
     file://720-07-net-phy-realtek-mark-existing-MMDs-as-present.patch \
     file://720-08-net-phy-realtek-work-around-broken-serdes.patch \
     file://720-09-net-phy-realtek-disable-MDIO-broadcast.patch \
-    file://730-net-ethernet-mtk_eth_soc-reset-all-TX-queues-on-DMA-.patch \
     file://731-net-permit-ieee80211_ptr-even-with-no-CFG82111-suppo.patch \
     file://732-00-net-ethernet-mtk_eth_soc-compile-out-netsys-v2-code-.patch \
     file://732-01-net-ethernet-mtk_eth_soc-work-around-issue-with-send.patch \

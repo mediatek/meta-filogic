@@ -1,8 +1,34 @@
+diff --git a/flowtable.sh b/flowtable.sh
+index 448fa685..14c7cb95 100644
+--- a/flowtable.sh
++++ b/flowtable.sh
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+ nftables_flowoffload_enable()
+ {
+@@ -7,7 +7,7 @@ nftables_flowoffload_enable()
+ 
+ 	# check all of the ETH/WiFi virtual interfaces
+ 	interfaces=$(ifconfig -a | awk -F':| ' '/^[a-zA-Z]/ {print $1}' | \
+-		grep -E 'eth|lan|phy|mld|wlan|wifi|apcli|ra' | grep -v 'br-lan')
++		grep -E 'eth|lan|phy|mld|wlan|wifi|apcli|ra|erouter' | grep -v 'brlan0')
+ 
+ 	# generate ETH/WiFi virtual interfaces list
+ 	interfaces_list=$(echo $interfaces | tr ' ' ', ')
 diff --git a/smp-mt76.sh b/smp-mt76.sh
-index b71c90a..d43ebe8 100755
+index 67cdd669..5b43992a 100644
 --- a/smp-mt76.sh
 +++ b/smp-mt76.sh
-@@ -5,7 +5,8 @@ CPU_LIST=`cat /proc/interrupts | sed -n '1p'`
+@@ -1,13 +1,14 @@
+ #!/bin/sh
+ 
+-source /sbin/flowtable.sh
++source /usr/sbin/flowtable.sh
+ 
+ OPTIMIZED_FOR="$1"
+ CPU_LIST=`cat /proc/interrupts | sed -n '1p'`
  NUM_OF_CPU=0; for i in $CPU_LIST; do NUM_OF_CPU=`expr $NUM_OF_CPU + 1`; done;
  DEFAULT_RPS=0
  
@@ -12,28 +38,28 @@ index b71c90a..d43ebe8 100755
  
  RPS_IF_LIST=""
  NUM_WIFI_CARD=0
-@@ -22,9 +23,9 @@ get_if_info()
+@@ -26,9 +27,9 @@ get_if_info()
  	NET_IF_LIST=`ls /sys/class/net`
  	for vif in $NET_IF_LIST;
  	do
 -		if [[ "$vif" == "eth"* ]] ||  \
 +		if [[ "$vif" == "eth"* ]] || [[ "$vif" == "erouter"* ]] || \
  		[[ "$vif" == "lan"* ]] || [[ "$vif" == "wan"* ]] || \
--		[[ "$vif" == "wlan"* ]] || [[ "$vif" == "phy"* ]]; then
-+		[[ "$vif" == "wlan"* ]] || [[ "$vif" == "wifi"* ]]; then
+-		[[ "$vif" == "wlan"* ]] || [[ "$vif" == "phy"* ]] || \
++		[[ "$vif" == "wlan"* ]] || [[ "$vif" == "wifi"* ]] || \
+ 		[[ "$vif" == *"mld"* ]]; then
  			RPS_IF_LIST="$RPS_IF_LIST $vif"
  		fi
- 	done;
-@@ -122,7 +123,7 @@ MT7988()
+@@ -125,7 +126,7 @@ MT7988()
  
  	for vif in $NET_IF_LIST;
  	do
--		if [[ "$vif" == "wlan"* ]] || [[ "$vif" == "phy"* ]]; then
-+		if [[ "$vif" == "wlan"* ]] || [[ "$vif" == "wifi"* ]]; then
+-		if [[ "$vif" == "wlan"* ]] || [[ "$vif" == "phy"* ]] || [[ "$vif" == *"mld"* ]]; then
++		if [[ "$vif" == "wlan"* ]] || [[ "$vif" == "wifi"* ]] || [[ "$vif" == *"mld"* ]]; then
  			WIFI_IF_LIST="$WIFI_IF_LIST $vif"
  		fi
  	done;
-@@ -325,7 +326,7 @@ MT7622()
+@@ -352,7 +353,7 @@ MT7622()
  
  setup_model()
  {

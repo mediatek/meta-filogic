@@ -5,15 +5,11 @@
 
 / {
 	fragment@0 {
-		target-path = "/soc_netsys/ethernet@15100000";
+		target = <&gmac0>;
 		__overlay__ {
-			gmac0: mac@0 {
-				compatible = "mediatek,eth-mac";
-				reg = <0>;
-				phy-mode = "sgmii";
-				phy-handle = <&phy31>;
-				pcs-handle = <&sgmiipcs0>;
-			};
+			phy-mode = "sgmii";
+			phy-handle = <&phy31>;
+			status = "okay";
 		};
 	};
 
@@ -27,6 +23,7 @@
 				reset-assert-us = <10000>;
 				reset-deassert-us = <10000>;
 				phy-mode = "sgmii";
+				airoha,sgmii-mode = <1>;
 				eee-broken-100tx;
 				eee-broken-1000t;
 			};
