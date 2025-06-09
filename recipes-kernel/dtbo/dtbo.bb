@@ -26,7 +26,7 @@ SRC_URI:append:mt7988a = " \
 	file://mt7988a-rfb-eth2-an8831x.dtso \
 	file://mt7988a-rfb-eth2-cux3410.dtso \
 	file://mt7988a-rfb-eth2-mxl.dtso \
-	file://mt7988a-rfb-eth1-mxl86252.dtso \
+	file://mt7988a-rfb-eth2-mxl86252.dtso \
 	file://mt7988a-rfb-eth2-sfp.dtso \
 	file://mt7988a-rfb-spidev.dtso \
 "
