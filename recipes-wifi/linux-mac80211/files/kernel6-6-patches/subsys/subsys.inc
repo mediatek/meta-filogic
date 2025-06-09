@@ -101,4 +101,10 @@ SRC_URI:append = " \
     file://0099-mtk-mac80211-refactor-BSS-color-change-collision-det.patch \
     file://0100-mtk-mac80211-fix-non-TX-BSS-checking-in-ieee802_11_p.patch \
     file://0101-mtk-mac80211-fixup-sanity-check-in-ieee80211_build_h.patch \
+    file://0102-mtk-mac80211-fix-status-code-type-in-ttlm_res-of-iee.patch \
+    file://0103-mtk-mac80211-fix-radio-idx-missing-after-replace-ctx.patch \
+    file://0104-mtk-mac80211-trigger-a-beacon-update-after-setting-b.patch \
+    file://0105-mtk-mac80211-copy-protocol-info-to-non-first-fragmen.patch \
+    file://0106-mtk-mac80211-fix-addba-buffer-size.patch \
+    file://0107-mtk-temporarily-skip-SSID-check-for-non-TX-BSS.patch \
     "
