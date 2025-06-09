@@ -1,0 +1,16 @@
+# currently, the BindTo is not working
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+
+EnvironmentFile=/etc/device.properties
+
+ExecStart=/sbin/ip link set dev %i up
+ExecStartPost=/bin/sh /usr/sbin/smp-mt76.sh
+ExecReload=/sbin/ip addr flush dev %i scope global
+ExecStop=-/sbin/ip addr flush dev %i scope global
+StandardOutput=journal+console
+
+[Unit]
+BindsTo=%i.device
+After=%i.device
