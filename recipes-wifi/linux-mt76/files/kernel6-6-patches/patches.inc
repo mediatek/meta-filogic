@@ -91,7 +91,6 @@ SRC_URI:append = " \
     file://0089-mtk-mt76-mt7996-set-VTA-in-txwi.patch \
     file://0090-mtk-mt76-mt7990-add-support-critical-packet-mode-for.patch \
     file://0091-mtk-mt76-mt7990-add-mt7990-coredump-support.patch \
-    file://0092-mtk-mt76-mt7996-fix-tx-non-stop-issue-when-radar-is-.patch \
     file://0093-mtk-mt76-mt7996-add-dfs-detection-mode.patch \
     file://0094-mtk-mt76-per-band-sw-token-needs-to-consider-MLO-aff.patch \
     file://0095-mtk-mt76-mt7996-use-altxq-when-IEEE80211_TX_CTL_TX_O.patch \
