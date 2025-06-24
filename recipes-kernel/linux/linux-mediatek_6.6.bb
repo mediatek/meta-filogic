@@ -39,6 +39,7 @@ SRC_URI:append += " \
     ${@bb.utils.contains('DISTRO_FEATURES','emmc','file://rdkb_cfg/emmc.cfg','',d)} \
     ${@bb.utils.contains('DISTRO_FEATURES','ccn34','file://rdkb_cfg/tops.cfg','',d)} \
     ${@bb.utils.contains('DISTRO_FEATURES','ccn34','file://rdkb_cfg/eip-197.cfg','',d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES','usb3','file://rdkb_cfg/usb.cfg','',d)} \
 "
 
 
