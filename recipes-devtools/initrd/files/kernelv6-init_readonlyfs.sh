@@ -32,6 +32,8 @@ $MOUNT -t proc proc -o rw,nosuid,nodev,noexec,noatime /proc
 $MOUNT -t sysfs sysfs -o rw,nosuid,nodev,noexec,noatime /sys
 $MOUNT -n -t tmpfs tmpfs -o rw,nosuid,nodev,noexec,noatime /rdklogs
 
+dual_boot=$([ -f /sys/firmware/devicetree/base/mediatek,dual-boot ] && echo Y)
+rootfs_data=$(cat /sys/firmware/devicetree/base/mediatek,boot-rootfs_data-part 2>/dev/null)
 
 if  [ x"${dual_boot}" != xY ]; then
 	rootfs_data="rootfs_data"
