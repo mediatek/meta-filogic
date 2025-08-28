@@ -1,0 +1,76 @@
+diff --git a/wifi_hal_rdk_util.c b/wifi_hal_rdk_util.c
+index f3b15ac..f8a7d84 100644
+--- a/wifi_hal_rdk_util.c
++++ b/wifi_hal_rdk_util.c
+@@ -52,7 +52,7 @@
+ #include <openssl/rand.h>
+ #include <aes_siv.h>
+ #include <wifi_hal_rdk_framework.h>
+-#include "wifi_hal_priv.h"
++//#include "wifi_hal_priv.h"
+ #include <cjson/cJSON.h>
+ #include <sys/types.h>
+ #include <ifaddrs.h>
+@@ -454,7 +454,7 @@ cJSON *json_open_file(const char *file_name)
+ 
+     fp = fopen(file_name, "r");
+     if (fp == NULL) {
+-        wifi_hal_error_print("%s:%d: Failed (err=%d, msg=%s) to open file:%s\n", __func__, __LINE__,
++        printf("%s:%d: Failed (err=%d, msg=%s) to open file:%s\n", __func__, __LINE__,
+             errno, strerror(errno), file_name);
+         return json;
+     }
+@@ -464,7 +464,7 @@ cJSON *json_open_file(const char *file_name)
+ 
+     buff = malloc(len);
+     if (buff == NULL) {
+-        wifi_hal_error_print("%s:%d: Failed to allocate %zu bytes for json file\n", __func__,
++        printf("%s:%d: Failed to allocate %zu bytes for json file\n", __func__,
+             __LINE__, len);
+         return NULL;
+     }
+@@ -472,7 +472,7 @@ cJSON *json_open_file(const char *file_name)
+     json = cJSON_ParseWithLength(buff, len);
+     if (json == NULL) {
+         const char *const error_ptr = cJSON_GetErrorPtr();
+-        wifi_hal_error_print("%s:%d: Error json file parse: %s\n", __func__, __LINE__,
++        printf("%s:%d: Error json file parse: %s\n", __func__, __LINE__,
+             (error_ptr ? error_ptr : "UNKNOWN"));
+     }
+     free(buff);
+@@ -492,7 +492,7 @@ int json_parse_string(const char* file_name, const char *item_name, char *val, s
+ 
+     item = cJSON_GetObjectItem(json, item_name);
+     if (!cJSON_IsString(item)) {
+-        wifi_hal_error_print("%s:%d: (%s) does "
++        printf("%s:%d: (%s) does "
+                              "not exist or is not a string\n",
+             __func__, __LINE__, item_name);
+         cJSON_Delete(json);
+@@ -518,7 +518,7 @@ int json_parse_integer(const char* file_name, const char *item_name, int *val)
+ 
+     item = cJSON_GetObjectItem(json, item_name);
+     if (item == NULL || cJSON_IsNumber(item) == false) {
+-        wifi_hal_error_print("%s:%d: (%s) does "
++        printf("%s:%d: (%s) does "
+                              "not exist or is not a number.\n",
+             __func__, __LINE__, item_name);
+         cJSON_Delete(json);
+@@ -544,7 +544,7 @@ int json_parse_boolean(const char* file_name, const char *item_name, bool *val)
+ 
+     item = cJSON_GetObjectItem(json, item_name);
+     if ((item == NULL) || (cJSON_IsBool(item) == false)) {
+-        wifi_hal_error_print("%s:%d: (%s) does "
++        printf("%s:%d: (%s) does "
+             "not exist or is not a boolean.\n",
+             __func__, __LINE__, item_name);
+         cJSON_Delete(json);
+@@ -566,7 +566,7 @@ bool get_ifname_from_mac(const mac_address_t *mac, char *ifname)
+     bool found = false;
+ 
+     if (getifaddrs(&ifaddr) != 0) {
+-        wifi_hal_error_print("%s:%d: Failed to get interface information\n", __func__, __LINE__);
++        printf("%s:%d: Failed to get interface information\n", __func__, __LINE__);
+         return found;
+     }
+     tmp = ifaddr;
