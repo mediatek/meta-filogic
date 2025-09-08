@@ -25,8 +25,6 @@ SRC_URI:append = " \
     file://410-v6.13-05-block-add-support-for-partition-table-defined-in-OF.patch \
     file://411-v6.7-mtd-spinand-add-support-for-FORESEE-F35SQA002G.patch \
     file://412-v6.14-mtd-spinand-add-support-for-FORESEE-F35SQA001G.patch \
-    file://421-01-v6.16-spi-bcm63xx-spi-fix-shared-reset.patch \
-    file://421-02-v6.16-spi-bcm63xx-hsspi-fix-shared-reset.patch \
     file://600-v6.10-net-Remove-conditional-threaded-NAPI-wakeup-based-on.patch \
     file://601-v6.10-net-Allow-to-use-SMP-threads-for-backlog-NAPI.patch \
     file://602-v6.10-net-Use-backlog-NAPI-to-clean-up-the-defer_list.patch \
@@ -38,10 +36,14 @@ SRC_URI:append = " \
     file://612-v6.9-net-get-stats64-if-device-if-driver-is-configured.patch \
     file://620-01-v6.7-page_pool-fragment-API-support-for-32-bit-arch-with-.patch \
     file://620-02-v6.7-page_pool-unify-frag_count-handling-in-page_pool_is_.patch \
+    file://621-proc-fix-missing-pde_set_flags.patch \
+    file://626-v6.17-net-ipv4-fix-regression-in-local-broadcast-routes.patch \
     file://700-v6.10-net-create-a-dummy-net_device-allocator.patch \
     file://702-01-v6.7-net-phy-aquantia-move-to-separate-directory.patch \
     file://702-02-v6.7-net-phy-aquantia-move-MMD_VEND-define-to-header.patch \
     file://702-03-v6.7-net-phy-aquantia-add-firmware-load-support.patch \
+    file://703-v6.10-flow_offload-add-control-flag-checking-helpers.patch \
+    file://704-v6.12-ipv6-Add-ipv6_addr_-cpu_to_be32-be32_to_cpu-helpers.patch \
     file://707-v6.8-02-net-phy-at803x-move-disable-WOL-to-specific-at8031-p.patch \
     file://707-v6.8-03-net-phy-at803x-raname-hw_stats-functions-to-qca83xx-.patch \
     file://707-v6.8-04-net-phy-at803x-move-qca83xx-specific-check-in-dedica.patch \
@@ -88,7 +90,6 @@ SRC_URI:append = " \
     file://720-v6.9-net-mdio-ipq4019-add-support-for-clock-frequency-pro.patch \
     file://721-v6.7-net-phy-aquantia-drop-wrong-endianness-conversion-fo.patch \
     file://722-v6.10-dt-bindings-arm-qcom-ids-Add-SoC-ID-for-IPQ5321.patch \
-    file://725-01-v6.16-net-dsa-tag_brcm-legacy-fix-pskb_may_pull-length.patch \
     file://734-v6.8-net-phy-bcm54612e-add-suspend-resume.patch \
     file://740-v6.10-net-stmmac-dwmac-ipq806x-account-for-rgmii-txid-rxid.patch \
     file://751-01-v6.8-net-ethernet-mediatek-split-tx-and-rx-fields-in-mtk_.patch \
@@ -179,7 +180,6 @@ SRC_URI:append = " \
     file://780-48-v6.14-r8169-add-support-for-RTL8125D-rev.b.patch \
     file://780-49-v6.14-r8169-add-support-for-RTL8125BP-rev.b.patch \
     file://780-50-v6.15-r8169-make-Kconfig-option-for-LED-support-user-visib.patch \
-    file://780-51-v6.15-r8169-don-t-scan-PHY-addresses-0.patch \
     file://780-52-v6.15-r8169-add-support-for-Intel-Killer-E5000.patch \
     file://780-53-v6.15-r8169-add-PHY-c45-ops-for-MDIO_MMD_VENDOR2-registers.patch \
     file://780-54-v6.15-r8169-increase-max-jumbo-packet-size-on-RTL8125-RTL8.patch \

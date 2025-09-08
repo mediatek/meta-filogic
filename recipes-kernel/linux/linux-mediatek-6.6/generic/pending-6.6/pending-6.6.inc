@@ -15,6 +15,7 @@ SRC_URI:append = " \
     file://203-kallsyms_uncompressed.patch \
     file://205-backtrace_module_info.patch \
     file://240-remove-unsane-filenames-from-deps_initramfs-list.patch \
+    file://250-kernel-fork-Increase-minimum-number-of-allowed-threa.patch \
     file://270-platform-mikrotik-build-bits.patch \
     file://300-mips_expose_boot_raw.patch \
     file://301-MIPS-Add-barriers-between-dcache-icache-flushes.patch \
@@ -129,13 +130,13 @@ SRC_URI:append = " \
     file://739-05-net-pcs-add-driver-for-MediaTek-USXGMII-PCS.patch \
     file://740-net-phy-motorcomm-Add-missing-include.patch \
     file://741-net-phy-broadcom-update-dependency-condition.patch \
+    file://742-net-ethernet-mtk_eth_soc-fix-tx-vlan-tag-for-llc-pac.patch \
     file://780-ARM-kirkwood-add-missing-linux-if_ether.h-for-ETH_AL.patch \
     file://790-bus-mhi-core-add-SBL-state-callback.patch \
     file://791-tg3-Fix-DMA-allocations-on-57766-devices.patch \
     file://800-bcma-get-SoC-device-struct-copy-its-DMA-params-to-th.patch \
     file://801-gpio-gpio-cascade-add-generic-GPIO-cascade.patch \
     file://802-OPP-Provide-old-opp-to-config_clks-on-_set_opp.patch \
-    file://802-nvmem-u-boot-env-align-endianness-of-crc32-values.patch \
     file://804-nvmem-core-support-mac-base-fixed-layout-cells.patch \
     file://810-pci_disable_common_quirks.patch \
     file://811-pci_disable_usb_common_quirks.patch \

@@ -62,6 +62,58 @@ struct mtk_eth *g_eth;
 
 struct mtk_eth_debug eth_debug;
 
+static int qdma_pppq_show(struct seq_file *m, void *v)
+{
+	struct mtk_eth *eth = m->private;
+	int i;
+
+	seq_puts(m, "Usage of the QDMA PPPQ for the HW path:\n");
+	for (i = 0; i < MTK_QDMA_NUM_QUEUES; i++)
+		seq_printf(m, "qdma_txq%d:	%5d Mbps %8d refcnt\n",
+			   i, eth->qdma_shaper.speed[i],
+			   atomic_read(&eth->qdma_shaper.refcnt[i]));
+	seq_printf(m, "qdma_thres:	%5d Mbps\n", eth->qdma_shaper.threshold);
+
+	return 0;
+}
+
+static int qdma_pppq_open(struct inode *inode, struct file *file)
+{
+	return single_open(file, qdma_pppq_show, inode->i_private);
+}
+
+static ssize_t qdma_pppq_write(struct file *file, const char __user *buffer,
+			       size_t count, loff_t *data)
+{
+	struct mtk_eth *eth = file_inode(file)->i_private;
+	char buf[8] = {0};
+	u32 threshold;
+	int len = count;
+
+	if ((len > 8) || copy_from_user(buf, buffer, len))
+		return -EFAULT;
+
+	if (sscanf(buf, "%6d", &threshold) != 1)
+		return -EFAULT;
+
+	if (threshold > 10000 || threshold < 0) {
+		pr_warn("Threshold must be between 0 and 10000 Mbps\n");
+		return -EINVAL;
+	}
+
+	eth->qdma_shaper.threshold = threshold;
+
+	return len;
+}
+
+static const struct file_operations qdma_pppq_fops = {
+	.open = qdma_pppq_open,
+	.read = seq_read,
+	.write = qdma_pppq_write,
+	.llseek = seq_lseek,
+	.release = single_release,
+};
+
 static ssize_t qdma_sched_show(struct file *file, char __user *user_buf,
 			       size_t count, loff_t *ppos)
 {
@@ -101,7 +153,7 @@ static ssize_t qdma_sched_show(struct file *file, char __user *user_buf,
 	for (i = 0; i < MTK_QDMA_NUM_QUEUES; i++) {
 		mtk_w32(eth, (i / MTK_QTX_PER_PAGE), soc->reg_map->qdma.page);
 		sch_reg = mtk_r32(eth, soc->reg_map->qdma.qtx_sch +
-				       (id % MTK_QTX_PER_PAGE) * MTK_QTX_OFFSET);
+				       (i % MTK_QTX_PER_PAGE) * MTK_QTX_OFFSET);
 		if (mtk_is_netsys_v2_or_greater(eth))
 			scheduler = FIELD_GET(MTK_QTX_SCH_TX_SEL_V2, sch_reg);
 		else
@@ -334,6 +386,8 @@ static ssize_t qdma_queue_write(struct file *file, const char __user *buf,
 		qtx_sch |= FIELD_PREP(MTK_QTX_SCH_TX_SEL_V2, scheduler);
 	else
 		qtx_sch |= FIELD_PREP(MTK_QTX_SCH_TX_SEL, scheduler);
+
+	qtx_sch |= FIELD_PREP(MTK_QTX_SCH_LEAKY_BUCKET_SIZE, 3);
 
 	if (min_enable)
 		qtx_sch |= MTK_QTX_SCH_MIN_RATE_EN;
@@ -759,6 +813,22 @@ static ssize_t mtketh_debugfs_reset(struct file *file, const char __user *ptr,
 	return count;
 }
 
+static int tx_full_cnt_read(struct seq_file *m, void *v)
+{
+	struct mtk_eth *eth = m->private;
+	int cnt;
+
+	cnt = atomic_xchg(&eth->tx_ring.full_count, 0);
+	seq_printf(m, "tx ring full count: %d\n", cnt);
+
+	return 0;
+}
+
+static int tx_full_cnt_open(struct inode *inode, struct file *file)
+{
+	return single_open(file, tx_full_cnt_read, inode->i_private);
+}
+
 static const struct file_operations fops_reg_w = {
 	.owner = THIS_MODULE,
 	.open = simple_open,
@@ -778,6 +848,14 @@ static const struct file_operations fops_mt7530sw_reg_w = {
 	.open = simple_open,
 	.write = mtketh_mt7530sw_debugfs_write,
 	.llseek = noop_llseek,
+};
+
+static const struct file_operations fops_tx_full_cnt = {
+	.owner = THIS_MODULE,
+	.open = tx_full_cnt_open,
+	.read = seq_read,
+	.llseek = seq_lseek,
+	.release = single_release,
 };
 
 void mtketh_debugfs_exit(struct mtk_eth *eth)
@@ -802,6 +880,8 @@ int mtketh_debugfs_init(struct mtk_eth *eth)
 			    eth_debug.root, eth, &fops_reg_w);
 	debugfs_create_file("reset", 0444,
 			    eth_debug.root, eth, &fops_eth_reset);
+	debugfs_create_file("tx_full_cnt", 0444,
+			    eth_debug.root, eth, &fops_tx_full_cnt);
 	if (mt7530_exist(eth)) {
 		debugfs_create_file("mt7530sw_regs", 0444,
 				    eth_debug.root, eth,
@@ -810,6 +890,10 @@ int mtketh_debugfs_init(struct mtk_eth *eth)
 				    eth_debug.root, eth,
 				    &fops_mt7530sw_reg_w);
 	}
+
+	if (mtk_is_netsys_v3_or_greater(eth))
+		debugfs_create_file("qdma_pppq", 0444, eth_debug.root, eth,
+				    &qdma_pppq_fops);
 
 	for (i = 0; i < (mtk_is_netsys_v2_or_greater(eth) ? 4 : 2); i++) {
 		ret = snprintf(name, sizeof(name), "qdma_sch%d", i);
@@ -1208,6 +1292,8 @@ void xfi_mib_dump(struct seq_file *seq, u32 gdm_id)
 	PRINT_FORMATTED_XFI_MIB(seq, RX_PAUSE_CNT, GENMASK(15, 0));
 	PRINT_FORMATTED_XFI_MIB(seq, RX_LEN_ERR_CNT, GENMASK(15, 0));
 	PRINT_FORMATTED_XFI_MIB(seq, RX_CRC_ERR_CNT, GENMASK(15, 0));
+	if (eth->soc->caps != MT7988_CAPS)
+		PRINT_FORMATTED_XFI_MIB(seq, RX_RUNT_PKT_CNT, GENMASK(31, 0));
 	PRINT_FORMATTED_XFI_MIB64(seq, RX_UC_PKT_CNT);
 	PRINT_FORMATTED_XFI_MIB64(seq, RX_MC_PKT_CNT);
 	PRINT_FORMATTED_XFI_MIB64(seq, RX_BC_PKT_CNT);

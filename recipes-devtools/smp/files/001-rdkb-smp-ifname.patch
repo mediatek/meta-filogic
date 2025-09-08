@@ -2,21 +2,15 @@ diff --git a/flowtable.sh b/flowtable.sh
 index 448fa685..14c7cb95 100644
 --- a/flowtable.sh
 +++ b/flowtable.sh
-@@ -1,4 +1,4 @@
--#!/bin/bash
-+#!/bin/sh
- 
- nftables_flowoffload_enable()
- {
-@@ -7,7 +7,7 @@ nftables_flowoffload_enable()
+@@ -38,7 +38,7 @@ nftables_flowoffload_enable()
+ 	fi
  
  	# check all of the ETH/WiFi virtual interfaces
- 	interfaces=$(ifconfig -a | awk -F':| ' '/^[a-zA-Z]/ {print $1}' | \
--		grep -E 'eth|lan|phy|mld|wlan|wifi|apcli|ra' | grep -v 'br-lan')
-+		grep -E 'eth|lan|phy|mld|wlan|wifi|apcli|ra|erouter' | grep -v 'brlan0')
+-	eth_ifs=$(ls /sys/class/net | grep -E '^(eth|lan|wan|mxl|ppp)')
++	eth_ifs=$(ls /sys/class/net | grep -E '^(eth|lan|wan|mxl|ppp|erouter)')
+ 	wifi_ifs=$(iw dev | grep 'Interface' | awk '{print $2}')
  
- 	# generate ETH/WiFi virtual interfaces list
- 	interfaces_list=$(echo $interfaces | tr ' ' ', ')
+ 	interfaces=$(echo -e "$eth_ifs\n$wifi_ifs")
 diff --git a/smp-mt76.sh b/smp-mt76.sh
 index 67cdd669..5b43992a 100644
 --- a/smp-mt76.sh
@@ -38,28 +32,16 @@ index 67cdd669..5b43992a 100644
  
  RPS_IF_LIST=""
  NUM_WIFI_CARD=0
-@@ -26,9 +27,9 @@ get_if_info()
+@@ -27,7 +28,7 @@ get_if_info()
  	NET_IF_LIST=`ls /sys/class/net`
  	for vif in $NET_IF_LIST;
  	do
 -		if [[ "$vif" == "eth"* ]] ||  \
 +		if [[ "$vif" == "eth"* ]] || [[ "$vif" == "erouter"* ]] || \
  		[[ "$vif" == "lan"* ]] || [[ "$vif" == "wan"* ]] || \
--		[[ "$vif" == "wlan"* ]] || [[ "$vif" == "phy"* ]] || \
-+		[[ "$vif" == "wlan"* ]] || [[ "$vif" == "wifi"* ]] || \
+ 		[[ "$vif" == "wlan"* ]] || [[ "$vif" == "phy"* ]] || \
  		[[ "$vif" == *"mld"* ]]; then
- 			RPS_IF_LIST="$RPS_IF_LIST $vif"
- 		fi
-@@ -125,7 +126,7 @@ MT7988()
- 
- 	for vif in $NET_IF_LIST;
- 	do
--		if [[ "$vif" == "wlan"* ]] || [[ "$vif" == "phy"* ]] || [[ "$vif" == *"mld"* ]]; then
-+		if [[ "$vif" == "wlan"* ]] || [[ "$vif" == "wifi"* ]] || [[ "$vif" == *"mld"* ]]; then
- 			WIFI_IF_LIST="$WIFI_IF_LIST $vif"
- 		fi
- 	done;
-@@ -352,7 +353,7 @@ MT7622()
+@@ -353,7 +354,7 @@ MT7622()
  
  setup_model()
  {

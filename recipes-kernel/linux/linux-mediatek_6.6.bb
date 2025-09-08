@@ -7,8 +7,8 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}-${PV}/mediatek/flow_patch:"
 
 KBRANCH ?= "linux-6.6.y"
 
-LINUX_VERSION ?= "6.6.92"
-SRCREV_machine ?= "ffaf6178137b9cdcc9742d6677b70be164dfeb8c"
+LINUX_VERSION ?= "6.6.103"
+SRCREV_machine ?= "cc1a1c5b404a5e6ad751d0831b1991a90c3de4c5"
 KMETA = "kernel-meta"
 SRCREV_meta ?= "dff911ce87fe7b9944c6058907f079ddb0f3e840"
 
@@ -82,8 +82,13 @@ do_filogic_patches() {
 
             patch -p1 < ${WORKDIR}/863-arm64-dts-mt7986-add-sound-wm8960.patch
             patch -p1 < ${WORKDIR}/999-2000-arm64-dts-mt7988-move-phys-to-sgmiipcs-and-usxgmiisy.patch
+            patch -p1 < ${WORKDIR}/999-2005-arm64-dts-mt7988-add-cpufreq-cooling-device.patch
+            patch -p1 < ${WORKDIR}/999-2138-dts-add-zts8232.patch
+            patch -p1 < ${WORKDIR}/999-2745-mtkhnat-add-mtkhnat-driver-support.patch
+            patch -p1 < ${WORKDIR}/999-2747-net-ethernet-mtk_eth_soc-add-proprietary-SER-flow.patch
             patch -p1 < ${WORKDIR}/999-2757-net-dsa-add-netlink-support-for-an8855.patch
-            patch -p1 < ${WORKDIR}/999-cpufreq-02-mediatek-enable-using-efuse-cali-data-for-mt7988-cpu-volt.patch
+            patch -p1 < ${WORKDIR}/999-2775-net-ethernet-mtk_eth_soc-add-IEEE1588v2-support-for-NETSYSv3.1.patch
+            patch -p1 < ${WORKDIR}/999-cpufreq-03-mediatek-enable-using-efuse-cali-data-for-mt7988-cpu-volt.patch
 
             if [ $DISTRO_FlowBlock_ENABLED = 'true' ]; then
                 for i in ${WORKDIR}/mediatek/flow_patch/*.patch; do patch -p1 < $i; done
@@ -143,4 +148,4 @@ kernel_do_install() {
 addtask filogic_patches after do_patch before do_compile
 
 KERNEL_MODULE_AUTOLOAD += "${@bb.utils.contains('DISTRO_FEATURES','logan','mtkhnat nf_flow_table_hw','',d)}"
-KERNEL_MODULE_AUTOLOAD_mt7987 += "air_en8811h "
+KERNEL_MODULE_AUTOLOAD_mt7987 += "air_en8811h  mtk-2p5ge "
