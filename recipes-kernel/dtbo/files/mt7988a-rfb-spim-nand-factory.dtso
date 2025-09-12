@@ -79,4 +79,11 @@
 			nvmem-cells = <&gmac2_mac>;
 		};
 	};
+
+	fragment@5 {
+		target-path = "/";
+		__overlay__ {
+			mediatek,no-split-fitrw;
+		};
+	};
 };

@@ -240,6 +240,7 @@ SRC_URI:append = " \
     file://999-2774-net-ethernet-mtk_eth_soc-add-tx-ring-full-event-counter.patch \
     file://999-2775-net-ethernet-mtk_eth_soc-add-IEEE1588v2-support-for-NETSYSv3.1.patch;apply=no \
     file://999-2776-net-phy-mediatek-2p5ge-add-sysfs-support-and-fix-led.patch \
+    file://999-2777-net-ethernet-mtk_eth_soc-change-xgmac-counter-statistics-method.patch \
     file://999-2800-trng-driver-porting.patch \
     file://999-4100-mtk-tunnel-offload-support.patch \
     file://999-clk-01-clk-mediatek-add-mt7987-clock-drivers-support.patch \

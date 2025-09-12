@@ -25,6 +25,7 @@ SRC_URI:append = " \
     file://410-v6.13-05-block-add-support-for-partition-table-defined-in-OF.patch \
     file://411-v6.7-mtd-spinand-add-support-for-FORESEE-F35SQA002G.patch \
     file://412-v6.14-mtd-spinand-add-support-for-FORESEE-F35SQA001G.patch \
+    file://419-v6.17-mtd-spinand-add-support-for-FudanMicro-FM25S01A.patch \
     file://600-v6.10-net-Remove-conditional-threaded-NAPI-wakeup-based-on.patch \
     file://601-v6.10-net-Allow-to-use-SMP-threads-for-backlog-NAPI.patch \
     file://602-v6.10-net-Use-backlog-NAPI-to-clean-up-the-defer_list.patch \
@@ -37,7 +38,6 @@ SRC_URI:append = " \
     file://620-01-v6.7-page_pool-fragment-API-support-for-32-bit-arch-with-.patch \
     file://620-02-v6.7-page_pool-unify-frag_count-handling-in-page_pool_is_.patch \
     file://621-proc-fix-missing-pde_set_flags.patch \
-    file://626-v6.17-net-ipv4-fix-regression-in-local-broadcast-routes.patch \
     file://700-v6.10-net-create-a-dummy-net_device-allocator.patch \
     file://702-01-v6.7-net-phy-aquantia-move-to-separate-directory.patch \
     file://702-02-v6.7-net-phy-aquantia-move-MMD_VEND-define-to-header.patch \

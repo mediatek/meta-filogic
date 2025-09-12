@@ -72,4 +72,11 @@
 			rootdisk-spim-nand = <&ubi_root>;
 		};
 	};
+
+	fragment@2 {
+		target-path = "/";
+		__overlay__ {
+			mediatek,no-split-fitrw;
+		};
+	};
 };
