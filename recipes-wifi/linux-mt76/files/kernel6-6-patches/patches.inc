@@ -120,5 +120,7 @@ SRC_URI:append = " \
     file://0118-mtk-mt76-mt7996-add-red-releated-debugfs.patch \
     file://0119-mtk-mt76-mt7996-fix-testmode-crash-issue.patch \
     file://0120-mtk-mt76-mt7996-update-agg-session-time-when-receivi.patch \
-    file://0121-wifi-mt76-mt7996-support-writing-MAC-TXD-for-AddBA-R.patch \
+    file://0121-mtk-mt76-mt7996-support-writing-MAC-TXD-for-AddBA-Re.patch \
+    file://0122-mtk-mt76-mt7996-add-BA-recovery-mechanism.patch \
+    file://0123-mtk-mt76-mt7996-fix-wcid-index-to-follow-hw-rule.patch \
     "
