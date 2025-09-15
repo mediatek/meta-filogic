@@ -149,3 +149,4 @@ addtask filogic_patches after do_patch before do_compile
 
 KERNEL_MODULE_AUTOLOAD += "${@bb.utils.contains('DISTRO_FEATURES','logan','mtkhnat nf_flow_table_hw','',d)}"
 KERNEL_MODULE_AUTOLOAD_mt7987 += "air_en8811h  mtk-2p5ge "
+KERNEL_MODULE_AUTOLOAD_mt7988d += "mtk-2p5ge "
