@@ -7,10 +7,10 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=b42eb47dc3802282b0d1be1bc8f5336c"
 SRC_URI = " \
     git://git@github.com/jow-/ucode.git;protocol=https;branch=master \
     file://0001-change-cmakelist.patch \
-    file://100-nl80211_vif_radio_mask.patch \
+    file://100-ucode-add-padding-to-uc_resource_ext_t.patch \
 "
 
-SRCREV = "b610860dd4a0591ff586dd71a50f556a0ddafced"
+SRCREV = "3f64c8089bf3ea4847c96b91df09fbfcaec19e1d"
 PV = "git${SRCPV}"
 
 S = "${WORKDIR}/git"
