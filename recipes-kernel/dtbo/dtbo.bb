@@ -50,7 +50,7 @@ SRC_URI:append:mt7988d = " \
 "
 
 SRC_URI:append:mt7987 = " \
-	file://mt7987-spim-nand.dtso \
+	file://mt7987-spim-nand-nmbm.dtso \
 	file://mt7987-spidev.dtso \
 	file://mt7987-spim-nor.dtso \
 	file://mt7987-emmc.dtso \
