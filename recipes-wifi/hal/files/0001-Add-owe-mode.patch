@@ -7,10 +7,10 @@ Subject: [PATCH] Add owe mode
  wifi_hal_ap.h | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/wifi_hal_ap.h b/wifi_hal_ap.h
+diff --git a/include/wifi_hal_ap.h b/include/wifi_hal_ap.h
 index 9eebe10..15c24f9 100644
---- a/wifi_hal_ap.h
-+++ b/wifi_hal_ap.h
+--- a/include/wifi_hal_ap.h
++++ b/include/wifi_hal_ap.h
 @@ -2455,7 +2455,8 @@ typedef enum {
      wifi_security_mode_wpa_wpa2_enterprise = 0x00000100,
      wifi_security_mode_wpa3_personal = 0x00000200,

@@ -1,7 +1,7 @@
-diff --git a/wifi_hal_generic.h b/wifi_hal_generic.h
+diff --git a/include/wifi_hal_generic.h b/include/wifi_hal_generic.h
 index 61cf9b6..2c1ae58 100644
---- a/wifi_hal_generic.h
-+++ b/wifi_hal_generic.h
+--- a/include/wifi_hal_generic.h
++++ b/include/wifi_hal_generic.h
 @@ -309,7 +309,9 @@ typedef enum{
      WIFI_CHANNELBANDWIDTH_80MHZ = 0x4,
      WIFI_CHANNELBANDWIDTH_160MHZ = 0x8,

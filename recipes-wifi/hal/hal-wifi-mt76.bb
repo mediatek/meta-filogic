@@ -19,7 +19,7 @@ SRCREV_FORMAT = "wifihal"
 PV = "${RDK_RELEASE}+git${SRCPV}"
 S = "${WORKDIR}/git/src/wifi/"
 
-DEPENDS += "halinterface libnl libev hostapd wpa-supplicant"
+DEPENDS += "rdk-wifi-halif libnl libev hostapd wpa-supplicant"
 CFLAGS:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'extender', '-D_TURRIS_EXTENDER_', '', d)}"
 CFLAGS:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'wifi_eht', '-DSINGLE_WIPHY_SUPPORT', '', d)}"
 CFLAGS:append = " -I=${includedir}/ccsp -I=${includedir}/libnl3"
