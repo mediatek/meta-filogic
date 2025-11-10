@@ -1,5 +1,15 @@
+From b66aba3c8fc50e70a67f63e52b54ae687b90b45c Mon Sep 17 00:00:00 2001
+From: Rex Lu <rex.lu@mediatek.com>
+Date: Mon, 10 Nov 2025 14:28:57 +0800
+Subject: [PATCH] test
+
+---
+ flowtable.sh | 2 +-
+ smp-mt76.sh  | 9 +++++----
+ 2 files changed, 6 insertions(+), 5 deletions(-)
+
 diff --git a/flowtable.sh b/flowtable.sh
-index 448fa685..14c7cb95 100644
+index 8ac1d7c..e82ffbb 100644
 --- a/flowtable.sh
 +++ b/flowtable.sh
 @@ -38,7 +38,7 @@ nftables_flowoffload_enable()
@@ -12,17 +22,18 @@ index 448fa685..14c7cb95 100644
  
  	interfaces=$(echo -e "$eth_ifs\n$wifi_ifs")
 diff --git a/smp-mt76.sh b/smp-mt76.sh
-index 67cdd669..5b43992a 100644
+index abc4944..ccf1d5b 100644
 --- a/smp-mt76.sh
 +++ b/smp-mt76.sh
-@@ -1,13 +1,14 @@
+@@ -1,6 +1,6 @@
  #!/bin/sh
  
 -source /sbin/flowtable.sh
 +source /usr/sbin/flowtable.sh
  
- OPTIMIZED_FOR="$1"
- CPU_LIST=`cat /proc/interrupts | sed -n '1p'`
+ KERNEL_VERSION=$(uname -r)
+ 
+@@ -9,7 +9,8 @@ CPU_LIST=`cat /proc/interrupts | sed -n '1p'`
  NUM_OF_CPU=0; for i in $CPU_LIST; do NUM_OF_CPU=`expr $NUM_OF_CPU + 1`; done;
  DEFAULT_RPS=0
  
@@ -32,7 +43,7 @@ index 67cdd669..5b43992a 100644
  
  RPS_IF_LIST=""
  NUM_WIFI_CARD=0
-@@ -27,7 +28,7 @@ get_if_info()
+@@ -29,7 +30,7 @@ get_if_info()
  	NET_IF_LIST=`ls /sys/class/net`
  	for vif in $NET_IF_LIST;
  	do
@@ -41,7 +52,7 @@ index 67cdd669..5b43992a 100644
  		[[ "$vif" == "lan"* ]] || [[ "$vif" == "wan"* ]] || \
  		[[ "$vif" == "wlan"* ]] || [[ "$vif" == "phy"* ]] || \
  		[[ "$vif" == *"mld"* ]]; then
-@@ -353,7 +354,7 @@ MT7622()
+@@ -355,7 +356,7 @@ MT7622()
  
  setup_model()
  {
@@ -50,3 +61,6 @@ index 67cdd669..5b43992a 100644
  	num_of_wifi=$NUM_WIFI_CARD
  
  	if [[ $board == *"7988"* ]]; then
+-- 
+2.45.2
+

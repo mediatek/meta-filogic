@@ -147,6 +147,7 @@ SRC_URI:append = " \
     file://999-1723-v6.10-net-phy-sfp-allow-use-2500base-X-for-2500base-T-modules.patch \
     file://999-2000-arm64-dts-mt7988-move-phys-to-sgmiipcs-and-usxgmiisy.patch;apply=no \
     file://999-2005-arm64-dts-mt7988-add-cpufreq-cooling-device.patch;apply=no \
+    file://999-2006-arm64-dts-mt7988-add-pcie-wifi-reset-support.patch;apply=no \
     file://999-2100-thermal-mediatek-add-mt7988-lvts-support.patch \
     file://999-2101-thermal-mediatek-add-mt7987-lvts-support.patch \
     file://999-2133-pwm-mediatek-add-longer-period-support.patch \
@@ -212,7 +213,7 @@ SRC_URI:append = " \
     file://999-2746-mtkhnat-add-support-ppe-flow-check-interrupt.patch \
     file://999-2747-crypto-eth-inline.patch \
     file://999-2747-net-ethernet-mtk_eth_soc-add-SER-fast-mode.patch \
-    file://999-2747-net-ethernet-mtk_eth_soc-add-proprietary-SER-flow.patch;apply=no \
+    file://999-2747-net-ethernet-mtk_eth_soc-add-internal-SER-notify-event.patch;apply=no \
     file://999-2750-net-phy-aquantia-add-frmware-load-to-config_init.patch \
     file://999-2751-net-phy-aquantia-add-mib-debugfs.patch \
     file://999-2752-net-phy-aquantia-add-cux3410.patch \
@@ -220,7 +221,7 @@ SRC_URI:append = " \
     file://999-2754-net-phy-sfp-support-shared-mod-def0-gpio.patch \
     file://999-2755-add-mt753x-gsw-support.patch \
     file://999-2756-net-dsa-change-mt753x-agetime-setting-method.patch \
-    file://999-2757-net-dsa-add-netlink-support-for-an8855.patch;apply=no \
+    file://999-2757-net-dsa-add-an8855-v2p0p1-and-netlink-support.patch;apply=no  \
     file://999-2758-net-dsa-add-mxl862xx-special-tag-support.patch \
     file://999-2759-net-dsa-add-mxl862xx-dsa-driver.patch \
     file://999-2760-net-phy-mediatek-add-i2p5g-support-for-mt7987.patch \
@@ -241,6 +242,8 @@ SRC_URI:append = " \
     file://999-2775-net-ethernet-mtk_eth_soc-add-IEEE1588v2-support-for-NETSYSv3.1.patch;apply=no \
     file://999-2776-net-phy-mediatek-2p5ge-add-sysfs-support-and-fix-led.patch \
     file://999-2777-net-ethernet-mtk_eth_soc-change-xgmac-counter-statistics-method.patch \
+    file://999-2778-net-ethernet-mtk_eth_soc-add-skb-mark-support-for-qos.patch \
+    file://999-2779-net-phy-add-aeonsemi-as21xxx-support.patch \
     file://999-2800-trng-driver-porting.patch \
     file://999-4100-mtk-tunnel-offload-support.patch \
     file://999-clk-01-clk-mediatek-add-mt7987-clock-drivers-support.patch \
@@ -256,17 +259,19 @@ SRC_URI:append = " \
     file://999-dual-boot-02-ubi-allow-no-default-rootdev.patch \
     file://999-dual-boot-03-fitblk-do-not-split-rootfs_data-if-required.patch \
     file://999-fitblk-01-parse-and-mount-ramdisk.patch \
+    file://999-fitblk-02-fix-nor-create-fitrw-for-rootfs-data.patch \
     file://999-pcie-01-pcie-mediatek-gen3-Add-PCIe-max-link-width-adjustment.patch \
     file://999-pcie-02-pcie-mediatek-gen3-Add-PCIe-IRQ-affinity-support.patch \
     file://999-pcie-03-pcie-mediatek-gen3-Add-WIFI-HW-reset-flow.patch \
     file://999-pcie-04-pcie-mediatek-gen3-Add-soft-off-and-soft-on-API.patch \
     file://999-pinctrl-01-pinctrl-mediatek-add-mt7987-pinctrl-support.patch \
-    file://999-serial-01-tty-serial-8250-fix-clock-setting-for-mediatek-serial.patch \
     file://999-spi-01-fix-calibration-message.patch \
+    file://999-spi-mt65xx-01-fix-dual-quad-mode-of-transfer-one-op.patch \
     file://999-spi-nand-01-integrate-ONFI-and-CASN-manipulation.patch \
     file://999-spi-nand-02-Add-CASN-support.patch \
     file://999-spi-nor-01-fix-3B-4B-calibration.patch \
-    file://999-spi-nor-02-fix-or-add-devices.patch \
+    file://999-spi-nor-02-fix-en25qh256-attribute.patch \
+    file://999-spi-nor-03-add-new-devices.patch \
     file://999-tphy-01-phy-mtk-tphy-Add-PCIe-2-lane-efuse-support.patch \
     file://999-tphy-02-phy-mtk-tphy-add-auto-load-valid-check-mechanism.patch \
     file://999-tphy-03-phy-mtk-tphy-one-setting-of-TTSSC-Freq-Dev-for-all-IC-cases.patch \

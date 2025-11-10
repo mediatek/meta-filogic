@@ -26,7 +26,6 @@ SRC_URI:append:mt7988a = " \
 	file://mt7988a-rfb-eth2-an8831x.dtso \
 	file://mt7988a-rfb-eth2-cux3410.dtso \
 	file://mt7988a-rfb-eth2-mxl.dtso \
-	file://mt7988a-rfb-eth2-mxl86252.dtso \
 	file://mt7988a-rfb-eth2-sfp.dtso \
 	file://mt7988a-rfb-spidev.dtso \
 	file://mt7988a-rfb-4pcie.dtso \
@@ -51,6 +50,7 @@ SRC_URI:append:mt7988d = " \
 
 SRC_URI:append:mt7987 = " \
 	file://mt7987-spim-nand-nmbm.dtso \
+	file://mt7987-spim-nand.dtso \
 	file://mt7987-spidev.dtso \
 	file://mt7987-spim-nor.dtso \
 	file://mt7987-emmc.dtso \

@@ -7,8 +7,8 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}-${PV}/mediatek/flow_patch:"
 
 KBRANCH ?= "linux-6.6.y"
 
-LINUX_VERSION ?= "6.6.104"
-SRCREV_machine ?= "355bd0b51d2fc0a2c9d0789c77269e4476637428"
+LINUX_VERSION ?= "6.6.116"
+SRCREV_machine ?= "0a805b6ea8cda0caa268b396a2e5117f3772d849"
 KMETA = "kernel-meta"
 SRCREV_meta ?= "dff911ce87fe7b9944c6058907f079ddb0f3e840"
 
@@ -83,10 +83,11 @@ do_filogic_patches() {
             patch -p1 < ${WORKDIR}/863-arm64-dts-mt7986-add-sound-wm8960.patch
             patch -p1 < ${WORKDIR}/999-2000-arm64-dts-mt7988-move-phys-to-sgmiipcs-and-usxgmiisy.patch
             patch -p1 < ${WORKDIR}/999-2005-arm64-dts-mt7988-add-cpufreq-cooling-device.patch
+            patch -p1 < ${WORKDIR}/999-2006-arm64-dts-mt7988-add-pcie-wifi-reset-support.patch
             patch -p1 < ${WORKDIR}/999-2138-dts-add-zts8232.patch
             patch -p1 < ${WORKDIR}/999-2745-mtkhnat-add-mtkhnat-driver-support.patch
-            patch -p1 < ${WORKDIR}/999-2747-net-ethernet-mtk_eth_soc-add-proprietary-SER-flow.patch
-            patch -p1 < ${WORKDIR}/999-2757-net-dsa-add-netlink-support-for-an8855.patch
+            patch -p1 < ${WORKDIR}/999-2747-net-ethernet-mtk_eth_soc-add-internal-SER-notify-event.patch
+            patch -p1 < ${WORKDIR}/999-2757-net-dsa-add-an8855-v2p0p1-and-netlink-support.patch
             patch -p1 < ${WORKDIR}/999-2775-net-ethernet-mtk_eth_soc-add-IEEE1588v2-support-for-NETSYSv3.1.patch
             patch -p1 < ${WORKDIR}/999-cpufreq-03-mediatek-enable-using-efuse-cali-data-for-mt7988-cpu-volt.patch
 

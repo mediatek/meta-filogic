@@ -37,7 +37,6 @@ SRC_URI:append = " \
     file://612-v6.9-net-get-stats64-if-device-if-driver-is-configured.patch \
     file://620-01-v6.7-page_pool-fragment-API-support-for-32-bit-arch-with-.patch \
     file://620-02-v6.7-page_pool-unify-frag_count-handling-in-page_pool_is_.patch \
-    file://621-proc-fix-missing-pde_set_flags.patch \
     file://700-v6.10-net-create-a-dummy-net_device-allocator.patch \
     file://702-01-v6.7-net-phy-aquantia-move-to-separate-directory.patch \
     file://702-02-v6.7-net-phy-aquantia-move-MMD_VEND-define-to-header.patch \
@@ -122,6 +121,7 @@ SRC_URI:append = " \
     file://752-28-v6.10-net-ethernet-mediatek-Allow-gaps-in-MAC-allocation.patch \
     file://752-29-v6.10-net-ethernet-mtk_ppe-Change-PPE-entries-number-to-16.patch \
     file://752-30-v6.10-net-ethernet-mtk_eth_soc-implement-.-get-set-_pausep.patch \
+    file://752-31-v6.18-net-mediatek-wed-Introduce-MT7992-WED-support-to-MT7.patch \
     file://760-v6.9-net-phy-aquantia-add-AQR111-and-AQR111B0-PHY-ID.patch \
     file://761-v6.9-net-phy-aquantia-add-AQR113-PHY-ID.patch \
     file://762-v6.9-net-phy-aquantia-add-AQR813-PHY-ID.patch \

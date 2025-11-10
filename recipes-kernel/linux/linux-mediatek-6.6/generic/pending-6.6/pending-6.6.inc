@@ -119,6 +119,7 @@ SRC_URI:append = " \
     file://733-01-net-ethernet-mtk_eth_soc-use-napi_build_skb.patch \
     file://734-net-ethernet-mediatek-enlarge-DMA-reserve-buffer.patch \
     file://735-net-ethernet-mtk_eth_soc-fix-memory-corruption-durin.patch \
+    file://736-05-net-ethernet-mtk_eth_soc-zero-initialize-PPE-flow-ta.patch \
     file://736-net-ethernet-mtk_wed-fix-path-of-MT7988-WO-firmware.patch \
     file://737-net-ethernet-mtk_eth_soc-add-paths-and-SerDes-modes-.patch \
     file://738-01-net-ethernet-mtk_eth_soc-reduce-rx-ring-size-for-older.patch \
@@ -130,7 +131,6 @@ SRC_URI:append = " \
     file://739-05-net-pcs-add-driver-for-MediaTek-USXGMII-PCS.patch \
     file://740-net-phy-motorcomm-Add-missing-include.patch \
     file://741-net-phy-broadcom-update-dependency-condition.patch \
-    file://742-net-ethernet-mtk_eth_soc-fix-tx-vlan-tag-for-llc-pac.patch \
     file://780-ARM-kirkwood-add-missing-linux-if_ether.h-for-ETH_AL.patch \
     file://790-bus-mhi-core-add-SBL-state-callback.patch \
     file://791-tg3-Fix-DMA-allocations-on-57766-devices.patch \

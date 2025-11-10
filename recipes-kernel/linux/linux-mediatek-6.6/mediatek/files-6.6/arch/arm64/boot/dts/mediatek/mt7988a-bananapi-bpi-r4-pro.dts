@@ -99,7 +99,7 @@
 		compatible = "sff,sfp";
 		i2c-bus = <&imux1_gpio>;
 		los-gpios = <&pio 70 GPIO_ACTIVE_HIGH>;
-		mod-def0-gpios = <&pio 4 GPIO_ACTIVE_LOW>;
+		mod-def0-gpios = <&pio 69 GPIO_ACTIVE_LOW>;
 		tx-disable-gpios = <&pio 21 GPIO_ACTIVE_HIGH>;
 		maximum-power-milliwatt = <3000>;
 	};
@@ -141,28 +141,6 @@
 				phy-connection-type = "10gbase-r";
 				managed = "in-band-status";
 				sfp = <&sfp2>;
-			};
-		};
-		mux2: ethernet-mux@2 {
-			compatible = "mediatek,eth-mux";
-			reg = <2>;
-			chan-sel-gpios = <&pio 54 GPIO_ACTIVE_HIGH>;
-			mod-def0-gpios = <&pio 4 GPIO_ACTIVE_LOW>;
-			sfp-present-channel = <0>;
-
-			channel_20: channel@0 {
-				reg = <0>;
-				phy-mode = "10gbase-r";
-				phy-connection-type = "10gbase-r";
-				managed = "in-band-status";
-				sfp = <&sfp1>;
-			};
-
-			channel_21: channel@1 {
-				reg = <1>;
-				phy-mode = "10gbase-r";
-				phy-connection-type = "10gbase-r";
-				phy-handle = <&phy24>;
 			};
 		};
 	};
@@ -208,7 +186,7 @@
 	phy24: ethernet-phy@24 {
 		reg = <24>;
 		compatible = "ethernet-phy-ieee802.3-c45";
-		reset-gpios = <&pca9555 12 GPIO_ACTIVE_LOW>;
+		reset-gpios = <&pio 83 GPIO_ACTIVE_LOW>;
 		reset-assert-us = <200000>;
 		reset-deassert-us = <350000>;
 		firmware-name = "as21x1x_fw.bin";
@@ -237,7 +215,7 @@
 	phy28: ethernet-phy@28 {
 		reg = <28>;
 		compatible = "ethernet-phy-ieee802.3-c45";
-		reset-gpios = <&pca9555 13 GPIO_ACTIVE_LOW>;
+		reset-gpios = <&pio 82 GPIO_ACTIVE_LOW>;
 		reset-assert-us = <200000>;
 		reset-deassert-us = <350000>;
 		firmware-name = "as21x1x_fw.bin";
@@ -266,7 +244,32 @@
 		compatible = "mxl,86252";
 		reg = <16>;
 		dsa,member = <0 0>;
-		status = "disabled";
+		status = "okay";
+
+		ds_mux: ds-mux-bus {
+			ds_mux0: ds-mux@0 {
+				compatible = "mxl862xx,ds-mux";
+				reg = <12>;
+				chan-sel-gpios = <&pio 54 GPIO_ACTIVE_HIGH>;
+				mod-def0-gpios = <&pio 69 GPIO_ACTIVE_LOW>;
+				sfp-present-channel = <0>;
+
+				ds_channel_0: channel@0 {
+					reg = <0>;
+					phy-mode = "10gbase-r";
+					phy-connection-type = "10gbase-r";
+					managed = "in-band-status";
+					sfp = <&sfp1>;
+				};
+
+				ds_channel_1: channel@1 {
+					reg = <1>;
+					phy-mode = "10gbase-r";
+					phy-connection-type = "10gbase-r";
+					phy-handle = <&phy24>;
+				};
+			};
+		};
 
 		ports {
 			port0: port@0 {
@@ -309,14 +312,7 @@
 				status = "okay";
 			};
 
-			port12: port@12 {
-				reg = <12>;
-				label = "mxl_lan12";
-				phy-mode = "xfi";
-				status = "okay";
-			};
-
-			port8: port@8 {
+			port5: port@5 {
 				reg = <8>;
 				label = "cpu";
 				phy-mode = "usxgmii";
@@ -328,6 +324,15 @@
 					full-duplex;
 				};
 			};
+
+			port6: port@6 {
+				reg = <12>;
+				label = "mxl_lan5";
+				phy-mode = "10gbase-r";
+				phy-handle = <&phy24>;
+				status = "okay";
+			};
+
 		};
 
 		mdio {
@@ -358,10 +363,6 @@
 &gsw_phy0 {
 	pinctrl-names = "gbe-led";
 	pinctrl-0 = <&gbe0_led0_pins>;
-};
-
-&gsw_port0 {
-	label = "wan";
 };
 
 &gsw_phy0_led0 {
