@@ -1,20 +1,20 @@
-From f291d3baa4e45c6241c5faf37db91d2f6132dcc5 Mon Sep 17 00:00:00 2001
+From 39b6f5dc1ca79e77feb0091be24c3923ff0668b4 Mon Sep 17 00:00:00 2001
 From: Simon Chung <simon.c.chung@accenture.com>
 Date: Thu, 2 Sep 2021 15:44:57 +0100
-Subject: [PATCH] sta-network
+Subject: [PATCH 2/2] sta-network
 
 ---
  include/wifi_hal.h | 90 ++++++++++++++++++++++++++++++++++++++++++++++
  1 file changed, 90 insertions(+)
 
 diff --git a/include/wifi_hal.h b/include/wifi_hal.h
-index a04b680..fbaabe1 100644
+index 7906f42..6d3ace9 100644
 --- a/include/wifi_hal.h
 +++ b/include/wifi_hal.h
-@@ -115,4 +115,94 @@
- * APIs to be deprecated. Not add new function or structure!
+@@ -118,4 +118,94 @@
  */
  #include "wifi_hal_deprecated.h"
+ 
 +
 +/* DRAFT FOR CLIENT API */
 +

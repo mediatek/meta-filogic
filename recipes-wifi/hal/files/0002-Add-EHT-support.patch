@@ -1,15 +1,27 @@
+From 60b40d8ba758233c075f4995480b07ef5c6b2e88 Mon Sep 17 00:00:00 2001
+From: Rex Lu <rex.lu@mediatek.com>
+Date: Mon, 10 Nov 2025 11:33:30 +0800
+Subject: [PATCH 1/2] Add EHT support
+
+---
+ include/wifi_hal_generic.h | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
 diff --git a/include/wifi_hal_generic.h b/include/wifi_hal_generic.h
-index 61cf9b6..2c1ae58 100644
+index 20e2628..478cdf8 100644
 --- a/include/wifi_hal_generic.h
 +++ b/include/wifi_hal_generic.h
-@@ -309,7 +309,9 @@ typedef enum{
-     WIFI_CHANNELBANDWIDTH_80MHZ = 0x4,
-     WIFI_CHANNELBANDWIDTH_160MHZ = 0x8,
-     WIFI_CHANNELBANDWIDTH_80_80MHZ = 0x10,
--    WIFI_CHANNELBANDWIDTH_320MHZ = 0x20
-+    WIFI_CHANNELBANDWIDTH_320MHZ = 0x20,
+@@ -327,7 +327,9 @@ typedef enum
+     WIFI_CHANNELBANDWIDTH_80MHZ = 0x4, /**< 80MHz. */
+     WIFI_CHANNELBANDWIDTH_160MHZ = 0x8, /**< 160MHz. */
+     WIFI_CHANNELBANDWIDTH_80_80MHZ = 0x10, /**< 80+80MHz. */
+-    WIFI_CHANNELBANDWIDTH_320MHZ = 0x20 /**< 320MHz. */
++    WIFI_CHANNELBANDWIDTH_320MHZ = 0x20, /**< 320MHz. */
 +    WIFI_CHANNELBANDWIDTH_320_1MHZ = 0x40,
-+    WIFI_CHANNELBANDWIDTH_320_2MHZ = 0x80,
++    WIFI_CHANNELBANDWIDTH_320_2MHZ = 0x80
  } wifi_channelBandwidth_t;
  
  /**
+-- 
+2.45.2
+
