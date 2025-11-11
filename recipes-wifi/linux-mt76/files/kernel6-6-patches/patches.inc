@@ -123,4 +123,9 @@ SRC_URI:append = " \
     file://0121-mtk-mt76-mt7996-support-writing-MAC-TXD-for-AddBA-Re.patch \
     file://0122-mtk-mt76-mt7996-add-BA-recovery-mechanism.patch \
     file://0123-mtk-mt76-mt7996-fix-wcid-index-to-follow-hw-rule.patch \
+    file://0130-cp-mtk-mt76-mt7996-enable-RED-and-fresh-agg-timer-no-ma.patch \
+    file://0131-cp-mtk-mt76-add-mask-for-Q_READ-and-Q_WRITE.patch \
+    file://0132-cp-mtk-mt76-mt7996-fix-incorrect-memory-access-when-wed.patch \
+    file://0133-cp-mtk-mt76-mt7996-update-mtxq-wcid-to-another-link-whe.patch \
+    file://0134-cp-mtk-mt76-mt7996-update-bss-rfch-sta-rec-when-bw-chan.patch \
     "

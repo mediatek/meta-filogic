@@ -11,7 +11,7 @@ SRC_URI = "\
           "
 
 wifi6_ver = "4fc532c8a55ba8217ad67d7fd47c5eb9a8aba044"
-wifi7_ver = "5952b48e251c0ea76dfce97f129da6f18d889eda"
+wifi7_ver = "60e04048a0e2f3e33651c19e62861b41be4c290f"
 
 SRCREV = "${@bb.utils.contains('DISTRO_FEATURES', 'wifi_eht', '${wifi7_ver}', '${wifi6_ver}', d)}"
 

@@ -236,4 +236,6 @@ SRC_URI:append = " \
     file://0234-mtk-hostapd-properly-call-ap_sta_remove_link_sta-bef.patch \
     file://0235-mtk-hostapd-replace-callback-is_mld_finished-with-ge.patch \
     file://0236-mtk-hostapd-add-MLD-support-for-command-STA-FIRST-an.patch \
+    file://0250-cp-fixup-mtk-hostapd-always-do-WPA-initialization-in-ho.patch \
+    file://0251-cp-Upstream-fix-HE-PHY-cap-for-wtbl-fcap.patch \
     "
