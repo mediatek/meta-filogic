@@ -115,4 +115,5 @@ SRC_URI:append = " \
     file://0113-mtk-mac80211-rework-inband-discovery-template-for-ml.patch \
     file://0114-mtk-mac80211-add-dfs-channel-state-update-cmd.patch \
     file://0115-mtk-nl80211-support-per-radio-txpower-setting.patch \
+    file://0116-cp-mtk-mac80211-fix-DFS-slave-in-pure-station-vif.patch \
     "

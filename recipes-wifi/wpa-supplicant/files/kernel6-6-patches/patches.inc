@@ -238,4 +238,5 @@ SRC_URI:append = " \
     file://0236-mtk-hostapd-add-MLD-support-for-command-STA-FIRST-an.patch \
     file://0250-cp-fixup-mtk-hostapd-always-do-WPA-initialization-in-ho.patch \
     file://0251-cp-Upstream-fix-HE-PHY-cap-for-wtbl-fcap.patch \
+    file://0252-cp-mtk-hostapd-Fix-iFEM-background-radar-channel-switch.patch \
     "

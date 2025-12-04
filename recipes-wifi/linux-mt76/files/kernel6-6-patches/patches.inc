@@ -128,4 +128,7 @@ SRC_URI:append = " \
     file://0132-cp-mtk-mt76-mt7996-fix-incorrect-memory-access-when-wed.patch \
     file://0133-cp-mtk-mt76-mt7996-update-mtxq-wcid-to-another-link-whe.patch \
     file://0134-cp-mtk-mt76-mt7996-update-bss-rfch-sta-rec-when-bw-chan.patch \
+    file://0135-cp-mtk-mt76-mt7996-offload-radar-threshold-initializati.patch \
+    file://0136-cp-mtk-mt76-mt7996-fix-and-refactor-air-monitor.patch \
+    file://0137-cp-mtk-mt76-mt7996-Fix-updating-background-channel.patch \
     "
