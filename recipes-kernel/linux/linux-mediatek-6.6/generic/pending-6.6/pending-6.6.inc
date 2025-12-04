@@ -31,6 +31,7 @@ SRC_URI:append = " \
     file://400-mtd-mtdsplit-support.patch \
     file://401-mtd-don-t-register-NVMEM-devices-for-partitions-with.patch \
     file://402-mtd-spi-nor-write-support-for-minor-aligned-partitions.patch \
+    file://403-mtd-spinand-add-support-for-FudanMicro-FM25S01BI3.patch \
     file://410-mtd-spinand-set-bitflip_threshold-to-75-of-ECC-strength.patch \
     file://420-mtd-redboot_space.patch \
     file://430-mtd-add-myloader-partition-parser.patch \

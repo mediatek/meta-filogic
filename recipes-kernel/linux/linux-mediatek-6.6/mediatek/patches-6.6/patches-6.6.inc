@@ -221,7 +221,7 @@ SRC_URI:append = " \
     file://999-2754-net-phy-sfp-support-shared-mod-def0-gpio.patch \
     file://999-2755-add-mt753x-gsw-support.patch \
     file://999-2756-net-dsa-change-mt753x-agetime-setting-method.patch \
-    file://999-2757-net-dsa-add-an8855-v2p0p1-and-netlink-support.patch;apply=no  \
+    file://999-2757-net-dsa-add-an8855-v2p0p1-and-netlink-support.patch;apply=no \
     file://999-2758-net-dsa-add-mxl862xx-special-tag-support.patch \
     file://999-2759-net-dsa-add-mxl862xx-dsa-driver.patch \
     file://999-2760-net-phy-mediatek-add-i2p5g-support-for-mt7987.patch \
@@ -244,6 +244,8 @@ SRC_URI:append = " \
     file://999-2777-net-ethernet-mtk_eth_soc-change-xgmac-counter-statistics-method.patch \
     file://999-2778-net-ethernet-mtk_eth_soc-add-skb-mark-support-for-qos.patch \
     file://999-2779-net-phy-add-aeonsemi-as21xxx-support.patch \
+    file://999-2780-net-ethernet-mtk_eth_soc-change-qdma-txq-num-to-32.patch \
+    file://999-2781-net-ethernet-mtk_eth_soc-support-multiple-dsa-switch-PPPQ.patch;apply=no \
     file://999-2800-trng-driver-porting.patch \
     file://999-4100-mtk-tunnel-offload-support.patch \
     file://999-clk-01-clk-mediatek-add-mt7987-clock-drivers-support.patch \
@@ -259,7 +261,6 @@ SRC_URI:append = " \
     file://999-dual-boot-02-ubi-allow-no-default-rootdev.patch \
     file://999-dual-boot-03-fitblk-do-not-split-rootfs_data-if-required.patch \
     file://999-fitblk-01-parse-and-mount-ramdisk.patch \
-    file://999-fitblk-02-fix-nor-create-fitrw-for-rootfs-data.patch \
     file://999-pcie-01-pcie-mediatek-gen3-Add-PCIe-max-link-width-adjustment.patch \
     file://999-pcie-02-pcie-mediatek-gen3-Add-PCIe-IRQ-affinity-support.patch \
     file://999-pcie-03-pcie-mediatek-gen3-Add-WIFI-HW-reset-flow.patch \
@@ -275,6 +276,7 @@ SRC_URI:append = " \
     file://999-tphy-01-phy-mtk-tphy-Add-PCIe-2-lane-efuse-support.patch \
     file://999-tphy-02-phy-mtk-tphy-add-auto-load-valid-check-mechanism.patch \
     file://999-tphy-03-phy-mtk-tphy-one-setting-of-TTSSC-Freq-Dev-for-all-IC-cases.patch \
+    file://999-wdt-01-add-clamp-to-set-timeout.patch \
     file://999-xHCI-01-change-compliance-mode-de-emphasis-default-as-g.patch \
     file://999-xHCI-02-xhci-mtk-mt79xx-USB-2.0-USBIF-compliance-toolkit.patch \
     file://999-xHCI-03-usb-add-embedded-Host-feature-support.patch \

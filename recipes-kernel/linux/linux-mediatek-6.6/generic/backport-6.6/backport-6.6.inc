@@ -26,6 +26,8 @@ SRC_URI:append = " \
     file://411-v6.7-mtd-spinand-add-support-for-FORESEE-F35SQA002G.patch \
     file://412-v6.14-mtd-spinand-add-support-for-FORESEE-F35SQA001G.patch \
     file://419-v6.17-mtd-spinand-add-support-for-FudanMicro-FM25S01A.patch \
+    file://420-v6.19-mtd-spinand-fmsh-remove-QE-bit-for-FM25S01A-flash.patch \
+    file://422-v6.19-mtd-spinand-esmt-add-support-for-F50L1G41LC.patch \
     file://600-v6.10-net-Remove-conditional-threaded-NAPI-wakeup-based-on.patch \
     file://601-v6.10-net-Allow-to-use-SMP-threads-for-backlog-NAPI.patch \
     file://602-v6.10-net-Use-backlog-NAPI-to-clean-up-the-defer_list.patch \
@@ -122,6 +124,8 @@ SRC_URI:append = " \
     file://752-29-v6.10-net-ethernet-mtk_ppe-Change-PPE-entries-number-to-16.patch \
     file://752-30-v6.10-net-ethernet-mtk_eth_soc-implement-.-get-set-_pausep.patch \
     file://752-31-v6.18-net-mediatek-wed-Introduce-MT7992-WED-support-to-MT7.patch \
+    file://752-32-v6.18-wifi-mt76-wed-use-proper-wed-reference-in-mt76-wed-d.patch \
+    file://752-33-v6.18-net-mtk-wed-add-dma-mask-limitation-and-GFP_DMA32-fo.patch \
     file://760-v6.9-net-phy-aquantia-add-AQR111-and-AQR111B0-PHY-ID.patch \
     file://761-v6.9-net-phy-aquantia-add-AQR113-PHY-ID.patch \
     file://762-v6.9-net-phy-aquantia-add-AQR813-PHY-ID.patch \
