@@ -13,3 +13,8 @@ FILES:${PN}-airoha = " \
 	${nonarch_base_libdir}/firmware/airoha/EthMD32.DSP.bin \
 "
 PACKAGES =+ "${PN}-airoha"
+
+do_install:append() {
+	mkdir -p ${TOPDIR}/firmware/airoha
+	cp -rf ${WORKDIR}/${PN}-${PV}/airoha/* ${TOPDIR}/firmware/airoha
+}

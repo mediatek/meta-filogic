@@ -12,7 +12,7 @@ SRCREV_machine ?= "4791134e4aebe300af2b409dc550610ef69fae3e"
 KMETA = "kernel-meta"
 SRCREV_meta ?= "dff911ce87fe7b9944c6058907f079ddb0f3e840"
 
-DEPENDS:append = " kern-tools-native xz-native bc-native"
+DEPENDS:append = " kern-tools-native xz-native bc-native linux-firmware marvell-eth-firmware "
 
 SRC_URI = " \
     git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git;protocol=https;branch=${KBRANCH};name=machine \
