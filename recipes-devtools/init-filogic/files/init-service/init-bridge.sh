@@ -9,6 +9,10 @@ then
     ifconfig brlan0 $lan_ip netmask $lan_mask up
 fi
 
+if [ -d /sys/class/net/eth2 ]; then
+    ip link set eth2 name erouter0
+fi
+
 #Work around for Ethernet connected clients
 if [ ! -d /sys/class/net/lan1 ]
 then
