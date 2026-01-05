@@ -407,7 +407,7 @@ fitimage_emit_section_config_itb() {
 	# conf node name is selected based on dtb ID if it is present,
 	# otherwise its selected based on kernel ID
 	if [ -n "$dtb_image" ]; then
-		conf_node=$conf_node$dtb_filename
+		conf_node=${dtb_filename#mediatek_}
 	else
 		conf_node=$conf_node$kernel_id
 	fi
