@@ -27,7 +27,7 @@ FILES:${PN} += " \
             "
 
 do_install() {
-    IS_ITB_IMAGE="${@bb.utils.contains('DISTRO_FEATURES','kernel6-6','true','false',d)}"
+    IS_ITB_IMAGE="${@bb.utils.contains('DISTRO_FEATURES','kernelv6','true','false',d)}"
     install -d ${D}/lib/upgrade
     install -d ${D}${sbindir}
     if [ $IS_ITB_IMAGE = 'true' ]; then

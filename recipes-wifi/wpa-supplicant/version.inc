@@ -1,1 +1,1 @@
-SRCREV_kernel6-6 = "4b8ac10cb77c3d4dbf7ccefbe697dc0578da374c"
+SRCREV_kernelv6 = "4b8ac10cb77c3d4dbf7ccefbe697dc0578da374c"

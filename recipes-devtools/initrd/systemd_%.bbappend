@@ -11,7 +11,7 @@ do_install:append() {
        if ${@bb.utils.contains('DISTRO_FEATURES','kernel_in_ubi','true','false',d)}; then
               install -d ${D}/overlay
               install -d ${D}/rom
-              if ${@bb.utils.contains('DISTRO_FEATURES','kernel6-6','true','false',d)}; then
+              if ${@bb.utils.contains('DISTRO_FEATURES','kernelv6','true','false',d)}; then
                      if ${@bb.utils.contains('DISTRO_FEATURES','emmc','true','false',d)}; then
                             install -m 0755 ${WORKDIR}/kernelv6-init_readonlyfs-emmc.sh ${D}${rootlibexecdir}/init_readonlyfs.sh
                      else

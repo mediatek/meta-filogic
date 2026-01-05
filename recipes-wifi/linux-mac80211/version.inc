@@ -1,2 +1,2 @@
-PV_kernel6-6 = "6.16"
+PV_kernelv6= "6.16"
 SHASUM-kernelv6 = "67f11320509dd18e5e2c58cb81e9f6c7d19b09f5229baa5880ed4dab71c19052"

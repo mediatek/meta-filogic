@@ -17,8 +17,8 @@ SRC_URI = " \
 DEPENDS += "virtual/kernel"
 DEPENDS += "linux-mac80211"
 
-PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6-6', 'kernel6-6-patches', 'patches-${PV}', d)}"
-FW_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6-6', 'kernel6-6-src', 'src', d)}"
+PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernelv6', 'kernelv6-patches', 'patches-${PV}', d)}"
+FW_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernelv6', 'kernelv6-src', 'src', d)}"
 
 SRC_URI += " \
     file://${FW_SRC} \
@@ -99,7 +99,7 @@ do_install:append () {
 }
 
 do_install:append_mt7988 () {
-    IS_KERNEL_V6="${@bb.utils.contains('DISTRO_FEATURES','kernel6-6','true','false',d)}"
+    IS_KERNEL_V6="${@bb.utils.contains('DISTRO_FEATURES','kernelv6','true','false',d)}"
     if [ $IS_KERNEL_V6 = 'false' ]; then
         install -d ${D}/${base_libdir}/firmware/mediatek/
 

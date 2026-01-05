@@ -9,8 +9,8 @@ DEPENDS:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'telemetry2_0', 'tele
 LDFLAGS:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'telemetry2_0', ' -ltelemetry_msgsender ', '', d)}"
 RDEPENDS:${PN} += "gawk ucode udebug"
 
-PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6-6', 'kernel6-6-patches', 'patches-${PV}', d)}"
-UC_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6-6', 'kernel6-6-uc-files', 'uc-files', d)}"
+PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernelv6', 'kernelv6-patches', 'patches-${PV}', d)}"
+UC_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernelv6', 'kernelv6-uc-files', 'uc-files', d)}"
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/${PATCH_SRC}:"
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/${UC_SRC}:"
@@ -35,7 +35,7 @@ SRC_URI = " \
     file://wifi-detect.uc \
     file://mac80211.uc \
     file://board.json \
-    ${@bb.utils.contains('DISTRO_FEATURES','kernel6-6','','file://src-${PV}',d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES','kernelv6','','file://src-${PV}',d)} \
     file://002-rdkb-add-ucode-support.patch;apply=no \
 "
 require files/${PATCH_SRC}/patches.inc

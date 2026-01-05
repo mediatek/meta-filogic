@@ -16,7 +16,7 @@ SRC_URI = " \
     git://git@github.com/openwrt/mt76.git;protocol=https;branch=master \
     file://COPYING;subdir=git \
     file://5000-mt76-add-internal-wed_tiny-header-file.patch;apply=no\
-    ${@bb.utils.contains('DISTRO_FEATURES','kernel6-6','file://kernel6-6-patches/;apply=no','',d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES','kernelv6','file://kernelv6-patches/;apply=no','',d)} \
     "
 
 
@@ -31,7 +31,7 @@ CFLAGS:append = " -I=${includedir}/libnl-tiny -I${STAGING_KERNEL_BUILDDIR}/usr/i
 
 S = "${WORKDIR}/git/tools"
 PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES','wifi_eht','${WORKDIR}/patches-3.x','${WORKDIR}/patches',d)}"
-PATCH_SRC_kernel6-6 = "${WORKDIR}/kernel6-6-patches"
+PATCH_SRC_kernelv6 = "${WORKDIR}/kernelv6-patches"
 
 SRC_URI += "file://${@bb.utils.contains('DISTRO_FEATURES','wifi_eht','patches-3.x/','patches/',d)};apply=no"
 

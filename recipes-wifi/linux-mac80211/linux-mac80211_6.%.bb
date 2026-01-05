@@ -10,7 +10,7 @@ PV = "6.12.6"
 SHASUM-kernelv5 = "28ec39425a1b3270e1422d92a8131a6a3d8919cc13e8ee250c315e55d922ba68"
 
 require version.inc
-SRC_URI[sha256sum] = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6-6', '${SHASUM-kernelv6}', '${SHASUM-kernelv5}', d)}"
+SRC_URI[sha256sum] = "${@bb.utils.contains('DISTRO_FEATURES', 'kernelv6', '${SHASUM-kernelv6}', '${SHASUM-kernelv5}', d)}"
 SRC_URI = " \
     http://mirror2.openwrt.org/sources/backports-${PV}.tar.xz \
     file://config \
@@ -20,7 +20,7 @@ SRC_URI = " \
 
 DEPENDS += "virtual/kernel"
 DEPENDS += "bison-native coreutils-native flex-native"
-PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6-6', 'kernel6-6-patches', 'patches-6.x', d)}"
+PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernelv6', 'kernelv6-patches', 'patches-6.x', d)}"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/${PATCH_SRC}/subsys:"
 

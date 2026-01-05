@@ -7,7 +7,7 @@ LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://hostapd/README;md5=0e430ef1be3d6eebf257cf493fc7661d"
 
 DEPENDS = "dbus libnl-tiny ubus ucode udebug"
-PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6-6', 'kernel6-6-patches', 'patches-${PV}', d)}"
+PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernelv6', 'kernelv6-patches', 'patches-${PV}', d)}"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/${PATCH_SRC}:"
@@ -21,7 +21,7 @@ SRC_URI = "git://w1.fi/hostap.git;protocol=https;branch=main \
            file://wpa_supplicant.conf-sane \
            file://99_wpa_supplicant \
            file://wpa_supplicant-full.config \
-           ${@bb.utils.contains('DISTRO_FEATURES','kernel6-6','','file://src-${PV}',d)} \
+           ${@bb.utils.contains('DISTRO_FEATURES','kernelv6','','file://src-${PV}',d)} \
            file://002-rdkb-add-ucode-support.patch;apply=no \
 	   file://003-fix_wpa_supplicant_build_issue.patch;apply=no \
            "
@@ -40,7 +40,7 @@ EXTRA_OEMAKE = "'LIBDIR=${libdir}' 'INCDIR=${includedir}' 'BINDIR=${sbindir}'"
 
 do_filogic_patches() {
     cd ${S}
-	IS_KERNEL_V6="${@bb.utils.contains('DISTRO_FEATURES','kernel6-6','true','false',d)}"
+	IS_KERNEL_V6="${@bb.utils.contains('DISTRO_FEATURES','kernelv6','true','false',d)}"
         if [ ! -e patch_applied ]; then
             patch -p1 < ${WORKDIR}/002-rdkb-add-ucode-support.patch
 	    if [ $IS_KERNEL_V6 = 'false' ]; then
