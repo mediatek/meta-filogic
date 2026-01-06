@@ -36,10 +36,9 @@ ifconfig eth1 up
 
 board_name=`cat /proc/device-tree/model`
 
-if [[ $board_name == *"7988"* ]]; then
-    brctl addif brlan0 eth3
-    ifconfig eth3 up
-fi
+brctl addif brlan0 eth3
+ifconfig eth3 up
+
 #workaround: creating /opt/secure folder for ssh service
 if [ ! -d /opt/secure ]; then
     mkdir -p /opt/secure
