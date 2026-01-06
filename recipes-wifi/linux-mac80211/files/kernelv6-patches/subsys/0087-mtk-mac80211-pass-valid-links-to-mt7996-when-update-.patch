@@ -1,7 +1,7 @@
-From 37468b35bea6ac85d890de9e463acdc95d8c146a Mon Sep 17 00:00:00 2001
+From 1810dd8733a85a19bb86ff43199b4498d3e43fd3 Mon Sep 17 00:00:00 2001
 From: Michael-CY Lee <michael-cy.lee@mediatek.com>
 Date: Mon, 13 Jan 2025 15:13:17 +0800
-Subject: [PATCH 087/115] mtk: mac80211: pass valid links to mt7996 when update
+Subject: [PATCH 087/128] mtk: mac80211: pass valid links to mt7996 when update
  vif's links in mac80211
 
 MAC80211 used to pass active links to mt7996 when updating vif's links,
@@ -18,10 +18,10 @@ Signed-off-by: Michael-CY Lee <michael-cy.lee@mediatek.com>
  1 file changed, 12 insertions(+), 6 deletions(-)
 
 diff --git a/net/mac80211/link.c b/net/mac80211/link.c
-index 7141b982..127aa4cb 100644
+index dba4df5f..f452914c 100644
 --- a/net/mac80211/link.c
 +++ b/net/mac80211/link.c
-@@ -196,7 +196,6 @@ static int ieee80211_vif_update_links(struct ieee80211_sub_if_data *sdata,
+@@ -194,7 +194,6 @@ static int ieee80211_vif_update_links(struct ieee80211_sub_if_data *sdata,
  				      u16 new_links, u16 dormant_links)
  {
  	u16 old_links = sdata->vif.valid_links;
@@ -29,7 +29,7 @@ index 7141b982..127aa4cb 100644
  	unsigned long add = new_links & ~old_links;
  	unsigned long rem = old_links & ~new_links;
  	unsigned int link_id;
-@@ -275,11 +274,18 @@ static int ieee80211_vif_update_links(struct ieee80211_sub_if_data *sdata,
+@@ -273,11 +272,18 @@ static int ieee80211_vif_update_links(struct ieee80211_sub_if_data *sdata,
  		ieee80211_set_vif_links_bitmaps(sdata, new_links, dormant_links);
  
  		/* tell the driver */

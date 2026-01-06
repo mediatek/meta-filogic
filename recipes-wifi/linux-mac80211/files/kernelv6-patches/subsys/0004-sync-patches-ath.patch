@@ -1,7 +1,7 @@
-From ca3296ff51d9761ac34f4aa6aae24605dc32d399 Mon Sep 17 00:00:00 2001
+From 1b0fb84f67380d3d4c115c04f44377e39193a743 Mon Sep 17 00:00:00 2001
 From: Shayne Chen <shayne.chen@mediatek.com>
 Date: Thu, 9 Jan 2025 15:48:10 +0800
-Subject: [PATCH 004/115] sync patches/ath
+Subject: [PATCH 004/128] sync patches/ath
 
 ---
  drivers/net/wireless/ath/Kconfig       |  5 +-
@@ -340,10 +340,10 @@ index cdb1e9a2..2574f80a 100644
  	{CTRY_UNITED_STATES3, FCC3_FCCA, "US"},
  	/* This "PS" is for US public safety actually... to support this we
 diff --git a/local-symbols b/local-symbols
-index 45cbdd39..1a325b1b 100644
+index 9e3cfc24..54f1ebaa 100644
 --- a/local-symbols
 +++ b/local-symbols
-@@ -90,6 +90,7 @@ ADM8211=
+@@ -91,6 +91,7 @@ ADM8211=
  ATH_COMMON=
  WLAN_VENDOR_ATH=
  ATH_DEBUG=
@@ -352,10 +352,10 @@ index 45cbdd39..1a325b1b 100644
  ATH_REG_DYNAMIC_USER_REG_HINTS=
  ATH_REG_DYNAMIC_USER_CERT_TESTING=
 diff --git a/net/wireless/reg.c b/net/wireless/reg.c
-index 363a6e4e..426f5c9e 100644
+index 0fe70d15..004e96bd 100644
 --- a/net/wireless/reg.c
 +++ b/net/wireless/reg.c
-@@ -3366,6 +3366,8 @@ void regulatory_hint_country_ie(struct wiphy *wiphy, enum nl80211_band band,
+@@ -3336,6 +3336,8 @@ void regulatory_hint_country_ie(struct wiphy *wiphy, enum nl80211_band band,
  	enum environment_cap env = ENVIRON_ANY;
  	struct regulatory_request *request = NULL, *lr;
  
@@ -364,7 +364,7 @@ index 363a6e4e..426f5c9e 100644
  	/* IE len must be evenly divisible by 2 */
  	if (country_ie_len & 0x01)
  		return;
-@@ -3615,6 +3617,7 @@ static bool is_wiphy_all_set_reg_flag(enum ieee80211_regulatory_flags flag)
+@@ -3585,6 +3587,7 @@ static bool is_wiphy_all_set_reg_flag(enum ieee80211_regulatory_flags flag)
  
  void regulatory_hint_disconnect(void)
  {

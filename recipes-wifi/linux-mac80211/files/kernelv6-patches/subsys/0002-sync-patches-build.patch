@@ -1,7 +1,7 @@
-From 4be577a2094027ed72044231596d08eca9968448 Mon Sep 17 00:00:00 2001
+From 54877db62848afac79c77db59fa3924f4ca47929 Mon Sep 17 00:00:00 2001
 From: Shayne Chen <shayne.chen@mediatek.com>
 Date: Thu, 9 Jan 2025 15:42:08 +0800
-Subject: [PATCH 002/115] sync patches/build
+Subject: [PATCH 002/128] sync patches/build
 
 ---
  Kconfig.sources                               |   2 -
@@ -29,9 +29,7 @@ Subject: [PATCH 002/115] sync patches/build
  kconf/conf.c                                  |  46 ++-----
  kconf/confdata.c                              |   4 +-
  local-symbols                                 |   8 --
- net/mac80211/trace.h                          |   2 +-
- net/wireless/trace.h                          |   2 +-
- 27 files changed, 207 insertions(+), 227 deletions(-)
+ 25 files changed, 205 insertions(+), 225 deletions(-)
 
 diff --git a/Kconfig.sources b/Kconfig.sources
 index 0aa62a35..d74affd4 100644
@@ -362,10 +360,10 @@ index 3e0c4177..502e2ff0 100644
  	),
  
 diff --git a/drivers/net/wireless/ath/ath10k/snoc.c b/drivers/net/wireless/ath/ath10k/snoc.c
-index d51f2e5a..fb555fef 100644
+index b3f6424c..71529ebf 100644
 --- a/drivers/net/wireless/ath/ath10k/snoc.c
 +++ b/drivers/net/wireless/ath/ath10k/snoc.c
-@@ -1638,10 +1638,10 @@ static int ath10k_fw_init(struct ath10k *ar)
+@@ -1630,10 +1630,10 @@ static int ath10k_fw_init(struct ath10k *ar)
  
  	ar_snoc->fw.dev = &pdev->dev;
  
@@ -553,10 +551,10 @@ index db8fcbed..52e502cb 100644
  		memcpy(__get_dynamic_array(data), data, len);
  	),
 diff --git a/drivers/net/wireless/ath/ath11k/ahb.c b/drivers/net/wireless/ath/ath11k/ahb.c
-index 50809cc1..0f58b48e 100644
+index 8dfe9b40..a504ab53 100644
 --- a/drivers/net/wireless/ath/ath11k/ahb.c
 +++ b/drivers/net/wireless/ath/ath11k/ahb.c
-@@ -1031,10 +1031,10 @@ static int ath11k_ahb_fw_resources_init(struct ath11k_base *ab)
+@@ -1020,10 +1020,10 @@ static int ath11k_ahb_fw_resources_init(struct ath11k_base *ab)
  
  	ab_ahb->fw.dev = &pdev->dev;
  
@@ -1099,7 +1097,7 @@ index df26c7b0..1038c30f 100644
  	 * We have different type of choice blocks.
  	 * If curr.tri equals to mod then we can select several
 diff --git a/local-symbols b/local-symbols
-index ed8e2d79..45cbdd39 100644
+index 88bf6741..9e3cfc24 100644
 --- a/local-symbols
 +++ b/local-symbols
 @@ -53,14 +53,6 @@ MAC80211_MESH_PS_DEBUG=
@@ -1117,32 +1115,6 @@ index ed8e2d79..45cbdd39 100644
  QCOM_AOSS_QMP=
  QCOM_COMMAND_DB=
  QCOM_GENI_SE=
-diff --git a/net/mac80211/trace.h b/net/mac80211/trace.h
-index 0bfbce15..e738b5e6 100644
---- a/net/mac80211/trace.h
-+++ b/net/mac80211/trace.h
-@@ -33,7 +33,7 @@
- 			__string(vif_name, sdata->name)
- #define VIF_ASSIGN	__entry->vif_type = sdata->vif.type; __entry->sdata = sdata;	\
- 			__entry->p2p = sdata->vif.p2p;					\
--			__assign_str(vif_name)
-+			__assign_str(vif_name, sdata->name)
- #define VIF_PR_FMT	" vif:%s(%d%s)"
- #define VIF_PR_ARG	__get_str(vif_name), __entry->vif_type, __entry->p2p ? "/p2p" : ""
- 
-diff --git a/net/wireless/trace.h b/net/wireless/trace.h
-index cd69598b..91141cad 100644
---- a/net/wireless/trace.h
-+++ b/net/wireless/trace.h
-@@ -457,7 +457,7 @@ TRACE_EVENT(rdev_add_virtual_intf,
- 	),
- 	TP_fast_assign(
- 		WIPHY_ASSIGN;
--		__assign_str(vir_intf_name);
-+		__assign_str(vir_intf_name, name ? name : "<noname>");
- 		__entry->type = type;
- 	),
- 	TP_printk(WIPHY_PR_FMT ", virtual intf name: %s, type: %d",
 -- 
 2.45.2
 

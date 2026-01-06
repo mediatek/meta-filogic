@@ -1,5 +1,5 @@
 diff --git a/ated.sh b/ated.sh
-index e989e446..c15867a8 100644
+index 9046136..e431296 100644
 --- a/ated.sh
 +++ b/ated.sh
 @@ -1,4 +1,4 @@
@@ -9,7 +9,7 @@ index e989e446..c15867a8 100644
  # 0 is normal mode, 1 is used for doing specific commands such as "sync eeprom all"
  
 diff --git a/iwpriv.sh b/iwpriv.sh
-index 8b0d76fd..9f75bae9 100644
+index cebc82b..2a9b167 100644
 --- a/iwpriv.sh
 +++ b/iwpriv.sh
 @@ -1,4 +1,4 @@
@@ -18,3 +18,15 @@ index 8b0d76fd..9f75bae9 100644
  
  interface=$1    # phy0/phy1/ra0
  cmd_type=$2     # set/show/e2p/mac/dump
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index c5b202e..2dcbf3a 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -12,6 +12,7 @@ INCLUDE_DIRECTORIES("${backports_dir}/mac80211/uapi")
+ 
+ ADD_EXECUTABLE(atenl main.c eth.c hqa.c nl.c eeprom.c util.c)
+ TARGET_LINK_LIBRARIES(atenl nl-tiny)
++TARGET_LINK_LIBRARIES(atenl blkid)
+ 
+ SET(CMAKE_INSTALL_PREFIX /usr)
+ 

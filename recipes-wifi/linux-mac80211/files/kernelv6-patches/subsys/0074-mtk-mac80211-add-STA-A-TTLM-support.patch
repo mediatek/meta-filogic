@@ -1,7 +1,7 @@
-From 99b109caaab8b5d6762ef7a113dc41229210149b Mon Sep 17 00:00:00 2001
+From f1a37e41c25c30587dc8ccfb468c5ee26ecd5ba3 Mon Sep 17 00:00:00 2001
 From: Michael-CY Lee <michael-cy.lee@mediatek.com>
 Date: Fri, 2 Aug 2024 17:08:08 +0800
-Subject: [PATCH 074/115] mtk: mac80211: add STA A-TTLM support
+Subject: [PATCH 074/128] mtk: mac80211: add STA A-TTLM support
 
 Move adv_ttlm_info to ieee80211_vif so that driver can use it in
 vif_cfg_changed callback.
@@ -24,28 +24,14 @@ This change includes:
 
 Signed-off-by: Michael-CY Lee <michael-cy.lee@mediatek.com>
 ---
- .../wireless/intel/iwlwifi/mvm/mld-mac80211.c |  2 +-
- include/net/mac80211.h                        | 27 +++++++++--
- net/mac80211/ieee80211_i.h                    | 12 -----
- net/mac80211/main.c                           |  3 +-
- net/mac80211/mlme.c                           | 48 +++++++++++--------
- 5 files changed, 56 insertions(+), 36 deletions(-)
+ include/net/mac80211.h     | 27 ++++++++++++++++++---
+ net/mac80211/ieee80211_i.h | 12 ----------
+ net/mac80211/main.c        |  3 ++-
+ net/mac80211/mlme.c        | 48 +++++++++++++++++++++++---------------
+ 4 files changed, 55 insertions(+), 35 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mld-mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mld-mac80211.c
-index 802a2fa6..d1069371 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/mld-mac80211.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/mld-mac80211.c
-@@ -880,7 +880,7 @@ static void iwl_mvm_mld_vif_cfg_changed_station(struct iwl_mvm *mvm,
- 			IWL_ERR(mvm, "failed to update power mode\n");
- 	}
- 
--	if (changes & (BSS_CHANGED_MLD_VALID_LINKS | BSS_CHANGED_MLD_TTLM) &&
-+	if (changes & (BSS_CHANGED_MLD_VALID_LINKS | BSS_CHANGED_MLD_NEG_TTLM) &&
- 	    ieee80211_vif_is_mld(vif) && mvmvif->authorized)
- 		wiphy_delayed_work_queue(mvm->hw->wiphy,
- 					 &mvmvif->mlo_int_scan_wk, 0);
 diff --git a/include/net/mac80211.h b/include/net/mac80211.h
-index a3fb6480..4f2b6ae4 100644
+index 422a3b84..60565522 100644
 --- a/include/net/mac80211.h
 +++ b/include/net/mac80211.h
 @@ -363,7 +363,8 @@ struct ieee80211_vif_chanctx_switch {
@@ -70,7 +56,7 @@ index a3fb6480..4f2b6ae4 100644
  
  	/* when adding here, make sure to change ieee80211_reconfig */
  };
-@@ -1955,6 +1957,22 @@ struct ieee80211_vif_cfg {
+@@ -1957,6 +1959,22 @@ struct ieee80211_vif_cfg {
  
  #define IEEE80211_TTLM_NUM_TIDS 8
  
@@ -93,7 +79,7 @@ index a3fb6480..4f2b6ae4 100644
  /**
   * struct ieee80211_neg_ttlm - negotiated TID to link map info
   *
-@@ -2005,6 +2023,8 @@ enum ieee80211_neg_ttlm_res {
+@@ -2007,6 +2025,8 @@ enum ieee80211_neg_ttlm_res {
   *	suspended due to negotiated TTLM, and could be activated in the
   *	future by tearing down the TTLM negotiation.
   *	0 for non-MLO.
@@ -102,7 +88,7 @@ index a3fb6480..4f2b6ae4 100644
   * @neg_ttlm: negotiated TID to link mapping info.
   *	see &struct ieee80211_neg_ttlm.
   * @addr: address of this interface
-@@ -2046,6 +2066,7 @@ struct ieee80211_vif {
+@@ -2048,6 +2068,7 @@ struct ieee80211_vif {
  	struct ieee80211_bss_conf bss_conf;
  	struct ieee80211_bss_conf __rcu *link_conf[IEEE80211_MLD_MAX_NUM_LINKS];
  	u16 valid_links, active_links, dormant_links, suspended_links;
@@ -111,10 +97,10 @@ index a3fb6480..4f2b6ae4 100644
  	u8 addr[ETH_ALEN] __aligned(2);
  	bool addr_valid;
 diff --git a/net/mac80211/ieee80211_i.h b/net/mac80211/ieee80211_i.h
-index 50a26b84..7bc65e3d 100644
+index 8ccce9ac..3890b17f 100644
 --- a/net/mac80211/ieee80211_i.h
 +++ b/net/mac80211/ieee80211_i.h
-@@ -507,17 +507,6 @@ struct ieee80211_sta_tx_tspec {
+@@ -515,17 +515,6 @@ struct ieee80211_sta_tx_tspec {
  	bool downgraded;
  };
  
@@ -132,16 +118,16 @@ index 50a26b84..7bc65e3d 100644
  DECLARE_EWMA(beacon_signal, 4, 4)
  
  struct ieee80211_if_managed {
-@@ -619,7 +608,6 @@ struct ieee80211_if_managed {
+@@ -627,7 +616,6 @@ struct ieee80211_if_managed {
  
  	/* TID-to-link mapping support */
- 	struct wiphy_delayed_work ttlm_work;
+ 	struct wiphy_hrtimer_work ttlm_work;
 -	struct ieee80211_adv_ttlm_info ttlm_info;
  	struct wiphy_work teardown_ttlm_work;
  
  	/* dialog token enumerator for neg TTLM request */
 diff --git a/net/mac80211/main.c b/net/mac80211/main.c
-index 05cc1167..5cef0293 100644
+index 1542f820..c18f961c 100644
 --- a/net/mac80211/main.c
 +++ b/net/mac80211/main.c
 @@ -331,7 +331,8 @@ EXPORT_SYMBOL(ieee80211_emulate_switch_vif_chanctx);
@@ -155,10 +141,10 @@ index 05cc1167..5cef0293 100644
  void ieee80211_bss_info_change_notify(struct ieee80211_sub_if_data *sdata,
  				      u64 changed)
 diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
-index 708e538e..fbe2d1ba 100644
+index 94138618..d5eb9495 100644
 --- a/net/mac80211/mlme.c
 +++ b/net/mac80211/mlme.c
-@@ -4246,8 +4246,8 @@ static void ieee80211_set_disassoc(struct ieee80211_sub_if_data *sdata,
+@@ -4273,8 +4273,8 @@ static void ieee80211_set_disassoc(struct ieee80211_sub_if_data *sdata,
  	sdata->vif.cfg.eml_med_sync_delay = 0;
  	sdata->vif.cfg.mld_capa_op = 0;
  
@@ -166,10 +152,10 @@ index 708e538e..fbe2d1ba 100644
 -	       sizeof(sdata->u.mgd.ttlm_info));
 +	memset(&sdata->vif.adv_ttlm, 0,
 +	       sizeof(sdata->vif.adv_ttlm));
- 	wiphy_delayed_work_cancel(sdata->local->hw.wiphy, &ifmgd->ttlm_work);
+ 	wiphy_hrtimer_work_cancel(sdata->local->hw.wiphy, &ifmgd->ttlm_work);
  
  	memset(&sdata->vif.neg_ttlm, 0, sizeof(sdata->vif.neg_ttlm));
-@@ -6990,7 +6990,7 @@ static int ieee80211_ttlm_set_links(struct ieee80211_sub_if_data *sdata,
+@@ -7008,7 +7008,7 @@ static int ieee80211_ttlm_set_links(struct ieee80211_sub_if_data *sdata,
  	if (sdata->vif.neg_ttlm.valid) {
  		memset(&sdata->vif.neg_ttlm, 0, sizeof(sdata->vif.neg_ttlm));
  		sdata->vif.suspended_links = 0;
@@ -178,7 +164,7 @@ index 708e538e..fbe2d1ba 100644
  	}
  
  	if (sdata->vif.active_links != active_links) {
-@@ -6998,6 +6998,9 @@ static int ieee80211_ttlm_set_links(struct ieee80211_sub_if_data *sdata,
+@@ -7016,6 +7016,9 @@ static int ieee80211_ttlm_set_links(struct ieee80211_sub_if_data *sdata,
  		 * so notify the driver about the status change
  		 */
  		changed |= BSS_CHANGED_MLD_VALID_LINKS;
@@ -188,7 +174,7 @@ index 708e538e..fbe2d1ba 100644
  		active_links &= sdata->vif.active_links;
  		if (!active_links)
  			active_links =
-@@ -7008,6 +7011,7 @@ static int ieee80211_ttlm_set_links(struct ieee80211_sub_if_data *sdata,
+@@ -7026,6 +7029,7 @@ static int ieee80211_ttlm_set_links(struct ieee80211_sub_if_data *sdata,
  			sdata_info(sdata, "Failed to set TTLM active links\n");
  			goto out;
  		}
@@ -196,7 +182,7 @@ index 708e538e..fbe2d1ba 100644
  	}
  
  	ret = ieee80211_vif_set_links(sdata, sdata->vif.valid_links,
-@@ -7019,7 +7023,10 @@ static int ieee80211_ttlm_set_links(struct ieee80211_sub_if_data *sdata,
+@@ -7037,7 +7041,10 @@ static int ieee80211_ttlm_set_links(struct ieee80211_sub_if_data *sdata,
  
  	sdata->vif.suspended_links = suspended_links;
  	if (sdata->vif.suspended_links)
@@ -208,7 +194,7 @@ index 708e538e..fbe2d1ba 100644
  
  	ieee80211_vif_cfg_change_notify(sdata, changed);
  
-@@ -7038,18 +7045,19 @@ static void ieee80211_tid_to_link_map_work(struct wiphy *wiphy,
+@@ -7056,18 +7063,19 @@ static void ieee80211_tid_to_link_map_work(struct wiphy *wiphy,
  		container_of(work, struct ieee80211_sub_if_data,
  			     u.mgd.ttlm_work.work);
  
@@ -234,7 +220,7 @@ index 708e538e..fbe2d1ba 100644
  }
  
  static u16 ieee80211_get_ttlm(u8 bm_size, u8 *data)
-@@ -7063,7 +7071,7 @@ static u16 ieee80211_get_ttlm(u8 bm_size, u8 *data)
+@@ -7081,7 +7089,7 @@ static u16 ieee80211_get_ttlm(u8 bm_size, u8 *data)
  static int
  ieee80211_parse_adv_t2l(struct ieee80211_sub_if_data *sdata,
  			const struct ieee80211_ttlm_elem *ttlm,
@@ -243,7 +229,7 @@ index 708e538e..fbe2d1ba 100644
  {
  	/* The element size was already validated in
  	 * ieee80211_tid_to_link_map_size_ok()
-@@ -7152,13 +7160,13 @@ static void ieee80211_process_adv_ttlm(struct ieee80211_sub_if_data *sdata,
+@@ -7170,13 +7178,13 @@ static void ieee80211_process_adv_ttlm(struct ieee80211_sub_if_data *sdata,
  		return;
  
  	if (!elems->ttlm_num) {
@@ -252,14 +238,14 @@ index 708e538e..fbe2d1ba 100644
  			/* if a planned TID-to-link mapping was cancelled -
  			 * abort it
  			 */
- 			wiphy_delayed_work_cancel(sdata->local->hw.wiphy,
+ 			wiphy_hrtimer_work_cancel(sdata->local->hw.wiphy,
  						  &sdata->u.mgd.ttlm_work);
 -		} else if (sdata->u.mgd.ttlm_info.active) {
 +		} else if (sdata->vif.adv_ttlm.active) {
  			/* if no TID-to-link element, set to default mapping in
  			 * which all TIDs are mapped to all setup links
  			 */
-@@ -7169,16 +7177,18 @@ static void ieee80211_process_adv_ttlm(struct ieee80211_sub_if_data *sdata,
+@@ -7187,16 +7195,18 @@ static void ieee80211_process_adv_ttlm(struct ieee80211_sub_if_data *sdata,
  				sdata_info(sdata, "Failed setting valid/dormant links\n");
  				return;
  			}
@@ -282,16 +268,16 @@ index 708e538e..fbe2d1ba 100644
  		u32 res;
  
  		res = ieee80211_parse_adv_t2l(sdata, elems->ttlm[i],
-@@ -7224,7 +7234,7 @@ static void ieee80211_process_adv_ttlm(struct ieee80211_sub_if_data *sdata,
+@@ -7242,7 +7252,7 @@ static void ieee80211_process_adv_ttlm(struct ieee80211_sub_if_data *sdata,
  			else
- 				delay_jiffies = 0;
+ 				delay_usec = 0;
  
 -			sdata->u.mgd.ttlm_info = ttlm_info;
 +			sdata->vif.adv_ttlm = ttlm_info;
- 			wiphy_delayed_work_cancel(sdata->local->hw.wiphy,
+ 			wiphy_hrtimer_work_cancel(sdata->local->hw.wiphy,
  						  &sdata->u.mgd.ttlm_work);
- 			wiphy_delayed_work_queue(sdata->local->hw.wiphy,
-@@ -8083,7 +8093,7 @@ void ieee80211_process_ttlm_teardown(struct ieee80211_sub_if_data *sdata)
+ 			wiphy_hrtimer_work_queue(sdata->local->hw.wiphy,
+@@ -8140,7 +8150,7 @@ void ieee80211_process_ttlm_teardown(struct ieee80211_sub_if_data *sdata)
  	sdata->vif.suspended_links = 0;
  	ieee80211_vif_set_links(sdata, sdata->vif.valid_links,
  				new_dormant_links);

@@ -6,7 +6,7 @@ SECTION = "libs"
 
 SRC_URI = "git://git.openwrt.org/project/libnl-tiny.git;branch=master"
 SRCREV = "965c4bf49658342ced0bd6e7cb069571b4a1ddff"
-SRCREV_kernelv6 = "c0df580adbd4d555ecc1962dbe88e91d75b67a4e"
+SRCREV_kernelv6 = "40493a655d8caa2ccf5206dde1e733abe2920432"
 
 PV = "git${SRCPV}"
 

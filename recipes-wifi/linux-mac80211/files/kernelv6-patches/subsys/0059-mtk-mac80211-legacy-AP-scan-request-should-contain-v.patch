@@ -1,7 +1,7 @@
-From 258c8b4fcbc460afb31799ee42bcecdc8111ccfc Mon Sep 17 00:00:00 2001
+From 9b9f2470b5868c972ca7b13d32dc25fd42f1295c Mon Sep 17 00:00:00 2001
 From: Michael-CY Lee <michael-cy.lee@mediatek.com>
 Date: Thu, 9 May 2024 09:24:43 +0800
-Subject: [PATCH 059/115] mtk: mac80211: legacy AP scan request should contain
+Subject: [PATCH 059/128] mtk: mac80211: legacy AP scan request should contain
  valid channels
 
 In single-wiphy, if scan_freqs is not specified in scan request,
@@ -22,10 +22,10 @@ Signed-off-by: Michael-CY Lee <michael-cy.lee@mediatek.com>
  1 file changed, 21 insertions(+)
 
 diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index f36dd3fd..ccd2664d 100644
+index 01211e5a..9955b4d8 100644
 --- a/net/wireless/nl80211.c
 +++ b/net/wireless/nl80211.c
-@@ -10050,6 +10050,12 @@ static int nl80211_trigger_scan(struct sk_buff *skb, struct genl_info *info)
+@@ -10429,6 +10429,12 @@ static int nl80211_trigger_scan(struct sk_buff *skb, struct genl_info *info)
  		n_channels = validate_scan_freqs(scan_freqs);
  		if (!n_channels)
  			return -EINVAL;
@@ -38,7 +38,7 @@ index f36dd3fd..ccd2664d 100644
  	} else {
  		n_channels = ieee80211_get_num_supported_channels(wiphy);
  	}
-@@ -10105,6 +10111,21 @@ static int nl80211_trigger_scan(struct sk_buff *skb, struct genl_info *info)
+@@ -10485,6 +10491,21 @@ static int nl80211_trigger_scan(struct sk_buff *skb, struct genl_info *info)
  			    !cfg80211_wdev_channel_allowed(wdev, chan))
  				continue;
  

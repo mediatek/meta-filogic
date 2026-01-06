@@ -1,7 +1,7 @@
-From 73a3d5d7844b76bca329bb8634b8b1475ecf5773 Mon Sep 17 00:00:00 2001
+From 2710a199396c6d1851b39964e9a2e24be3368ebb Mon Sep 17 00:00:00 2001
 From: StanleyYP Wang <StanleyYP.Wang@mediatek.com>
 Date: Tue, 11 Feb 2025 11:33:50 +0800
-Subject: [PATCH 109/115] mtk: mac80211: relax the DFS restrictions for
+Subject: [PATCH 109/128] mtk: mac80211: relax the DFS restrictions for
  scanning
 
 If user turn on the dfs relax flag by entering the following command:
@@ -24,10 +24,10 @@ Signed-off-by: StanleyYP Wang <StanleyYP.Wang@mediatek.com>
  6 files changed, 94 insertions(+), 18 deletions(-)
 
 diff --git a/include/net/cfg80211.h b/include/net/cfg80211.h
-index ced5d724..2476d469 100644
+index c82b7f14..2d955f85 100644
 --- a/include/net/cfg80211.h
 +++ b/include/net/cfg80211.h
-@@ -5881,6 +5881,8 @@ struct wiphy_radio {
+@@ -6030,6 +6030,8 @@ struct wiphy_nan_capa {
   *
   * @radio: radios belonging to this wiphy
   * @n_radio: number of radios
@@ -36,7 +36,7 @@ index ced5d724..2476d469 100644
   */
  struct wiphy {
  	struct mutex mtx;
-@@ -6039,6 +6041,8 @@ struct wiphy {
+@@ -6190,6 +6192,8 @@ struct wiphy {
  	int n_radio;
  	const struct wiphy_radio *radio;
  
@@ -45,7 +45,7 @@ index ced5d724..2476d469 100644
  	char priv[] __aligned(NETDEV_ALIGN);
  };
  
-@@ -6796,11 +6800,15 @@ bool cfg80211_radio_chandef_valid(const struct wiphy_radio *radio,
+@@ -7031,11 +7035,15 @@ bool cfg80211_radio_chandef_valid(const struct wiphy_radio *radio,
   *
   * @wdev: the wireless device
   * @chan: channel to check
@@ -63,10 +63,10 @@ index ced5d724..2476d469 100644
  /**
   * ieee80211_get_response_rate - get basic rate for a given rate
 diff --git a/net/mac80211/scan.c b/net/mac80211/scan.c
-index 648a7d34..74082306 100644
+index 5302139a..6851e6d4 100644
 --- a/net/mac80211/scan.c
 +++ b/net/mac80211/scan.c
-@@ -598,7 +598,8 @@ static bool __ieee80211_can_leave_ch(struct ieee80211_sub_if_data *sdata,
+@@ -602,7 +602,8 @@ static bool __ieee80211_can_leave_ch(struct ieee80211_sub_if_data *sdata,
  	if (!ieee80211_is_radar_required(local, req))
  		return true;
  
@@ -76,7 +76,7 @@ index 648a7d34..74082306 100644
  		return false;
  
  	list_for_each_entry(sdata_iter, &local->interfaces, list) {
-@@ -1224,7 +1225,7 @@ int ieee80211_request_ibss_scan(struct ieee80211_sub_if_data *sdata,
+@@ -1229,7 +1230,7 @@ int ieee80211_request_ibss_scan(struct ieee80211_sub_if_data *sdata,
  				if (tmp_ch->flags & (IEEE80211_CHAN_NO_IR |
  						     IEEE80211_CHAN_DISABLED) ||
  				    !cfg80211_wdev_channel_allowed(&sdata->wdev,
@@ -85,7 +85,7 @@ index 648a7d34..74082306 100644
  					continue;
  
  				local->int_scan_req->channels[n_ch] = tmp_ch;
-@@ -1241,7 +1242,7 @@ int ieee80211_request_ibss_scan(struct ieee80211_sub_if_data *sdata,
+@@ -1246,7 +1247,7 @@ int ieee80211_request_ibss_scan(struct ieee80211_sub_if_data *sdata,
  			if (channels[i]->flags & (IEEE80211_CHAN_NO_IR |
  						  IEEE80211_CHAN_DISABLED) ||
  			    !cfg80211_wdev_channel_allowed(&sdata->wdev,
@@ -95,10 +95,10 @@ index 648a7d34..74082306 100644
  
  			local->int_scan_req->channels[n_ch] = channels[i];
 diff --git a/net/wireless/debugfs.c b/net/wireless/debugfs.c
-index 26fa47dd..2453b7ec 100644
+index c25125ad..61f06b6f 100644
 --- a/net/wireless/debugfs.c
 +++ b/net/wireless/debugfs.c
-@@ -407,6 +407,57 @@ dfs_available_reset(void *data, u64 val)
+@@ -428,6 +428,57 @@ dfs_available_reset(void *data, u64 val)
  DEFINE_DEBUGFS_ATTRIBUTE(dfs_available_reset_ops, NULL,
  			 dfs_available_reset, "0x%08llx\n");
  
@@ -156,19 +156,19 @@ index 26fa47dd..2453b7ec 100644
  #define DEBUGFS_ADD(name, chmod)						\
  	debugfs_create_file(#name, chmod, phyd, &rdev->wiphy, &name## _ops)
  
-@@ -423,6 +474,7 @@ void cfg80211_debugfs_rdev_add(struct cfg80211_registered_device *rdev)
+@@ -451,6 +502,7 @@ void cfg80211_debugfs_rdev_add(struct cfg80211_registered_device *rdev)
  	DEBUGFS_ADD(dfs_skip_nop, 0600);
  	DEBUGFS_ADD(dfs_skip_cac, 0600);
  	DEBUGFS_ADD(dfs_available_reset, 0600);
 +	DEBUGFS_ADD(scan_dfs_relax, 0644);
- }
  
- struct debugfs_read_work {
+ 	for (i = 0; i < rdev->wiphy.n_radio; i++) {
+ 		radiod = rdev->wiphy.radio_cfg[i].radio_debugfsdir;
 diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index 137f02c5..971d5fb6 100644
+index e85922be..a2396fb6 100644
 --- a/net/wireless/nl80211.c
 +++ b/net/wireless/nl80211.c
-@@ -9879,7 +9879,8 @@ int nl80211_parse_random_mac(struct nlattr **attrs,
+@@ -10258,7 +10258,8 @@ int nl80211_parse_random_mac(struct nlattr **attrs,
  }
  
  static bool cfg80211_off_channel_oper_allowed(struct wireless_dev *wdev,
@@ -178,7 +178,7 @@ index 137f02c5..971d5fb6 100644
  {
  	unsigned int link_id;
  	bool all_ok = true;
-@@ -9887,12 +9888,15 @@ static bool cfg80211_off_channel_oper_allowed(struct wireless_dev *wdev,
+@@ -10266,12 +10267,15 @@ static bool cfg80211_off_channel_oper_allowed(struct wireless_dev *wdev,
  
  	lockdep_assert_wiphy(wdev->wiphy);
  
@@ -195,16 +195,16 @@ index 137f02c5..971d5fb6 100644
  	radio_idx = cfg80211_get_radio_idx_by_chan(wdev->wiphy, chan);
  
  	/*
-@@ -10120,7 +10124,7 @@ static int nl80211_trigger_scan(struct sk_buff *skb, struct genl_info *info)
- 
- 			/* ignore disabled channels */
+@@ -10500,7 +10504,7 @@ static int nl80211_trigger_scan(struct sk_buff *skb, struct genl_info *info)
+ 			/* Ignore disabled / no primary channels */
  			if (chan->flags & IEEE80211_CHAN_DISABLED ||
+ 			    chan->flags & IEEE80211_CHAN_S1G_NO_PRIMARY ||
 -			    !cfg80211_wdev_channel_allowed(wdev, chan))
 +			    !cfg80211_wdev_channel_allowed(wdev, chan, 0))
  				continue;
  
  			request->req.channels[i] = chan;
-@@ -10143,6 +10147,11 @@ static int nl80211_trigger_scan(struct sk_buff *skb, struct genl_info *info)
+@@ -10523,6 +10527,11 @@ static int nl80211_trigger_scan(struct sk_buff *skb, struct genl_info *info)
  		}
  	} else {
  		enum nl80211_band band;
@@ -216,16 +216,16 @@ index 137f02c5..971d5fb6 100644
  
  		/* all channels */
  		for (band = 0; band < NUM_NL80211_BANDS; band++) {
-@@ -10156,7 +10165,7 @@ static int nl80211_trigger_scan(struct sk_buff *skb, struct genl_info *info)
- 				chan = &wiphy->bands[band]->channels[j];
- 
+@@ -10538,7 +10547,7 @@ static int nl80211_trigger_scan(struct sk_buff *skb, struct genl_info *info)
  				if (chan->flags & IEEE80211_CHAN_DISABLED ||
+ 				    chan->flags &
+ 					    IEEE80211_CHAN_S1G_NO_PRIMARY ||
 -				    !cfg80211_wdev_channel_allowed(wdev, chan))
 +				    !cfg80211_wdev_channel_allowed(wdev, chan, radio_mask))
  					continue;
  
  				request->req.channels[i] = chan;
-@@ -10176,7 +10185,7 @@ static int nl80211_trigger_scan(struct sk_buff *skb, struct genl_info *info)
+@@ -10558,7 +10567,7 @@ static int nl80211_trigger_scan(struct sk_buff *skb, struct genl_info *info)
  		struct ieee80211_channel *chan = request->req.channels[i];
  
  		/* if we can go off-channel to the target channel we're good */
@@ -234,7 +234,7 @@ index 137f02c5..971d5fb6 100644
  			continue;
  
  		if (!cfg80211_wdev_on_sub_chan(wdev, chan, true)) {
-@@ -13369,7 +13378,10 @@ static int nl80211_remain_on_channel(struct sk_buff *skb,
+@@ -13751,7 +13760,10 @@ static int nl80211_remain_on_channel(struct sk_buff *skb,
  	if (err)
  		return err;
  
@@ -246,7 +246,7 @@ index 137f02c5..971d5fb6 100644
  		const struct cfg80211_chan_def *oper_chandef, *compat_chandef;
  
  		oper_chandef = wdev_chandef(wdev, link_id);
-@@ -13586,7 +13598,7 @@ static int nl80211_tx_mgmt(struct sk_buff *skb, struct genl_info *info)
+@@ -13972,7 +13984,7 @@ static int nl80211_tx_mgmt(struct sk_buff *skb, struct genl_info *info)
  		return -EINVAL;
  
  	if (params.offchan &&
@@ -256,7 +256,7 @@ index 137f02c5..971d5fb6 100644
  
  	params.link_id = nl80211_link_id_or_invalid(info->attrs);
 diff --git a/net/wireless/scan.c b/net/wireless/scan.c
-index b7367e17..055d8f41 100644
+index b36c38b7..8b1da1ca 100644
 --- a/net/wireless/scan.c
 +++ b/net/wireless/scan.c
 @@ -994,7 +994,7 @@ static int cfg80211_scan_6ghz(struct cfg80211_registered_device *rdev,
@@ -268,7 +268,7 @@ index b7367e17..055d8f41 100644
  			continue;
  
  		for (i = 0; i < rdev_req->req.n_channels; i++) {
-@@ -3548,7 +3548,7 @@ int cfg80211_wext_siwscan(struct net_device *dev,
+@@ -3542,7 +3542,7 @@ int cfg80211_wext_siwscan(struct net_device *dev,
  			/* ignore disabled channels */
  			chan = &wiphy->bands[band]->channels[j];
  			if (chan->flags & IEEE80211_CHAN_DISABLED ||
@@ -278,10 +278,10 @@ index b7367e17..055d8f41 100644
  
  			/* If we have a wireless request structure and the
 diff --git a/net/wireless/util.c b/net/wireless/util.c
-index 30fa8af1..75643f95 100644
+index 8c1203da..d7d1d67d 100644
 --- a/net/wireless/util.c
 +++ b/net/wireless/util.c
-@@ -3013,21 +3013,24 @@ bool cfg80211_radio_chandef_valid(const struct wiphy_radio *radio,
+@@ -2965,21 +2965,24 @@ bool cfg80211_radio_chandef_valid(const struct wiphy_radio *radio,
  EXPORT_SYMBOL(cfg80211_radio_chandef_valid);
  
  bool cfg80211_wdev_channel_allowed(struct wireless_dev *wdev,

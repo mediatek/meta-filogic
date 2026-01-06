@@ -1,7 +1,7 @@
-From 50b256506b871f5babc504a08855b72396ed60b8 Mon Sep 17 00:00:00 2001
+From 670b69f08f8568feff17bfec43d60e83d1dc68b0 Mon Sep 17 00:00:00 2001
 From: StanleyYP Wang <StanleyYP.Wang@mediatek.com>
 Date: Tue, 24 Jun 2025 12:06:51 +0800
-Subject: [PATCH 101/115] mtk: mac80211: fix kernel crash during reboot &
+Subject: [PATCH 101/128] mtk: mac80211: fix kernel crash during reboot &
  cfg80211_autodisconnect_wk
 
 When cfg80211_autodisconnect_wk is executed during the reboot process, a race

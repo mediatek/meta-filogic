@@ -1,7 +1,7 @@
-From f77a75e32cbaf15302f6d9dc1a2c0abf7a658c4a Mon Sep 17 00:00:00 2001
+From 062ec3e17189bfc2987fe096e33c249a2f6b4e79 Mon Sep 17 00:00:00 2001
 From: StanleyYP Wang <StanleyYP.Wang@mediatek.com>
 Date: Wed, 30 Oct 2024 10:49:44 +0800
-Subject: [PATCH 081/115] mtk: mac80211: Fix CAC event call trace
+Subject: [PATCH 081/128] mtk: mac80211: Fix CAC event call trace
 
 A CAC abort event call trace will occur when deleting the interface
 during bootup CAC.
@@ -28,7 +28,7 @@ Signed-off-by: StanleyYP Wang <StanleyYP.Wang@mediatek.com>
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/net/wireless/mlme.c b/net/wireless/mlme.c
-index 8f8757d7..cc7351ac 100644
+index e336dd00..83a30cf9 100644
 --- a/net/wireless/mlme.c
 +++ b/net/wireless/mlme.c
 @@ -1138,7 +1138,8 @@ void cfg80211_cac_event(struct net_device *netdev,

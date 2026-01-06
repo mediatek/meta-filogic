@@ -1,7 +1,7 @@
-From c3e2f247cfe6ed15ce8ccf871a3abd4ab89e1202 Mon Sep 17 00:00:00 2001
+From 5a68e713fa19994f018eb3729d9c5debec9740de Mon Sep 17 00:00:00 2001
 From: Michael-CY Lee <michael-cy.lee@mediatek.com>
 Date: Thu, 26 Jun 2025 08:28:30 +0800
-Subject: [PATCH 105/115] mtk: wifi: disallow AP interface from getting BIGTK
+Subject: [PATCH 105/128] mtk: wifi: disallow AP interface from getting BIGTK
  in RX path
 
 The problem was that when the AP interface with BIGTK set received
@@ -19,10 +19,10 @@ Signed-off-by: Michael-CY Lee <michael-cy.lee@mediatek.com>
  1 file changed, 4 insertions(+)
 
 diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
-index b34460e6..2124d79e 100644
+index afd603af..3d8eaf2f 100644
 --- a/net/mac80211/rx.c
 +++ b/net/mac80211/rx.c
-@@ -1898,6 +1898,10 @@ ieee80211_rx_get_bigtk(struct ieee80211_rx_data *rx, int idx)
+@@ -1979,6 +1979,10 @@ ieee80211_rx_get_bigtk(struct ieee80211_rx_data *rx, int idx)
  	 * index (i.e., a key that we do not have).
  	 */
  

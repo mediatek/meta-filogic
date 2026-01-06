@@ -1,7 +1,7 @@
-From 0cba7523c7460bc1851f91d6c77f1169fd65dacc Mon Sep 17 00:00:00 2001
+From bfc3a4995d674d98e1a54effd4579dc316a53205 Mon Sep 17 00:00:00 2001
 From: Peter Chiu <chui-hao.chiu@mediatek.com>
 Date: Fri, 9 May 2025 17:35:43 +0800
-Subject: [PATCH 097/115] mtk: mac80211: fix addba buffer size
+Subject: [PATCH 097/128] mtk: mac80211: fix addba buffer size
 
 When a HE station connect to an EHT MLD ap, the sta->sta.valid_links
 would not be zero and ap would send ba request that HE station cannot

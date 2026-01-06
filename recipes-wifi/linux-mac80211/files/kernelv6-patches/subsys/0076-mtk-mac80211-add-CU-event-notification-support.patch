@@ -1,7 +1,7 @@
-From f49298c0bd9113aa592d0086770e277aeb1c06b8 Mon Sep 17 00:00:00 2001
+From 9553eb4ec3af9b7b326e7a05dac805b053a92fee Mon Sep 17 00:00:00 2001
 From: StanleyYP Wang <StanleyYP.Wang@mediatek.com>
 Date: Mon, 29 Jul 2024 10:07:17 +0800
-Subject: [PATCH 076/115] mtk: mac80211: add CU event notification support
+Subject: [PATCH 076/128] mtk: mac80211: add CU event notification support
 
 Add CU event notification support
 
@@ -16,12 +16,12 @@ Signed-off-by: StanleyYP Wang <StanleyYP.Wang@mediatek.com>
  6 files changed, 132 insertions(+)
 
 diff --git a/include/net/cfg80211.h b/include/net/cfg80211.h
-index 4e360aff..5ef47517 100644
+index d0858a53..14e2c09e 100644
 --- a/include/net/cfg80211.h
 +++ b/include/net/cfg80211.h
-@@ -10084,6 +10084,16 @@ void cfg80211_schedule_channels_check(struct wireless_dev *wdev);
-  */
- void cfg80211_epcs_changed(struct net_device *netdev, bool enabled);
+@@ -10372,6 +10372,16 @@ void cfg80211_nan_cluster_joined(struct wireless_dev *wdev,
+ 				 const u8 *cluster_id, bool new_cluster,
+ 				 gfp_t gfp);
  
 +/**
 + * cfg80211_crit_update_notify - notify about the status of a critical update event.
@@ -37,10 +37,10 @@ index 4e360aff..5ef47517 100644
  /**
   * wiphy_locked_debugfs_read - do a locked read in debugfs
 diff --git a/include/net/mac80211.h b/include/net/mac80211.h
-index 4f2b6ae4..ea62a991 100644
+index 60565522..cd8658d9 100644
 --- a/include/net/mac80211.h
 +++ b/include/net/mac80211.h
-@@ -7942,4 +7942,17 @@ void ieee80211_links_removed(struct ieee80211_vif *vif, u16 removed_links);
+@@ -7955,4 +7955,17 @@ void ieee80211_links_removed(struct ieee80211_vif *vif, u16 removed_links);
   * @hw: pointer as obtained from ieee80211_alloc_hw()
   */
  unsigned long ieee80211_get_scanning(struct ieee80211_hw *hw);
@@ -59,12 +59,12 @@ index 4f2b6ae4..ea62a991 100644
 +				  enum nl80211_crit_update_event event, gfp_t gfp);
  #endif /* MAC80211_H */
 diff --git a/include/uapi/linux/nl80211.h b/include/uapi/linux/nl80211.h
-index e9fe6bb9..d23ab773 100644
+index 8f74340f..1cb6a004 100644
 --- a/include/uapi/linux/nl80211.h
 +++ b/include/uapi/linux/nl80211.h
-@@ -1344,6 +1344,9 @@
-  *	control EPCS configuration. Used to notify userland on the current state
-  *	of EPCS.
+@@ -1361,6 +1361,9 @@
+  *	user space that the NAN new cluster has been joined. The cluster ID is
+  *	indicated by %NL80211_ATTR_MAC.
   *
 + * @NL80211_CMD_NOTIFY_CRIT_UPDATE: Notify the userspace that the status of a
 + *	critical update event was changed.
@@ -72,7 +72,7 @@ index e9fe6bb9..d23ab773 100644
   * @NL80211_CMD_MAX: highest used command number
   * @__NL80211_CMD_AFTER_LAST: internal use
   */
-@@ -1609,6 +1612,7 @@ enum nl80211_commands {
+@@ -1629,6 +1632,7 @@ enum nl80211_commands {
  	/* MTK internal */
  	NL80211_CMD_ATTLM_EVENT,
  	NL80211_CMD_SET_ATTLM,
@@ -80,7 +80,7 @@ index e9fe6bb9..d23ab773 100644
  
  	/* used to define NL80211_CMD_MAX below */
  	__NL80211_CMD_AFTER_LAST,
-@@ -3527,6 +3531,8 @@ enum nl80211_attrs {
+@@ -3578,6 +3582,8 @@ enum nl80211_attrs {
  	NL80211_ATTR_MLO_ATTLM_EVENT,
  	NL80211_ATTR_MLO_ATTLM_SWITCH_TIME_TSF_TU,
  
@@ -89,7 +89,7 @@ index e9fe6bb9..d23ab773 100644
  	__NL80211_ATTR_AFTER_LAST,
  	NUM_NL80211_ATTR = __NL80211_ATTR_AFTER_LAST,
  	NL80211_ATTR_MAX = __NL80211_ATTR_AFTER_LAST - 1
-@@ -8250,4 +8256,25 @@ enum nl80211_attlm_event {
+@@ -8495,4 +8501,25 @@ enum nl80211_attlm_event {
  	NL80211_ATTLM_END,
  };
  
@@ -116,10 +116,10 @@ index e9fe6bb9..d23ab773 100644
 +
  #endif /* __LINUX_NL80211_H */
 diff --git a/net/mac80211/cfg.c b/net/mac80211/cfg.c
-index 3a3e05aa..5280f162 100644
+index 0a24e478..c42fd121 100644
 --- a/net/mac80211/cfg.c
 +++ b/net/mac80211/cfg.c
-@@ -4075,6 +4075,12 @@ static int __ieee80211_csa_finalize(struct ieee80211_link_data *link_data)
+@@ -4205,6 +4205,12 @@ static int __ieee80211_csa_finalize(struct ieee80211_link_data *link_data)
  		return err;
  
  	ieee80211_link_info_change_notify(sdata, link_data, changed);
@@ -132,7 +132,7 @@ index 3a3e05aa..5280f162 100644
  
  	ieee80211_vif_unblock_queues_csa(sdata);
  
-@@ -5557,6 +5563,17 @@ void ieee80211_links_removed(struct ieee80211_vif *vif, u16 removed_links)
+@@ -5685,6 +5691,17 @@ void ieee80211_links_removed(struct ieee80211_vif *vif, u16 removed_links)
  }
  EXPORT_SYMBOL_GPL(ieee80211_links_removed);
  
@@ -151,18 +151,18 @@ index 3a3e05aa..5280f162 100644
  	.add_virtual_intf = ieee80211_add_iface,
  	.del_virtual_intf = ieee80211_del_iface,
 diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index e6a7e6af..52dd6195 100644
+index acd74a48..42b9ddee 100644
 --- a/net/wireless/nl80211.c
 +++ b/net/wireless/nl80211.c
-@@ -902,6 +902,7 @@ static const struct nla_policy nl80211_policy[NUM_NL80211_ATTR] = {
- 	[NL80211_ATTR_S1G_SHORT_BEACON] =
- 		NLA_POLICY_NESTED(nl80211_s1g_short_beacon),
+@@ -963,6 +963,7 @@ static const struct nla_policy nl80211_policy[NUM_NL80211_ATTR] = {
+ 	[NL80211_ATTR_BSS_PARAM] = { .type = NLA_FLAG },
+ 	[NL80211_ATTR_S1G_PRIMARY_2MHZ] = { .type = NLA_FLAG },
  	[NL80211_ATTR_CNTDWN_OFFS_STA_PROF] = { .type = NLA_BINARY },
 +	[NL80211_ATTR_CRTI_UPDATE_EVENT] = { .type = NLA_U8 },
  };
  
  /* policy for the key attributes */
-@@ -21367,6 +21368,49 @@ nla_put_failure:
+@@ -21936,6 +21937,49 @@ nla_put_failure:
  }
  EXPORT_SYMBOL(cfg80211_update_owe_info_event);
  
@@ -213,10 +213,10 @@ index e6a7e6af..52dd6195 100644
  {
  	struct wiphy *wiphy = wdev->wiphy;
 diff --git a/net/wireless/trace.h b/net/wireless/trace.h
-index ac89486c..13706669 100644
+index c27df4a4..5b9e6e60 100644
 --- a/net/wireless/trace.h
 +++ b/net/wireless/trace.h
-@@ -4100,6 +4100,27 @@ TRACE_EVENT(cfg80211_attlm_notify,
+@@ -4069,6 +4069,27 @@ TRACE_EVENT(cfg80211_attlm_notify,
  		  __entry->switch_time_tsf_tu)
  );
  

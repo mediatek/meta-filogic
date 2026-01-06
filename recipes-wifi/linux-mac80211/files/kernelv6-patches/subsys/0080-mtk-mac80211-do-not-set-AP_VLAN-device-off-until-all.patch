@@ -1,7 +1,7 @@
-From bacfa09674237ed831c82192f826847c5b26ba30 Mon Sep 17 00:00:00 2001
+From f4899d232f11329e86bc9240494833b47ba58433 Mon Sep 17 00:00:00 2001
 From: Michael-CY Lee <michael-cy.lee@mediatek.com>
 Date: Mon, 28 Oct 2024 15:01:16 +0800
-Subject: [PATCH 080/115] mtk: mac80211: do not set AP_VLAN device off until
+Subject: [PATCH 080/128] mtk: mac80211: do not set AP_VLAN device off until
  all links become unusable
 
 Signed-off-by: Michael-CY Lee <michael-cy.lee@mediatek.com>
@@ -10,10 +10,10 @@ Signed-off-by: Michael-CY Lee <michael-cy.lee@mediatek.com>
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/net/mac80211/cfg.c b/net/mac80211/cfg.c
-index 6c8a0b5d..3eb2a924 100644
+index 21640ed2..82285883 100644
 --- a/net/mac80211/cfg.c
 +++ b/net/mac80211/cfg.c
-@@ -1748,11 +1748,11 @@ static int ieee80211_stop_ap(struct wiphy *wiphy, struct net_device *dev,
+@@ -1869,11 +1869,11 @@ static int ieee80211_stop_ap(struct wiphy *wiphy, struct net_device *dev,
  
  	ieee80211_free_next_beacon(link);
  

@@ -1,7 +1,7 @@
-From 3ea67e6f3c724b07ca960cd181766abdc1d4029f Mon Sep 17 00:00:00 2001
+From 61cc4bd4aa09b6a994d9eb5f57c493dbbddb699c Mon Sep 17 00:00:00 2001
 From: StanleyYP Wang <StanleyYP.Wang@mediatek.com>
 Date: Thu, 22 Sep 2022 14:27:41 +0800
-Subject: [PATCH 015/115] mtk: cfg80211: implement DFS status show, cac and nop
+Subject: [PATCH 015/128] mtk: cfg80211: implement DFS status show, cac and nop
  skip command via debugfs
 
 Signed-off-by: StanleyYP Wang <StanleyYP.Wang@mediatek.com>
@@ -16,14 +16,14 @@ Signed-off-by: StanleyYP Wang <StanleyYP.Wang@mediatek.com>
  net/wireless/debugfs.c  | 326 +++++++++++++++++++++++++++++++++++++++-
  net/wireless/mlme.c     |   5 +
  net/wireless/rdev-ops.h |  13 ++
- net/wireless/trace.h    |  13 ++
- 7 files changed, 379 insertions(+), 7 deletions(-)
+ net/wireless/trace.h    |  14 ++
+ 7 files changed, 380 insertions(+), 7 deletions(-)
 
 diff --git a/include/net/cfg80211.h b/include/net/cfg80211.h
-index 3c16ba43..9f0ddb7e 100644
+index c57e729d..75f045ce 100644
 --- a/include/net/cfg80211.h
 +++ b/include/net/cfg80211.h
-@@ -5117,6 +5117,7 @@ struct cfg80211_ops {
+@@ -5220,6 +5220,7 @@ struct cfg80211_ops {
  				   struct cfg80211_ml_reconf_req *req);
  	int	(*set_epcs)(struct wiphy *wiphy, struct net_device *dev,
  			    bool val);
@@ -32,10 +32,10 @@ index 3c16ba43..9f0ddb7e 100644
  
  /*
 diff --git a/net/mac80211/cfg.c b/net/mac80211/cfg.c
-index 71047ef2..eb0b678d 100644
+index d3cd146e..dc2d2593 100644
 --- a/net/mac80211/cfg.c
 +++ b/net/mac80211/cfg.c
-@@ -5407,6 +5407,30 @@ ieee80211_set_epcs(struct wiphy *wiphy, struct net_device *dev, bool enable)
+@@ -5535,6 +5535,30 @@ ieee80211_set_epcs(struct wiphy *wiphy, struct net_device *dev, bool enable)
  	return ieee80211_mgd_set_epcs(sdata, enable);
  }
  
@@ -66,14 +66,14 @@ index 71047ef2..eb0b678d 100644
  const struct cfg80211_ops mac80211_config_ops = {
  	.add_virtual_intf = ieee80211_add_iface,
  	.del_virtual_intf = ieee80211_del_iface,
-@@ -5523,4 +5547,5 @@ const struct cfg80211_ops mac80211_config_ops = {
+@@ -5651,4 +5675,5 @@ const struct cfg80211_ops mac80211_config_ops = {
  	.get_radio_mask = ieee80211_get_radio_mask,
  	.assoc_ml_reconf = ieee80211_assoc_ml_reconf,
  	.set_epcs = ieee80211_set_epcs,
 +	.skip_cac = ieee80211_skip_cac,
  };
 diff --git a/net/wireless/core.h b/net/wireless/core.h
-index e225bb7f..d1e55383 100644
+index 485abef7..14932737 100644
 --- a/net/wireless/core.h
 +++ b/net/wireless/core.h
 @@ -93,6 +93,9 @@ struct cfg80211_registered_device {
@@ -87,7 +87,7 @@ index e225bb7f..d1e55383 100644
  	struct work_struct background_cac_abort_wk;
  
 diff --git a/net/wireless/debugfs.c b/net/wireless/debugfs.c
-index 40e49074..b1ad7fe0 100644
+index f9e7fff1..9b462744 100644
 --- a/net/wireless/debugfs.c
 +++ b/net/wireless/debugfs.c
 @@ -10,6 +10,7 @@
@@ -98,7 +98,7 @@ index 40e49074..b1ad7fe0 100644
  
  #define DEBUGFS_READONLY_FILE(name, buflen, fmt, value...)		\
  static ssize_t name## _read(struct file *file, char __user *userbuf,	\
-@@ -97,18 +98,329 @@ static const struct file_operations ht40allow_map_ops = {
+@@ -118,8 +119,315 @@ static const struct file_operations ht40allow_map_ops = {
  	.llseek = default_llseek,
  };
  
@@ -414,9 +414,11 @@ index 40e49074..b1ad7fe0 100644
 +#define DEBUGFS_ADD(name, chmod)						\
 +	debugfs_create_file(#name, chmod, phyd, &rdev->wiphy, &name## _ops)
  
- void cfg80211_debugfs_rdev_add(struct cfg80211_registered_device *rdev)
- {
- 	struct dentry *phyd = rdev->wiphy.debugfsdir;
+ #define DEBUGFS_RADIO_ADD(name, radio_idx)				\
+ 	debugfs_create_file(#name, 0444, radiod,			\
+@@ -132,11 +440,15 @@ void cfg80211_debugfs_rdev_add(struct cfg80211_registered_device *rdev)
+ 	struct dentry *radiod;
+ 	u8 i;
  
 -	DEBUGFS_ADD(rts_threshold);
 -	DEBUGFS_ADD(fragmentation_threshold);
@@ -432,11 +434,11 @@ index 40e49074..b1ad7fe0 100644
 +	DEBUGFS_ADD(dfs_skip_nop, 0600);
 +	DEBUGFS_ADD(dfs_skip_cac, 0600);
 +	DEBUGFS_ADD(dfs_available_reset, 0600);
- }
  
- struct debugfs_read_work {
+ 	for (i = 0; i < rdev->wiphy.n_radio; i++) {
+ 		radiod = rdev->wiphy.radio_cfg[i].radio_debugfsdir;
 diff --git a/net/wireless/mlme.c b/net/wireless/mlme.c
-index 5d6cb841..638a00fe 100644
+index 80313b09..206e78c1 100644
 --- a/net/wireless/mlme.c
 +++ b/net/wireless/mlme.c
 @@ -1198,13 +1198,16 @@ __cfg80211_background_cac_event(struct cfg80211_registered_device *rdev,
@@ -490,13 +492,14 @@ index a0128ed0..d3df5b85 100644
 +}
  #endif /* __CFG80211_RDEV_OPS */
 diff --git a/net/wireless/trace.h b/net/wireless/trace.h
-index 91141cad..09ee2b3d 100644
+index 2ec326fa..7f50f791 100644
 --- a/net/wireless/trace.h
 +++ b/net/wireless/trace.h
-@@ -4222,6 +4222,19 @@ TRACE_EVENT(cfg80211_epcs_changed,
- 		  WDEV_PR_ARG, __entry->enabled)
+@@ -4226,6 +4226,20 @@ TRACE_EVENT(cfg80211_nan_cluster_joined,
+ 		  WDEV_PR_ARG, __entry->cluster_id,
+ 		  __entry->new_cluster ? " [new]" : "")
  );
- 
++
 +TRACE_EVENT(rdev_skip_cac,
 +	TP_PROTO(struct wireless_dev *wdev, unsigned int link_id),
 +	TP_ARGS(wdev, link_id),

@@ -1,7 +1,7 @@
-From faa01696b49531688903ab87393e8a18a305faa2 Mon Sep 17 00:00:00 2001
+From 7d9b2e1d48d63be65c3a48b2a552e1cbbf9b0e91 Mon Sep 17 00:00:00 2001
 From: Shayne Chen <shayne.chen@mediatek.com>
 Date: Sat, 10 May 2025 01:35:11 +0800
-Subject: [PATCH 098/115] mtk: temporarily skip SSID check for non-TX BSS
+Subject: [PATCH 098/128] mtk: temporarily skip SSID check for non-TX BSS
 
 mac80211 has reworked some code flow for beacon parsing since commit:
 wifi: mac80211: fix MLE non-inheritance parsing
@@ -22,10 +22,10 @@ Signed-off-by: Shayne Chen <shayne.chen@mediatek.com>
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
-index 73b94576..083f1438 100644
+index e59ccc06..b3f53a85 100644
 --- a/net/mac80211/mlme.c
 +++ b/net/mac80211/mlme.c
-@@ -7547,7 +7547,8 @@ static void ieee80211_rx_mgmt_beacon(struct ieee80211_link_data *link,
+@@ -7600,7 +7600,8 @@ static void ieee80211_rx_mgmt_beacon(struct ieee80211_link_data *link,
  	if (!elems)
  		return;
  

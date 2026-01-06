@@ -1,7 +1,7 @@
-From adf79682ad2fb962f0deea460a3f36e4aa60ae7a Mon Sep 17 00:00:00 2001
+From fff4962a9ae845dded9e9699bd0b35aabc0ec6eb Mon Sep 17 00:00:00 2001
 From: StanleyYP Wang <StanleyYP.Wang@mediatek.com>
 Date: Tue, 6 Feb 2024 17:46:10 +0800
-Subject: [PATCH 062/115] mtk: mac80211: add DFS CAC countdown in CSA flow
+Subject: [PATCH 062/128] mtk: mac80211: add DFS CAC countdown in CSA flow
 
 Add DFS channel CAC countdown mechanism in CSA flow
 
@@ -56,10 +56,10 @@ Signed-off-by: StanleyYP Wang <StanleyYP.Wang@mediatek.com>
  9 files changed, 209 insertions(+), 19 deletions(-)
 
 diff --git a/include/net/cfg80211.h b/include/net/cfg80211.h
-index 1f9fe969..3f781ef5 100644
+index c1d18bca..e8f0c7d3 100644
 --- a/include/net/cfg80211.h
 +++ b/include/net/cfg80211.h
-@@ -4622,6 +4622,8 @@ struct mgmt_frame_regs {
+@@ -4725,6 +4725,8 @@ struct mgmt_frame_regs {
   *
   * @start_radar_detection: Start radar detection in the driver.
   *
@@ -68,7 +68,7 @@ index 1f9fe969..3f781ef5 100644
   * @end_cac: End running CAC, probably because a related CAC
   *	was finished on another phy.
   *
-@@ -5009,9 +5011,13 @@ struct cfg80211_ops {
+@@ -5112,9 +5114,13 @@ struct cfg80211_ops {
  
  	int	(*start_radar_detection)(struct wiphy *wiphy,
  					 struct net_device *dev,
@@ -83,7 +83,7 @@ index 1f9fe969..3f781ef5 100644
  	void	(*end_cac)(struct wiphy *wiphy,
  			   struct net_device *dev, unsigned int link_id);
  	int	(*update_ft_ies)(struct wiphy *wiphy, struct net_device *dev,
-@@ -9187,11 +9193,15 @@ static inline void cfg80211_report_obss_beacon(struct wiphy *wiphy,
+@@ -9422,11 +9428,15 @@ static inline void cfg80211_report_obss_beacon(struct wiphy *wiphy,
   *	NOTE: If this is set, wiphy mutex must be held.
   * @reg_power: &enum ieee80211_ap_reg_power value indicating the
   *	advertised/used 6 GHz regulatory power setting
@@ -99,7 +99,7 @@ index 1f9fe969..3f781ef5 100644
  };
  
  /**
-@@ -9255,6 +9265,46 @@ cfg80211_reg_can_beacon_relax(struct wiphy *wiphy,
+@@ -9490,6 +9500,46 @@ cfg80211_reg_can_beacon_relax(struct wiphy *wiphy,
  }
  
  /**
@@ -147,10 +147,10 @@ index 1f9fe969..3f781ef5 100644
   * @dev: the device which switched channels
   * @chandef: the new channel definition
 diff --git a/net/mac80211/cfg.c b/net/mac80211/cfg.c
-index 69383eaa..d130f4e0 100644
+index 8da0f2b3..1d9f0e95 100644
 --- a/net/mac80211/cfg.c
 +++ b/net/mac80211/cfg.c
-@@ -1698,7 +1698,7 @@ static int ieee80211_change_beacon(struct wiphy *wiphy, struct net_device *dev,
+@@ -1819,7 +1819,7 @@ static int ieee80211_change_beacon(struct wiphy *wiphy, struct net_device *dev,
  	return 0;
  }
  
@@ -159,7 +159,7 @@ index 69383eaa..d130f4e0 100644
  {
  	if (!link->u.ap.next_beacon)
  		return;
-@@ -3991,6 +3991,40 @@ static int ieee80211_set_after_csa_beacon(struct ieee80211_link_data *link_data,
+@@ -4121,6 +4121,40 @@ static int ieee80211_set_after_csa_beacon(struct ieee80211_link_data *link_data,
  	return 0;
  }
  
@@ -200,7 +200,7 @@ index 69383eaa..d130f4e0 100644
  static int __ieee80211_csa_finalize(struct ieee80211_link_data *link_data)
  {
  	struct ieee80211_sub_if_data *sdata = link_data->sdata;
-@@ -4024,6 +4058,12 @@ static int __ieee80211_csa_finalize(struct ieee80211_link_data *link_data)
+@@ -4154,6 +4188,12 @@ static int __ieee80211_csa_finalize(struct ieee80211_link_data *link_data)
  					&link_data->csa.chanreq.oper))
  		return -EINVAL;
  
@@ -213,7 +213,7 @@ index 69383eaa..d130f4e0 100644
  	link_conf->csa_active = false;
  
  	err = ieee80211_set_after_csa_beacon(link_data, &changed);
-@@ -4242,9 +4282,6 @@ __ieee80211_channel_switch(struct wiphy *wiphy, struct net_device *dev,
+@@ -4372,9 +4412,6 @@ __ieee80211_channel_switch(struct wiphy *wiphy, struct net_device *dev,
  	if (ieee80211_is_scan_ongoing(wiphy, local, &params->chandef))
  		return -EBUSY;
  
@@ -223,7 +223,7 @@ index 69383eaa..d130f4e0 100644
  	if (WARN_ON(link_id >= IEEE80211_MLD_MAX_NUM_LINKS))
  		return -EINVAL;
  
-@@ -4257,10 +4294,6 @@ __ieee80211_channel_switch(struct wiphy *wiphy, struct net_device *dev,
+@@ -4387,10 +4424,6 @@ __ieee80211_channel_switch(struct wiphy *wiphy, struct net_device *dev,
  	if (chanreq.oper.punctured && !link_conf->eht_support)
  		return -EINVAL;
  
@@ -234,7 +234,7 @@ index 69383eaa..d130f4e0 100644
  	conf = wiphy_dereference(wiphy, link_conf->chanctx_conf);
  	if (!conf) {
  		err = -EBUSY;
-@@ -4281,6 +4314,15 @@ __ieee80211_channel_switch(struct wiphy *wiphy, struct net_device *dev,
+@@ -4411,6 +4444,15 @@ __ieee80211_channel_switch(struct wiphy *wiphy, struct net_device *dev,
  
  	chanctx = container_of(conf, struct ieee80211_chanctx, conf);
  
@@ -250,7 +250,7 @@ index 69383eaa..d130f4e0 100644
  	ch_switch.timestamp = 0;
  	ch_switch.device_timestamp = 0;
  	ch_switch.block_tx = params->block_tx;
-@@ -5455,8 +5497,15 @@ ieee80211_skip_cac(struct wireless_dev *wdev, unsigned int link_id)
+@@ -5583,8 +5625,15 @@ ieee80211_skip_cac(struct wireless_dev *wdev, unsigned int link_id)
  
  	wiphy_delayed_work_cancel(sdata->local->hw.wiphy,
  				  &link->dfs_cac_timer_work);
@@ -268,7 +268,7 @@ index 69383eaa..d130f4e0 100644
  		cac_time_ms = wdev->links[link_id].cac_time_ms;
  		wdev->links[link_id].cac_start_time = jiffies -
  						      msecs_to_jiffies(cac_time_ms + 1);
-@@ -5548,6 +5597,7 @@ const struct cfg80211_ops mac80211_config_ops = {
+@@ -5676,6 +5725,7 @@ const struct cfg80211_ops mac80211_config_ops = {
  #endif
  	.get_channel = ieee80211_cfg_get_channel,
  	.start_radar_detection = ieee80211_start_radar_detection,
@@ -277,10 +277,10 @@ index 69383eaa..d130f4e0 100644
  	.channel_switch = ieee80211_channel_switch,
  	.set_qos_map = ieee80211_set_qos_map,
 diff --git a/net/mac80211/ieee80211_i.h b/net/mac80211/ieee80211_i.h
-index 9a87ba31..2ba75426 100644
+index b0b117f6..3e6b0394 100644
 --- a/net/mac80211/ieee80211_i.h
 +++ b/net/mac80211/ieee80211_i.h
-@@ -2078,6 +2078,7 @@ int ieee80211_mgmt_tx_cancel_wait(struct wiphy *wiphy,
+@@ -2086,6 +2086,7 @@ int ieee80211_mgmt_tx_cancel_wait(struct wiphy *wiphy,
  void ieee80211_csa_finalize_work(struct wiphy *wiphy, struct wiphy_work *work);
  int ieee80211_channel_switch(struct wiphy *wiphy, struct net_device *dev,
  			     struct cfg80211_csa_settings *params);
@@ -289,10 +289,10 @@ index 9a87ba31..2ba75426 100644
  /* color change handling */
  void ieee80211_color_change_finalize_work(struct wiphy *wiphy,
 diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
-index 43a429af..fb82d67e 100644
+index 1746ec75..9662a971 100644
 --- a/net/mac80211/mlme.c
 +++ b/net/mac80211/mlme.c
-@@ -3494,7 +3494,14 @@ void ieee80211_dfs_cac_timer_work(struct wiphy *wiphy, struct wiphy_work *work)
+@@ -3521,7 +3521,14 @@ void ieee80211_dfs_cac_timer_work(struct wiphy *wiphy, struct wiphy_work *work)
  	lockdep_assert_wiphy(sdata->local->hw.wiphy);
  
  	if (sdata->wdev.links[link->link_id].cac_started) {
@@ -309,10 +309,10 @@ index 43a429af..fb82d67e 100644
  				   NL80211_RADAR_CAC_FINISHED,
  				   GFP_KERNEL, link->link_id);
 diff --git a/net/mac80211/util.c b/net/mac80211/util.c
-index ac14f481..a9f19e21 100644
+index 2a40cc13..a47841dc 100644
 --- a/net/mac80211/util.c
 +++ b/net/mac80211/util.c
-@@ -3538,7 +3538,13 @@ void ieee80211_dfs_cac_cancel(struct ieee80211_local *local,
+@@ -3556,7 +3556,13 @@ void ieee80211_dfs_cac_cancel(struct ieee80211_local *local,
  				continue;
  
  			chandef = link->conf->chanreq.oper;
@@ -328,10 +328,10 @@ index ac14f481..a9f19e21 100644
  					   NL80211_RADAR_CAC_ABORTED,
  					   GFP_KERNEL, link_id);
 diff --git a/net/wireless/chan.c b/net/wireless/chan.c
-index 629d98b1..9a3dba43 100644
+index fc9e7a56..916ec824 100644
 --- a/net/wireless/chan.c
 +++ b/net/wireless/chan.c
-@@ -1483,8 +1483,13 @@ static bool _cfg80211_reg_can_beacon(struct wiphy *wiphy,
+@@ -1520,8 +1520,13 @@ static bool _cfg80211_reg_can_beacon(struct wiphy *wiphy,
  	check_radar = dfs_required != 0;
  
  	if (dfs_required > 0 &&
@@ -347,7 +347,7 @@ index 629d98b1..9a3dba43 100644
  		prohibited_flags &= ~IEEE80211_CHAN_NO_IR;
  		check_radar = false;
  	}
-@@ -1522,6 +1527,9 @@ bool cfg80211_reg_check_beaconing(struct wiphy *wiphy,
+@@ -1559,6 +1564,9 @@ bool cfg80211_reg_check_beaconing(struct wiphy *wiphy,
  							   chandef->chan);
  	}
  
@@ -357,7 +357,7 @@ index 629d98b1..9a3dba43 100644
  	if (cfg->reg_power == IEEE80211_REG_VLP_AP)
  		permitting_flags |= IEEE80211_CHAN_ALLOW_6GHZ_VLP_AP;
  
-@@ -1537,6 +1545,51 @@ bool cfg80211_reg_check_beaconing(struct wiphy *wiphy,
+@@ -1574,6 +1582,51 @@ bool cfg80211_reg_check_beaconing(struct wiphy *wiphy,
  }
  EXPORT_SYMBOL(cfg80211_reg_check_beaconing);
  
@@ -410,10 +410,10 @@ index 629d98b1..9a3dba43 100644
  				 struct net_device *dev,
  				 struct cfg80211_chan_def *chandef)
 diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index b9f4872e..13025808 100644
+index 5e51a386..08b3483e 100644
 --- a/net/wireless/nl80211.c
 +++ b/net/wireless/nl80211.c
-@@ -11134,8 +11134,9 @@ skip_beacons:
+@@ -11516,8 +11516,9 @@ skip_beacons:
  		cfg80211_set_dfs_state(&rdev->wiphy, &params.chandef, NL80211_DFS_AVAILABLE);
  	}
  
@@ -455,10 +455,10 @@ index d3df5b85..1b271cae 100644
  rdev_end_cac(struct cfg80211_registered_device *rdev,
  	     struct net_device *dev, unsigned int link_id)
 diff --git a/net/wireless/reg.c b/net/wireless/reg.c
-index dc8ff03d..daeca7a5 100644
+index e5749e6b..d8bd7b51 100644
 --- a/net/wireless/reg.c
 +++ b/net/wireless/reg.c
-@@ -2444,8 +2444,12 @@ static bool reg_wdev_chan_valid(struct wiphy *wiphy, struct wireless_dev *wdev)
+@@ -2414,8 +2414,12 @@ static bool reg_wdev_chan_valid(struct wiphy *wiphy, struct wireless_dev *wdev)
  		case NL80211_IFTYPE_P2P_GO:
  		case NL80211_IFTYPE_ADHOC:
  		case NL80211_IFTYPE_MESH_POINT:

@@ -1,7 +1,7 @@
-From 1114089c2f88e32ebc372acc20c2dbca7998da82 Mon Sep 17 00:00:00 2001
+From 03a14e260ea89e26ae0ad4fbfeff4cdfb83a4f31 Mon Sep 17 00:00:00 2001
 From: Shayne Chen <shayne.chen@mediatek.com>
 Date: Fri, 3 May 2024 17:51:37 +0800
-Subject: [PATCH 071/115] mtk: mac80211: add ieee80211_links_removed() to
+Subject: [PATCH 071/128] mtk: mac80211: add ieee80211_links_removed() to
  support MLD AP reconf
 
 Add ieee80211_links_removed() to let driver notify upper layers for MLD AP
@@ -20,12 +20,12 @@ Signed-off-by: Shayne Chen <shayne.chen@mediatek.com>
  7 files changed, 75 insertions(+), 14 deletions(-)
 
 diff --git a/include/net/mac80211.h b/include/net/mac80211.h
-index 115f1893..4c3a51e0 100644
+index 4b3d0bff..9f46389b 100644
 --- a/include/net/mac80211.h
 +++ b/include/net/mac80211.h
-@@ -7894,6 +7894,14 @@ int ieee80211_emulate_switch_vif_chanctx(struct ieee80211_hw *hw,
- 					 int n_vifs,
- 					 enum ieee80211_chanctx_switch_mode mode);
+@@ -7907,6 +7907,14 @@ int ieee80211_emulate_switch_vif_chanctx(struct ieee80211_hw *hw,
+  */
+ bool ieee80211_vif_nan_started(struct ieee80211_vif *vif);
  
 +/**
 + * ieee80211_links_removed - notify removed links
@@ -39,10 +39,10 @@ index 115f1893..4c3a51e0 100644
   * ieee80211_get_scanning - get scanning bitmask
   *
 diff --git a/net/mac80211/cfg.c b/net/mac80211/cfg.c
-index 00cb4228..32e38fa6 100644
+index 3ca35f66..9d563adf 100644
 --- a/net/mac80211/cfg.c
 +++ b/net/mac80211/cfg.c
-@@ -1793,10 +1793,12 @@ static int ieee80211_stop_ap(struct wiphy *wiphy, struct net_device *dev,
+@@ -1917,10 +1917,12 @@ static int ieee80211_stop_ap(struct wiphy *wiphy, struct net_device *dev,
  	RCU_INIT_POINTER(link_conf->tx_bss_conf, NULL);
  
  	link_conf->enable_beacon = false;
@@ -59,7 +59,7 @@ index 00cb4228..32e38fa6 100644
  	ieee80211_link_info_change_notify(sdata, link,
  					  BSS_CHANGED_BEACON_ENABLED);
  
-@@ -1811,8 +1813,10 @@ static int ieee80211_stop_ap(struct wiphy *wiphy, struct net_device *dev,
+@@ -1935,8 +1937,10 @@ static int ieee80211_stop_ap(struct wiphy *wiphy, struct net_device *dev,
  	drv_stop_ap(sdata->local, sdata, link_conf);
  
  	/* free all potentially still buffered bcast frames */
@@ -72,7 +72,7 @@ index 00cb4228..32e38fa6 100644
  
  	ieee80211_link_copy_chanctx_to_vlans(link, true);
  	ieee80211_link_release_channel(link);
-@@ -5522,6 +5526,15 @@ ieee80211_skip_cac(struct wireless_dev *wdev, unsigned int link_id)
+@@ -5650,6 +5654,15 @@ ieee80211_skip_cac(struct wireless_dev *wdev, unsigned int link_id)
  	}
  }
  
@@ -89,10 +89,10 @@ index 00cb4228..32e38fa6 100644
  	.add_virtual_intf = ieee80211_add_iface,
  	.del_virtual_intf = ieee80211_del_iface,
 diff --git a/net/mac80211/ieee80211_i.h b/net/mac80211/ieee80211_i.h
-index 308c4f9d..50a26b84 100644
+index 3514ba7e..8ccce9ac 100644
 --- a/net/mac80211/ieee80211_i.h
 +++ b/net/mac80211/ieee80211_i.h
-@@ -1210,6 +1210,10 @@ struct ieee80211_sub_if_data {
+@@ -1214,6 +1214,10 @@ struct ieee80211_sub_if_data {
  
  	u16 restart_active_links;
  
@@ -104,10 +104,10 @@ index 308c4f9d..50a26b84 100644
  	struct {
  		struct dentry *subdir_stations;
 diff --git a/net/mac80211/iface.c b/net/mac80211/iface.c
-index 48c6ead8..7cd947ec 100644
+index 9ad2b9a6..44e8f4ee 100644
 --- a/net/mac80211/iface.c
 +++ b/net/mac80211/iface.c
-@@ -807,6 +807,7 @@ static int ieee80211_stop(struct net_device *dev)
+@@ -821,6 +821,7 @@ static int ieee80211_stop(struct net_device *dev)
  	guard(wiphy)(sdata->local->hw.wiphy);
  
  	wiphy_work_cancel(sdata->local->hw.wiphy, &sdata->activate_links_work);
@@ -115,7 +115,7 @@ index 48c6ead8..7cd947ec 100644
  
  	/* Close the dependent MBSSID interfaces with wiphy lock as we may be
  	 * terminating its partner links too in case of MLD.
-@@ -1854,6 +1855,22 @@ static void ieee80211_activate_links_work(struct wiphy *wiphy,
+@@ -1891,6 +1892,22 @@ static void ieee80211_activate_links_work(struct wiphy *wiphy,
  	sdata->desired_active_links = 0;
  }
  
@@ -138,7 +138,7 @@ index 48c6ead8..7cd947ec 100644
  /*
   * Helper function to initialise an interface to a specific type.
   */
-@@ -1892,6 +1909,8 @@ static void ieee80211_setup_sdata(struct ieee80211_sub_if_data *sdata,
+@@ -1929,6 +1946,8 @@ static void ieee80211_setup_sdata(struct ieee80211_sub_if_data *sdata,
  	wiphy_work_init(&sdata->work, ieee80211_iface_work);
  	wiphy_work_init(&sdata->activate_links_work,
  			ieee80211_activate_links_work);
@@ -148,7 +148,7 @@ index 48c6ead8..7cd947ec 100644
  	switch (type) {
  	case NL80211_IFTYPE_P2P_GO:
 diff --git a/net/mac80211/sta_info.c b/net/mac80211/sta_info.c
-index 0df6ff13..b856194f 100644
+index 02fd5470..5020d8a8 100644
 --- a/net/mac80211/sta_info.c
 +++ b/net/mac80211/sta_info.c
 @@ -1670,6 +1670,12 @@ int __sta_info_flush(struct ieee80211_sub_if_data *sdata, bool vlans,
@@ -213,10 +213,10 @@ index e4f06e93..a9b967be 100644
  	return err;
  }
 diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index 13025808..dfee20fa 100644
+index 08b3483e..683e56db 100644
 --- a/net/wireless/nl80211.c
 +++ b/net/wireless/nl80211.c
-@@ -19394,7 +19394,8 @@ void cfg80211_links_removed(struct net_device *dev, u16 link_mask)
+@@ -19963,7 +19963,8 @@ void cfg80211_links_removed(struct net_device *dev, u16 link_mask)
  	trace_cfg80211_links_removed(dev, link_mask);
  
  	if (WARN_ON(wdev->iftype != NL80211_IFTYPE_STATION &&
@@ -226,7 +226,7 @@ index 13025808..dfee20fa 100644
  		return;
  
  	if (WARN_ON(!wdev->valid_links || !link_mask ||
-@@ -19402,8 +19403,10 @@ void cfg80211_links_removed(struct net_device *dev, u16 link_mask)
+@@ -19971,8 +19972,10 @@ void cfg80211_links_removed(struct net_device *dev, u16 link_mask)
  		    wdev->valid_links == link_mask))
  		return;
  

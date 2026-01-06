@@ -1,7 +1,7 @@
-From 13b7d4e1d73ba7c76bb1d5014f08c2f9259625f5 Mon Sep 17 00:00:00 2001
+From 33b50ee55d7ba3589d2478b72b350b64f7a0b893 Mon Sep 17 00:00:00 2001
 From: Michael-CY Lee <michael-cy.lee@mediatek.com>
 Date: Wed, 3 Jul 2024 17:05:01 +0800
-Subject: [PATCH 072/115] mtk: mac80211: add A-TTLM support
+Subject: [PATCH 072/128] mtk: mac80211: add A-TTLM support
 
 There are 3 A-TTLM events from the driver, and mac80211 just forward
 them
@@ -27,10 +27,10 @@ Signed-off-by: Michael-CY Lee <michael-cy.lee@mediatek.com>
  7 files changed, 229 insertions(+)
 
 diff --git a/include/net/cfg80211.h b/include/net/cfg80211.h
-index 3f781ef5..4e360aff 100644
+index e8f0c7d3..d0858a53 100644
 --- a/include/net/cfg80211.h
 +++ b/include/net/cfg80211.h
-@@ -4741,6 +4741,7 @@ struct mgmt_frame_regs {
+@@ -4844,6 +4844,7 @@ struct mgmt_frame_regs {
   * @del_link_station: Remove a link of a station.
   *
   * @set_hw_timestamp: Enable/disable HW timestamping of TM/FTM frames.
@@ -38,7 +38,7 @@ index 3f781ef5..4e360aff 100644
   * @set_ttlm: set the TID to link mapping.
   * @set_epcs: Enable/Disable EPCS for station mode.
   * @get_radio_mask: get bitmask of radios in use.
-@@ -5123,6 +5124,8 @@ struct cfg80211_ops {
+@@ -5226,6 +5227,8 @@ struct cfg80211_ops {
  				    struct link_station_del_parameters *params);
  	int	(*set_hw_timestamp)(struct wiphy *wiphy, struct net_device *dev,
  				    struct cfg80211_set_hw_timestamp *hwts);
@@ -47,7 +47,7 @@ index 3f781ef5..4e360aff 100644
  	int	(*set_ttlm)(struct wiphy *wiphy, struct net_device *dev,
  			    struct cfg80211_ttlm_params *params);
  	u32	(*get_radio_mask)(struct wiphy *wiphy, struct net_device *dev);
-@@ -9936,6 +9939,15 @@ int cfg80211_bss_color_notify(struct net_device *dev,
+@@ -10171,6 +10174,15 @@ int cfg80211_bss_color_notify(struct net_device *dev,
  			      enum nl80211_commands cmd, u8 count,
  			      u64 color_bitmap, u8 link_id);
  
@@ -64,10 +64,10 @@ index 3f781ef5..4e360aff 100644
   * cfg80211_obss_color_collision_notify - notify about bss color collision
   * @dev: network device
 diff --git a/include/net/mac80211.h b/include/net/mac80211.h
-index 4c3a51e0..a3fb6480 100644
+index 9f46389b..422a3b84 100644
 --- a/include/net/mac80211.h
 +++ b/include/net/mac80211.h
-@@ -4523,6 +4523,7 @@ struct ieee80211_prep_tx_info {
+@@ -4529,6 +4529,7 @@ struct ieee80211_prep_tx_info {
   *	flow offloading for flows originating from the vif.
   *	Note that the driver must not assume that the vif driver_data is valid
   *	at this point, since the callback can be called during netdev teardown.
@@ -75,7 +75,7 @@ index 4c3a51e0..a3fb6480 100644
   * @can_neg_ttlm: for managed interface, requests the driver to determine
   *	if the requested TID-To-Link mapping can be accepted or not.
   *	If it's not accepted the driver may suggest a preferred mapping and
-@@ -4928,6 +4929,8 @@ struct ieee80211_ops {
+@@ -4934,6 +4935,8 @@ struct ieee80211_ops {
  			    struct net_device *dev,
  			    enum tc_setup_type type,
  			    void *type_data);
@@ -84,9 +84,9 @@ index 4c3a51e0..a3fb6480 100644
  	enum ieee80211_neg_ttlm_res
  	(*can_neg_ttlm)(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
  			struct ieee80211_neg_ttlm *ttlm);
-@@ -7894,6 +7897,16 @@ int ieee80211_emulate_switch_vif_chanctx(struct ieee80211_hw *hw,
- 					 int n_vifs,
- 					 enum ieee80211_chanctx_switch_mode mode);
+@@ -7907,6 +7910,16 @@ int ieee80211_emulate_switch_vif_chanctx(struct ieee80211_hw *hw,
+  */
+ bool ieee80211_vif_nan_started(struct ieee80211_vif *vif);
  
 +/**
 + * ieee80211_attlm_notify - notify Advertised Tid-to-Link-Mapping
@@ -102,10 +102,10 @@ index 4c3a51e0..a3fb6480 100644
   * ieee80211_links_removed - notify removed links
   * @vif: interface to be notified
 diff --git a/include/uapi/linux/nl80211.h b/include/uapi/linux/nl80211.h
-index 223d864a..e9fe6bb9 100644
+index 0e89ce53..8f74340f 100644
 --- a/include/uapi/linux/nl80211.h
 +++ b/include/uapi/linux/nl80211.h
-@@ -1606,6 +1606,10 @@ enum nl80211_commands {
+@@ -1626,6 +1626,10 @@ enum nl80211_commands {
  
  	/* add new commands above here */
  
@@ -116,9 +116,9 @@ index 223d864a..e9fe6bb9 100644
  	/* used to define NL80211_CMD_MAX below */
  	__NL80211_CMD_AFTER_LAST,
  	NL80211_CMD_MAX = __NL80211_CMD_AFTER_LAST - 1
-@@ -2931,6 +2935,25 @@ enum nl80211_commands {
-  *	required alongside this attribute. Refer to
-  *	@enum nl80211_s1g_short_beacon_attrs for the attribute definitions.
+@@ -2976,6 +2980,25 @@ enum nl80211_commands {
+  *	primary channel is 2 MHz wide, and the control channel designates
+  *	the 1 MHz primary subchannel within that 2 MHz primary.
   *
 + * @NL80211_ATTR_MLO_LINK_DISABLED_BMP: u16 bitmap of A-TTLM disabled links for
 + * 	the %NL80211_CMD_SET_ATTLM.
@@ -142,7 +142,7 @@ index 223d864a..e9fe6bb9 100644
   * @NUM_NL80211_ATTR: total number of nl80211_attrs available
   * @NL80211_ATTR_MAX: highest attribute number currently defined
   * @__NL80211_ATTR_AFTER_LAST: internal use
-@@ -3498,6 +3521,12 @@ enum nl80211_attrs {
+@@ -3549,6 +3572,12 @@ enum nl80211_attrs {
  	/* MTK internal */
  	NL80211_ATTR_CNTDWN_OFFS_STA_PROF,
  
@@ -155,8 +155,8 @@ index 223d864a..e9fe6bb9 100644
  	__NL80211_ATTR_AFTER_LAST,
  	NUM_NL80211_ATTR = __NL80211_ATTR_AFTER_LAST,
  	NL80211_ATTR_MAX = __NL80211_ATTR_AFTER_LAST - 1
-@@ -8207,4 +8236,18 @@ enum nl80211_s1g_short_beacon_attrs {
- 		__NL80211_S1G_SHORT_BEACON_ATTR_LAST - 1
+@@ -8452,4 +8481,18 @@ enum nl80211_nan_capabilities {
+ 	NL80211_NAN_CAPABILITIES_MAX = __NL80211_NAN_CAPABILITIES_LAST - 1,
  };
  
 +/**
@@ -175,10 +175,10 @@ index 223d864a..e9fe6bb9 100644
 +
  #endif /* __LINUX_NL80211_H */
 diff --git a/net/mac80211/cfg.c b/net/mac80211/cfg.c
-index 32e38fa6..3a3e05aa 100644
+index 9d563adf..0a24e478 100644
 --- a/net/mac80211/cfg.c
 +++ b/net/mac80211/cfg.c
-@@ -5465,6 +5465,20 @@ static int ieee80211_set_hw_timestamp(struct wiphy *wiphy,
+@@ -5593,6 +5593,20 @@ static int ieee80211_set_hw_timestamp(struct wiphy *wiphy,
  	return local->ops->set_hw_timestamp(&local->hw, &sdata->vif, hwts);
  }
  
@@ -199,7 +199,7 @@ index 32e38fa6..3a3e05aa 100644
  static int
  ieee80211_set_ttlm(struct wiphy *wiphy, struct net_device *dev,
  		   struct cfg80211_ttlm_params *params)
-@@ -5526,6 +5540,14 @@ ieee80211_skip_cac(struct wireless_dev *wdev, unsigned int link_id)
+@@ -5654,6 +5668,14 @@ ieee80211_skip_cac(struct wireless_dev *wdev, unsigned int link_id)
  	}
  }
  
@@ -214,7 +214,7 @@ index 32e38fa6..3a3e05aa 100644
  void ieee80211_links_removed(struct ieee80211_vif *vif, u16 removed_links)
  {
  	struct ieee80211_sub_if_data *sdata = vif_to_sdata(vif);
-@@ -5648,6 +5670,7 @@ const struct cfg80211_ops mac80211_config_ops = {
+@@ -5776,6 +5798,7 @@ const struct cfg80211_ops mac80211_config_ops = {
  	.mod_link_station = ieee80211_mod_link_station,
  	.del_link_station = ieee80211_del_link_station,
  	.set_hw_timestamp = ieee80211_set_hw_timestamp,
@@ -223,10 +223,10 @@ index 32e38fa6..3a3e05aa 100644
  	.get_radio_mask = ieee80211_get_radio_mask,
  	.assoc_ml_reconf = ieee80211_assoc_ml_reconf,
 diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index dfee20fa..e6a7e6af 100644
+index 683e56db..acd74a48 100644
 --- a/net/wireless/nl80211.c
 +++ b/net/wireless/nl80211.c
-@@ -881,6 +881,10 @@ static const struct nla_policy nl80211_policy[NUM_NL80211_ATTR] = {
+@@ -940,6 +940,10 @@ static const struct nla_policy nl80211_policy[NUM_NL80211_ATTR] = {
  	[NL80211_ATTR_HW_TIMESTAMP_ENABLED] = { .type = NLA_FLAG },
  	[NL80211_ATTR_EMA_RNR_ELEMS] = { .type = NLA_NESTED },
  	[NL80211_ATTR_MLO_LINK_DISABLED] = { .type = NLA_FLAG },
@@ -237,7 +237,7 @@ index dfee20fa..e6a7e6af 100644
  	[NL80211_ATTR_BSS_DUMP_INCLUDE_USE_DATA] = { .type = NLA_FLAG },
  	[NL80211_ATTR_MLO_TTLM_DLINK] = NLA_POLICY_EXACT_LEN(sizeof(u16) * 8),
  	[NL80211_ATTR_MLO_TTLM_ULINK] = NLA_POLICY_EXACT_LEN(sizeof(u16) * 8),
-@@ -17217,6 +17221,30 @@ static int nl80211_set_hw_timestamp(struct sk_buff *skb,
+@@ -17786,6 +17790,30 @@ static int nl80211_set_hw_timestamp(struct sk_buff *skb,
  	return rdev_set_hw_timestamp(rdev, dev, &hwts);
  }
  
@@ -268,7 +268,7 @@ index dfee20fa..e6a7e6af 100644
  static int
  nl80211_set_ttlm(struct sk_buff *skb, struct genl_info *info)
  {
-@@ -18532,6 +18560,12 @@ static const struct genl_small_ops nl80211_small_ops[] = {
+@@ -19101,6 +19129,12 @@ static const struct genl_small_ops nl80211_small_ops[] = {
  		.flags = GENL_UNS_ADMIN_PERM,
  		.internal_flags = IFLAGS(NL80211_FLAG_NEED_NETDEV_UP),
  	},
@@ -281,7 +281,7 @@ index dfee20fa..e6a7e6af 100644
  	{
  		.cmd = NL80211_CMD_SET_TID_TO_LINK_MAPPING,
  		.doit = nl80211_set_ttlm,
-@@ -20588,6 +20622,47 @@ nla_put_failure:
+@@ -21157,6 +21191,47 @@ nla_put_failure:
  }
  EXPORT_SYMBOL(cfg80211_bss_color_notify);
  
@@ -359,10 +359,10 @@ index 1b271cae..09d7eead 100644
  rdev_set_ttlm(struct cfg80211_registered_device *rdev,
  	      struct net_device *dev,
 diff --git a/net/wireless/trace.h b/net/wireless/trace.h
-index de653bc1..ac89486c 100644
+index 6b54777f..c27df4a4 100644
 --- a/net/wireless/trace.h
 +++ b/net/wireless/trace.h
-@@ -3064,6 +3064,30 @@ TRACE_EVENT(rdev_set_hw_timestamp,
+@@ -3089,6 +3089,30 @@ TRACE_EVENT(rdev_set_hw_timestamp,
  		  __entry->enable)
  );
  
@@ -393,7 +393,7 @@ index de653bc1..ac89486c 100644
  TRACE_EVENT(rdev_set_ttlm,
  	TP_PROTO(struct wiphy *wiphy, struct net_device *netdev,
  		 struct cfg80211_ttlm_params *params),
-@@ -4055,6 +4079,27 @@ TRACE_EVENT(cfg80211_bss_color_notify,
+@@ -4024,6 +4048,27 @@ TRACE_EVENT(cfg80211_bss_color_notify,
  		  __entry->color_bitmap)
  );
  

@@ -1,7 +1,7 @@
-From 3e21b8a18d92155d54f573ac7129b4dacaadbddf Mon Sep 17 00:00:00 2001
+From 32351a4d1516184627e24db1a7154f8e9a55505c Mon Sep 17 00:00:00 2001
 From: MeiChia Chiu <MeiChia.Chiu@mediatek.com>
 Date: Thu, 20 Jun 2024 14:56:42 +0800
-Subject: [PATCH 067/115] mtk: mac80211: Add ba_disable debugfs to disable ba
+Subject: [PATCH 067/128] mtk: mac80211: Add ba_disable debugfs to disable ba
 
 Add ba_disable debugfs to diable ba for Wi-Fi 7 cert
 
@@ -13,10 +13,10 @@ Signed-off-by: MeiChia Chiu <MeiChia.Chiu@mediatek.com>
  3 files changed, 61 insertions(+)
 
 diff --git a/include/net/mac80211.h b/include/net/mac80211.h
-index 9089c093..115f1893 100644
+index 4c656fc9..4b3d0bff 100644
 --- a/include/net/mac80211.h
 +++ b/include/net/mac80211.h
-@@ -3101,6 +3101,7 @@ struct ieee80211_hw {
+@@ -3103,6 +3103,7 @@ struct ieee80211_hw {
  	const s8 *tx_power_levels;
  	u8 max_txpwr_levels_idx;
  	bool cert_mode;
@@ -24,7 +24,7 @@ index 9089c093..115f1893 100644
  };
  
  static inline bool ieee80211_is_cert_mode(struct ieee80211_hw *hw)
-@@ -3108,6 +3109,11 @@ static inline bool ieee80211_is_cert_mode(struct ieee80211_hw *hw)
+@@ -3110,6 +3111,11 @@ static inline bool ieee80211_is_cert_mode(struct ieee80211_hw *hw)
  	return hw->cert_mode;
  }
  
@@ -54,10 +54,10 @@ index 42c7a0d7..9592f681 100644
  		 "Requested to start BA session on reserved tid=%d", tid))
  		return -EINVAL;
 diff --git a/net/mac80211/debugfs.c b/net/mac80211/debugfs.c
-index 0e779036..c60d1150 100644
+index 2a13f50c..5d2f3511 100644
 --- a/net/mac80211/debugfs.c
 +++ b/net/mac80211/debugfs.c
-@@ -519,6 +519,54 @@ static const struct file_operations cert_mode_ops = {
+@@ -517,6 +517,54 @@ static const struct file_operations cert_mode_ops = {
  	.llseek = noop_llseek,
  };
  
@@ -112,7 +112,7 @@ index 0e779036..c60d1150 100644
  static const char *hw_flag_names[] = {
  #define FLAG(F)	[IEEE80211_HW_##F] = #F
  	FLAG(HAS_RATE_CONTROL),
-@@ -793,6 +841,7 @@ void debugfs_hw_add(struct ieee80211_local *local)
+@@ -791,6 +839,7 @@ void debugfs_hw_add(struct ieee80211_local *local)
  			   phyd, &local->aql_threshold);
  
  	DEBUGFS_ADD_MODE(cert_mode, 0644);

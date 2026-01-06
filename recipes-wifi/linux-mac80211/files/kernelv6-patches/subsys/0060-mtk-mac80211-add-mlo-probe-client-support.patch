@@ -1,7 +1,7 @@
-From eeba023b1538eff21fb4fbf357e887d60840625b Mon Sep 17 00:00:00 2001
+From 39693e0775d7069f8314c5e513c408d25afd5e96 Mon Sep 17 00:00:00 2001
 From: StanleyYP Wang <StanleyYP.Wang@mediatek.com>
 Date: Wed, 15 May 2024 11:25:19 +0800
-Subject: [PATCH 060/115] mtk: mac80211: add mlo probe client support
+Subject: [PATCH 060/128] mtk: mac80211: add mlo probe client support
 
 Add link unspec for mld case; otherwise it would be link 0
 instead of primary link
@@ -19,10 +19,10 @@ Signed-off-by: StanleyYP Wang <StanleyYP.Wang@mediatek.com>
  1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/net/mac80211/cfg.c b/net/mac80211/cfg.c
-index bd2dba19..69383eaa 100644
+index 572df509..8da0f2b3 100644
 --- a/net/mac80211/cfg.c
 +++ b/net/mac80211/cfg.c
-@@ -4540,7 +4540,10 @@ static int ieee80211_probe_client(struct wiphy *wiphy, struct net_device *dev,
+@@ -4670,7 +4670,10 @@ static int ieee80211_probe_client(struct wiphy *wiphy, struct net_device *dev,
  	info = IEEE80211_SKB_CB(skb);
  
  	info->flags |= IEEE80211_TX_CTL_REQ_TX_STATUS |

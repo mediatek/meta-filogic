@@ -1,7 +1,7 @@
-From 1c5c87577f3722485e0de7971e3d7a4c21c4f160 Mon Sep 17 00:00:00 2001
+From 4bd27cdac2d9667d37e28b43d56a87e2145ad2db Mon Sep 17 00:00:00 2001
 From: Howard Hsu <howard-yh.hsu@mediatek.com>
 Date: Thu, 26 Jun 2025 16:11:19 +0800
-Subject: [PATCH 103/115] mtk: mac80211: Add beamform caps in
+Subject: [PATCH 103/128] mtk: mac80211: Add beamform caps in
  ieee80211_bss_conf for station interface
 
 The beamform-related capabilities are assigned to ieee80211_bss_conf by
@@ -48,7 +48,7 @@ index fd41046e..85a0f377 100644
 +		own_eht_cap.eht_cap_elem.phy_cap_info[0] & IEEE80211_EHT_PHY_CAP0_SU_BEAMFORMEE;
 +}
 diff --git a/net/mac80211/he.c b/net/mac80211/he.c
-index 5792ef77..53cdbb1a 100644
+index f7b05e59..895abdae 100644
 --- a/net/mac80211/he.c
 +++ b/net/mac80211/he.c
 @@ -365,3 +365,23 @@ void ieee80211_finalize_rx_omi_bw(struct ieee80211_link_sta *pub_link_sta)
@@ -76,10 +76,10 @@ index 5792ef77..53cdbb1a 100644
 +		own_he_cap.he_cap_elem.phy_cap_info[4] & IEEE80211_HE_PHY_CAP4_SU_BEAMFORMEE;
 +}
 diff --git a/net/mac80211/ieee80211_i.h b/net/mac80211/ieee80211_i.h
-index 9ddbeb3d..56d76af2 100644
+index 7391d678..6121a057 100644
 --- a/net/mac80211/ieee80211_i.h
 +++ b/net/mac80211/ieee80211_i.h
-@@ -2310,6 +2310,9 @@ void
+@@ -2319,6 +2319,9 @@ void
  ieee80211_he_spr_ie_to_bss_conf(struct ieee80211_vif *vif,
  				const struct ieee80211_he_spr *he_spr_ie_elem);
  
@@ -89,7 +89,7 @@ index 9ddbeb3d..56d76af2 100644
  void
  ieee80211_he_op_ie_to_bss_conf(struct ieee80211_vif *vif,
  			const struct ieee80211_he_operation *he_op_ie_elem);
-@@ -2846,6 +2849,9 @@ ieee80211_eht_cap_ie_to_sta_eht_cap(struct ieee80211_sub_if_data *sdata,
+@@ -2845,6 +2848,9 @@ ieee80211_eht_cap_ie_to_sta_eht_cap(struct ieee80211_sub_if_data *sdata,
  				    const struct ieee80211_eht_cap_elem *eht_cap_ie_elem,
  				    u8 eht_cap_len,
  				    struct link_sta_info *link_sta);
@@ -100,10 +100,10 @@ index 9ddbeb3d..56d76af2 100644
  				    struct ieee80211_mgmt *mgmt, size_t len);
  void ieee80211_process_neg_ttlm_res(struct ieee80211_sub_if_data *sdata,
 diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
-index 083f1438..7df9270a 100644
+index b3f53a85..2f5ea56f 100644
 --- a/net/mac80211/mlme.c
 +++ b/net/mac80211/mlme.c
-@@ -5477,6 +5477,11 @@ static bool ieee80211_assoc_config_link(struct ieee80211_link_data *link,
+@@ -5507,6 +5507,11 @@ static bool ieee80211_assoc_config_link(struct ieee80211_link_data *link,
  		ieee80211_vht_cap_ie_to_sta_vht_cap(sdata, sband,
  						    elems->vht_cap_elem,
  						    bss_vht_cap, link_sta);
@@ -115,7 +115,7 @@ index 083f1438..7df9270a 100644
  		rcu_read_unlock();
  	}
  
-@@ -5490,6 +5495,7 @@ static bool ieee80211_assoc_config_link(struct ieee80211_link_data *link,
+@@ -5520,6 +5525,7 @@ static bool ieee80211_assoc_config_link(struct ieee80211_link_data *link,
  						  link_sta);
  
  		bss_conf->he_support = link_sta->pub->he_cap.has_he;
@@ -123,7 +123,7 @@ index 083f1438..7df9270a 100644
  		if (elems->rsnx && elems->rsnx_len &&
  		    (elems->rsnx[0] & WLAN_RSNX_CAPA_PROTECTED_TWT) &&
  		    wiphy_ext_feature_isset(local->hw.wiphy,
-@@ -5522,6 +5528,7 @@ static bool ieee80211_assoc_config_link(struct ieee80211_link_data *link,
+@@ -5552,6 +5558,7 @@ static bool ieee80211_assoc_config_link(struct ieee80211_link_data *link,
  			if (sdata->u.mgd.epcs.enabled &&
  			    !bss_conf->epcs_support)
  				ieee80211_epcs_teardown(sdata);

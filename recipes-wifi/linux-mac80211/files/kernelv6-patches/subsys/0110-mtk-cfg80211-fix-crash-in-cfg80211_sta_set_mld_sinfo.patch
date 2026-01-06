@@ -1,7 +1,7 @@
-From ae49370ea5a07d27522f386dd5cc54fdcfb4cc28 Mon Sep 17 00:00:00 2001
+From b584f831a372c8d5420c49f2eb15582a0554d9bc Mon Sep 17 00:00:00 2001
 From: Shayne Chen <shayne.chen@mediatek.com>
 Date: Wed, 16 Jul 2025 20:58:16 +0800
-Subject: [PATCH 110/115] mtk: cfg80211: fix crash in
+Subject: [PATCH 110/128] mtk: cfg80211: fix crash in
  cfg80211_sta_set_mld_sinfo()
 
 ---
@@ -9,10 +9,10 @@ Subject: [PATCH 110/115] mtk: cfg80211: fix crash in
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index 971d5fb6..06373863 100644
+index a2396fb6..08d20718 100644
 --- a/net/wireless/nl80211.c
 +++ b/net/wireless/nl80211.c
-@@ -7529,7 +7529,7 @@ static void cfg80211_sta_set_mld_sinfo(struct station_info *sinfo)
+@@ -7870,7 +7870,7 @@ static void cfg80211_sta_set_mld_sinfo(struct station_info *sinfo)
  		init++;
  
  		/* pertid stats accumulate for rx/tx fields */

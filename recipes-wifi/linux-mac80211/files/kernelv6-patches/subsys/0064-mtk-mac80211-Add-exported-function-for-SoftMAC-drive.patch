@@ -1,7 +1,7 @@
-From 3cc937a7987f4ec1cf69511e690f75634073693f Mon Sep 17 00:00:00 2001
+From b034061c00a4fb9aac78d96ba13ba256ab8bba7a Mon Sep 17 00:00:00 2001
 From: Rex Lu <rex.lu@mediatek.com>
 Date: Fri, 7 Jun 2024 13:25:08 +0800
-Subject: [PATCH 064/115] mtk: mac80211: Add exported function for SoftMAC
+Subject: [PATCH 064/128] mtk: mac80211: Add exported function for SoftMAC
  driver to get QoS map
 
 Add exported function for SoftMAC driver to get QoS map.
@@ -39,20 +39,20 @@ Check if ieee80211_sub_if_data is ready before its usage to prevent later kernel
 
 Signed-off-by: Benjamin Lin <benjamin-jw.lin@mediatek.com>
 ---
- include/net/mac80211.h    |  4 +++-
+ include/net/mac80211.h    |  3 +++
  net/mac80211/cfg.c        | 12 ++++++++++--
  net/mac80211/chan.c       |  7 +++++++
  net/mac80211/driver-ops.h | 21 +++++++++++++++++++++
  net/mac80211/iface.c      |  8 +++++++-
  net/mac80211/trace.h      |  6 ++++++
  net/mac80211/util.c       |  2 +-
- 7 files changed, 55 insertions(+), 5 deletions(-)
+ 7 files changed, 55 insertions(+), 4 deletions(-)
 
 diff --git a/include/net/mac80211.h b/include/net/mac80211.h
-index 0a2efebb..97915271 100644
+index f0ef93e2..77345c9f 100644
 --- a/include/net/mac80211.h
 +++ b/include/net/mac80211.h
-@@ -4525,6 +4525,7 @@ struct ieee80211_prep_tx_info {
+@@ -4531,6 +4531,7 @@ struct ieee80211_prep_tx_info {
   *      interface with the specified type would be added, and thus drivers that
   *      implement this callback need to handle such cases. The type is the full
   *      &enum nl80211_iftype.
@@ -60,7 +60,7 @@ index 0a2efebb..97915271 100644
   */
  struct ieee80211_ops {
  	void (*tx)(struct ieee80211_hw *hw,
-@@ -4923,6 +4924,8 @@ struct ieee80211_ops {
+@@ -4929,6 +4930,8 @@ struct ieee80211_ops {
  			struct ieee80211_neg_ttlm *ttlm);
  	void (*prep_add_interface)(struct ieee80211_hw *hw,
  				   enum nl80211_iftype type);
@@ -69,17 +69,11 @@ index 0a2efebb..97915271 100644
  };
  
  /**
-@@ -7888,5 +7891,4 @@ int ieee80211_emulate_switch_vif_chanctx(struct ieee80211_hw *hw,
-  * @hw: pointer as obtained from ieee80211_alloc_hw()
-  */
- unsigned long ieee80211_get_scanning(struct ieee80211_hw *hw);
--
- #endif /* MAC80211_H */
 diff --git a/net/mac80211/cfg.c b/net/mac80211/cfg.c
-index d130f4e0..45aec69a 100644
+index 1d9f0e95..c686c3e4 100644
 --- a/net/mac80211/cfg.c
 +++ b/net/mac80211/cfg.c
-@@ -4655,9 +4655,12 @@ static int ieee80211_set_qos_map(struct wiphy *wiphy,
+@@ -4785,9 +4785,12 @@ static int ieee80211_set_qos_map(struct wiphy *wiphy,
  				 struct net_device *dev,
  				 struct cfg80211_qos_map *qos_map)
  {
@@ -93,7 +87,7 @@ index d130f4e0..45aec69a 100644
  	if (qos_map) {
  		new_qos_map = kzalloc(sizeof(*new_qos_map), GFP_KERNEL);
  		if (!new_qos_map)
-@@ -4673,7 +4676,12 @@ static int ieee80211_set_qos_map(struct wiphy *wiphy,
+@@ -4803,7 +4806,12 @@ static int ieee80211_set_qos_map(struct wiphy *wiphy,
  	if (old_qos_map)
  		kfree_rcu(old_qos_map, rcu_head);
  
@@ -108,10 +102,10 @@ index d130f4e0..45aec69a 100644
  
  static int ieee80211_set_ap_chanwidth(struct wiphy *wiphy,
 diff --git a/net/mac80211/chan.c b/net/mac80211/chan.c
-index 98c8b05a..6dc1565d 100644
+index bc8da330..2125dfc2 100644
 --- a/net/mac80211/chan.c
 +++ b/net/mac80211/chan.c
-@@ -986,6 +986,13 @@ static int ieee80211_assign_link_chanctx(struct ieee80211_link_data *link,
+@@ -1090,6 +1090,13 @@ static int ieee80211_assign_link_chanctx(struct ieee80211_link_data *link,
  
  	ieee80211_check_fast_xmit_iface(sdata);
  
@@ -126,7 +120,7 @@ index 98c8b05a..6dc1565d 100644
  }
  
 diff --git a/net/mac80211/driver-ops.h b/net/mac80211/driver-ops.h
-index a05a36a1..df9b77b7 100644
+index 40d4b52e..c28330c1 100644
 --- a/net/mac80211/driver-ops.h
 +++ b/net/mac80211/driver-ops.h
 @@ -1785,4 +1785,25 @@ drv_prep_add_interface(struct ieee80211_local *local,
@@ -156,10 +150,10 @@ index a05a36a1..df9b77b7 100644
 +
  #endif /* __MAC80211_DRIVER_OPS */
 diff --git a/net/mac80211/iface.c b/net/mac80211/iface.c
-index 8feacfff..48c6ead8 100644
+index 30399c5c..9ad2b9a6 100644
 --- a/net/mac80211/iface.c
 +++ b/net/mac80211/iface.c
-@@ -381,8 +381,14 @@ static int ieee80211_check_concurrent_iface(struct ieee80211_sub_if_data *sdata,
+@@ -398,8 +398,14 @@ static int ieee80211_check_concurrent_iface(struct ieee80211_sub_if_data *sdata,
  			 * can only add VLANs to enabled APs
  			 */
  			if (iftype == NL80211_IFTYPE_AP_VLAN &&
@@ -176,10 +170,10 @@ index 8feacfff..48c6ead8 100644
  	}
  
 diff --git a/net/mac80211/trace.h b/net/mac80211/trace.h
-index 95318f16..5accbbaf 100644
+index 372885d0..72230615 100644
 --- a/net/mac80211/trace.h
 +++ b/net/mac80211/trace.h
-@@ -3373,6 +3373,12 @@ TRACE_EVENT(bss_color_bitmap,
+@@ -3379,6 +3379,12 @@ TRACE_EVENT(bss_color_bitmap,
  		"color=%u color_bitmap=0x%llx", __entry->color, __entry->color_bitmap
  	)
  );
@@ -193,10 +187,10 @@ index 95318f16..5accbbaf 100644
  
  #undef TRACE_INCLUDE_PATH
 diff --git a/net/mac80211/util.c b/net/mac80211/util.c
-index a9f19e21..ac9d09cc 100644
+index a47841dc..58fcddc5 100644
 --- a/net/mac80211/util.c
 +++ b/net/mac80211/util.c
-@@ -4541,4 +4541,4 @@ unsigned long ieee80211_get_scanning(struct ieee80211_hw *hw)
+@@ -4564,4 +4564,4 @@ unsigned long ieee80211_get_scanning(struct ieee80211_hw *hw)
  
  	return local->scanning;
  }

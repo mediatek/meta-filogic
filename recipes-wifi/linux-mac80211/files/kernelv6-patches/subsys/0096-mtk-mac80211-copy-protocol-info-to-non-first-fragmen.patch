@@ -1,7 +1,7 @@
-From c8b92d3049889c1328204d1e4b60987c2639f5fd Mon Sep 17 00:00:00 2001
+From 0d77d0ac54c9d73550db87a2e69057ea6d2e14c0 Mon Sep 17 00:00:00 2001
 From: Benjamin Lin <benjamin-jw.lin@mediatek.com>
 Date: Fri, 9 May 2025 15:37:25 +0800
-Subject: [PATCH 096/115] mtk: mac80211: copy protocol info to non-first
+Subject: [PATCH 096/128] mtk: mac80211: copy protocol info to non-first
  fragments
 
 Copy protocol info from first fragment to remaining ones.
@@ -13,10 +13,10 @@ Signed-off-by: Benjamin Lin <benjamin-jw.lin@mediatek.com>
  1 file changed, 1 insertion(+)
 
 diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
-index 751fa65a..5c5ae20a 100644
+index 7d587088..a8416d66 100644
 --- a/net/mac80211/tx.c
 +++ b/net/mac80211/tx.c
-@@ -930,6 +930,7 @@ static int ieee80211_fragment(struct ieee80211_tx_data *tx,
+@@ -936,6 +936,7 @@ static int ieee80211_fragment(struct ieee80211_tx_data *tx,
  		skb_copy_queue_mapping(tmp, skb);
  		tmp->priority = skb->priority;
  		tmp->dev = skb->dev;

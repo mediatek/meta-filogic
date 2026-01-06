@@ -1,7 +1,7 @@
-From 65fdb84dff69546c7d8c1e20243a782ccb3f9ddc Mon Sep 17 00:00:00 2001
+From 8007f35e89fe1bba35aff0566dab974b2ec6daa2 Mon Sep 17 00:00:00 2001
 From: Shayne Chen <shayne.chen@mediatek.com>
 Date: Thu, 19 Oct 2023 00:27:15 +0800
-Subject: [PATCH 038/115] mtk: mac80211: allow multiple links for STA vif
+Subject: [PATCH 038/128] mtk: mac80211: allow multiple links for STA vif
 
 Signed-off-by: Shayne Chen <shayne.chen@mediatek.com>
 ---
@@ -9,10 +9,10 @@ Signed-off-by: Shayne Chen <shayne.chen@mediatek.com>
  1 file changed, 3 deletions(-)
 
 diff --git a/net/mac80211/link.c b/net/mac80211/link.c
-index 2d491d04..7639eee1 100644
+index c6837834..f6f68a05 100644
 --- a/net/mac80211/link.c
 +++ b/net/mac80211/link.c
-@@ -184,10 +184,7 @@ static void ieee80211_set_vif_links_bitmaps(struct ieee80211_sub_if_data *sdata,
+@@ -182,10 +182,7 @@ static void ieee80211_set_vif_links_bitmaps(struct ieee80211_sub_if_data *sdata,
  		WARN_ON(dormant_links);
  		break;
  	case NL80211_IFTYPE_STATION:

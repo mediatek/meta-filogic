@@ -1,7 +1,7 @@
-From bd904b56ade45e6f4b1d6794200041d230973a00 Mon Sep 17 00:00:00 2001
+From 991dfd0f7ec75a054101314b979d3fe7d2dc7898 Mon Sep 17 00:00:00 2001
 From: Howard Hsu <howard-yh.hsu@mediatek.com>
 Date: Mon, 23 Jun 2025 11:31:27 +0800
-Subject: [PATCH 106/115] mtk: mac80211: support handle mtk vendor element
+Subject: [PATCH 106/128] mtk: mac80211: support handle mtk vendor element
 
 Notify the mt76 driver that a peer station is an MTK station if hostapd
 marks the peer station as an MTK station.
@@ -16,10 +16,10 @@ Signed-off-by: Howard Hsu <howard-yh.hsu@mediatek.com>
  5 files changed, 13 insertions(+)
 
 diff --git a/include/net/cfg80211.h b/include/net/cfg80211.h
-index 637a9907..ced5d724 100644
+index ea8ead78..c82b7f14 100644
 --- a/include/net/cfg80211.h
 +++ b/include/net/cfg80211.h
-@@ -1812,6 +1812,7 @@ struct station_parameters {
+@@ -1829,6 +1829,7 @@ struct station_parameters {
  	bool eml_cap_present;
  	u16 eml_cap;
  	struct link_station_parameters link_sta_params;
@@ -28,10 +28,10 @@ index 637a9907..ced5d724 100644
  
  /**
 diff --git a/include/net/mac80211.h b/include/net/mac80211.h
-index ba0e9a4e..d5d2d060 100644
+index a24ec894..a8e54d15 100644
 --- a/include/net/mac80211.h
 +++ b/include/net/mac80211.h
-@@ -2569,6 +2569,8 @@ struct ieee80211_sta {
+@@ -2571,6 +2571,8 @@ struct ieee80211_sta {
  	struct ieee80211_link_sta deflink;
  	struct ieee80211_link_sta __rcu *link[IEEE80211_MLD_MAX_NUM_LINKS];
  
@@ -41,10 +41,10 @@ index ba0e9a4e..d5d2d060 100644
  	u8 drv_priv[] __aligned(sizeof(void *));
  };
 diff --git a/include/uapi/linux/nl80211.h b/include/uapi/linux/nl80211.h
-index 5fdc24a3..800f22ef 100644
+index a0646399..bb9b3a53 100644
 --- a/include/uapi/linux/nl80211.h
 +++ b/include/uapi/linux/nl80211.h
-@@ -3537,6 +3537,8 @@ enum nl80211_attrs {
+@@ -3588,6 +3588,8 @@ enum nl80211_attrs {
  
  	NL80211_ATTR_MLO_TSF_OFFSET_VAL,
  
@@ -54,10 +54,10 @@ index 5fdc24a3..800f22ef 100644
  	NUM_NL80211_ATTR = __NL80211_ATTR_AFTER_LAST,
  	NL80211_ATTR_MAX = __NL80211_ATTR_AFTER_LAST - 1
 diff --git a/net/mac80211/cfg.c b/net/mac80211/cfg.c
-index f40ad41a..cb4a5bf1 100644
+index ee8d0d28..fd57069d 100644
 --- a/net/mac80211/cfg.c
 +++ b/net/mac80211/cfg.c
-@@ -2210,6 +2210,9 @@ static int sta_apply_parameters(struct ieee80211_local *local,
+@@ -2340,6 +2340,9 @@ static int sta_apply_parameters(struct ieee80211_local *local,
  	if (params->eml_cap)
  		sta->sta.eml_cap = params->eml_cap;
  
@@ -68,18 +68,18 @@ index f40ad41a..cb4a5bf1 100644
  		sta->sta.support_p2p_ps = params->support_p2p_ps;
  
 diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index 0736f5b2..137f02c5 100644
+index 5e988920..e85922be 100644
 --- a/net/wireless/nl80211.c
 +++ b/net/wireless/nl80211.c
-@@ -905,6 +905,7 @@ static const struct nla_policy nl80211_policy[NUM_NL80211_ATTR] = {
- 		NLA_POLICY_NESTED(nl80211_s1g_short_beacon),
+@@ -966,6 +966,7 @@ static const struct nla_policy nl80211_policy[NUM_NL80211_ATTR] = {
+ 	[NL80211_ATTR_S1G_PRIMARY_2MHZ] = { .type = NLA_FLAG },
  	[NL80211_ATTR_CNTDWN_OFFS_STA_PROF] = { .type = NLA_BINARY },
  	[NL80211_ATTR_CRTI_UPDATE_EVENT] = { .type = NLA_U8 },
 +	[NL80211_ATTR_VENDOR_MTK_STA] = { .type = NLA_FLAG },
  };
  
  /* policy for the key attributes */
-@@ -8142,6 +8143,10 @@ static int nl80211_set_station(struct sk_buff *skb, struct genl_info *info)
+@@ -8483,6 +8484,10 @@ static int nl80211_set_station(struct sk_buff *skb, struct genl_info *info)
  		params.airtime_weight =
  			nla_get_u16(info->attrs[NL80211_ATTR_AIRTIME_WEIGHT]);
  

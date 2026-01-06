@@ -1,7 +1,7 @@
-From cc484c803b83cb0eca09bed474c157f6bb0c6a86 Mon Sep 17 00:00:00 2001
+From b462013bd807fcb5b338b9027ebae790723a22f2 Mon Sep 17 00:00:00 2001
 From: StanleyYP Wang <StanleyYP.Wang@mediatek.com>
 Date: Fri, 19 Jan 2024 14:35:17 +0800
-Subject: [PATCH 041/115] mtk: cfg80211: implement DFS radar detect for MLO
+Subject: [PATCH 041/128] mtk: cfg80211: implement DFS radar detect for MLO
 
 Implement DFS radar detect for MLO
 1. Add link id info for radar detection in MLD
@@ -27,10 +27,10 @@ Signed-off-by: StanleyYP Wang <StanleyYP.Wang@mediatek.com>
  7 files changed, 19 insertions(+), 6 deletions(-)
 
 diff --git a/include/net/cfg80211.h b/include/net/cfg80211.h
-index b3dab5d6..749251f2 100644
+index c9f2ffb6..78e5d2f9 100644
 --- a/include/net/cfg80211.h
 +++ b/include/net/cfg80211.h
-@@ -5003,6 +5003,7 @@ struct cfg80211_ops {
+@@ -5106,6 +5106,7 @@ struct cfg80211_ops {
  
  	int	(*start_radar_detection)(struct wiphy *wiphy,
  					 struct net_device *dev,
@@ -39,10 +39,10 @@ index b3dab5d6..749251f2 100644
  					 u32 cac_time_ms, int link_id);
  	void	(*end_cac)(struct wiphy *wiphy,
 diff --git a/net/mac80211/main.c b/net/mac80211/main.c
-index 83b6bd29..05cc1167 100644
+index a4629da3..1542f820 100644
 --- a/net/mac80211/main.c
 +++ b/net/mac80211/main.c
-@@ -1088,6 +1088,8 @@ static int ieee80211_init_cipher_suites(struct ieee80211_local *local)
+@@ -1100,6 +1100,8 @@ static int ieee80211_init_cipher_suites(struct ieee80211_local *local)
  static bool
  ieee80211_ifcomb_check(const struct ieee80211_iface_combination *c, int n_comb)
  {
@@ -51,7 +51,7 @@ index 83b6bd29..05cc1167 100644
  	int i, j;
  
  	for (i = 0; i < n_comb; i++, c++) {
-@@ -1102,6 +1104,7 @@ ieee80211_ifcomb_check(const struct ieee80211_iface_combination *c, int n_comb)
+@@ -1114,6 +1116,7 @@ ieee80211_ifcomb_check(const struct ieee80211_iface_combination *c, int n_comb)
  			    c->limits[j].max > 1)
  				return false;
  	}
@@ -72,10 +72,10 @@ index 5a508d99..24bb6fd5 100644
  
  	if (!local->open_count)
 diff --git a/net/mac80211/util.c b/net/mac80211/util.c
-index 145314c5..ac14f481 100644
+index 975830b4..2a40cc13 100644
 --- a/net/mac80211/util.c
 +++ b/net/mac80211/util.c
-@@ -3527,6 +3527,10 @@ void ieee80211_dfs_cac_cancel(struct ieee80211_local *local,
+@@ -3545,6 +3545,10 @@ void ieee80211_dfs_cac_cancel(struct ieee80211_local *local,
  			if (ctx && &ctx->conf != chanctx_conf)
  				continue;
  
@@ -86,7 +86,7 @@ index 145314c5..ac14f481 100644
  			wiphy_delayed_work_cancel(local->hw.wiphy,
  						  &link->dfs_cac_timer_work);
  
-@@ -3553,7 +3557,8 @@ void ieee80211_dfs_radar_detected_work(struct wiphy *wiphy,
+@@ -3571,7 +3575,8 @@ void ieee80211_dfs_radar_detected_work(struct wiphy *wiphy,
  	lockdep_assert_wiphy(local->hw.wiphy);
  
  	list_for_each_entry(ctx, &local->chanctx_list, list) {
@@ -97,10 +97,10 @@ index 145314c5..ac14f481 100644
  
  		if (!ctx->radar_detected)
 diff --git a/net/wireless/core.c b/net/wireless/core.c
-index dcbc5ef9..1ec1f0a7 100644
+index d2a1af77..59de5f65 100644
 --- a/net/wireless/core.c
 +++ b/net/wireless/core.c
-@@ -633,10 +633,10 @@ int wiphy_verify_iface_combinations(struct wiphy *wiphy,
+@@ -636,10 +636,10 @@ int wiphy_verify_iface_combinations(struct wiphy *wiphy,
  		 * for multi-radio global combination, since it hold
  		 * the capabilities of all radio combinations.
  		 */
@@ -116,10 +116,10 @@ index dcbc5ef9..1ec1f0a7 100644
  		if (WARN_ON(!c->n_limits))
  			return -EINVAL;
 diff --git a/net/wireless/reg.c b/net/wireless/reg.c
-index 426f5c9e..9172dfd7 100644
+index 004e96bd..bc68a5a5 100644
 --- a/net/wireless/reg.c
 +++ b/net/wireless/reg.c
-@@ -4246,13 +4246,15 @@ static void cfg80211_check_and_end_cac(struct cfg80211_registered_device *rdev)
+@@ -4216,13 +4216,15 @@ static void cfg80211_check_and_end_cac(struct cfg80211_registered_device *rdev)
  	 */
  	list_for_each_entry(wdev, &rdev->wiphy.wdev_list, list) {
  		struct cfg80211_chan_def *chandef;
@@ -137,10 +137,10 @@ index 426f5c9e..9172dfd7 100644
  
  			if (!cfg80211_chandef_dfs_usable(&rdev->wiphy, chandef))
 diff --git a/net/wireless/trace.h b/net/wireless/trace.h
-index 09ee2b3d..de653bc1 100644
+index 7f50f791..6b54777f 100644
 --- a/net/wireless/trace.h
 +++ b/net/wireless/trace.h
-@@ -2713,6 +2713,7 @@ TRACE_EVENT(rdev_start_radar_detection,
+@@ -2738,6 +2738,7 @@ TRACE_EVENT(rdev_start_radar_detection,
  	TP_fast_assign(
  		WIPHY_ASSIGN;
  		NETDEV_ASSIGN;

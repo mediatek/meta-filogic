@@ -1,6 +1,6 @@
 #patch subsys (come from openwrt/lede/target/linux/mediatek)
 SRC_URI:append = " \
-    file://0001-backports-bump-to-wireless-next-2025-07-24-tag.patch \
+    file://0001-backports-bump-to-wireless-next-2025-11-27-tag.patch \
     file://0002-sync-patches-build.patch \
     file://0003-sync-patches-subsys.patch \
     file://0004-sync-patches-ath.patch \
@@ -8,9 +8,9 @@ SRC_URI:append = " \
     file://0006-sync-patches-ath9k.patch \
     file://0007-sync-patches-ath10k.patch \
     file://0008-sync-patches-rt2x00.patch \
-    file://0009-backport-include-add-faux.h.patch \
-    file://0010-Revert-wifi-cfg80211-avoid-overriding-direct-MBSSID-.patch \
-    file://0011-Revert-wifi-mac80211-Create-separate-links-for-VLAN-.patch \
+    file://0009-Revert-wifi-cfg80211-avoid-overriding-direct-MBSSID-.patch \
+    file://0010-Revert-wifi-mac80211-Create-separate-links-for-VLAN-.patch \
+    file://0011-Revert-wifi-nl80211-completely-disable-per-link-stat.patch \
     file://0012-mtk-mac80211-do-not-setup-twt-when-twt-responder-is-.patch \
     file://0013-mtk-cfg80211-extend-CAC-time-for-weather-radar-chann.patch \
     file://0014-mtk-mac80211-it-s-invalid-case-when-frag_threshold-i.patch \
@@ -110,10 +110,22 @@ SRC_URI:append = " \
     file://0108-mtk-mac80211-fix-direct-csa-issues.patch \
     file://0109-mtk-mac80211-relax-the-DFS-restrictions-for-scanning.patch \
     file://0110-mtk-cfg80211-fix-crash-in-cfg80211_sta_set_mld_sinfo.patch \
-    file://0111-mtk-mac80211-fix-station-dump-information.patch \
-    file://0112-mtk-mac80211-fix-AQL-for-BMC-packets-in-MLD-interfac.patch \
-    file://0113-mtk-mac80211-rework-inband-discovery-template-for-ml.patch \
-    file://0114-mtk-mac80211-add-dfs-channel-state-update-cmd.patch \
-    file://0115-mtk-nl80211-support-per-radio-txpower-setting.patch \
-    file://0116-cp-mtk-mac80211-fix-DFS-slave-in-pure-station-vif.patch \
+    file://0111-mtk-mac80211-fix-AQL-for-BMC-packets-in-MLD-interfac.patch \
+    file://0112-mtk-mac80211-rework-inband-discovery-template-for-ml.patch \
+    file://0113-mtk-mac80211-add-dfs-channel-state-update-cmd.patch \
+    file://0114-mtk-nl80211-support-per-radio-txpower-setting.patch \
+    file://0115-mtk-mac80211-process-broadcast-TWT-nl80211-msg.patch \
+    file://0116-mtk-mac80211-modify-struct-for-broadcast-TWT.patch \
+    file://0117-mtk-mac80211-Add-new-struct-for-TWT-teardown-flow.patch \
+    file://0118-mtk-mac80211-Support-for-receiving-BTWT-s1g-action-f.patch \
+    file://0119-mtk-mac80211-disable-beacon-in-start-ap-for-mld-ap.patch \
+    file://0120-mtk-mac80211-Handle-special-case-when-broadcast-TWT-.patch \
+    file://0121-mtk-mac80211-Reject-TWT-teardown-with-all-1.patch \
+    file://0122-mtk-mac80211-rename-IEEE80211_TWT_CONTROL_RESP_MODE.patch \
+    file://0123-mtk-mac80211-Add-debugfs-group-key-info-for-each-lin.patch \
+    file://0124-mtk-mac80211-allow-setting-antenna-with-radio_idx.patch \
+    file://0125-mtk-mac80211-remove-the-duplicated-nl80211-attribute.patch \
+    file://0126-mtk-mac80211-add-support-for-emlsr-enablement-on-one.patch \
+    file://0127-mtk-mac80211-add-support-for-TWT-demand-setup-handli.patch \
+    file://0128-mtk-mac80211-support-receiving-link_id-from-broadcas.patch \
     "

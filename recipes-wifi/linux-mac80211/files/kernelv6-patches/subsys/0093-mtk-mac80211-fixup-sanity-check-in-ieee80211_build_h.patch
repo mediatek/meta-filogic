@@ -1,7 +1,7 @@
-From 866a56b6ce2d5537b676f7733e722f576096a065 Mon Sep 17 00:00:00 2001
+From d8b79456fa67d276054b6fb17a18e8df6fdbf998 Mon Sep 17 00:00:00 2001
 From: Michael-CY Lee <michael-cy.lee@mediatek.com>
 Date: Tue, 25 Mar 2025 16:09:24 +0800
-Subject: [PATCH 093/115] mtk: mac80211: fixup sanity check in
+Subject: [PATCH 093/128] mtk: mac80211: fixup sanity check in
  ieee80211_build_hdr()
 
 This might be a typo from upstream.
@@ -29,10 +29,10 @@ Signed-off-by: Michael-CY Lee <michael-cy.lee@mediatek.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
-index 5cb55744..751fa65a 100644
+index 1f73ddd0..7d587088 100644
 --- a/net/mac80211/tx.c
 +++ b/net/mac80211/tx.c
-@@ -2981,7 +2981,7 @@ static struct sk_buff *ieee80211_build_hdr(struct ieee80211_sub_if_data *sdata,
+@@ -2990,7 +2990,7 @@ static struct sk_buff *ieee80211_build_hdr(struct ieee80211_sub_if_data *sdata,
  						IEEE80211_TX_CTRL_MLO_LINK);
  
  		if (pre_conf_link_id != link_id &&

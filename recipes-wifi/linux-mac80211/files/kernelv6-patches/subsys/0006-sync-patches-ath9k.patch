@@ -1,7 +1,7 @@
-From c54856d769921300bab21ba489907cb0ba7fbef6 Mon Sep 17 00:00:00 2001
+From 6a003c97d9f4fd3b92d2ad2ea3989067a541ea2e Mon Sep 17 00:00:00 2001
 From: Shayne Chen <shayne.chen@mediatek.com>
 Date: Thu, 9 Jan 2025 15:48:45 +0800
-Subject: [PATCH 006/115] sync patches/ath9k
+Subject: [PATCH 006/128] sync patches/ath9k
 
 ---
  drivers/net/wireless/ath/ath.h                |   2 +
@@ -2415,10 +2415,10 @@ index 4a1b9923..af667a36 100644
  	ATH_ANT_DIV_COMB_LNA1_MINUS_LNA2,
  	ATH_ANT_DIV_COMB_LNA2,
 diff --git a/local-symbols b/local-symbols
-index 1a325b1b..441cbd37 100644
+index 54f1ebaa..2b1400df 100644
 --- a/local-symbols
 +++ b/local-symbols
-@@ -117,6 +117,7 @@ ATH9K_WOW=
+@@ -118,6 +118,7 @@ ATH9K_WOW=
  ATH9K_RFKILL=
  ATH9K_CHANNEL_CONTEXT=
  ATH9K_PCOEM=

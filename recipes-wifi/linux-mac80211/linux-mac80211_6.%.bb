@@ -12,7 +12,7 @@ SHASUM-kernelv5 = "28ec39425a1b3270e1422d92a8131a6a3d8919cc13e8ee250c315e55d922b
 require version.inc
 SRC_URI[sha256sum] = "${@bb.utils.contains('DISTRO_FEATURES', 'kernelv6', '${SHASUM-kernelv6}', '${SHASUM-kernelv5}', d)}"
 SRC_URI = " \
-    http://mirror2.openwrt.org/sources/backports-${PV}.tar.xz \
+    http://sources.openwrt.org/backports-${PV}.tar.zst \
     file://config \
     file://0001-rdkb-fix_build_issue-mac80211-without_depmod.patch;apply=no \
     "

@@ -1,7 +1,7 @@
-From 85af8d33b0ca87322a995a284f1425393c2bd313 Mon Sep 17 00:00:00 2001
+From 7d62aef5d05064192bebde320e0de5038e3a074f Mon Sep 17 00:00:00 2001
 From: StanleyYP Wang <StanleyYP.Wang@mediatek.com>
 Date: Mon, 27 May 2024 13:23:59 +0800
-Subject: [PATCH 061/115] mtk: mac80211: rework radar notify for MLO
+Subject: [PATCH 061/128] mtk: mac80211: rework radar notify for MLO
 
 Rework radar notify for MLO.
 A netdev/wdev containing 5G link is required for all radar events since
@@ -43,16 +43,16 @@ AP hasn't started, so wiphy_get_band_first_wdev cannot find any available wdev.
 
 Signed-off-by: StanleyYP Wang <StanleyYP.Wang@mediatek.com>
 ---
- net/wireless/chan.c    | 34 +++++++++-------------------------
+ net/wireless/chan.c    | 29 +++++++----------------------
  net/wireless/mlme.c    |  6 +-----
  net/wireless/nl80211.c |  7 ++++---
- 3 files changed, 14 insertions(+), 33 deletions(-)
+ 3 files changed, 12 insertions(+), 30 deletions(-)
 
 diff --git a/net/wireless/chan.c b/net/wireless/chan.c
-index 9aa8b715..629d98b1 100644
+index 65a3ec2e..fc9e7a56 100644
 --- a/net/wireless/chan.c
 +++ b/net/wireless/chan.c
-@@ -1580,21 +1580,6 @@ bool cfg80211_any_usable_channels(struct wiphy *wiphy,
+@@ -1617,21 +1617,6 @@ bool cfg80211_any_usable_channels(struct wiphy *wiphy,
  }
  EXPORT_SYMBOL(cfg80211_any_usable_channels);
  
@@ -72,9 +72,9 @@ index 9aa8b715..629d98b1 100644
 -}
 -
  void cfg80211_sta_update_dfs_state(struct wireless_dev *wdev,
- 				   const struct cfg80211_chan_def *bss_chandef,
- 				   const struct cfg80211_chan_def *csa_chandef,
-@@ -1607,7 +1592,7 @@ void cfg80211_sta_update_dfs_state(struct wireless_dev *wdev,
+ 				   struct cfg80211_chan_def *bss_chandef,
+ 				   struct cfg80211_chan_def *csa_chandef,
+@@ -1644,7 +1629,7 @@ void cfg80211_sta_update_dfs_state(struct wireless_dev *wdev,
  	enum nl80211_dfs_state dfs_state = NL80211_DFS_USABLE;
  	enum nl80211_radar_event event = NL80211_RADAR_STA_CAC_EXPIRED;
  
@@ -83,7 +83,7 @@ index 9aa8b715..629d98b1 100644
  
  	if (!bss_chandef || !bss_chandef->chan ||
  	    bss_chandef->chan->band != NL80211_BAND_5GHZ)
-@@ -1620,14 +1605,14 @@ void cfg80211_sta_update_dfs_state(struct wireless_dev *wdev,
+@@ -1657,14 +1642,14 @@ void cfg80211_sta_update_dfs_state(struct wireless_dev *wdev,
  		cfg80211_set_dfs_state(wiphy, csa_chandef, NL80211_DFS_AVAILABLE);
  		/* avoid the dfs state from expired during csa countdown */
  		cfg80211_update_last_available(wiphy, csa_chandef, csa_time);
@@ -102,15 +102,8 @@ index 9aa8b715..629d98b1 100644
  		return;
  
  	if (associated && !csa_active) {
-@@ -1639,13 +1624,12 @@ void cfg80211_sta_update_dfs_state(struct wireless_dev *wdev,
- 	 * when other interfaces still operate on this channel
- 	 */
- 	if (dfs_state == NL80211_DFS_USABLE &&
--	    (cfg80211_is_wiphy_oper_chan(wdev->wiphy, bss_chandef->chan) ||
--	     cfg80211_offchan_chain_is_active(wiphy_to_rdev(wdev->wiphy),
--					      bss_chandef->chan)))
-+	    (cfg80211_is_wiphy_oper_chan(wiphy, bss_chandef->chan) ||
-+	     cfg80211_offchan_chain_is_active(rdev, bss_chandef->chan)))
+@@ -1682,8 +1667,8 @@ void cfg80211_sta_update_dfs_state(struct wireless_dev *wdev,
+ 	     cfg80211_offchan_chain_is_active(rdev, bss_chandef->chan)))
  		return;
  
 -	cfg80211_set_dfs_state(wdev->wiphy, bss_chandef, dfs_state);
@@ -121,7 +114,7 @@ index 9aa8b715..629d98b1 100644
  	if (csa_active)
  		netdev_info(wdev->netdev, "Set origin channel's DFS state to usable\n");
 diff --git a/net/wireless/mlme.c b/net/wireless/mlme.c
-index 8f7ff8f7..8f8757d7 100644
+index fa067ff5..e336dd00 100644
 --- a/net/wireless/mlme.c
 +++ b/net/wireless/mlme.c
 @@ -1181,7 +1181,6 @@ __cfg80211_background_cac_event(struct cfg80211_registered_device *rdev,
@@ -157,10 +150,10 @@ index 8f7ff8f7..8f8757d7 100644
  
  static void
 diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index ccd2664d..b9f4872e 100644
+index 9955b4d8..5e51a386 100644
 --- a/net/wireless/nl80211.c
 +++ b/net/wireless/nl80211.c
-@@ -20506,7 +20506,8 @@ void cfg80211_ch_switch_notify(struct net_device *dev,
+@@ -21075,7 +21075,8 @@ void cfg80211_ch_switch_notify(struct net_device *dev,
  	}
  
  	cfg80211_schedule_channels_check(wdev);
@@ -170,7 +163,7 @@ index ccd2664d..b9f4872e 100644
  
  	nl80211_ch_switch_notify(rdev, dev, link_id, chandef, GFP_KERNEL,
  				 NL80211_CMD_CH_SWITCH_NOTIFY, 0, false);
-@@ -20589,6 +20590,7 @@ nl80211_radar_notify(struct cfg80211_registered_device *rdev,
+@@ -21158,6 +21159,7 @@ nl80211_radar_notify(struct cfg80211_registered_device *rdev,
  		     enum nl80211_radar_event event,
  		     struct net_device *netdev, gfp_t gfp)
  {
@@ -178,7 +171,7 @@ index ccd2664d..b9f4872e 100644
  	struct sk_buff *msg;
  	void *hdr;
  
-@@ -20605,7 +20607,6 @@ nl80211_radar_notify(struct cfg80211_registered_device *rdev,
+@@ -21174,7 +21176,6 @@ nl80211_radar_notify(struct cfg80211_registered_device *rdev,
  	if (nla_put_u32(msg, NL80211_ATTR_WIPHY, rdev->wiphy_idx))
  		goto nla_put_failure;
  
@@ -186,7 +179,7 @@ index ccd2664d..b9f4872e 100644
  	if (netdev) {
  		struct wireless_dev *wdev = netdev->ieee80211_ptr;
  
-@@ -20623,7 +20624,7 @@ nl80211_radar_notify(struct cfg80211_registered_device *rdev,
+@@ -21192,7 +21193,7 @@ nl80211_radar_notify(struct cfg80211_registered_device *rdev,
  
  	genlmsg_end(msg, hdr);
  

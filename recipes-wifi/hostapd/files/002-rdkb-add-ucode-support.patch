@@ -1,6 +1,8 @@
---- a/hostapd/Makefile	2023-08-14 14:07:55.808647300 +0800
-+++ b/hostapd/Makefile	2023-08-14 14:09:14.222019605 +0800
-@@ -182,6 +182,7 @@
+diff --git a/hostapd/Makefile b/hostapd/Makefile
+index 15d4070e1..7aac2c13d 100644
+--- a/hostapd/Makefile
++++ b/hostapd/Makefile
+@@ -192,6 +192,7 @@ CFLAGS += -DUCODE_SUPPORT
  OBJS += ../src/utils/ucode.o
  OBJS += ../src/ap/ucode.o
  NEED_ULOOP:=y
@@ -8,14 +10,15 @@
  endif
  
  ifdef NEED_ULOOP
-
---- a/wpa_supplicant/Makefile	2023-08-14 17:51:44.351944100 +0800
-+++ b/wpa_supplicant/Makefile	2023-08-14 17:54:54.232111091 +0800
-@@ -206,6 +206,7 @@
- OBJS += ../src/utils/ucode.o
+diff --git a/wpa_supplicant/Makefile b/wpa_supplicant/Makefile
+index af0bceb2b..80c1afc35 100644
+--- a/wpa_supplicant/Makefile
++++ b/wpa_supplicant/Makefile
+@@ -197,6 +197,7 @@ OBJS += ../src/utils/ucode.o
+ OBJS += ../src/utils/uloop.o
  OBJS += ucode.o
- NEED_ULOOP:=y
+ LIBS += -lubox
 +LIBS += -lblobmsg_json -lucode -ludebug
  endif
  
- ifdef NEED_ULOOP
+ ifdef CONFIG_CODE_COVERAGE

@@ -12,7 +12,6 @@ INCLUDE_DIRECTORIES("${backports_dir}/mac80211/uapi")
 
 ADD_EXECUTABLE(atenl main.c eth.c hqa.c nl.c eeprom.c util.c)
 TARGET_LINK_LIBRARIES(atenl nl-tiny)
-TARGET_LINK_LIBRARIES(atenl blkid)
 
 SET(CMAKE_INSTALL_PREFIX /usr)
 

@@ -1,7 +1,7 @@
-From c03249e57e39e88da8c34118fb351108f6943470 Mon Sep 17 00:00:00 2001
+From 6a9767581cc39211383f1f9e5e436b5f1d544ecb Mon Sep 17 00:00:00 2001
 From: Shayne Chen <shayne.chen@mediatek.com>
 Date: Thu, 9 Jan 2025 15:48:27 +0800
-Subject: [PATCH 005/115] sync patches/ath5k
+Subject: [PATCH 005/128] sync patches/ath5k
 
 ---
  drivers/net/wireless/ath/ath5k/ath5k.h        |  1 +

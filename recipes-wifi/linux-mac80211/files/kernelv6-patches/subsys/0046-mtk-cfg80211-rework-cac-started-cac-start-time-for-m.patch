@@ -1,7 +1,7 @@
-From 79112735bb5fed86269c1d4fe2281e0fe7d19f82 Mon Sep 17 00:00:00 2001
+From 3831a9362e5dd08318fa35853dc9e7e269151090 Mon Sep 17 00:00:00 2001
 From: StanleyYP Wang <StanleyYP.Wang@mediatek.com>
 Date: Thu, 1 Feb 2024 10:57:39 +0800
-Subject: [PATCH 046/115] mtk: cfg80211: rework cac started, cac start time for
+Subject: [PATCH 046/128] mtk: cfg80211: rework cac started, cac start time for
  multi-link support
 
 Signed-off-by: StanleyYP Wang <StanleyYP.Wang@mediatek.com>
@@ -32,10 +32,10 @@ Signed-off-by: StanleyYP Wang <StanleyYP.Wang@mediatek.com>
  6 files changed, 25 insertions(+), 17 deletions(-)
 
 diff --git a/include/net/cfg80211.h b/include/net/cfg80211.h
-index 749251f2..f9d56d04 100644
+index 78e5d2f9..2061fe9a 100644
 --- a/include/net/cfg80211.h
 +++ b/include/net/cfg80211.h
-@@ -9016,6 +9016,7 @@ void cfg80211_sta_opmode_change_notify(struct net_device *dev, const u8 *mac,
+@@ -9251,6 +9251,7 @@ void cfg80211_sta_opmode_change_notify(struct net_device *dev, const u8 *mac,
  /**
   * cfg80211_cac_event - Channel availability check (CAC) event
   * @netdev: network device
@@ -44,10 +44,10 @@ index 749251f2..f9d56d04 100644
   * @event: type of event
   * @gfp: context flags
 diff --git a/net/mac80211/cfg.c b/net/mac80211/cfg.c
-index 5ac98358..b895f5a5 100644
+index b8c33ee1..c601b2de 100644
 --- a/net/mac80211/cfg.c
 +++ b/net/mac80211/cfg.c
-@@ -5423,13 +5423,13 @@ ieee80211_skip_cac(struct wireless_dev *wdev, unsigned int link_id)
+@@ -5551,13 +5551,13 @@ ieee80211_skip_cac(struct wireless_dev *wdev, unsigned int link_id)
  
  	wiphy_delayed_work_cancel(sdata->local->hw.wiphy,
  				  &link->dfs_cac_timer_work);
@@ -67,10 +67,10 @@ index 5ac98358..b895f5a5 100644
  }
  
 diff --git a/net/mac80211/iface.c b/net/mac80211/iface.c
-index dbcd5ec9..f073daf6 100644
+index b88dac0e..0c3560f4 100644
 --- a/net/mac80211/iface.c
 +++ b/net/mac80211/iface.c
-@@ -456,6 +456,8 @@ static void ieee80211_do_stop(struct ieee80211_sub_if_data *sdata, bool going_do
+@@ -473,6 +473,8 @@ static void ieee80211_do_stop(struct ieee80211_sub_if_data *sdata, bool going_do
  	struct cfg80211_chan_def chandef;
  	bool cancel_scan;
  	struct cfg80211_nan_func *func;
@@ -79,7 +79,7 @@ index dbcd5ec9..f073daf6 100644
  
  	lockdep_assert_wiphy(local->hw.wiphy);
  
-@@ -537,13 +539,18 @@ static void ieee80211_do_stop(struct ieee80211_sub_if_data *sdata, bool going_do
+@@ -554,13 +556,18 @@ static void ieee80211_do_stop(struct ieee80211_sub_if_data *sdata, bool going_do
  	wiphy_delayed_work_cancel(local->hw.wiphy,
  				  &sdata->deflink.dfs_cac_timer_work);
  
@@ -117,10 +117,10 @@ index 24bb6fd5..5a508d99 100644
  
  	if (!local->open_count)
 diff --git a/net/wireless/debugfs.c b/net/wireless/debugfs.c
-index b1ad7fe0..26fa47dd 100644
+index 9b462744..c25125ad 100644
 --- a/net/wireless/debugfs.c
 +++ b/net/wireless/debugfs.c
-@@ -187,10 +187,11 @@ static int dfs_status_read_wdev(struct wiphy *wiphy, struct wireless_dev *wdev,
+@@ -208,10 +208,11 @@ static int dfs_status_read_wdev(struct wiphy *wiphy, struct wireless_dev *wdev,
  				if (remain_time > wait_time_ms)
  					remain_time = 0;
  			} else if (chan->dfs_state == NL80211_DFS_USABLE) {
@@ -135,7 +135,7 @@ index b1ad7fe0..26fa47dd 100644
  					remain_time = (wait_time_ms -
  						       jiffies_to_msecs(jiffies_passed));
  				}
-@@ -336,7 +337,8 @@ dfs_cac_skip(void *data, u64 val)
+@@ -357,7 +358,8 @@ dfs_cac_skip(void *data, u64 val)
  					continue;
  
  				if (cfg80211_chandef_dfs_required(wiphy, c, wdev->iftype) > 0 &&
@@ -146,10 +146,10 @@ index b1ad7fe0..26fa47dd 100644
  				}
  			}
 diff --git a/net/wireless/reg.c b/net/wireless/reg.c
-index 9172dfd7..dc8ff03d 100644
+index bc68a5a5..e5749e6b 100644
 --- a/net/wireless/reg.c
 +++ b/net/wireless/reg.c
-@@ -4231,7 +4231,6 @@ EXPORT_SYMBOL(regulatory_pre_cac_allowed);
+@@ -4201,7 +4201,6 @@ EXPORT_SYMBOL(regulatory_pre_cac_allowed);
  static void cfg80211_check_and_end_cac(struct cfg80211_registered_device *rdev)
  {
  	struct wireless_dev *wdev;
