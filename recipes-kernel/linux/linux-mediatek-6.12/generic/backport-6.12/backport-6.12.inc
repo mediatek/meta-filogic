@@ -1,6 +1,7 @@
 #patch backport-6.12 (come from openwrt/lede/target/linux/mediatek)
 SRC_URI:append = " \
     file://010-v6.19-nvmem-layouts-u-boot-env-add-optional-env-size-property.patch \
+    file://152-v6.16-net-wireguard-add-nonstring-annotation-to-fix-build-with-GCC15.patch \
     file://200-01-v6.13-jiffies-Define-secs_to_jiffies.patch \
     file://200-02-v6.14-jiffies-Cast-to-unsigned-long-in-secs_to_jiffies-con.patch \
     file://201-v6.13-of-property-add-of_graph_get_next_port.patch \
@@ -10,10 +11,10 @@ SRC_URI:append = " \
     file://204-v6.13-resource-Add-resource-set-range-and-size-helpers.patch \
     file://205-v6.16-of-reserved_mem-Add-functions-to-parse-memory-region.patch \
     file://210-v6.13-fortify-Hide-run-time-copy-size-from-value-range-tracking.patch \
+    file://212-v6.17-of-reserved_mem-Add-missing-IORESOURCE_MEM-flag-on-r.patch \
     file://400-v6.14-mtd-spinand-add-support-for-FORESEE-F35SQA001G.patch \
     file://401-v6.17-mtd-spinand-add-support-for-FudanMicro-FM25S01A.patch \
     file://402-v6.18-mtd-nand-move-chunk-to-core.patch \
-    file://403-v6.19-mtd-mtdpart-ignore-error-ENOENT-from-parsers-on-subp.patch \
     file://404-v6.19-mtd-spinand-fmsh-remove-QE-bit-for-FM25S01A-flash.patch \
     file://410-01-v6.14-mtd-rawnand-qcom-cleanup-qcom_nandc-driver.patch \
     file://410-02-v6.14-mtd-rawnand-qcom-Add-qcom-prefix-to-common-api.patch \
@@ -29,10 +30,24 @@ SRC_URI:append = " \
     file://410-12-v6.15-spi-spi-qpic-snand-fix-NAND_READ_LOCATION_2-register-handling.patch \
     file://410-13-v6.15-spi-spi-qpic-snand-use-kmalloc-for-OOB-buffer-alloca.patch \
     file://410-14-v6.16-spi-spi-qpic-snand-remove-unused-wlen-member-of-struct-qpic_spi_nand.patch \
+    file://411-v6.15-mtd-nand-Drop-explicit-test-for-built-in-CONFIG_SPI_.patch \
+    file://412-v6.16-next-spi-spi-qpic-snand-validate-user-chip-specific-ECC-properties.patch \
+    file://413-v6.16-spi-spi-qpic-snand-use-CW_PER_PAGE_MASK-bitmask.patch \
+    file://414-v6.16-spi-spi-qpic-snand-reallocate-BAM-transactions.patch \
+    file://415-v6.16-spi-spi-qpic-snand-don-t-hardcode-ECC-steps.patch \
+    file://416-v6.17-mtd-nand-qpic-common-add-defines-for-ECC_MODE-values.patch \
+    file://417-v6.17-spi-spi-qpic-snand-add-support-for-8-bits-ECC-strength.patch \
+    file://418-v6.17-spi-spi-qpic-snand-use-correct-CW_PER_PAGE-value-for.patch \
+    file://419-v6.17-spi-spi-qpic-snand-fix-calculating-of-ECC-OOB-region.patch \
     file://420-01-v6.16-mtd-rawnand-brcmnand-remove-unused-parameters.patch \
     file://420-02-v6.16-mtd-nand-brcmnand-fix-NAND-timeout-when-accessing-eM.patch \
     file://420-03-v6.16-mtd-rawnand-brcmnand-legacy-exec_op-implementation.patch \
-    file://422-v6.19-mtd-spinand-esmt-add-support-for-F50L1G41LC.patch \
+    file://422-v6.17-spi-spi-qpic-snand-unregister-ECC-engine-on-probe-er.patch \
+    file://429-01-v6.18-mtd-spinand-fix-direct-mapping-creation-sizes.patch \
+    file://429-02-v6.18-mtd-spinand-try-a-regular-dirmap-if-creating-a-di.patch \
+    file://429-03-v6.18-mtd-spinand-repeat-reading-in-regular-mode-if-con.patch \
+    file://434-v6.19-mtd-spinand-esmt-add-support-for-F50L1G41LC.patch \
+    file://435-v6.19-mtd-spinand-add-support-for-FudanMicro-FM25S01BI3.patch \
     file://500-01-v6.13-block-add-support-for-defining-read-only-partitions.patch \
     file://500-02-v6.13-block-introduce-add_disk_fwnode.patch \
     file://500-03-v6.13-mmc-block-attach-partitions-fwnode-if-found-in-mmc-c.patch \
@@ -58,6 +73,8 @@ SRC_URI:append = " \
     file://602-01-v6.14-net-pcs-pcs-lynx-implement-pcs_inband_caps-method.patch \
     file://602-02-v6.14-net-pcs-pcs-mtk-lynxi-implement-pcs_inband_caps-meth.patch \
     file://602-03-v6.14-net-pcs-xpcs-implement-pcs_inband_caps-method.patch \
+    file://605-02-v6.17-net-phylink-provide-phylink_get_inband_type.patch \
+    file://605-03-v6.17-net-phylink-disable-autoneg-for-interfaces-that-have.patch \
     file://610-01-v6.13-net-dsa-use-ethtool-string-helpers.patch \
     file://610-02-v6.15-net-dsa-b53-mdio-add-support-for-BCM53101.patch \
     file://610-03-v6.16-net-dsa-b53-implement-setting-ageing-time.patch \
@@ -97,9 +114,23 @@ SRC_URI:append = " \
     file://613-06-v6.19-net-dsa-b53-fix-BCM5325-65-ARL-entry-VIDs.patch \
     file://613-07-v6.19-net-dsa-b53-allow-VID-0-for-BCM5325-65.patch \
     file://620-v6.15-ppp-use-IFF_NO_QUEUE-in-virtual-interfaces.patch \
-    file://625-v6.16-net-bridge-locally-receive-all-multicast-packets-if-.patch \
+    file://621-v6.17-ppp-convert-to-percpu-netstats.patch \
+    file://622-v6.18-ppp-remove-rwlock-usage.patch \
+    file://623-v6.18-pppoe-remove-rwlock-usage.patch \
+    file://624-v6.18-pppoe-drop-sock-reference-counting-on-fast-path.patch \
+    file://625-v7.0-ppp-enable-TX-scatter-gather.patch \
+    file://626-v6.16-net-bridge-locally-receive-all-multicast-packets-if-.patch \
     file://630-v6.13-net-usb-qmi_wwan-add-Quectel-RG255C.patch \
     file://630-v6.14-PM-sleep-wakeirq-Introduce-device-managed-variant-of.patch \
+    file://700-01-v7.0-net-sched-Export-mq-functions-for-reuse.patch \
+    file://700-02-v7.0-net-sched-sch_cake-Factor-out-config-variables-into-.patch \
+    file://700-03-v7.0-net-sched-sch_cake-Add-cake_mq-qdisc-for-using-cake-.patch \
+    file://700-04-v7.0-net-sched-sch_cake-Share-config-across-cake_mq-sub-q.patch \
+    file://700-05-v7.0-net-sched-sch_cake-share-shaper-state-across-sub-ins.patch \
+    file://700-06-v7.0-selftests-tc-testing-add-selftests-for-cake_mq-qdisc.patch \
+    file://700-07-v7.0-net-sched-cake-avoid-separate-allocation-of-struct-c.patch \
+    file://701-01-v7.0-net-sched-sch_cake-avoid-sync-overhead-when-unlimite.patch \
+    file://701-02-v7.0-net-sched-sch_cake-fixup-cake_mq-rate-adjustment-for.patch \
     file://710-v6.16-igc-enable-HW-vlan-tag-insertion-stripping-by-defaul.patch \
     file://720-01-v6.13-net-phy-mediatek-ge-soc-Fix-coding-style.patch \
     file://720-02-v6.13-net-phy-mediatek-ge-soc-Shrink-line-wrapping-to-80-c.patch \
@@ -130,7 +161,10 @@ SRC_URI:append = " \
     file://731-v6.18-net-mediatek-wed-Introduce-MT7992-WED-support-to-MT7.patch \
     file://732-v6.18-wifi-mt76-wed-use-proper-wed-reference-in-mt76-wed-d.patch \
     file://733-v6.18-net-mtk-wed-add-dma-mask-limitation-and-GFP_DMA32-fo.patch \
+    file://735-v6.13-net-phy-avoid-undefined-behavior-in-_led_polarity_se.patch \
     file://740-v6.13-net-dsa-mv88e6xxx-Support-LED-control.patch \
+    file://741-v6.13-net-dsa-mv88e6xxx-fix-unreleased-fwnode_handle-in-se.patch \
+    file://742-v6.17-net-dsa-mv88e6xxx-Fix-fwnode-reference-leaks-in-mv88.patch \
     file://780-01-v6.13-r8169-remove-original-workaround-for-RTL8125-broken-.patch \
     file://780-02-v6.13-r8169-enable-SG-TSO-on-selected-chip-versions-per-de.patch \
     file://780-03-v6.13-r8169-implement-additional-ethtool-stats-ops.patch \
@@ -217,6 +251,10 @@ SRC_URI:append = " \
     file://784-11-v6.19-net-phy-realtek-allow-CLKOUT-to-be-disabled-on-RTL82.patch \
     file://784-12-v6.19-net-phy-realtek-eliminate-priv-phycr1-variable.patch \
     file://784-13-v6.19-net-phy-realtek-create-rtl8211f_config_phy_eee-helpe.patch \
+    file://785-v6.18-r8169-fix-RTL8127-hang-on-suspend-shutdown.patch \
+    file://786-01-v6.18-net-phy-introduce-phy_id_compare_vendor-PHY-ID-helpe.patch \
+    file://786-02-v6.18-net-phy-as21xxx-better-handle-PHY-HW-reset-on-soft-r.patch \
+    file://787-v6.19-net-phy-RTL8211FVD-Restore-disabling-of-PHY-mode-EEE.patch \
     file://800-v6.13-hwmon-Add-static-visibility-member-to-struct-hwmon_o.patch \
     file://801-01-v6.13-dt-bindings-clocks-add-binding-for-gated-fixed-clock.patch \
     file://801-02-v6.13-clk-clk-gpio-update-documentation-for-gpio-gate-cloc.patch \
@@ -224,5 +262,8 @@ SRC_URI:append = " \
     file://801-04-v6.13-clk-clk-gpio-add-driver-for-gated-fixed-clocks.patch \
     file://810-v6.14-gpio-regmap-Use-generic-request-free-ops.patch \
     file://820-v6.15-power-supply-sysfs-remove-duplicate-nul-termination-to-fix-build-with-GCC15.patch \
+    file://891-v6.14-dt-bindings-leds-Add-LED1202-LED-Controller.patch \
+    file://892-v6.14-leds-Add-LED1202-I2C-driver.patch \
+    file://893-v6.14-leds_st1202-Fix-NULL-pointer-access-error.patch \
     file://900-v6.14-driver-core-add-a-faux-bus-for-use-when-a-simple-dev.patch \
     "

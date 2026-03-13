@@ -48,30 +48,9 @@
 +	};
  };
  
- &eth {
-@@ -348,6 +390,20 @@
- 		};
- 	};
- 
-+	pwm_pins: pwm-pins {
-+		mux {
-+			function = "pwm";
-+			groups = "pwm1";
-+		};
-+	};
-+
-+	pwm_rgb_pins: pwm-rgb-pins {
-+		mux {
-+			function = "pwm";
-+			groups = "pwm1", "pwm2", "pwm3";
-+		};
-+	};
-+
- 	spi0_pins: spi0-pins {
- 		mux {
- 			function = "spi";
-@@ -447,6 +503,10 @@
- 	};
+ &gmac0 {
+@@ -211,6 +253,10 @@
+ 	status = "okay";
  };
  
 +&pwm {

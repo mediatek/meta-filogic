@@ -9,7 +9,6 @@ SRC_URI:append = " \
     file://142-jffs2-add-splice-ops.patch \
     file://150-bridge_allow_receiption_on_disabled_port.patch \
     file://151-net-bridge-do-not-send-arp-replies-if-src-and-target.patch \
-    file://152-net-wireguard-add-nonstring-annotation-to-fix-build-with-GCC15.patch \
     file://190-rtc-rs5c372-support_alarms_up_to_1_week.patch \
     file://191-rtc-rs5c372-let_the_alarm_to_be_used_as_wakeup_source.patch \
     file://200-ARM-9404-1-arm32-fix-boot-hang-with-HAVE_LD_DEAD_COD.patch \
@@ -21,6 +20,7 @@ SRC_URI:append = " \
     file://300-mips_expose_boot_raw.patch \
     file://301-MIPS-Add-barriers-between-dcache-icache-flushes.patch \
     file://302-mips_no_branch_likely.patch \
+    file://303-Revert-powerpc-dts-mpc85xx-remove-simple-bus-compatible-from-ifc-node.patch \
     file://308-mips32r2_tune.patch \
     file://310-arm_module_unresolved_weak_sym.patch \
     file://330-MIPS-kexec-Accept-command-line-parameters-from-users.patch \
@@ -32,13 +32,6 @@ SRC_URI:append = " \
     file://361-Revert-MIPS-mm-Prevent-a-TLB-shutdown-on-initial-uni.patch \
     file://400-mtd-mtdsplit-support.patch \
     file://402-mtd-spi-nor-write-support-for-minor-aligned-partitions.patch \
-    file://403-mtd-spinand-add-support-for-FudanMicro-FM25S01BI3.patch \
-    file://405-01-mtd-spinand-fix-direct-mapping-creation-sizes.patch \
-    file://405-02-mtd-spinand-try-a-regular-dirmap-if-creating-a-di.patch \
-    file://405-03-mtd-spinand-repeat-reading-in-regular-mode-if-con.patch \
-    file://416-09-next-spi-spi-qpic-snand-validate-user-chip-specific-ECC-properties.patch \
-    file://416-10-next-1-2-mtd-nand-qpic-common-add-defines-for-ECC_MODE-values.patch \
-    file://416-11-next-2-2-spi-spi-qpic-snand-add-support-for-8-bits-ECC-strength.patch \
     file://417-mtd-spi-nand-macronix-disable-continuous-read-for-MX.patch \
     file://420-mtd-redboot_space.patch \
     file://430-mtd-add-myloader-partition-parser.patch \
@@ -83,6 +76,7 @@ SRC_URI:append = " \
     file://610-netfilter_match_bypass_default_checks.patch \
     file://611-netfilter_match_bypass_default_table.patch \
     file://612-netfilter_match_reduce_memory_access.patch \
+    file://620-net-sfp-improve-Huawei-MA5671a-fixup.patch \
     file://630-packet_socket_type.patch \
     file://640-net-bridge-fix-switchdev-host-mdb-entry-updates.patch \
     file://641-net-bridge-switchdev-Don-t-drop-packets-between-port.patch \
@@ -98,6 +92,7 @@ SRC_URI:append = " \
     file://701-netfilter-nf_tables-ignore-EOPNOTSUPP-on-flowtable-d.patch \
     file://702-net-ethernet-mtk_eth_soc-enable-threaded-NAPI.patch \
     file://703-phy-add-detach-callback-to-struct-phy_driver.patch \
+    file://704-net-phy-register-phy-led_triggers-during-probe-to-av.patch \
     file://705-net-dsa-tag_mtk-add-padding-for-tx-packets.patch \
     file://706-net-phy-populate-host_interfaces-when-attaching-PHY.patch \
     file://710-bridge-add-knob-for-filtering-rx-tx-BPDU-pack.patch \
@@ -150,9 +145,6 @@ SRC_URI:append = " \
     file://840-hwrng-bcm2835-set-quality-to-1000.patch \
     file://850-0023-PCI-aardvark-Make-main-irq_chip-structure-a-static-d.patch \
     file://890-usb-serial-add-support-for-CH348.patch \
-    file://891-dt-bindings-leds-Add-LED1202-LED-Controller.patch \
-    file://892-leds-Add-LED1202-I2C-driver.patch \
-    file://893-leds_st1202-Fix-NULL-pointer-access-error.patch \
     file://900-net-ag71xx-fix-qca9530-and-qca9550-mdio-probe.patch \
     file://920-mangle_bootargs.patch \
     "

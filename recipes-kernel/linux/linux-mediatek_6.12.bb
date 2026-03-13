@@ -7,12 +7,12 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}-${PV}/mediatek/flow_patch:"
 
 KBRANCH ?= "linux-6.12.y"
 
-LINUX_VERSION ?= "6.12.62"
-SRCREV_machine ?= "53d3c6ddbb9749ebc06956a13ed6eead31402a7d"
+LINUX_VERSION ?= "6.12.74"
+SRCREV_machine ?= "444b39ef6108313e8452010b22aaba588e8fb92b"
 KMETA = "kernel-meta"
 SRCREV_meta ?= "39c7e069b8475a8751d1a584a6181e072033f25d"
 
-DEPENDS:append = " kern-tools-native xz-native bc-native"
+DEPENDS:append = " kern-tools-native xz-native bc-native linux-firmware eth-firmware "
 
 SRC_URI = " \
     git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git;protocol=https;branch=${KBRANCH};name=machine \
@@ -77,6 +77,15 @@ do_filogic_patches() {
             patch -p1 < ${WORKDIR}/863-arm64-dts-mt7986-add-sound-wm8960.patch
             patch -p1 < ${WORKDIR}/999-dsa-03-add-an8855-netlink-support.patch
             patch -p1 < ${WORKDIR}/999-dts-04-arm64-dts-mediatek-add-mt7988-cpufreq-cooling-device.patch
+            patch -p1 < ${WORKDIR}/999-dts-12-arm64-dts-mediatek-add-mt7981-pinctrl.patch
+            patch -p1 < ${WORKDIR}/999-dts-13-arm64-dts-mediatek-add-mt7986-pinctrl.patch
+            patch -p1 < ${WORKDIR}/999-dts-mt7981-rfb-03-add-pwm-pin-and-devices.patch
+            patch -p1 < ${WORKDIR}/999-dts-mt7981-rfb-04-add-i2c-pin-and-devices.patch
+            patch -p1 < ${WORKDIR}/999-dts-mt7981-rfb-05-arm64-dts-mediatek-add-gpio-keys-debounce.patch
+            patch -p1 < ${WORKDIR}/999-dts-mt7981-rfb-06-arm64-dts-mediatek-add-wifi-device-node.patch
+            patch -p1 < ${WORKDIR}/999-dts-mt7986a-rfb-01-arm64-dts-mediaek-refactor-pinctrl-node.patch
+            patch -p1 < ${WORKDIR}/999-dts-mt7986a-rfb-08-arm64-dts-mediatek-fix-spim-nand-nor-dts-setting.patch
+            patch -p1 < ${WORKDIR}/999-net-01-netdevice-add-macvlan-device-path-type.patch
 
             if [ $DISTRO_FlowBlock_ENABLED = 'true' ]; then
                 for i in ${WORKDIR}/mediatek/flow_patch/*.patch; do patch -p1 < $i; done
