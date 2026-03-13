@@ -159,6 +159,7 @@ atenl_eeprom_init_chip_id(struct atenl *an)
 	case MT7996_DEVICE_ID:
 	case MT7992_DEVICE_ID:
 	case MT7990_DEVICE_ID:
+	case MT7999_DEVICE_ID:
 		/* TODO: parse info if required */
 		break;
 	default:
@@ -187,6 +188,10 @@ atenl_eeprom_init_max_size(struct atenl *an)
 	case MT7992_DEVICE_ID:
 	case MT7990_DEVICE_ID:
 		an->eeprom_size = 7680;
+		an->eeprom_prek_offs = 0x1a5;
+		break;
+	case MT7999_DEVICE_ID:
+		an->eeprom_size = 25600;
 		an->eeprom_prek_offs = 0x1a5;
 	default:
 		break;
@@ -287,6 +292,36 @@ atenl_eeprom_init_band_cap(struct atenl *an)
 				break;
 			}
 		}
+	} else if (is_connac5(an)) {
+		struct atenl_band *anb;
+		u8 val, band_sel;
+		int i;
+
+		for (i = 0; i < MAX_BAND_NUM; i++) {
+			val = eeprom[MT_EE_WIFI_CONNAC5_CONF(i)];
+			band_sel = FIELD_GET(MT_EE_WIFI_CONNAC5_CONF_BAND_SEL, val);
+			anb = &an->anb[i];
+
+			anb->valid = true;
+			switch (band_sel) {
+			case MT_EE_CONNAC3_BAND_SEL_2GHZ:
+				anb->cap = BAND_TYPE_2G;
+				break;
+			case MT_EE_CONNAC3_BAND_SEL_5GHZ_LOW:
+			case MT_EE_CONNAC3_BAND_SEL_5GHZ_HIGH:
+			case MT_EE_CONNAC3_BAND_SEL_5GHZ:
+				anb->cap = BAND_TYPE_5G;
+				break;
+			case MT_EE_CONNAC3_BAND_SEL_6GHZ_LOW:
+			case MT_EE_CONNAC3_BAND_SEL_6GHZ_HIGH:
+			case MT_EE_CONNAC3_BAND_SEL_6GHZ:
+				anb->cap = BAND_TYPE_6G;
+				break;
+			default:
+				anb->valid = false;
+				break;
+			}
+		}
 	}
 }
 
@@ -343,6 +378,19 @@ atenl_eeprom_init_antenna_cap(struct atenl *an)
 		an->anb[2].rx_chainmask = FIELD_GET(GENMASK(2, 0),
 						    an->eeprom_data[MT_EE_WIFI_CONF + 4]);
 		break;
+	case MT7999_DEVICE_ID: {
+		int i, conf_offset;
+
+		for (i = 0; i < MAX_BAND_NUM; i++) {
+			conf_offset = MT_EE_WIFI_CONNAC5_CONF(i);
+			an->anb[i].chainmask = FIELD_GET(MT_EE_WIFI_CONNAC5_CONF_TX_PATH,
+							 an->eeprom_data[conf_offset + 1]);
+			an->anb[i].rx_chainmask = FIELD_GET(MT_EE_WIFI_CONNAC5_CONF_RX_PATH,
+							    an->eeprom_data[conf_offset + 1]);
+		}
+
+		break;
+	}
 	default:
 		break;
 	}
@@ -742,23 +790,43 @@ void atenl_eeprom_cmd_handler(struct atenl *an, u8 phy_idx, char *cmd)
 				atenl_info("Efuse / Default bin mode\n");
 		} else if (!strncmp(s, "set", 3)) {
 			u32 offset, val;
+			char *token;
+			int count;
 
 			s = strchr(s, ' ');
 			if (!s)
 				return;
 			s++;
 
-			if (!sscanf(s, "%x=%x", &offset, &val) ||
-			    offset > EEPROM_PART_SIZE)
+			count = sscanf(s, "%x=", &offset);
+			if (count <= 0 || offset >= an->eeprom_size)
 				return;
 
-			if (offset == 0 || offset == 1) {
-				atenl_info("Modifying chip id is NOT allowed\n");
+			s = strchr(s, '=');
+			if (!s)
 				return;
+			s++;
+
+			token = strtok(s, ",");
+			for (count = 0; token; offset++, count++) {
+				if (offset >= an->eeprom_size) {
+					offset--;
+					count--;
+					break;
+				}
+
+				val = strtoul(token, NULL, 0);
+				if (offset != 0 && offset != 1)
+					an->eeprom_data[offset] = val;
+				token = strtok(NULL, ",");
+				if (!token)
+					break;
 			}
-
-			an->eeprom_data[offset] = val;
-			atenl_info("set offset 0x%x to 0x%x\n", offset, val);
+			if (count)
+				atenl_info("set offsets from 0x%x to 0x%x\n",
+					   offset - count, offset);
+			else
+				atenl_info("set offset 0x%x to 0x%x\n", offset, val);
 		} else if (!strncmp(s, "update buffermode", 17)) {
 			atenl_eeprom_sync_to_driver(an);
 			atenl_nl_update_buffer_mode(an);

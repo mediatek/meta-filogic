@@ -4,7 +4,7 @@ HOMEPAGE = "http://w1.fi/wpa_supplicant/"
 BUGTRACKER = "http://w1.fi/security/"
 SECTION = "network"
 LICENSE = "BSD-3-Clause"
-LIC_FILES_CHKSUM = "file://hostapd/README;md5=0e430ef1be3d6eebf257cf493fc7661d"
+LIC_FILES_CHKSUM = "file://hostapd/README;md5=1d4e9322770561b9c7d7fa4ac618547e"
 
 DEPENDS = "dbus libnl-tiny ubus ucode udebug"
 PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernelv6', 'kernelv6-patches', 'patches-${PV}', d)}"

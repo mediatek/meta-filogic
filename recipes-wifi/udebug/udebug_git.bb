@@ -10,7 +10,7 @@ SRC_URI = " \
     file://COPYING;subdir=git \
 "
 
-SRCREV = "6d3f51f9fda706f0cf4732c762e4dbe8c21e12cf"
+SRCREV = "875e1a7af6ca9d86524d18169c3a79f4a1920053"
 PV = "git${SRCPV}"
 
 S = "${WORKDIR}/git"

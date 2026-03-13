@@ -7,10 +7,14 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=b42eb47dc3802282b0d1be1bc8f5336c"
 SRC_URI = " \
     git://git@github.com/jow-/ucode.git;protocol=https;branch=master \
     file://0001-change-cmakelist.patch \
-    file://100-ucode-add-padding-to-uc_resource_ext_t.patch \
+    file://100-add-include-for-older-kernels.patch \
+    file://110-uloop-allow-reusing-the-existing-environment.patch \
+    file://111-uloop-add-optional-setup-callback-to-process.patch \
+    file://120-ubus-fix-refcounting-bug.patch \
+    file://121-ubus-avoid-double-close-of-externally-owned-channel-.patch \
 "
 
-SRCREV = "3f64c8089bf3ea4847c96b91df09fbfcaec19e1d"
+SRCREV = "85922056ef7abeace3cca3ab28bc1ac2d88e31b1"
 PV = "git${SRCPV}"
 
 S = "${WORKDIR}/git"
