@@ -17,15 +17,15 @@
 		__overlay__ {
 			#address-cells = <1>;
 			#size-cells = <0>;
-			clock-frequency = <10500000>;
 
 			/* external Aquantia CUX3410 */
 			phy8: ethernet-phy@8 {
 				reg = <8>;
 				compatible = "ethernet-phy-ieee802.3-c45";
 				firmware-name = "AQR-G4_v5.7.0-AQR_EVB_Generic_X3410_StdCfg_MDISwap_USX_ID46316_VER2148.cld";
-				eee-broken-10gt;
-				eee-broken-1000t;
+				reset-gpios = <&pio 71 GPIO_ACTIVE_LOW>;
+				reset-assert-us = <100000>;
+				reset-deassert-us = <221000>;
 
 				leds {
 					#address-cells = <1>;
@@ -60,14 +60,6 @@
 			phy-connection-type = "usxgmii";
 			phy = <&phy8>;
 			status = "okay";
-		};
-	};
-
-	fragment@2 {
-		target = <&eth>;
-		__overlay__ {
-			pinctrl-0 = <&mdio0_pins>;
-			pinctrl-names = "default";
 		};
 	};
 };

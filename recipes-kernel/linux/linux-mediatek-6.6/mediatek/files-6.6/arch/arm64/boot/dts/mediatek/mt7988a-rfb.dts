@@ -50,6 +50,11 @@
 	};
 };
 
+&eth {
+	pinctrl-0 = <&mdio0_pins>;
+	pinctrl-names = "default";
+};
+
 &gmac0 {
 	status = "okay";
 };
