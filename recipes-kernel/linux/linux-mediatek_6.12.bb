@@ -21,8 +21,6 @@ SRC_URI = " \
     file://mediatek \
     file://generic/defconfig \
     file://001-rdkb-eth-mtk-change-ifname-for.patch;apply=no \
-    file://004-rdkb-hnat-bind-ifname.patch;apply=no \
-    file://003-rdkb-refactor-bpi-r4-dts.patch;apply=no \
     "
 SRC_URI:append_filogic += " \
     file://mediatek/filogic.cfg \
@@ -42,6 +40,10 @@ SRC_URI:append += " \
     ${@bb.utils.contains('DISTRO_FEATURES','usb3','file://rdkb_cfg/usb.cfg','',d)} \
 "
 
+KERNEL_DEVICETREE_mt7988_bpi4 += " \
+    mediatek/mt7988a-bananapi-bpi-r4-spim-nand.dtbo \
+    mediatek/mt7988a-bananapi-bpi-r4-spim-nand-nmbm.dtbo \
+    "
 
 require ${PN}-${PV}/generic/backport-6.12/backport-6.12.inc
 
