@@ -29,6 +29,7 @@ SRC_URI:append = " \
     file://194-dts-mt7968a-add-ramoops.patch \
     file://195-dts-mt7986a-bpi-r3-leds-port-names-and-wifi-eeprom.patch \
     file://196-dts-mt7986a-bpi-r3-use-all-ubi-nand-layout.patch \
+    file://197-dts-mt7986a-bpi-r3-Change-fan-PWM-value.patch \
     file://200-phy-phy-mtk-tphy-Add-hifsys-support.patch \
     file://218-pinctrl-mediatek-mt7981-add-additional-uart-groups.patch \
     file://240-pinctrl-mediatek-add-support-for-MT7988-SoC.patch \
@@ -121,7 +122,6 @@ SRC_URI:append = " \
     file://946-arm64-dts-mt7986-move-dlm-in-a-dedicated-node.patch \
     file://950-smartrg-i2c-led-driver.patch \
     file://960-asus-hack-u-boot-ignore-mtdparts.patch \
-    file://999-1700-v6.8-net-phy-2p5g-eee-backport-read-support-link-mode-from-PMA.patch \
     file://999-1701-v6.8-net-phy-2p5g-eee-backport-ethtool-Add-forced-speed-to-supported-l.patch \
     file://999-1702-v6.8-net-phy-2p5g-eee-backport-untangle-the-linkmode-and-ethtool-heade.patch \
     file://999-1703-v6.9-net-phy-2p5g-eee-backport-ethtool-switch-EEE-netlink-interface-to.patch \
@@ -146,6 +146,10 @@ SRC_URI:append = " \
     file://999-1722-v6.14-net-phy-2p5g-eee-backport-net-phylib-eee-cleanups.patch \
     file://999-1723-v6.10-net-phy-sfp-allow-use-2500base-X-for-2500base-T-modules.patch \
     file://999-2000-arm64-dts-mt7988-move-phys-to-sgmiipcs-and-usxgmiisy.patch;apply=no \
+    file://999-2001-arm64-dts-mt7988-aqr-10gphy-disable-eee.patch;apply=no \
+    file://999-2002-arm64-dts-mt7988-increase-mdc-for-aqr-10gphy.patch;apply=no \
+    file://999-2003-arm64-dts-mt7988-use-software-reset-for-aqr-10gphy.patch;apply=no\
+    file://999-2004-arm64-dts-mt7988-fix-typo-for-the-LAN-and-WAN-MAC-address.patch;apply=no \
     file://999-2005-arm64-dts-mt7988-add-cpufreq-cooling-device.patch;apply=no \
     file://999-2006-arm64-dts-mt7988-add-pcie-wifi-reset-support.patch;apply=no \
     file://999-2100-thermal-mediatek-add-mt7988-lvts-support.patch \
@@ -163,6 +167,8 @@ SRC_URI:append = " \
     file://999-2606-net-pcs-mtk-lynxi-correct-power-down-setting.patch \
     file://999-2607-net-pcs-mtk-lynxi-add-individual-polarity-control.patch \
     file://999-2608-net-pcs-mtk-lynxi-add-phya-tx-rx-clock-path.patch \
+    file://999-2609-net-pcs-mtk-lynxi-add-link_poll-mechanism.patch \
+    file://999-2610-net-pcs-mtk_usxgmii-add-link_poll-mechanism.patch \
     file://999-2700-crypto-add-eip197-inside-secure-support-for-kernel-6.6.patch \
     file://999-2700-net-ethernet-mtk_eth_soc-add-mdio-reset-delay.patch \
     file://999-2701-crypto-add-aead-3des-md5.patch \
@@ -204,7 +210,7 @@ SRC_URI:append = " \
     file://999-2738-net-pppoe-support-hardware-flow-table-offload.patch \
     file://999-2739-net-dsa-support-hardware-flow-table-offload.patch \
     file://999-2740-net-macvlan-support-hardware-flow-table-offload.patch \
-    file://999-2741-mtkhnat-add-support-for-virtual-interface-a.patch \
+    file://999-2741-mtkhnat-add-support-for-virtual-interface-acceleration.patch \
     file://999-2742-mtkhnat-tnl-interface-offload-check.patch.patch \
     file://999-2743-mtkhnat-ipv6-fix-pskb-expand-head-limitatio.patch \
     file://999-2744-mtk-gso-skb-headroom-copy.patch \
@@ -213,7 +219,6 @@ SRC_URI:append = " \
     file://999-2746-mtkhnat-add-support-ppe-flow-check-interrupt.patch \
     file://999-2747-crypto-eth-inline.patch \
     file://999-2747-net-ethernet-mtk_eth_soc-add-SER-fast-mode.patch \
-    file://999-2747-net-ethernet-mtk_eth_soc-add-internal-SER-notify-event.patch;apply=no \
     file://999-2750-net-phy-aquantia-add-frmware-load-to-config_init.patch \
     file://999-2751-net-phy-aquantia-add-mib-debugfs.patch \
     file://999-2752-net-phy-aquantia-add-cux3410.patch \
@@ -246,6 +251,7 @@ SRC_URI:append = " \
     file://999-2779-net-phy-add-aeonsemi-as21xxx-support.patch \
     file://999-2780-net-ethernet-mtk_eth_soc-change-qdma-txq-num-to-32.patch \
     file://999-2781-net-ethernet-mtk_eth_soc-support-multiple-dsa-switch-PPPQ.patch;apply=no \
+    file://999-2783-net-phy-sfp-add-tplink-2500basex-disable-autoneg.patch \
     file://999-2800-trng-driver-porting.patch \
     file://999-4100-mtk-tunnel-offload-support.patch \
     file://999-clk-01-clk-mediatek-add-mt7987-clock-drivers-support.patch \
@@ -261,15 +267,19 @@ SRC_URI:append = " \
     file://999-dual-boot-02-ubi-allow-no-default-rootdev.patch \
     file://999-dual-boot-03-fitblk-do-not-split-rootfs_data-if-required.patch \
     file://999-fitblk-01-parse-and-mount-ramdisk.patch \
+    file://999-fs-ubifs-01-Check-c-dirty_-n-p-n_cnt-and-c-nroot-state-und.patch \
     file://999-pcie-01-pcie-mediatek-gen3-Add-PCIe-max-link-width-adjustment.patch \
     file://999-pcie-02-pcie-mediatek-gen3-Add-PCIe-IRQ-affinity-support.patch \
     file://999-pcie-03-pcie-mediatek-gen3-Add-WIFI-HW-reset-flow.patch \
-    file://999-pcie-04-pcie-mediatek-gen3-Add-soft-off-and-soft-on-API.patch \
+    file://999-pcie-04-pcie-mediatek-gen3-adjust-WIFI-HW-reset-flow.patch \
+    file://999-pcie-05-pcie-mediatek-gen3-Add-deassert-delay-for-WIFI-HW-re.patch \
+    file://999-pcie-06-pcie-mediatek-gen3-Add-soft-off-and-soft-on-API.patch \
     file://999-pinctrl-01-pinctrl-mediatek-add-mt7987-pinctrl-support.patch \
     file://999-spi-01-fix-calibration-message.patch \
     file://999-spi-mt65xx-01-fix-dual-quad-mode-of-transfer-one-op.patch \
     file://999-spi-nand-01-integrate-ONFI-and-CASN-manipulation.patch \
     file://999-spi-nand-02-Add-CASN-support.patch \
+    file://999-spi-nand-03-Fix-CASN-page-field-spanning-issues.patch \
     file://999-spi-nor-01-fix-3B-4B-calibration.patch \
     file://999-spi-nor-02-fix-en25qh256-attribute.patch \
     file://999-spi-nor-03-add-new-devices.patch \

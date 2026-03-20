@@ -7,12 +7,12 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}-${PV}/mediatek/flow_patch:"
 
 KBRANCH ?= "linux-6.6.y"
 
-LINUX_VERSION ?= "6.6.118"
-SRCREV_machine ?= "4791134e4aebe300af2b409dc550610ef69fae3e"
+LINUX_VERSION ?= "6.6.127"
+SRCREV_machine ?= "7a137e9bfa0e1919555d60f9dc0c05a7a5ba75d0"
 KMETA = "kernel-meta"
 SRCREV_meta ?= "dff911ce87fe7b9944c6058907f079ddb0f3e840"
 
-DEPENDS:append = " kern-tools-native xz-native bc-native linux-firmware eth-firmware "
+DEPENDS:append = " kern-tools-native xz-native bc-native"
 
 SRC_URI = " \
     git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git;protocol=https;branch=${KBRANCH};name=machine \
@@ -83,11 +83,14 @@ do_filogic_patches() {
 
             patch -p1 < ${WORKDIR}/863-arm64-dts-mt7986-add-sound-wm8960.patch
             patch -p1 < ${WORKDIR}/999-2000-arm64-dts-mt7988-move-phys-to-sgmiipcs-and-usxgmiisy.patch
+            patch -p1 < ${WORKDIR}/999-2001-arm64-dts-mt7988-aqr-10gphy-disable-eee.patch
+            patch -p1 < ${WORKDIR}/999-2002-arm64-dts-mt7988-increase-mdc-for-aqr-10gphy.patch
+            patch -p1 < ${WORKDIR}/999-2003-arm64-dts-mt7988-use-software-reset-for-aqr-10gphy.patch
+            patch -p1 < ${WORKDIR}/999-2004-arm64-dts-mt7988-fix-typo-for-the-LAN-and-WAN-MAC-address.patch
             patch -p1 < ${WORKDIR}/999-2005-arm64-dts-mt7988-add-cpufreq-cooling-device.patch
             patch -p1 < ${WORKDIR}/999-2006-arm64-dts-mt7988-add-pcie-wifi-reset-support.patch
             patch -p1 < ${WORKDIR}/999-2138-dts-add-zts8232.patch
             patch -p1 < ${WORKDIR}/999-2745-mtkhnat-add-mtkhnat-driver-support.patch
-            patch -p1 < ${WORKDIR}/999-2747-net-ethernet-mtk_eth_soc-add-internal-SER-notify-event.patch
             patch -p1 < ${WORKDIR}/999-2757-net-dsa-add-an8855-v2p0p1-and-netlink-support.patch
             patch -p1 < ${WORKDIR}/999-2775-net-ethernet-mtk_eth_soc-add-IEEE1588v2-support-for-NETSYSv3.1.patch
             patch -p1 < ${WORKDIR}/999-2781-net-ethernet-mtk_eth_soc-support-multiple-dsa-switch-PPPQ.patch

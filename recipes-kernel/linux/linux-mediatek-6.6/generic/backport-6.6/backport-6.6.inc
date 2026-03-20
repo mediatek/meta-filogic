@@ -93,6 +93,9 @@ SRC_URI:append = " \
     file://722-v6.10-dt-bindings-arm-qcom-ids-Add-SoC-ID-for-IPQ5321.patch \
     file://734-v6.8-net-phy-bcm54612e-add-suspend-resume.patch \
     file://740-v6.10-net-stmmac-dwmac-ipq806x-account-for-rgmii-txid-rxid.patch \
+    file://750-01-v6.8-net-phy-add-genphy_c45_pma_read_ext_abilities.patch \
+    file://750-02-v6.12-net-phy-motorcomm-prepare-for-yt8821-support.patch \
+    file://750-03-v6.12-net-phy-motorcomm-add-yt8821-support.patch \
     file://751-01-v6.8-net-ethernet-mediatek-split-tx-and-rx-fields-in-mtk_.patch \
     file://751-02-v6.8-net-ethernet-mediatek-use-QDMA-instead-of-ADMAv2-on-.patch \
     file://751-03-v6.4-net-ethernet-mtk_eth_soc-improve-keeping-track-of-of.patch \
