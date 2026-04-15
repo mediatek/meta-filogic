@@ -38,10 +38,12 @@ SRC_URI = " \
     ${@bb.utils.contains('DISTRO_FEATURES','kernelv6','','file://src-${PV}',d)} \
     file://002-rdkb-add-ucode-support.patch;apply=no \
 "
-require files/${PATCH_SRC}/patches.inc
+
 
 B = "${WORKDIR}/git/hostapd"
 S = "${WORKDIR}/git"
+PATCHDEST ?= "${S}"
+require files/${PATCH_SRC}/patches.inc
 
 inherit update-rc.d systemd pkgconfig features_check
 INITSCRIPT_NAME = "hostapd"

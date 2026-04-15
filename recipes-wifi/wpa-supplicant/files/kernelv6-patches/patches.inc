@@ -1,263 +1,263 @@
-#patch patches (come from openwrt/lede/target/linux/mediatek)
+#patch kernelv6-patches (come from openwrt/lede/target/linux/mediatek)
 SRC_URI:append = " \
-    file://0001-Revert-MLD-Pass-SSID-when-doing-multi-link-probe-che.patch \
-    file://0002-Revert-VLAN-Group-state-machine-data-creation-for-pa.patch \
-    file://0003-Revert-BSS-MLD-Add-verification-for-the-pairwise-cip.patch \
-    file://0004-Revert-BSS-Verify-the-ML-common-info-for-links.patch \
-    file://0005-Revert-BSS-Parse-ML-information-when-updating-the-BS.patch \
-    file://0006-Revert-AP-wpa_auth-Use-new-key-IDs-in-wpa_group_ensu.patch \
-    file://0007-Revert-AP-MLD-Add-MLO-Link-KDE-for-each-affiliated-l.patch \
-    file://0008-Revert-BSS-Validate-partner-link-BSSs-while-parsing-.patch \
-    file://0009-sync-2025-11-06-openwrt-src-folder.patch \
-    file://0010-sync-2025-11-06-openwrt-patches-folder.patch \
-    file://0011-hostapd-afcd-add-AFC-daemon-support.patch \
-    file://0012-hostapd-Update-hostapd_is_usable_chans-for-160-320-M.patch \
-    file://0013-hostapd-ap-Add-AFC-client-support.patch \
-    file://0014-hostapd-Update-TPE-IE-according-to-AFC.patch \
-    file://0015-mtk-sync-nl80211.h.patch \
-    file://0016-mtk-hostapd-Add-neighbor-report-and-BSS-Termination-.patch \
-    file://0017-mtk-hostapd-add-support-for-runtime-set-in-band-disc.patch \
-    file://0018-mtk-hostapd-Add-mtk_vendor.h.patch \
-    file://0019-mtk-hostapd-Support-EDCCA-hostapd-configuration.patch \
-    file://0020-mtk-hostapd-Add-hostapd-MU-SET-GET-control.patch \
-    file://0021-mtk-hostapd-Add-three-wire-PTA-ctrl-hostapd-vendor-c.patch \
-    file://0022-mtk-hostapd-Add-hostapd-iBF-control.patch \
-    file://0023-mtk-hostapd-Do-not-include-HE-capab-IE-if-associated.patch \
-    file://0024-mtk-hostapd-Add-DFS-detection-mode.patch \
-    file://0025-mtk-hostapd-Add-amsdu-set-get-ctrl.patch \
-    file://0026-mtk-hostapd-Add-he_ldpc-configuration.patch \
-    file://0027-mtk-hostapd-Fix-sending-wrong-VHT-operation-IE-in-CS.patch \
-    file://0028-mtk-hostapd-Add-sta-assisted-DFS-state-update-mechan.patch \
-    file://0029-mtk-hostapd-Mark-DFS-channel-as-available-for-CSA.patch \
-    file://0030-mtk-hostapd-Add-available-color-bitmap.patch \
-    file://0031-mtk-hostapd-Fix-ZWDFS-issue-in-BW-160.patch \
-    file://0032-mtk-hostapd-Add-vendor-for-CAPI-certification-comman.patch \
-    file://0033-mtk-hostapd-Air-Monitor-support-in-hostapd-by-vendor.patch \
-    file://0034-mtk-hostapd-Add-muru-user-number-debug-command.patch \
-    file://0035-mtk-hostapd-add-connac3-PHY-MURU-manual-mode-config-.patch \
-    file://0036-mtk-hostapd-Add-HE-capabilities-check.patch \
-    file://0037-mtk-hostapd-Fix-background-channel-overlapping-opera.patch \
-    file://0038-mtk-hostapd-Fix-hostapd_dfs_start_cac-log.patch \
-    file://0039-mtk-hostapd-Check-the-bridge-after-ioctl-SIOCBRADDIF.patch \
-    file://0040-mtk-hostapd-Update-parameter_set_count-in-MU-EDCA-IE.patch \
-    file://0041-mtk-hostapd-add-extension-IE-list-for-non-inherit-IE.patch \
-    file://0042-mtk-hostapd-add-back-ht-vht-cap-missing-field-before.patch \
-    file://0043-mtk-hostapd-Add-support-for-gtk-rekeying-in-hostapd-.patch \
-    file://0044-mtk-hostapd-Set-WMM-and-TX-queue-parameters-for-wpa_.patch \
-    file://0045-mtk-hostapd-Set-STA-TX-queue-parameters-configuratio.patch \
-    file://0046-mtk-hostapd-avoid-color-switch-when-beacon-is-not-se.patch \
-    file://0047-mtk-hostapd-6g-bss-connect-do-not-consider-ht-operat.patch \
-    file://0048-mtk-hostapd-Add-ACS-chanlist-info-in-get_config.patch \
-    file://0049-mtk-hostapd-Fix-RSNXE-Interop-issue-with-STA.patch \
-    file://0050-mtk-hostapd-add-support-for-ucode-to-parse-BW320MHz-.patch \
-    file://0051-mtk-hostapd-Add-support-for-updating-background-chan.patch \
-    file://0052-mtk-hostapd-add-zwdfs-mode-ctrl-for-mt7996-efem.patch \
-    file://0053-mtk-hostapd-add-support-enable-disable-preamble-punc.patch \
-    file://0054-mtk-hostapd-add-no_beacon-vendor-command-for-cert.patch \
-    file://0055-mtk-hostapd-WPS-added-change-to-configure-AP-PIN-loc.patch \
-    file://0056-mtk-hostapd-remove-chan-freq-list-check-when-scan-re.patch \
-    file://0057-mtk-hostapd-Fix-chan_switch-to-usable-DFS-channel-fa.patch \
-    file://0058-mtk-hostapd-initialize-i802_bss-s-flink-freq-with-if.patch \
-    file://0059-mtk-wpa_supplicant-correctly-get-assoc-frequency.patch \
-    file://0060-mtk-wpa_supplicant-force-MLD-STA-to-use-SAE-H2E-duri.patch \
-    file://0061-mtk-hostapd-extend-ap_get_sta-to-find-the-correct-st.patch \
-    file://0062-mtk-hostapd-update-cookie-only-when-noack-is-unset.patch \
-    file://0063-mtk-wpa_supplicant-fix-bss-selection-when-setting-ml.patch \
-    file://0064-mtk-hostapd-Handle-DFS-radar-detection-in-MLO.patch \
-    file://0065-mtk-hostapd-add-wds-mlo-support.patch \
-    file://0066-mtk-hostapd-prevent-getting-non-MLD-STA-for-other-li.patch \
-    file://0067-mtk-hostapd-specify-link-id-for-unicast-DEAUTH.patch \
-    file://0068-mtk-hostapd-using-MLD-addr-as-SA-BSSID-for-broadcast.patch \
-    file://0069-mtk-hostapd-support-vht-bfee-sts-can-be-up-to-0x4.patch \
-    file://0070-mtk-hostapd-add-connac3-csi-control-interface.patch \
-    file://0071-mtk-hostapd-Refactor-static-PP-and-mld-support.patch \
-    file://0072-mtk-hostapd-make-sure-all-links-are-set-before-enabl.patch \
-    file://0073-mtk-hostapd-do-not-roam-within-the-same-MLD.patch \
-    file://0074-mtk-hostapd-update-op_class-in-channel-switch-fallba.patch \
-    file://0075-mtk-hostapd-prevent-responding-to-mgmt-while-AP-MLD-.patch \
-    file://0076-mtk-hostapd-add-critical-update-support.patch \
-    file://0077-mtk-hostapd-add-support-for-emlsr.patch \
-    file://0078-mtk-hostapd-Fix-Operating-Mode-Notification-issue-in.patch \
-    file://0079-mtk-hostapd-add-mlo-probe-client-support.patch \
-    file://0080-mtk-hostapd-extend-MLO-information-getting.patch \
-    file://0081-mtk-hostapd-Remove-BPCC-and-ML-ie-in-per-sta-profile.patch \
-    file://0082-mtk-hostapd-Fix-the-issue-with-the-presence-of-MLD_I.patch \
-    file://0083-mtk-hostapd-add-support-for-DFS-channel-switching-wi.patch \
-    file://0084-mtk-hostapd-Temporary-non-inheritance-IE-solution.patch \
-    file://0085-mtk-hostapd-ensure-only-a-scan-callback-is-called-on.patch \
-    file://0086-mtk-hostapd-add-support-for-get_survey-to-specify-li.patch \
-    file://0087-mtk-hostapd-sequentially-conduct-multiple-setup-ACS.patch \
-    file://0088-mtk-hostapd-do-not-consider-bss-ignore-list-when-par.patch \
-    file://0089-mtk-hostapd-support-vendor-command-trig_type-and-ap_.patch \
-    file://0090-mtk-hostapd-add-support-for-link-add.patch \
-    file://0091-mtk-hostapd-Fix-the-op_class-value-in-the-RNR-IE-to-.patch \
-    file://0092-mtk-hostapd-support-enable-disable-preamble-puncture.patch \
-    file://0093-mtk-hostapd-fix-Multiple-MLDs-to-use-the-conf-s-own_.patch \
-    file://0094-mtk-hostapd-handle-5G-link-setup-after-DFS-bootup-CA.patch \
-    file://0095-mtk-hostapd-support-MLD-AP-affiliated-link-removal.patch \
-    file://0096-mtk-hostapd-add-A-TTLM-support.patch \
-    file://0097-mtk-hostapd-Add-txpower-vendor-command.patch \
-    file://0098-mtk-hostapd-Add-Triggered-Uplink-Access-Optimization.patch \
-    file://0099-mtk-hostapd-fix-6G-EHT-BW-320-channel-switch-issue.patch \
-    file://0100-mtk-hostapd-Add-AFC-and-lpi-driver-power-support.patch \
-    file://0101-mtk-hostapd-Fix-hostapd-crash-in-wds-mode-during-fre.patch \
-    file://0102-mtk-hostapd-add-CU-status-update-support.patch \
-    file://0103-mtk-hostapd-fix-wds-remove-flow.patch \
-    file://0104-mtk-hostapd-remove-the-STA-when-receiving-AUTH-from-.patch \
-    file://0105-mtk-hostapd-fix-per-sta-profile-and-bw-indication-el.patch \
-    file://0106-mtk-hostapd-update-channel-information-in-WBCS-to-ca.patch \
-    file://0107-mtk-hostapd-update-partner-link-s-per-STA-profile-af.patch \
-    file://0108-mtk-hostapd-remove-sta_info-from-partner-links-when-.patch \
-    file://0109-mtk-hostapd-skip-BSS-from-disallowed-channel-when-ma.patch \
-    file://0110-mtk-hostapd-Add-support-for-TSF-offset.patch \
-    file://0111-mtk-hostapd-clear-authroized-flag-when-removing-STA-.patch \
-    file://0112-mtk-hostapd-add-return-value-for-ieee802_11_set_beac.patch \
-    file://0113-mtk-hostapd-add-support-for-removeing-the-main-BSS.patch \
-    file://0114-mtk-hostapd-add-support-for-enable-disable-single-BS.patch \
-    file://0115-mtk-hostapd-add-support-for-removing-AP-MLD.patch \
-    file://0116-mtk-hostapd-refactor-upstream-s-enable-disable-MLD-o.patch \
-    file://0117-mtk-hostapd-Fix-bugs-in-FT-initial-mobility-domain-a.patch \
-    file://0118-mtk-hostapd-Fix-hostapd-crash-if-setup-a-iface-with-.patch \
-    file://0119-mtk-hostapd-reset-bss-scan_link-after-getting-survey.patch \
-    file://0120-mtk-hostapd-Add-DFS-offchain-control-support.patch \
-    file://0121-mtk-hostapd-change-vendor-cmd-band-idx-into-radio-id.patch \
-    file://0122-mtk-hostapd-add-11v-MLD-BPCC-critical-update-support.patch \
-    file://0123-mtk-hostapd-fix-hostapd-crash-when-building-per-sta-.patch \
-    file://0124-mtk-hostapd-WPS-use-passphrase-over-psk-file.patch \
-    file://0125-mtk-hostapd-add-background-radar-standalone-mode.patch \
-    file://0126-mtk-hostapd-move-attlm_settings-to-ieee802_11_def.h.patch \
-    file://0127-mtk-hostapd-add-Adv-TTLM-helper-functions.patch \
-    file://0128-mtk-wpa_s-add-Neg-TTLM-setup-and-teardown-for-STA-ML.patch \
-    file://0129-mtk-hostapd-add-Neg-TTLM-support-for-AP-MLD.patch \
-    file://0130-mtk-hostapd-unset-MLE-cap-bit-3-for-Wi-Fi-7-CERT-4.5.patch \
-    file://0131-mtk-hostapd-add-link-id-for-air-monitor.patch \
-    file://0132-mtk-hostapd-add-a-variable-of-type-struct-hostapd_in.patch \
-    file://0133-mtk-hostapd-refactor-beacon-setting-after-interface-.patch \
-    file://0134-mtk-hostapd-Add-FT-Auth-mld-support.patch \
-    file://0135-mtk-hostapd-FT-Add-FT-DS-mld-sta-info-handling-in-as.patch \
-    file://0136-mtk-hostapd-Fix-reassoc-cb-can-t-get-STA-error.patch \
-    file://0137-mtk-hostapd-FT-Add-AP-FT-Assoc-mld-support.patch \
-    file://0138-mtk-wpa_s-fix-MLD-connection-issue-when-WPS-is-used.patch \
-    file://0139-mtk-hostapd-allow-only-new-association-to-enter-WPA-.patch \
-    file://0140-mtk-hostapd-add-support-for-EPCS.patch \
-    file://0141-mtk-hostapd-fix-RNR-unsync-issue-after-channel-switc.patch \
-    file://0142-mtk-hostapd-update-preference-val-of-neighbor-report.patch \
-    file://0143-mtk-hostapd-update-preference-val-of-neighbor-report.patch \
-    file://0144-mtk-hostapd-add-new-argument-mbo_cert-for-hostapd_cl.patch \
-    file://0145-mtk-wpa_s-also-allow-AKM24-SAE-EXT-when-wps_cred_add.patch \
-    file://0146-mtk-hostapd-rework-add-txpower-vendor-command.patch \
-    file://0147-mtk-hostapd-fix-aid-allocation.patch \
-    file://0148-mtk-hostapd-send-beacon-request-to-STA-s-MLD-address.patch \
-    file://0149-mtk-hostapd-properly-reset-ret-value-so-that-followi.patch \
-    file://0150-mtk-hostapd-support-handle-mscs-protocol.patch \
-    file://0151-mtk-hostapd-add-hostapd_eid_wmm_len.patch \
-    file://0152-mtk-hostapd-refactor-MTK-configuration-options-in-ho.patch \
-    file://0153-mtk-hostapd-refactor-for-mld-active_links.patch \
-    file://0154-mtk-hostapd-prevent-repeatly-adding-link-to-MLD.patch \
-    file://0155-mtk-hostapd-update-freq-on-i802_bss-s-link-only-afte.patch \
-    file://0156-mtk-hostapd-support-delete-mscs-policy-for-the-speci.patch \
-    file://0157-mtk-hostapd-FT-Add-FT-MIC-calculation-support-mlo.patch \
-    file://0158-mtk-hostapd-FT-Add-rrb-frame-support-mld-address.patch \
-    file://0159-mtk-hostapd-fix-set-key-fail-when-11v-mbss-is-enable.patch \
-    file://0160-mtk-hostapd-include-BPCC-in-MLE-STA-control-when-han.patch \
-    file://0161-mtk-hostapd-FT-Use-primary-wpa_auth-to-handle-rrb-in.patch \
-    file://0162-mtk-hostapd-Add-support-for-printing-eml_cap-using-h.patch \
-    file://0163-hostapd-mtk-drop-contiguous-association-frame-before.patch \
-    file://0164-mtk-hostapd-refactor-BSS-color-change-collision-dete.patch \
-    file://0165-mtk-hostapd-fix-get-set-edcca-vendor-command-for-sin.patch \
-    file://0166-mtk-hostapd-add-802.1X-support-AP-MLD.patch \
-    file://0167-mtk-hostapd-add-support-to-dump-STA-Neg-TTLM-status.patch \
-    file://0168-mtk-hostapd-prevent-NULL-pointer-access-in-hostapd_f.patch \
-    file://0169-mtk-hostapd-FT-Set-mld-AP-handle-OTD-roaming-with-th.patch \
-    file://0170-mtk-hostapd-fix-complie-warnings-for-hostapd_cli-cmd.patch \
-    file://0171-mtk-hostapd-FT-Add-rrb-frame-support-remove-sta.patch \
-    file://0172-mtk-hostapd-avoid-adding-empty-channel-switch-wrappe.patch \
-    file://0173-mtk-hostapd-avoid-clearing-vht-160-support-during-do.patch \
-    file://0174-mtk-hostapd-fix-start_disabled.patch \
-    file://0175-mtk-hostapd-fix-wbcs-values-when-pp-is-enabled.patch \
-    file://0176-mtk-hostapd-fix-compile-error-when-TESTING_OPTION-is.patch \
-    file://0177-mtk-hostapd-Add-RSNE-in-per-sta-profile.patch \
-    file://0178-mtk-wpa_s-Find-partner-links-by-BSSID-and-SSID.patch \
-    file://0179-mtk-wpa_s-add-driver-operation-to-get-interface-s-ra.patch \
-    file://0180-mtk-hostapd-update-DFS-detection-mode.patch \
-    file://0181-mtk-hostapd-Add-BSS-Transition-Candidate-Preference-.patch \
-    file://0182-mtk-hostapd-include-vendor-element-in-MBSSID-nontran.patch \
-    file://0183-mtk-hostapd-add-disconnect-counter-for-AP-interface.patch \
-    file://0184-mtk-hostapd-add-support-to-get-Adv-TTLM-of-a-AP-MLD-.patch \
-    file://0185-mtk-hostapd-support-handle-mtk_vendor-element.patch \
-    file://0186-mtk-wpa_supplicant-support-add-mtk-vendor-element-in.patch \
-    file://0187-mtk-wpa_s-add-support-to-disable-Radio-Resource-Mana.patch \
-    file://0188-mtk-hostapd-increase-csa-count-for-radar-triggered-c.patch \
-    file://0189-mtk-hostapd-fix-cca-csa-collision-issue.patch \
-    file://0190-mtk-hostapd-Deauth-single-link-or-legacy-STA-when-AP.patch \
-    file://0191-mtk-hostapd-add-11v-adv-TTLM-support.patch \
-    file://0192-mtk-hostapd-use-assoc_sm-s-auth_alg-when-validating-.patch \
-    file://0193-mtk-hostapd-add-checks-for-csa-cca-attlm-reconfig-fl.patch \
-    file://0194-mtk-hostapd-fix-acs-ht-coex-issue.patch \
-    file://0195-mtk-hostapd-fix-debug-log-parameters-order-in-ap_sta.patch \
-    file://0196-mtk-hostapd-free-link-STA-for-user-triggering-deauth.patch \
-    file://0197-mtk-hostapd-always-do-WPA-initialization-in-hostapd_.patch \
-    file://0198-mtk-hostapd-avoid-deauthentication-disassociation-re.patch \
-    file://0199-mtk-hostapd-properly-assign-sta-to-NULL-in-handle_au.patch \
-    file://0200-mtk-hostapd-add-dfs-channel-state-update-cmd.patch \
-    file://0201-mtk-hostapd-make-sure-that-hostapd_ml_get_assoc_sta-.patch \
-    file://0202-mtk-hostapd-add-new-function-ap_cleanup_sta.patch \
-    file://0203-mtk-hostapd-use-ap_celanup_sta-to-safely-cleanup-STA.patch \
-    file://0204-mtk-hostapd-properly-call-ap_sta_remove_link_sta-bef.patch \
-    file://0205-mtk-hostapd-replace-callback-is_mld_finished-with-ge.patch \
-    file://0206-mtk-hostapd-add-MLD-support-for-command-STA-FIRST-an.patch \
-    file://0207-mtk-hostapd-add-support-for-broadcast-TWT.patch \
-    file://0208-mtk-hostapd-add-TWT-IE-for-Broadcast-TWT.patch \
-    file://0209-mtk-hostapd-FT-Add-first_sta_seen-flag-for-roamed-st.patch \
-    file://0210-mtk-wpa_supplicant-Add-wpa_sm-cb-functions-for-mlo-f.patch \
-    file://0211-mtk-wpa_supplicant-Add-mlo-ft-roaming-support.patch \
-    file://0212-mtk-wpa_supplicant-Add-mlo-ft-calculate-mic-support.patch \
-    file://0213-mtk-hostapd-rework-mld-started.patch \
-    file://0214-Revert-Avoid-set-beacon-operations-when-color-change.patch \
-    file://0215-tmp-add-back-hostapd_is_mld_ap.patch \
-    file://0216-mtk-hostapd-check-for-invalid-mld_link_id-in-hostapd.patch \
-    file://0217-mtk-hostapd-add-support-to-request-PP-bitmap-to-driv.patch \
-    file://0218-mtk-hostapd-add-MTK-refactors-for-Extender.patch \
-    file://0219-Skip-associating-AP-MLD-s-link-on-disallowed-channel.patch \
-    file://0220-mtk-wpa_s-add-option-to-disable-MLO.patch \
-    file://0221-mtk-hostapd-add-support-to-config-setband_mask-via-u.patch \
-    file://0222-mtk-hostapd-reset-sta_info-after-link-removing.patch \
-    file://0223-mtk-hostapd-add-link-removal-support-for-multiple-AP.patch \
-    file://0224-mtk-hostapd-move-hostapd_interfaces_get_hapd-to-host.patch \
-    file://0225-mtk-hostapd-refactor-hostapd_bss_alloc_link_id.patch \
-    file://0226-mtk-hostapd-refactor-link-add-operation-to-support-s.patch \
-    file://0227-mtk-hostapd-FT-Add-support-for-non-tx-bss-roaming.patch \
-    file://0228-mtk-hostapd-add-def_link_map-and-link_map_size-in-st.patch \
-    file://0229-mtk-hostapd-add-support-to-send-TTLM-request-and-han.patch \
-    file://0230-mtk-hostapd-Align-QCA-s-prpl-hostapd-Neg-TTLM-comman.patch \
-    file://0231-mtk-hostapd-align-QCA-s-prpl-Adv-TTLM-command-format.patch \
-    file://0232-mtk-hostapd-disallow-removing-link-from-a-MBSSID-gro.patch \
-    file://0233-mtk-hostapd-align-QCA-s-prpl-link-add-command-format.patch \
-    file://0234-mtk-wpa_s-skip-the-link-on-unused-radio-when-setting.patch \
-    file://0235-mtk-fix-hostapd-Update-hostapd_is_usable_chans-for-1.patch \
-    file://0236-mtk-hostapd-provide-information-for-kernel-6.6-ucode.patch \
-    file://0237-mtk-hostapd-add-support-for-emlsr-enablement-on-one-.patch \
-    file://0238-mtk-hostapd-do-not-check-ACL-for-link-addrss.patch \
-    file://0239-mtk-hostapd-add-support-for-unifying-BTWT-RTWT-event.patch \
-    file://0240-mtk-hostapd-add-secondary-channel-offset-element-sup.patch \
-    file://0241-mtk-hostapd-do-not-check-ACL-when-handling-probe-req.patch \
-    file://0242-mtk-wpa_s-ucode-retrieve-freq-and-sec_chan-from-dirv.patch \
-    file://0243-mtk-hostapd-add-configuration-disable_robust_av_scs-.patch \
-    file://0244-mtk-hostapd-add-allocated_links-to-track-allocated-l.patch \
-    file://0245-mtk-hostapd-support-link-specific-add_btwt-del_btwt-.patch \
-    file://0246-mtk-hostapd-fix-build-failure-for-Wi-Fi-6-kernel-6.1.patch \
-    file://0247-mtk-hostapd-fix-2-5-GHz-link-start-failed-while-enab.patch \
-    file://0248-mtk-hostapd-add-csa-cca-sanity-check-before-disable-.patch \
-    file://0249-mtk-hostapd-fix-dfs-issue-for-using-the-same-channel.patch \
-    file://0250-mtk-wpa_supplicant-fix-failure-to-enable-STA-interfa.patch \
-    file://0251-mtk-hostapd-add-hostapd-config-he_bcast_twt_disabled.patch \
-    file://0252-mtk-hostapd-Add-afc-info-and-send-request-command.patch \
-    file://0253-mtk-hostapd-fix-the-potential-memory-leak-for-muru_c.patch \
-    file://0254-mtk-hostapd-always-do-ML-probe-request-before-authen.patch \
-    file://0255-mtk-hostapd-support-setting-singlesku-file-path.patch \
-    file://0256-mtk-hostapd-rename-json_type.patch \
-    file://0257-JSON-Add-double-type-support.patch \
-    file://0258-hostapd-Expand-hostapd_cli-can-ctrl_iface-buffer-siz.patch \
-    file://0259-tests-Add-AFC-hwsim-tests.patch \
-    file://0260-mtk-hostapd-Add-AFC-EVENT.patch \
+    file://0001-Revert-MLD-Pass-SSID-when-doing-multi-link-probe-che.patch;patchdir=${PATCHDEST}\
+    file://0002-Revert-VLAN-Group-state-machine-data-creation-for-pa.patch;patchdir=${PATCHDEST}\
+    file://0003-Revert-BSS-MLD-Add-verification-for-the-pairwise-cip.patch;patchdir=${PATCHDEST}\
+    file://0004-Revert-BSS-Verify-the-ML-common-info-for-links.patch;patchdir=${PATCHDEST}\
+    file://0005-Revert-BSS-Parse-ML-information-when-updating-the-BS.patch;patchdir=${PATCHDEST}\
+    file://0006-Revert-AP-wpa_auth-Use-new-key-IDs-in-wpa_group_ensu.patch;patchdir=${PATCHDEST}\
+    file://0007-Revert-AP-MLD-Add-MLO-Link-KDE-for-each-affiliated-l.patch;patchdir=${PATCHDEST}\
+    file://0008-Revert-BSS-Validate-partner-link-BSSs-while-parsing-.patch;patchdir=${PATCHDEST}\
+    file://0009-sync-2025-11-06-openwrt-src-folder.patch;patchdir=${PATCHDEST}\
+    file://0010-sync-2025-11-06-openwrt-patches-folder.patch;patchdir=${PATCHDEST}\
+    file://0011-hostapd-afcd-add-AFC-daemon-support.patch;patchdir=${PATCHDEST}\
+    file://0012-hostapd-Update-hostapd_is_usable_chans-for-160-320-M.patch;patchdir=${PATCHDEST}\
+    file://0013-hostapd-ap-Add-AFC-client-support.patch;patchdir=${PATCHDEST}\
+    file://0014-hostapd-Update-TPE-IE-according-to-AFC.patch;patchdir=${PATCHDEST}\
+    file://0015-mtk-sync-nl80211.h.patch;patchdir=${PATCHDEST}\
+    file://0016-mtk-hostapd-Add-neighbor-report-and-BSS-Termination-.patch;patchdir=${PATCHDEST}\
+    file://0017-mtk-hostapd-add-support-for-runtime-set-in-band-disc.patch;patchdir=${PATCHDEST}\
+    file://0018-mtk-hostapd-Add-mtk_vendor.h.patch;patchdir=${PATCHDEST}\
+    file://0019-mtk-hostapd-Support-EDCCA-hostapd-configuration.patch;patchdir=${PATCHDEST}\
+    file://0020-mtk-hostapd-Add-hostapd-MU-SET-GET-control.patch;patchdir=${PATCHDEST}\
+    file://0021-mtk-hostapd-Add-three-wire-PTA-ctrl-hostapd-vendor-c.patch;patchdir=${PATCHDEST}\
+    file://0022-mtk-hostapd-Add-hostapd-iBF-control.patch;patchdir=${PATCHDEST}\
+    file://0023-mtk-hostapd-Do-not-include-HE-capab-IE-if-associated.patch;patchdir=${PATCHDEST}\
+    file://0024-mtk-hostapd-Add-DFS-detection-mode.patch;patchdir=${PATCHDEST}\
+    file://0025-mtk-hostapd-Add-amsdu-set-get-ctrl.patch;patchdir=${PATCHDEST}\
+    file://0026-mtk-hostapd-Add-he_ldpc-configuration.patch;patchdir=${PATCHDEST}\
+    file://0027-mtk-hostapd-Fix-sending-wrong-VHT-operation-IE-in-CS.patch;patchdir=${PATCHDEST}\
+    file://0028-mtk-hostapd-Add-sta-assisted-DFS-state-update-mechan.patch;patchdir=${PATCHDEST}\
+    file://0029-mtk-hostapd-Mark-DFS-channel-as-available-for-CSA.patch;patchdir=${PATCHDEST}\
+    file://0030-mtk-hostapd-Add-available-color-bitmap.patch;patchdir=${PATCHDEST}\
+    file://0031-mtk-hostapd-Fix-ZWDFS-issue-in-BW-160.patch;patchdir=${PATCHDEST}\
+    file://0032-mtk-hostapd-Add-vendor-for-CAPI-certification-comman.patch;patchdir=${PATCHDEST}\
+    file://0033-mtk-hostapd-Air-Monitor-support-in-hostapd-by-vendor.patch;patchdir=${PATCHDEST}\
+    file://0034-mtk-hostapd-Add-muru-user-number-debug-command.patch;patchdir=${PATCHDEST}\
+    file://0035-mtk-hostapd-add-connac3-PHY-MURU-manual-mode-config-.patch;patchdir=${PATCHDEST}\
+    file://0036-mtk-hostapd-Add-HE-capabilities-check.patch;patchdir=${PATCHDEST}\
+    file://0037-mtk-hostapd-Fix-background-channel-overlapping-opera.patch;patchdir=${PATCHDEST}\
+    file://0038-mtk-hostapd-Fix-hostapd_dfs_start_cac-log.patch;patchdir=${PATCHDEST}\
+    file://0039-mtk-hostapd-Check-the-bridge-after-ioctl-SIOCBRADDIF.patch;patchdir=${PATCHDEST}\
+    file://0040-mtk-hostapd-Update-parameter_set_count-in-MU-EDCA-IE.patch;patchdir=${PATCHDEST}\
+    file://0041-mtk-hostapd-add-extension-IE-list-for-non-inherit-IE.patch;patchdir=${PATCHDEST}\
+    file://0042-mtk-hostapd-add-back-ht-vht-cap-missing-field-before.patch;patchdir=${PATCHDEST}\
+    file://0043-mtk-hostapd-Add-support-for-gtk-rekeying-in-hostapd-.patch;patchdir=${PATCHDEST}\
+    file://0044-mtk-hostapd-Set-WMM-and-TX-queue-parameters-for-wpa_.patch;patchdir=${PATCHDEST}\
+    file://0045-mtk-hostapd-Set-STA-TX-queue-parameters-configuratio.patch;patchdir=${PATCHDEST}\
+    file://0046-mtk-hostapd-avoid-color-switch-when-beacon-is-not-se.patch;patchdir=${PATCHDEST}\
+    file://0047-mtk-hostapd-6g-bss-connect-do-not-consider-ht-operat.patch;patchdir=${PATCHDEST}\
+    file://0048-mtk-hostapd-Add-ACS-chanlist-info-in-get_config.patch;patchdir=${PATCHDEST}\
+    file://0049-mtk-hostapd-Fix-RSNXE-Interop-issue-with-STA.patch;patchdir=${PATCHDEST}\
+    file://0050-mtk-hostapd-add-support-for-ucode-to-parse-BW320MHz-.patch;patchdir=${PATCHDEST}\
+    file://0051-mtk-hostapd-Add-support-for-updating-background-chan.patch;patchdir=${PATCHDEST}\
+    file://0052-mtk-hostapd-add-zwdfs-mode-ctrl-for-mt7996-efem.patch;patchdir=${PATCHDEST}\
+    file://0053-mtk-hostapd-add-support-enable-disable-preamble-punc.patch;patchdir=${PATCHDEST}\
+    file://0054-mtk-hostapd-add-no_beacon-vendor-command-for-cert.patch;patchdir=${PATCHDEST}\
+    file://0055-mtk-hostapd-WPS-added-change-to-configure-AP-PIN-loc.patch;patchdir=${PATCHDEST}\
+    file://0056-mtk-hostapd-remove-chan-freq-list-check-when-scan-re.patch;patchdir=${PATCHDEST}\
+    file://0057-mtk-hostapd-Fix-chan_switch-to-usable-DFS-channel-fa.patch;patchdir=${PATCHDEST}\
+    file://0058-mtk-hostapd-initialize-i802_bss-s-flink-freq-with-if.patch;patchdir=${PATCHDEST}\
+    file://0059-mtk-wpa_supplicant-correctly-get-assoc-frequency.patch;patchdir=${PATCHDEST}\
+    file://0060-mtk-wpa_supplicant-force-MLD-STA-to-use-SAE-H2E-duri.patch;patchdir=${PATCHDEST}\
+    file://0061-mtk-hostapd-extend-ap_get_sta-to-find-the-correct-st.patch;patchdir=${PATCHDEST}\
+    file://0062-mtk-hostapd-update-cookie-only-when-noack-is-unset.patch;patchdir=${PATCHDEST}\
+    file://0063-mtk-wpa_supplicant-fix-bss-selection-when-setting-ml.patch;patchdir=${PATCHDEST}\
+    file://0064-mtk-hostapd-Handle-DFS-radar-detection-in-MLO.patch;patchdir=${PATCHDEST}\
+    file://0065-mtk-hostapd-add-wds-mlo-support.patch;patchdir=${PATCHDEST}\
+    file://0066-mtk-hostapd-prevent-getting-non-MLD-STA-for-other-li.patch;patchdir=${PATCHDEST}\
+    file://0067-mtk-hostapd-specify-link-id-for-unicast-DEAUTH.patch;patchdir=${PATCHDEST}\
+    file://0068-mtk-hostapd-using-MLD-addr-as-SA-BSSID-for-broadcast.patch;patchdir=${PATCHDEST}\
+    file://0069-mtk-hostapd-support-vht-bfee-sts-can-be-up-to-0x4.patch;patchdir=${PATCHDEST}\
+    file://0070-mtk-hostapd-add-connac3-csi-control-interface.patch;patchdir=${PATCHDEST}\
+    file://0071-mtk-hostapd-Refactor-static-PP-and-mld-support.patch;patchdir=${PATCHDEST}\
+    file://0072-mtk-hostapd-make-sure-all-links-are-set-before-enabl.patch;patchdir=${PATCHDEST}\
+    file://0073-mtk-hostapd-do-not-roam-within-the-same-MLD.patch;patchdir=${PATCHDEST}\
+    file://0074-mtk-hostapd-update-op_class-in-channel-switch-fallba.patch;patchdir=${PATCHDEST}\
+    file://0075-mtk-hostapd-prevent-responding-to-mgmt-while-AP-MLD-.patch;patchdir=${PATCHDEST}\
+    file://0076-mtk-hostapd-add-critical-update-support.patch;patchdir=${PATCHDEST}\
+    file://0077-mtk-hostapd-add-support-for-emlsr.patch;patchdir=${PATCHDEST}\
+    file://0078-mtk-hostapd-Fix-Operating-Mode-Notification-issue-in.patch;patchdir=${PATCHDEST}\
+    file://0079-mtk-hostapd-add-mlo-probe-client-support.patch;patchdir=${PATCHDEST}\
+    file://0080-mtk-hostapd-extend-MLO-information-getting.patch;patchdir=${PATCHDEST}\
+    file://0081-mtk-hostapd-Remove-BPCC-and-ML-ie-in-per-sta-profile.patch;patchdir=${PATCHDEST}\
+    file://0082-mtk-hostapd-Fix-the-issue-with-the-presence-of-MLD_I.patch;patchdir=${PATCHDEST}\
+    file://0083-mtk-hostapd-add-support-for-DFS-channel-switching-wi.patch;patchdir=${PATCHDEST}\
+    file://0084-mtk-hostapd-Temporary-non-inheritance-IE-solution.patch;patchdir=${PATCHDEST}\
+    file://0085-mtk-hostapd-ensure-only-a-scan-callback-is-called-on.patch;patchdir=${PATCHDEST}\
+    file://0086-mtk-hostapd-add-support-for-get_survey-to-specify-li.patch;patchdir=${PATCHDEST}\
+    file://0087-mtk-hostapd-sequentially-conduct-multiple-setup-ACS.patch;patchdir=${PATCHDEST}\
+    file://0088-mtk-hostapd-do-not-consider-bss-ignore-list-when-par.patch;patchdir=${PATCHDEST}\
+    file://0089-mtk-hostapd-support-vendor-command-trig_type-and-ap_.patch;patchdir=${PATCHDEST}\
+    file://0090-mtk-hostapd-add-support-for-link-add.patch;patchdir=${PATCHDEST}\
+    file://0091-mtk-hostapd-Fix-the-op_class-value-in-the-RNR-IE-to-.patch;patchdir=${PATCHDEST}\
+    file://0092-mtk-hostapd-support-enable-disable-preamble-puncture.patch;patchdir=${PATCHDEST}\
+    file://0093-mtk-hostapd-fix-Multiple-MLDs-to-use-the-conf-s-own_.patch;patchdir=${PATCHDEST}\
+    file://0094-mtk-hostapd-handle-5G-link-setup-after-DFS-bootup-CA.patch;patchdir=${PATCHDEST}\
+    file://0095-mtk-hostapd-support-MLD-AP-affiliated-link-removal.patch;patchdir=${PATCHDEST}\
+    file://0096-mtk-hostapd-add-A-TTLM-support.patch;patchdir=${PATCHDEST}\
+    file://0097-mtk-hostapd-Add-txpower-vendor-command.patch;patchdir=${PATCHDEST}\
+    file://0098-mtk-hostapd-Add-Triggered-Uplink-Access-Optimization.patch;patchdir=${PATCHDEST}\
+    file://0099-mtk-hostapd-fix-6G-EHT-BW-320-channel-switch-issue.patch;patchdir=${PATCHDEST}\
+    file://0100-mtk-hostapd-Add-AFC-and-lpi-driver-power-support.patch;patchdir=${PATCHDEST}\
+    file://0101-mtk-hostapd-Fix-hostapd-crash-in-wds-mode-during-fre.patch;patchdir=${PATCHDEST}\
+    file://0102-mtk-hostapd-add-CU-status-update-support.patch;patchdir=${PATCHDEST}\
+    file://0103-mtk-hostapd-fix-wds-remove-flow.patch;patchdir=${PATCHDEST}\
+    file://0104-mtk-hostapd-remove-the-STA-when-receiving-AUTH-from-.patch;patchdir=${PATCHDEST}\
+    file://0105-mtk-hostapd-fix-per-sta-profile-and-bw-indication-el.patch;patchdir=${PATCHDEST}\
+    file://0106-mtk-hostapd-update-channel-information-in-WBCS-to-ca.patch;patchdir=${PATCHDEST}\
+    file://0107-mtk-hostapd-update-partner-link-s-per-STA-profile-af.patch;patchdir=${PATCHDEST}\
+    file://0108-mtk-hostapd-remove-sta_info-from-partner-links-when-.patch;patchdir=${PATCHDEST}\
+    file://0109-mtk-hostapd-skip-BSS-from-disallowed-channel-when-ma.patch;patchdir=${PATCHDEST}\
+    file://0110-mtk-hostapd-Add-support-for-TSF-offset.patch;patchdir=${PATCHDEST}\
+    file://0111-mtk-hostapd-clear-authroized-flag-when-removing-STA-.patch;patchdir=${PATCHDEST}\
+    file://0112-mtk-hostapd-add-return-value-for-ieee802_11_set_beac.patch;patchdir=${PATCHDEST}\
+    file://0113-mtk-hostapd-add-support-for-removeing-the-main-BSS.patch;patchdir=${PATCHDEST}\
+    file://0114-mtk-hostapd-add-support-for-enable-disable-single-BS.patch;patchdir=${PATCHDEST}\
+    file://0115-mtk-hostapd-add-support-for-removing-AP-MLD.patch;patchdir=${PATCHDEST}\
+    file://0116-mtk-hostapd-refactor-upstream-s-enable-disable-MLD-o.patch;patchdir=${PATCHDEST}\
+    file://0117-mtk-hostapd-Fix-bugs-in-FT-initial-mobility-domain-a.patch;patchdir=${PATCHDEST}\
+    file://0118-mtk-hostapd-Fix-hostapd-crash-if-setup-a-iface-with-.patch;patchdir=${PATCHDEST}\
+    file://0119-mtk-hostapd-reset-bss-scan_link-after-getting-survey.patch;patchdir=${PATCHDEST}\
+    file://0120-mtk-hostapd-Add-DFS-offchain-control-support.patch;patchdir=${PATCHDEST}\
+    file://0121-mtk-hostapd-change-vendor-cmd-band-idx-into-radio-id.patch;patchdir=${PATCHDEST}\
+    file://0122-mtk-hostapd-add-11v-MLD-BPCC-critical-update-support.patch;patchdir=${PATCHDEST}\
+    file://0123-mtk-hostapd-fix-hostapd-crash-when-building-per-sta-.patch;patchdir=${PATCHDEST}\
+    file://0124-mtk-hostapd-WPS-use-passphrase-over-psk-file.patch;patchdir=${PATCHDEST}\
+    file://0125-mtk-hostapd-add-background-radar-standalone-mode.patch;patchdir=${PATCHDEST}\
+    file://0126-mtk-hostapd-move-attlm_settings-to-ieee802_11_def.h.patch;patchdir=${PATCHDEST}\
+    file://0127-mtk-hostapd-add-Adv-TTLM-helper-functions.patch;patchdir=${PATCHDEST}\
+    file://0128-mtk-wpa_s-add-Neg-TTLM-setup-and-teardown-for-STA-ML.patch;patchdir=${PATCHDEST}\
+    file://0129-mtk-hostapd-add-Neg-TTLM-support-for-AP-MLD.patch;patchdir=${PATCHDEST}\
+    file://0130-mtk-hostapd-unset-MLE-cap-bit-3-for-Wi-Fi-7-CERT-4.5.patch;patchdir=${PATCHDEST}\
+    file://0131-mtk-hostapd-add-link-id-for-air-monitor.patch;patchdir=${PATCHDEST}\
+    file://0132-mtk-hostapd-add-a-variable-of-type-struct-hostapd_in.patch;patchdir=${PATCHDEST}\
+    file://0133-mtk-hostapd-refactor-beacon-setting-after-interface-.patch;patchdir=${PATCHDEST}\
+    file://0134-mtk-hostapd-Add-FT-Auth-mld-support.patch;patchdir=${PATCHDEST}\
+    file://0135-mtk-hostapd-FT-Add-FT-DS-mld-sta-info-handling-in-as.patch;patchdir=${PATCHDEST}\
+    file://0136-mtk-hostapd-Fix-reassoc-cb-can-t-get-STA-error.patch;patchdir=${PATCHDEST}\
+    file://0137-mtk-hostapd-FT-Add-AP-FT-Assoc-mld-support.patch;patchdir=${PATCHDEST}\
+    file://0138-mtk-wpa_s-fix-MLD-connection-issue-when-WPS-is-used.patch;patchdir=${PATCHDEST}\
+    file://0139-mtk-hostapd-allow-only-new-association-to-enter-WPA-.patch;patchdir=${PATCHDEST}\
+    file://0140-mtk-hostapd-add-support-for-EPCS.patch;patchdir=${PATCHDEST}\
+    file://0141-mtk-hostapd-fix-RNR-unsync-issue-after-channel-switc.patch;patchdir=${PATCHDEST}\
+    file://0142-mtk-hostapd-update-preference-val-of-neighbor-report.patch;patchdir=${PATCHDEST}\
+    file://0143-mtk-hostapd-update-preference-val-of-neighbor-report.patch;patchdir=${PATCHDEST}\
+    file://0144-mtk-hostapd-add-new-argument-mbo_cert-for-hostapd_cl.patch;patchdir=${PATCHDEST}\
+    file://0145-mtk-wpa_s-also-allow-AKM24-SAE-EXT-when-wps_cred_add.patch;patchdir=${PATCHDEST}\
+    file://0146-mtk-hostapd-rework-add-txpower-vendor-command.patch;patchdir=${PATCHDEST}\
+    file://0147-mtk-hostapd-fix-aid-allocation.patch;patchdir=${PATCHDEST}\
+    file://0148-mtk-hostapd-send-beacon-request-to-STA-s-MLD-address.patch;patchdir=${PATCHDEST}\
+    file://0149-mtk-hostapd-properly-reset-ret-value-so-that-followi.patch;patchdir=${PATCHDEST}\
+    file://0150-mtk-hostapd-support-handle-mscs-protocol.patch;patchdir=${PATCHDEST}\
+    file://0151-mtk-hostapd-add-hostapd_eid_wmm_len.patch;patchdir=${PATCHDEST}\
+    file://0152-mtk-hostapd-refactor-MTK-configuration-options-in-ho.patch;patchdir=${PATCHDEST}\
+    file://0153-mtk-hostapd-refactor-for-mld-active_links.patch;patchdir=${PATCHDEST}\
+    file://0154-mtk-hostapd-prevent-repeatly-adding-link-to-MLD.patch;patchdir=${PATCHDEST}\
+    file://0155-mtk-hostapd-update-freq-on-i802_bss-s-link-only-afte.patch;patchdir=${PATCHDEST}\
+    file://0156-mtk-hostapd-support-delete-mscs-policy-for-the-speci.patch;patchdir=${PATCHDEST}\
+    file://0157-mtk-hostapd-FT-Add-FT-MIC-calculation-support-mlo.patch;patchdir=${PATCHDEST}\
+    file://0158-mtk-hostapd-FT-Add-rrb-frame-support-mld-address.patch;patchdir=${PATCHDEST}\
+    file://0159-mtk-hostapd-fix-set-key-fail-when-11v-mbss-is-enable.patch;patchdir=${PATCHDEST}\
+    file://0160-mtk-hostapd-include-BPCC-in-MLE-STA-control-when-han.patch;patchdir=${PATCHDEST}\
+    file://0161-mtk-hostapd-FT-Use-primary-wpa_auth-to-handle-rrb-in.patch;patchdir=${PATCHDEST}\
+    file://0162-mtk-hostapd-Add-support-for-printing-eml_cap-using-h.patch;patchdir=${PATCHDEST}\
+    file://0163-hostapd-mtk-drop-contiguous-association-frame-before.patch;patchdir=${PATCHDEST}\
+    file://0164-mtk-hostapd-refactor-BSS-color-change-collision-dete.patch;patchdir=${PATCHDEST}\
+    file://0165-mtk-hostapd-fix-get-set-edcca-vendor-command-for-sin.patch;patchdir=${PATCHDEST}\
+    file://0166-mtk-hostapd-add-802.1X-support-AP-MLD.patch;patchdir=${PATCHDEST}\
+    file://0167-mtk-hostapd-add-support-to-dump-STA-Neg-TTLM-status.patch;patchdir=${PATCHDEST}\
+    file://0168-mtk-hostapd-prevent-NULL-pointer-access-in-hostapd_f.patch;patchdir=${PATCHDEST}\
+    file://0169-mtk-hostapd-FT-Set-mld-AP-handle-OTD-roaming-with-th.patch;patchdir=${PATCHDEST}\
+    file://0170-mtk-hostapd-fix-complie-warnings-for-hostapd_cli-cmd.patch;patchdir=${PATCHDEST}\
+    file://0171-mtk-hostapd-FT-Add-rrb-frame-support-remove-sta.patch;patchdir=${PATCHDEST}\
+    file://0172-mtk-hostapd-avoid-adding-empty-channel-switch-wrappe.patch;patchdir=${PATCHDEST}\
+    file://0173-mtk-hostapd-avoid-clearing-vht-160-support-during-do.patch;patchdir=${PATCHDEST}\
+    file://0174-mtk-hostapd-fix-start_disabled.patch;patchdir=${PATCHDEST}\
+    file://0175-mtk-hostapd-fix-wbcs-values-when-pp-is-enabled.patch;patchdir=${PATCHDEST}\
+    file://0176-mtk-hostapd-fix-compile-error-when-TESTING_OPTION-is.patch;patchdir=${PATCHDEST}\
+    file://0177-mtk-hostapd-Add-RSNE-in-per-sta-profile.patch;patchdir=${PATCHDEST}\
+    file://0178-mtk-wpa_s-Find-partner-links-by-BSSID-and-SSID.patch;patchdir=${PATCHDEST}\
+    file://0179-mtk-wpa_s-add-driver-operation-to-get-interface-s-ra.patch;patchdir=${PATCHDEST}\
+    file://0180-mtk-hostapd-update-DFS-detection-mode.patch;patchdir=${PATCHDEST}\
+    file://0181-mtk-hostapd-Add-BSS-Transition-Candidate-Preference-.patch;patchdir=${PATCHDEST}\
+    file://0182-mtk-hostapd-include-vendor-element-in-MBSSID-nontran.patch;patchdir=${PATCHDEST}\
+    file://0183-mtk-hostapd-add-disconnect-counter-for-AP-interface.patch;patchdir=${PATCHDEST}\
+    file://0184-mtk-hostapd-add-support-to-get-Adv-TTLM-of-a-AP-MLD-.patch;patchdir=${PATCHDEST}\
+    file://0185-mtk-hostapd-support-handle-mtk_vendor-element.patch;patchdir=${PATCHDEST}\
+    file://0186-mtk-wpa_supplicant-support-add-mtk-vendor-element-in.patch;patchdir=${PATCHDEST}\
+    file://0187-mtk-wpa_s-add-support-to-disable-Radio-Resource-Mana.patch;patchdir=${PATCHDEST}\
+    file://0188-mtk-hostapd-increase-csa-count-for-radar-triggered-c.patch;patchdir=${PATCHDEST}\
+    file://0189-mtk-hostapd-fix-cca-csa-collision-issue.patch;patchdir=${PATCHDEST}\
+    file://0190-mtk-hostapd-Deauth-single-link-or-legacy-STA-when-AP.patch;patchdir=${PATCHDEST}\
+    file://0191-mtk-hostapd-add-11v-adv-TTLM-support.patch;patchdir=${PATCHDEST}\
+    file://0192-mtk-hostapd-use-assoc_sm-s-auth_alg-when-validating-.patch;patchdir=${PATCHDEST}\
+    file://0193-mtk-hostapd-add-checks-for-csa-cca-attlm-reconfig-fl.patch;patchdir=${PATCHDEST}\
+    file://0194-mtk-hostapd-fix-acs-ht-coex-issue.patch;patchdir=${PATCHDEST}\
+    file://0195-mtk-hostapd-fix-debug-log-parameters-order-in-ap_sta.patch;patchdir=${PATCHDEST}\
+    file://0196-mtk-hostapd-free-link-STA-for-user-triggering-deauth.patch;patchdir=${PATCHDEST}\
+    file://0197-mtk-hostapd-always-do-WPA-initialization-in-hostapd_.patch;patchdir=${PATCHDEST}\
+    file://0198-mtk-hostapd-avoid-deauthentication-disassociation-re.patch;patchdir=${PATCHDEST}\
+    file://0199-mtk-hostapd-properly-assign-sta-to-NULL-in-handle_au.patch;patchdir=${PATCHDEST}\
+    file://0200-mtk-hostapd-add-dfs-channel-state-update-cmd.patch;patchdir=${PATCHDEST}\
+    file://0201-mtk-hostapd-make-sure-that-hostapd_ml_get_assoc_sta-.patch;patchdir=${PATCHDEST}\
+    file://0202-mtk-hostapd-add-new-function-ap_cleanup_sta.patch;patchdir=${PATCHDEST}\
+    file://0203-mtk-hostapd-use-ap_celanup_sta-to-safely-cleanup-STA.patch;patchdir=${PATCHDEST}\
+    file://0204-mtk-hostapd-properly-call-ap_sta_remove_link_sta-bef.patch;patchdir=${PATCHDEST}\
+    file://0205-mtk-hostapd-replace-callback-is_mld_finished-with-ge.patch;patchdir=${PATCHDEST}\
+    file://0206-mtk-hostapd-add-MLD-support-for-command-STA-FIRST-an.patch;patchdir=${PATCHDEST}\
+    file://0207-mtk-hostapd-add-support-for-broadcast-TWT.patch;patchdir=${PATCHDEST}\
+    file://0208-mtk-hostapd-add-TWT-IE-for-Broadcast-TWT.patch;patchdir=${PATCHDEST}\
+    file://0209-mtk-hostapd-FT-Add-first_sta_seen-flag-for-roamed-st.patch;patchdir=${PATCHDEST}\
+    file://0210-mtk-wpa_supplicant-Add-wpa_sm-cb-functions-for-mlo-f.patch;patchdir=${PATCHDEST}\
+    file://0211-mtk-wpa_supplicant-Add-mlo-ft-roaming-support.patch;patchdir=${PATCHDEST}\
+    file://0212-mtk-wpa_supplicant-Add-mlo-ft-calculate-mic-support.patch;patchdir=${PATCHDEST}\
+    file://0213-mtk-hostapd-rework-mld-started.patch;patchdir=${PATCHDEST}\
+    file://0214-Revert-Avoid-set-beacon-operations-when-color-change.patch;patchdir=${PATCHDEST}\
+    file://0215-tmp-add-back-hostapd_is_mld_ap.patch;patchdir=${PATCHDEST}\
+    file://0216-mtk-hostapd-check-for-invalid-mld_link_id-in-hostapd.patch;patchdir=${PATCHDEST}\
+    file://0217-mtk-hostapd-add-support-to-request-PP-bitmap-to-driv.patch;patchdir=${PATCHDEST}\
+    file://0218-mtk-hostapd-add-MTK-refactors-for-Extender.patch;patchdir=${PATCHDEST}\
+    file://0219-Skip-associating-AP-MLD-s-link-on-disallowed-channel.patch;patchdir=${PATCHDEST}\
+    file://0220-mtk-wpa_s-add-option-to-disable-MLO.patch;patchdir=${PATCHDEST}\
+    file://0221-mtk-hostapd-add-support-to-config-setband_mask-via-u.patch;patchdir=${PATCHDEST}\
+    file://0222-mtk-hostapd-reset-sta_info-after-link-removing.patch;patchdir=${PATCHDEST}\
+    file://0223-mtk-hostapd-add-link-removal-support-for-multiple-AP.patch;patchdir=${PATCHDEST}\
+    file://0224-mtk-hostapd-move-hostapd_interfaces_get_hapd-to-host.patch;patchdir=${PATCHDEST}\
+    file://0225-mtk-hostapd-refactor-hostapd_bss_alloc_link_id.patch;patchdir=${PATCHDEST}\
+    file://0226-mtk-hostapd-refactor-link-add-operation-to-support-s.patch;patchdir=${PATCHDEST}\
+    file://0227-mtk-hostapd-FT-Add-support-for-non-tx-bss-roaming.patch;patchdir=${PATCHDEST}\
+    file://0228-mtk-hostapd-add-def_link_map-and-link_map_size-in-st.patch;patchdir=${PATCHDEST}\
+    file://0229-mtk-hostapd-add-support-to-send-TTLM-request-and-han.patch;patchdir=${PATCHDEST}\
+    file://0230-mtk-hostapd-Align-QCA-s-prpl-hostapd-Neg-TTLM-comman.patch;patchdir=${PATCHDEST}\
+    file://0231-mtk-hostapd-align-QCA-s-prpl-Adv-TTLM-command-format.patch;patchdir=${PATCHDEST}\
+    file://0232-mtk-hostapd-disallow-removing-link-from-a-MBSSID-gro.patch;patchdir=${PATCHDEST}\
+    file://0233-mtk-hostapd-align-QCA-s-prpl-link-add-command-format.patch;patchdir=${PATCHDEST}\
+    file://0234-mtk-wpa_s-skip-the-link-on-unused-radio-when-setting.patch;patchdir=${PATCHDEST}\
+    file://0235-mtk-fix-hostapd-Update-hostapd_is_usable_chans-for-1.patch;patchdir=${PATCHDEST}\
+    file://0236-mtk-hostapd-provide-information-for-kernel-6.6-ucode.patch;patchdir=${PATCHDEST}\
+    file://0237-mtk-hostapd-add-support-for-emlsr-enablement-on-one-.patch;patchdir=${PATCHDEST}\
+    file://0238-mtk-hostapd-do-not-check-ACL-for-link-addrss.patch;patchdir=${PATCHDEST}\
+    file://0239-mtk-hostapd-add-support-for-unifying-BTWT-RTWT-event.patch;patchdir=${PATCHDEST}\
+    file://0240-mtk-hostapd-add-secondary-channel-offset-element-sup.patch;patchdir=${PATCHDEST}\
+    file://0241-mtk-hostapd-do-not-check-ACL-when-handling-probe-req.patch;patchdir=${PATCHDEST}\
+    file://0242-mtk-wpa_s-ucode-retrieve-freq-and-sec_chan-from-dirv.patch;patchdir=${PATCHDEST}\
+    file://0243-mtk-hostapd-add-configuration-disable_robust_av_scs-.patch;patchdir=${PATCHDEST}\
+    file://0244-mtk-hostapd-add-allocated_links-to-track-allocated-l.patch;patchdir=${PATCHDEST}\
+    file://0245-mtk-hostapd-support-link-specific-add_btwt-del_btwt-.patch;patchdir=${PATCHDEST}\
+    file://0246-mtk-hostapd-fix-build-failure-for-Wi-Fi-6-kernel-6.1.patch;patchdir=${PATCHDEST}\
+    file://0247-mtk-hostapd-fix-2-5-GHz-link-start-failed-while-enab.patch;patchdir=${PATCHDEST}\
+    file://0248-mtk-hostapd-add-csa-cca-sanity-check-before-disable-.patch;patchdir=${PATCHDEST}\
+    file://0249-mtk-hostapd-fix-dfs-issue-for-using-the-same-channel.patch;patchdir=${PATCHDEST}\
+    file://0250-mtk-wpa_supplicant-fix-failure-to-enable-STA-interfa.patch;patchdir=${PATCHDEST}\
+    file://0251-mtk-hostapd-add-hostapd-config-he_bcast_twt_disabled.patch;patchdir=${PATCHDEST}\
+    file://0252-mtk-hostapd-Add-afc-info-and-send-request-command.patch;patchdir=${PATCHDEST}\
+    file://0253-mtk-hostapd-fix-the-potential-memory-leak-for-muru_c.patch;patchdir=${PATCHDEST}\
+    file://0254-mtk-hostapd-always-do-ML-probe-request-before-authen.patch;patchdir=${PATCHDEST}\
+    file://0255-mtk-hostapd-support-setting-singlesku-file-path.patch;patchdir=${PATCHDEST}\
+    file://0256-mtk-hostapd-rename-json_type.patch;patchdir=${PATCHDEST}\
+    file://0257-JSON-Add-double-type-support.patch;patchdir=${PATCHDEST}\
+    file://0258-hostapd-Expand-hostapd_cli-can-ctrl_iface-buffer-siz.patch;patchdir=${PATCHDEST}\
+    file://0259-tests-Add-AFC-hwsim-tests.patch;patchdir=${PATCHDEST}\
+    file://0260-mtk-hostapd-Add-AFC-EVENT.patch;patchdir=${PATCHDEST}\
     "
