@@ -1,3 +1,13 @@
+---
+[v1] net: phy: add MT753x gigabit switch family driver support
+
+Add complete driver implementation for MediaTek MT753x gigabit switch
+family (MT7530/MT7531) with comprehensive switch management
+capabilities.
+---
+v1: add MT753x gigabit switch family driver support
+---
+
 From e5a3e9a08297ce73c0fa4b3853161aff40545053 Mon Sep 17 00:00:00 2001
 From: "neal.yen" <neal.yen@mediatek.com>
 Date: Mon, 20 Oct 2025 15:29:14 +0800
@@ -81,10 +91,13 @@ index 0000000..d9e0230
 +	tristate "Driver for the MediaTek MT753x switch"
 diff --git a/drivers/net/phy/mtk/mt753x/Makefile b/drivers/net/phy/mtk/mt753x/Makefile
 new file mode 100644
-index 0000000..16e9775
+index 0000000..5090de0
 --- /dev/null
 +++ b/drivers/net/phy/mtk/mt753x/Makefile
-@@ -0,0 +1,12 @@
+@@ -0,0 +1,15 @@
++# SPDX-License-Identifier: GPL-2.0-only
++#
++# Copyright (C) 2025 MediaTek Inc.
 +#
 +# Makefile for MediaTek MT753x gigabit switch
 +#

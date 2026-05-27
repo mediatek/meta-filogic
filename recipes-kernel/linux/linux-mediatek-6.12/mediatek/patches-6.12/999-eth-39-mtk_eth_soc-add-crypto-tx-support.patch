@@ -1,6 +1,18 @@
+---
+[v3] net: ethernet: mtk_eth_soc: add crypto TX support for MT7988
+
+Add cryptographic TX support for IPsec ESP tunnels on NETSYSv3. This enables
+hardware offload for IPsec encryption via EIP197 engine, with proper descriptor
+handling for crypto DMA transport and tunnel metadata.
+---
+v3: Add extra QDMA path after EIP197 SW inline encryption.
+v2: Add txd info for IPSec inline mode in gro frag_list processing.
+v1: Refactor and decouple crypto TX with NF_HNAT driver.
+---
+
 --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
 +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -1817,6 +1817,9 @@ static void mtk_tx_set_dma_desc_v2(struc
+@@ -1782,6 +1782,9 @@ static void mtk_tx_set_dma_desc_v2(struc
  	}
  
  	data |= TX_DMA_SWC_V2 | QID_BITS_V2(info->qid);
@@ -10,7 +22,7 @@
  	WRITE_ONCE(desc->txd4, data);
  
  	data = 0;
-@@ -1837,7 +1840,11 @@ static void mtk_tx_set_dma_desc_v2(struc
+@@ -1802,7 +1805,11 @@ static void mtk_tx_set_dma_desc_v2(struc
  	WRITE_ONCE(desc->txd6, data);
  
  	WRITE_ONCE(desc->txd7, 0);
@@ -23,7 +35,7 @@
  }
  
  static void mtk_tx_set_dma_desc(struct net_device *dev, void *txd,
-@@ -1970,12 +1977,22 @@ next:
+@@ -1935,12 +1942,22 @@ next:
  	txd_info = (struct mtk_tx_dma_desc_info){
  		.gso = gso,
  		.qid = queue,
@@ -46,7 +58,7 @@
  	if (cur_skb != skb) {
  		struct tcphdr *th, *th2;
  
-@@ -2050,6 +2067,14 @@ next_frag:
+@@ -2015,6 +2032,14 @@ next_frag:
  		memset(&txd_info, 0, sizeof(struct mtk_tx_dma_desc_info));
  		txd_info.qid = queue;
  		offset = 0;
@@ -71,7 +83,7 @@
  
  #define MTK_MAX_DSA_PORTS	7
  #define MTK_DSA_PORT_MASK	GENMASK(2, 0)
-@@ -448,6 +449,10 @@
+@@ -441,6 +442,10 @@
  
  #define MTK_TX_DMA_BUF_SHIFT	8
  
@@ -82,7 +94,7 @@
  /* QDMA V2 descriptor txd6 */
  #define TX_DMA_INS_VLAN_V2	BIT(16)
  /* QDMA V2 descriptor txd5 */
-@@ -457,6 +462,10 @@
+@@ -450,6 +455,10 @@
  #define TX_DMA_SPTAG_V3         BIT(27)
  
  /* QDMA V2 descriptor txd4 */
@@ -93,7 +105,7 @@
  #define TX_DMA_FPORT_SHIFT_V2	8
  #define TX_DMA_FPORT_MASK_V2	0xf
  #define TX_DMA_SWC_V2		BIT(30)
-@@ -539,6 +548,10 @@
+@@ -532,6 +541,10 @@
  /* PDMA V2 descriptor rxd6 */
  #define RX_DMA_GET_FLUSH_RSN_V2	GENMASK(2, 0)
  #define RX_DMA_GET_AGG_CNT_V2	GENMASK(23, 16)
@@ -104,7 +116,7 @@
  
  /* PHY Polling and SMI Master Control registers */
  #define MTK_PPSC		0x10000
-@@ -1497,6 +1510,9 @@ struct mtk_tx_dma_desc_info {
+@@ -1491,6 +1504,9 @@ struct mtk_tx_dma_desc_info {
  	u32		size;
  	u16		vlan_tci;
  	u16		qid;
@@ -116,7 +128,12 @@
  	u8		vlan:1;
 --- /dev/null
 +++ b/drivers/net/ethernet/mediatek/mtk_tnl.h
-@@ -0,0 +1,37 @@
+@@ -0,0 +1,42 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Copyright (C) 2026 MediaTek Inc.
++ */
++
 +#ifndef MTK_TNL_H
 +#define MTK_TNL_H
 +

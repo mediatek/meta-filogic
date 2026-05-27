@@ -1,4 +1,8 @@
 #!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# Copyright (C) 2022 MediaTek Inc.
+#
 
 source /sbin/flowtable.sh
 
@@ -18,7 +22,7 @@ WED_ENABLE=0
 NFT_ENABLE=1
 HW_OFFLOAD=1
 
-WIFI_MODULE_LIST='mt7915e mt7996e'
+WIFI_MODULE_LIST='mt7915e mt7996e mt7999e'
 
 get_if_info()
 {

@@ -28,8 +28,6 @@ SRC_URI:append = " \
     file://333-arc-enable-unaligned-access-in-kernel-mode.patch \
     file://342-powerpc-Enable-kernel-XZ-compression-option-on-PPC_8.patch \
     file://350-mips-kernel-fix-detect_memory_region-function.patch \
-    file://360-Revert-MIPS-mm-kmalloc-tlb_vpn-array-to-avoid-stack-.patch \
-    file://361-Revert-MIPS-mm-Prevent-a-TLB-shutdown-on-initial-uni.patch \
     file://400-mtd-mtdsplit-support.patch \
     file://402-mtd-spi-nor-write-support-for-minor-aligned-partitions.patch \
     file://417-mtd-spi-nand-macronix-disable-continuous-read-for-MX.patch \
@@ -76,7 +74,6 @@ SRC_URI:append = " \
     file://610-netfilter_match_bypass_default_checks.patch \
     file://611-netfilter_match_bypass_default_table.patch \
     file://612-netfilter_match_reduce_memory_access.patch \
-    file://620-net-sfp-improve-Huawei-MA5671a-fixup.patch \
     file://630-packet_socket_type.patch \
     file://640-net-bridge-fix-switchdev-host-mdb-entry-updates.patch \
     file://641-net-bridge-switchdev-Don-t-drop-packets-between-port.patch \
@@ -92,7 +89,6 @@ SRC_URI:append = " \
     file://701-netfilter-nf_tables-ignore-EOPNOTSUPP-on-flowtable-d.patch \
     file://702-net-ethernet-mtk_eth_soc-enable-threaded-NAPI.patch \
     file://703-phy-add-detach-callback-to-struct-phy_driver.patch \
-    file://704-net-phy-register-phy-led_triggers-during-probe-to-av.patch \
     file://705-net-dsa-tag_mtk-add-padding-for-tx-packets.patch \
     file://706-net-phy-populate-host_interfaces-when-attaching-PHY.patch \
     file://710-bridge-add-knob-for-filtering-rx-tx-BPDU-pack.patch \

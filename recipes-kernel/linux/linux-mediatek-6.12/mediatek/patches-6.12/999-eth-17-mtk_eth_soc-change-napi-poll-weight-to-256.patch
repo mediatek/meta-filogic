@@ -1,3 +1,13 @@
+---
+[v1] net: ethernet: mtk_eth_soc: change NAPI poll weight to 256
+
+Change NAPI poll weight from default to 256 for improved throughput. This tuning
+parameter significantly affects peak performance of the software receive path,
+optimizing packet processing per NAPI poll cycle.
+---
+v1: Change TX/RX NAPI poll weight to 256.
+---
+
 From 9be90bb153b9a7cdd1fa0ef0b47414b5ddb36d63 Mon Sep 17 00:00:00 2001
 From: Mason Chang <mason-cw.chang@mediatek.com>
 Date: Mon, 22 Sep 2025 11:12:08 +0800
@@ -11,7 +21,7 @@ This parameter will strongly affect the peak throughput of the SW path.
 
 --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
 +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -6693,19 +6693,20 @@ static int mtk_probe(struct platform_dev
+@@ -6722,19 +6722,20 @@ static int mtk_probe(struct platform_dev
  		goto err_deinit_ppe;
  	}
  	strcpy(eth->dummy_dev->name, "mtk_eth");

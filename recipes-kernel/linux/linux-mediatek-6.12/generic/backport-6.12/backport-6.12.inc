@@ -8,9 +8,10 @@ SRC_URI:append = " \
     file://202-v6.13-clk-Provide-devm_clk_bulk_get_all_enabled-helper.patch \
     file://203-01-v6.13-of-address-Rework-bus-matching-to-avoid-warnings.patch \
     file://203-02-v6.13-of-address-Fix-WARN-when-attempting-translating-non-.patch \
-    file://204-v6.13-resource-Add-resource-set-range-and-size-helpers.patch \
     file://205-v6.16-of-reserved_mem-Add-functions-to-parse-memory-region.patch \
     file://210-v6.13-fortify-Hide-run-time-copy-size-from-value-range-tracking.patch \
+    file://211-01-v6.19-bitfield-Add-less-checking-__FIELD_-GET-PREP.patch \
+    file://211-02-v6.19-bitfield-Add-non-constant-field_-prep-get-helpers.patch \
     file://212-v6.17-of-reserved_mem-Add-missing-IORESOURCE_MEM-flag-on-r.patch \
     file://400-v6.14-mtd-spinand-add-support-for-FORESEE-F35SQA001G.patch \
     file://401-v6.17-mtd-spinand-add-support-for-FudanMicro-FM25S01A.patch \
@@ -262,8 +263,28 @@ SRC_URI:append = " \
     file://801-04-v6.13-clk-clk-gpio-add-driver-for-gated-fixed-clocks.patch \
     file://810-v6.14-gpio-regmap-Use-generic-request-free-ops.patch \
     file://820-v6.15-power-supply-sysfs-remove-duplicate-nul-termination-to-fix-build-with-GCC15.patch \
+    file://822-v6.19-ALSA-usb-audio-Convert-to-common-field_-get-prep-hel.patch \
+    file://823-v6.19-clk-at91-Convert-to-common-field_-get-prep-helpers.patch \
+    file://824-v6.19-iio-mlx90614-Convert-to-common-field_-get-prep-helpe.patch \
+    file://825-v6.19-pinctrl-ma35-Convert-to-common-field_-get-prep-helpe.patch \
     file://891-v6.14-dt-bindings-leds-Add-LED1202-LED-Controller.patch \
     file://892-v6.14-leds-Add-LED1202-I2C-driver.patch \
     file://893-v6.14-leds_st1202-Fix-NULL-pointer-access-error.patch \
     file://900-v6.14-driver-core-add-a-faux-bus-for-use-when-a-simple-dev.patch \
+    file://910-v6.19-crypto-testmgr-Add-missing-DES-weak-and-semi-weak-ke.patch \
+    file://911-v7.0-crypto-testmgr-Add-test-vectors-for-authenc-hmac-sha.patch \
+    file://912-v7.0-crypto-testmgr-Add-test-vectors-for-authenc-hmac-sha.patch \
+    file://913-v7.0-crypto-testmgr-Add-test-vectors-for-authenc-hmac-md5.patch \
+    file://914-v7.0-crypto-testmgr-allow-authenc-sha224-rfc3686-variant-.patch \
+    file://915-v7.1-crypto-testmgr-Add-test-vectors-for-authenc-hmac-md5.patch \
+    file://916-v7.1-crypto-testmgr-Add-test-vectors-for-authenc-hmac-sha.patch \
+    file://917-v7.1-crypto-testmgr-Add-test-vectors-for-authenc-hmac-sha.patch \
+    file://918-v7.1-crypto-testmgr-Add-test-vectors-for-authenc-hmac-sha.patch \
+    file://919-v7.1-crypto-testmgr-Add-test-vectors-for-authenc-hmac-sha.patch \
+    file://920-v7.1-crypto-testmgr-Add-test-vectors-for-authenc-hmac-sha.patch \
+    file://921-v7.1-crypto-tesmgr-allow-authenc-hmac-sha224-sha384-cbc-a.patch \
+    file://922-v7.1-crypto-testmgr-Add-test-vectors-for-authenc-hmac-md5.patch \
+    file://923-v7.1-crypto-testmgr-Add-test-vectors-for-authenc-hmac-md5.patch \
+    file://930-v7.1-crypto-safexcel-Group-authenc-ciphersuites.patch \
+    file://931-v7.1-crypto-safexcel-Add-support-for-authenc-hmac-md5-sui.patch \
     "

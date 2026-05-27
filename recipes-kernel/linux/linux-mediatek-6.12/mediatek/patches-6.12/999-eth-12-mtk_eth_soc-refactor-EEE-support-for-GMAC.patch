@@ -1,3 +1,11 @@
+---
+[v1] net: ethernet: mtk_eth_soc: refactor EEE support for GMAC
+
+Refactor Energy Efficient Ethernet (EEE) support for GMAC.
+---
+v1: Refactor EEE support for the GMAC.
+---
+
 From d1f8cd781d5e7500c844e36d877a3108caf0e397 Mon Sep 17 00:00:00 2001
 From: Bo-Cun Chen <bc-bocun.chen@mediatek.com>
 Date: Thu, 6 Nov 2025 21:46:17 +0800
@@ -22,7 +30,7 @@ Signed-off-by: Bo-Cun Chen <bc-bocun.chen@mediatek.com>
 
 --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
 +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -931,6 +931,40 @@ static void mtk_set_queue_speed(struct m
+@@ -913,6 +913,40 @@ static void mtk_set_queue_speed(struct m
  	mtk_w32(eth, val, soc->reg_map->qdma.qtx_sch + ofs);
  }
  
@@ -63,7 +71,7 @@ Signed-off-by: Bo-Cun Chen <bc-bocun.chen@mediatek.com>
  static void mtk_gdm_mac_link_up(struct mtk_mac *mac,
  				struct phy_device *phy,
  				unsigned int mode, phy_interface_t interface,
-@@ -966,17 +1000,12 @@ static void mtk_gdm_mac_link_up(struct m
+@@ -948,17 +982,12 @@ static void mtk_gdm_mac_link_up(struct m
  	if (rx_pause)
  		mcr |= MAC_MCR_FORCE_RX_FC;
  
@@ -85,7 +93,7 @@ Signed-off-by: Bo-Cun Chen <bc-bocun.chen@mediatek.com>
  }
  
  static void mtk_xgdm_mac_link_up(struct mtk_mac *mac,
-@@ -5506,9 +5535,11 @@ static int mtk_get_eee(struct net_device
+@@ -5533,9 +5562,11 @@ static int mtk_get_eee(struct net_device
  	if (ret)
  		return ret;
  
@@ -100,7 +108,7 @@ Signed-off-by: Bo-Cun Chen <bc-bocun.chen@mediatek.com>
  
  	return 0;
  }
-@@ -5516,37 +5547,20 @@ static int mtk_get_eee(struct net_device
+@@ -5543,37 +5574,20 @@ static int mtk_get_eee(struct net_device
  static int mtk_set_eee(struct net_device *dev, struct ethtool_keee *eee)
  {
  	struct mtk_mac *mac = netdev_priv(dev);
@@ -148,7 +156,7 @@ Signed-off-by: Bo-Cun Chen <bc-bocun.chen@mediatek.com>
  }
 --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
 +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-@@ -525,6 +525,7 @@
+@@ -527,6 +527,7 @@
  #define MAC_EEE_WAKEUP_TIME_1000	GENMASK(31, 24)
  #define MAC_EEE_WAKEUP_TIME_100		GENMASK(23, 16)
  #define MAC_EEE_LPI_TXIDLE_THD		GENMASK(15, 8)

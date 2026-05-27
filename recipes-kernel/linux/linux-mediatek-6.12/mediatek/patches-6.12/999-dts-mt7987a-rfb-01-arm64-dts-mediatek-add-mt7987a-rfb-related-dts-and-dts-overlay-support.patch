@@ -1,3 +1,24 @@
+---
+[v4] arm64: dts: mediatek: convert mt7987 to dts-overlay architecture
+
+Convert MT7987 device tree to overlay based architecture. This comprehensive
+implementation demonstrates the full power of DTS overlay architecture for
+complex SoC platforms with multiple hardware configurations. The base
+mt7987a-rfb.dts keeps essential nodes. Storage media overlays support various
+flash types, refer to mt7987-<flash-type>.dtso for different storage options.
+Network configuration overlays support various PHY and switch configurations,
+refer to mt7987-netsys-*.dtso for different networking options. Peripheral
+overlays include SPIDEV for development.
+
+---
+v4: Move Wi-Fi nodes to separate DTSOs
+v3: Update AN8855 SWCONFIG (GSW) driver to v1.0.11 for improved switch support.
+v2: Fix Bananapi BPI-R4-Lite NAND boot patches. BPI-R4-Lite uses SPI2 for NAND
+    instead of SPI0 which differs from standard MT7987 RFB board.
+v1: Move openwrt-master files to openwrt-25.12 branch after OpenWrt official
+    25.12 branch release.
+---
+
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt7987-spidev.dtso
 @@ -0,0 +1,28 @@
@@ -31,8 +52,11 @@
 +};
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt7987-netsys-eth1-i2p5g.dtso
-@@ -0,0 +1,30 @@
+@@ -0,0 +1,33 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright (C) 2025 MediaTek Inc.
++ */
 +
 +/dts-v1/;
 +/plugin/;
@@ -64,8 +88,11 @@
 +
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt7987-netsys-eth2-usb.dtso
-@@ -0,0 +1,25 @@
+@@ -0,0 +1,28 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright (C) 2025 MediaTek Inc.
++ */
 +
 +/dts-v1/;
 +/plugin/;
@@ -92,8 +119,11 @@
 +
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt7987-spim-nor.dtso
-@@ -0,0 +1,61 @@
+@@ -0,0 +1,64 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright (C) 2025 MediaTek Inc.
++ */
 +
 +/dts-v1/;
 +/plugin/;
@@ -156,8 +186,11 @@
 +
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt7987-netsys-eth0-e2p5g.dtso
-@@ -0,0 +1,40 @@
+@@ -0,0 +1,43 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright (C) 2025 MediaTek Inc.
++ */
 +
 +/dts-v1/;
 +/plugin/;
@@ -199,8 +232,11 @@
 +
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt7987-netsys-eth0-an8855-gsw.dtso
-@@ -0,0 +1,61 @@
+@@ -0,0 +1,64 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright (C) 2025 MediaTek Inc.
++ */
 +
 +/dts-v1/;
 +/plugin/;
@@ -263,8 +299,11 @@
 +};
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt7987-emmc.dtso
-@@ -0,0 +1,101 @@
+@@ -0,0 +1,86 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright (C) 2025 MediaTek Inc.
++ */
 +
 +/dts-v1/;
 +/plugin/;
@@ -320,17 +359,13 @@
 +							};
 +						};
 +
-+						block-partition-factory {
++						factory: block-partition-factory {
 +							partname = "factory";
 +
 +							nvmem-layout {
 +								compatible = "fixed-layout";
 +								#address-cells = <1>;
 +								#size-cells = <1>;
-+
-+								eeprom_factory_0: eeprom@0 {
-+									reg = <0x0 0x1e00>;
-+								};
 +							};
 +						};
 +
@@ -349,26 +384,15 @@
 +			rootdisk-emmc = <&emmc_rootfs>;
 +		};
 +	};
-+
-+	fragment@4 {
-+		target = <&pcie0>;
-+		__overlay__ {
-+			slot0: pcie@0,0 {
-+				reg = <0x0000 0 0 0 0>;
-+				mt7996@0,0 {
-+					reg = <0x0000 0 0 0 0>;
-+					nvmem-cells = <&eeprom_factory_0>;
-+					nvmem-cell-names = "eeprom";
-+				};
-+			};
-+		};
-+	};
 +};
 +
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt7987-netsys-eth0-mt7531-gsw.dtso
-@@ -0,0 +1,87 @@
+@@ -0,0 +1,90 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright (C) 2025 MediaTek Inc.
++ */
 +
 +/dts-v1/;
 +/plugin/;
@@ -549,8 +573,11 @@
 +};
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt7987-netsys-eth0-mt7531.dtso
-@@ -0,0 +1,91 @@
+@@ -0,0 +1,94 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright (C) 2025 MediaTek Inc.
++ */
 +
 +/dts-v1/;
 +/plugin/;
@@ -643,8 +670,11 @@
 +
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt7987-netsys-eth0-an8855.dtso
-@@ -0,0 +1,206 @@
+@@ -0,0 +1,209 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright (C) 2025 MediaTek Inc.
++ */
 +
 +/dts-v1/;
 +/plugin/;
@@ -852,8 +882,11 @@
 +
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt7987-sd.dtso
-@@ -0,0 +1,74 @@
+@@ -0,0 +1,77 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright (C) 2025 MediaTek Inc.
++ */
 +
 +/dts-v1/;
 +/plugin/;
@@ -929,8 +962,11 @@
 +
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt7987-netsys-eth0-an8801sb.dtso
-@@ -0,0 +1,40 @@
+@@ -0,0 +1,43 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright (C) 2025 MediaTek Inc.
++ */
 +
 +/dts-v1/;
 +/plugin/;
@@ -972,8 +1008,11 @@
 +
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt7987-netsys-eth2-an8801sb.dtso
-@@ -0,0 +1,41 @@
+@@ -0,0 +1,44 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright (C) 2025 MediaTek Inc.
++ */
 +
 +/dts-v1/;
 +/plugin/;
@@ -1016,8 +1055,11 @@
 +
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt7987-netsys-eth2-e2p5g.dtso
-@@ -0,0 +1,39 @@
+@@ -0,0 +1,42 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright (C) 2025 MediaTek Inc.
++ */
 +
 +/dts-v1/;
 +/plugin/;
@@ -1058,8 +1100,11 @@
 +
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt7987-netsys-eth2-sfp.dtso
-@@ -0,0 +1,50 @@
+@@ -0,0 +1,53 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright (C) 2025 MediaTek Inc.
++ */
 +
 +/dts-v1/;
 +/plugin/;
@@ -1111,8 +1156,11 @@
 +
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt7987-spim-nand-nmbm.dtso
-@@ -0,0 +1,130 @@
+@@ -0,0 +1,117 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright (C) 2025 MediaTek Inc.
++ */
 +
 +/dts-v1/;
 +/plugin/;
@@ -1203,22 +1251,6 @@
 +	};
 +
 +	fragment@2 {
-+		target = <&pcie0>;
-+		__overlay__ {
-+			slot0: pcie@0,0 {
-+				reg = <0x0000 0 0 0 0>;
-+
-+				mt7996@0,0 {
-+					compatible = "mediatek,mt76";
-+					reg = <0x0000 0 0 0 0>;
-+					device_type = "pci";
-+					mediatek,mtd-eeprom = <&factory 0x0>;
-+				};
-+			};
-+		};
-+	};
-+
-+	fragment@3 {
 +		target = <&gmac0>;
 +		__overlay__ {
 +			nvmem-cell-names = "mac-address";
@@ -1226,7 +1258,7 @@
 +		};
 +	};
 +
-+	fragment@4 {
++	fragment@3 {
 +		target = <&gmac1>;
 +		__overlay__ {
 +			nvmem-cell-names = "mac-address";
@@ -1234,7 +1266,7 @@
 +		};
 +	};
 +
-+	fragment@5 {
++	fragment@4 {
 +		target = <&gmac2>;
 +		__overlay__ {
 +			nvmem-cell-names = "mac-address";
@@ -1244,8 +1276,11 @@
 +};
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt7987-spim-nand.dtso
-@@ -0,0 +1,134 @@
+@@ -0,0 +1,117 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright (C) 2025 MediaTek Inc.
++ */
 +
 +/dts-v1/;
 +/plugin/;
@@ -1296,17 +1331,13 @@
 +								};
 +							};
 +
-+							ubi_factory: ubi-volume-factory {
++							factory: ubi_factory: ubi-volume-factory {
 +								volname = "factory";
 +
 +								nvmem-layout {
 +									compatible = "fixed-layout";
 +									#address-cells = <1>;
 +									#size-cells = <1>;
-+
-+									eeprom_wmac: eeprom@0 {
-+										reg = <0x0 0x1e00>;
-+									};
 +
 +									gmac2_mac: eeprom@fffee {
 +										reg = <0xfffee 0x6>;
@@ -1340,22 +1371,6 @@
 +	};
 +
 +	fragment@2 {
-+		target = <&pcie0>;
-+		__overlay__ {
-+			slot0: pcie@0,0 {
-+				reg = <0x0000 0 0 0 0>;
-+
-+				wifi@0,0 {
-+					compatible = "mediatek,mt76";
-+					reg = <0x0000 0 0 0 0>;
-+					nvmem-cell-names = "eeprom";
-+					nvmem-cells = <&eeprom_wmac>;
-+				};
-+			};
-+		};
-+	};
-+
-+	fragment@3 {
 +		target = <&gmac0>;
 +		__overlay__ {
 +			nvmem-cell-names = "mac-address";
@@ -1363,7 +1378,7 @@
 +		};
 +	};
 +
-+	fragment@4 {
++	fragment@3 {
 +		target = <&gmac1>;
 +		__overlay__ {
 +			nvmem-cell-names = "mac-address";
@@ -1371,7 +1386,7 @@
 +		};
 +	};
 +
-+	fragment@5 {
++	fragment@4 {
 +		target = <&gmac2>;
 +		__overlay__ {
 +			nvmem-cell-names = "mac-address";
@@ -1381,8 +1396,11 @@
 +};
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt7987-spim2-nand.dtso
-@@ -0,0 +1,134 @@
+@@ -0,0 +1,137 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright (C) 2025 MediaTek Inc.
++ */
 +
 +/dts-v1/;
 +/plugin/;
@@ -1518,8 +1536,11 @@
 +};
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt7987-spim2-nand-nmbm.dtso
-@@ -0,0 +1,130 @@
+@@ -0,0 +1,133 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright (C) 2025 MediaTek Inc.
++ */
 +
 +/dts-v1/;
 +/plugin/;

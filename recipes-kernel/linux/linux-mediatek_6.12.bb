@@ -7,8 +7,8 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}-${PV}/mediatek/flow_patch:"
 
 KBRANCH ?= "linux-6.12.y"
 
-LINUX_VERSION ?= "6.12.74"
-SRCREV_machine ?= "444b39ef6108313e8452010b22aaba588e8fb92b"
+LINUX_VERSION ?= "6.12.87"
+SRCREV_machine ?= "8bf2f55ef536982e44802d99340119dac6f50636"
 KMETA = "kernel-meta"
 SRCREV_meta ?= "39c7e069b8475a8751d1a584a6181e072033f25d"
 
@@ -85,8 +85,10 @@ do_filogic_patches() {
             patch -p1 < ${WORKDIR}/999-dts-mt7981-rfb-04-add-i2c-pin-and-devices.patch
             patch -p1 < ${WORKDIR}/999-dts-mt7981-rfb-05-arm64-dts-mediatek-add-gpio-keys-debounce.patch
             patch -p1 < ${WORKDIR}/999-dts-mt7981-rfb-06-arm64-dts-mediatek-add-wifi-device-node.patch
+            patch -p1 < ${WORKDIR}/999-dts-mt7981-rfb-08-arm64-dts-mediatek-add-last-partition-size-extend-to-end-support.patch
             patch -p1 < ${WORKDIR}/999-dts-mt7986a-rfb-01-arm64-dts-mediaek-refactor-pinctrl-node.patch
             patch -p1 < ${WORKDIR}/999-dts-mt7986a-rfb-08-arm64-dts-mediatek-fix-spim-nand-nor-dts-setting.patch
+            patch -p1 < ${WORKDIR}/999-dts-mt7986a-rfb-13-arm64-dts-mediatek-add-last-partition-size-extend-to-end-support.patch
             patch -p1 < ${WORKDIR}/999-net-01-netdevice-add-macvlan-device-path-type.patch
 
             if [ $DISTRO_FlowBlock_ENABLED = 'true' ]; then

@@ -1,3 +1,14 @@
+---
+[v2] net: ethernet: mtk_eth_soc: add 9K jumbo frame support
+
+Add support for 9K jumbo frames on MT7988. This enables handling of large
+packets for improved Rx throughput, with proper MTU configuration for
+both GMAC and XGMAC interfaces.
+---
+v2: Add 9K jumbo frame support for GMAC on MT7988.
+v1: Add 9K jumbo frame support for XGMAC on MT7988.
+---
+
 From 056472e54b579fc2d97744f9efdd5f35622f7be1 Mon Sep 17 00:00:00 2001
 From: Mason Chang <mason-cw.chang@mediatek.com>
 Date: Fri, 17 Oct 2025 17:25:15 +0800
@@ -44,7 +55,7 @@ Subject: [PATCH] net: ethernet: mtk_eth_soc: add 9k jumbo frame support
  
  		if (mcr_new != mcr_cur)
  			mtk_w32(mac->hw, mcr_new, MTK_XMAC_RX_CFG2(mac->id));
-@@ -910,6 +918,19 @@ void mtk_shaper_update_refcnt(struct mtk
+@@ -885,6 +893,19 @@ void mtk_shaper_update_refcnt(struct mtk
  		atomic_dec(&eth->qdma_shaper.refcnt[idx]);
  }
  
@@ -64,7 +75,7 @@ Subject: [PATCH] net: ethernet: mtk_eth_soc: add 9k jumbo frame support
  static void mtk_set_queue_speed(struct mtk_eth *eth, unsigned int idx,
  				int speed)
  {
-@@ -1525,9 +1546,8 @@ static bool mtk_rx_get_desc(struct mtk_e
+@@ -1499,9 +1520,8 @@ static bool mtk_rx_get_desc(struct mtk_e
  	return true;
  }
  
@@ -75,7 +86,7 @@ Subject: [PATCH] net: ethernet: mtk_eth_soc: add 9k jumbo frame support
  	unsigned long data;
  
  	data = __get_free_pages(gfp_mask | __GFP_COMP | __GFP_NOWARN,
-@@ -2689,7 +2709,7 @@ static int mtk_poll_rx(struct napi_struc
+@@ -2663,7 +2683,7 @@ static int mtk_poll_rx(struct napi_struc
  			if (ring->frag_size <= PAGE_SIZE)
  				new_data = napi_alloc_frag(ring->frag_size);
  			else
@@ -84,7 +95,7 @@ Subject: [PATCH] net: ethernet: mtk_eth_soc: add 9k jumbo frame support
  
  			if (unlikely(!new_data)) {
  				netdev->stats.rx_dropped++;
-@@ -3263,7 +3283,7 @@ static int mtk_rx_alloc(struct mtk_eth *
+@@ -3237,7 +3257,7 @@ static int mtk_rx_alloc(struct mtk_eth *
  			if (ring->frag_size <= PAGE_SIZE)
  				data = netdev_alloc_frag(ring->frag_size);
  			else
@@ -93,7 +104,7 @@ Subject: [PATCH] net: ethernet: mtk_eth_soc: add 9k jumbo frame support
  
  			if (!data)
  				return -ENOMEM;
-@@ -6475,7 +6495,7 @@ static int mtk_add_mac(struct mtk_eth *e
+@@ -6496,7 +6516,7 @@ static int mtk_add_mac(struct mtk_eth *e
  	eth->netdev[id]->irq = eth->irq_fe[0];
  	eth->netdev[id]->dev.of_node = np;
  
@@ -114,7 +125,7 @@ Subject: [PATCH] net: ethernet: mtk_eth_soc: add 9k jumbo frame support
  #define MTK_TX_DMA_BUF_LEN	0x3fff
  #define MTK_TX_DMA_BUF_LEN_V2	0xffff
  #define MTK_QDMA_RING_SIZE	2048
-@@ -539,6 +541,8 @@
+@@ -541,6 +543,8 @@
  
  /* Mac control registers */
  #define MTK_MAC_MCR(x)		(0x10100 + (x * 0x100))
@@ -123,7 +134,7 @@ Subject: [PATCH] net: ethernet: mtk_eth_soc: add 9k jumbo frame support
  #define MAC_MCR_MAX_RX_MASK	GENMASK(25, 24)
  #define MAC_MCR_MAX_RX(_x)	(MAC_MCR_MAX_RX_MASK & ((_x) << 24))
  #define MAC_MCR_MAX_RX_1518	0x0
-@@ -1201,6 +1205,7 @@ enum mkt_eth_capabilities {
+@@ -1203,6 +1207,7 @@ enum mkt_eth_capabilities {
  	MTK_SRAM_BIT,
  	MTK_XGMAC_BIT,
  	MTK_XGMAC_V2_BIT,
@@ -131,7 +142,7 @@ Subject: [PATCH] net: ethernet: mtk_eth_soc: add 9k jumbo frame support
  	MTK_36BIT_DMA_BIT,
  
  	/* MUX BITS*/
-@@ -1253,6 +1258,7 @@ enum mkt_eth_capabilities {
+@@ -1255,6 +1260,7 @@ enum mkt_eth_capabilities {
  #define MTK_SRAM		BIT_ULL(MTK_SRAM_BIT)
  #define MTK_XGMAC		BIT_ULL(MTK_XGMAC_BIT)
  #define MTK_XGMAC_V2		BIT_ULL(MTK_XGMAC_V2_BIT)
@@ -139,7 +150,7 @@ Subject: [PATCH] net: ethernet: mtk_eth_soc: add 9k jumbo frame support
  #define MTK_36BIT_DMA	BIT_ULL(MTK_36BIT_DMA_BIT)
  
  #define MTK_ETH_MUX_GDM1_TO_GMAC1_ESW		\
-@@ -1375,7 +1381,8 @@ enum mkt_eth_capabilities {
+@@ -1377,7 +1383,8 @@ enum mkt_eth_capabilities {
  		      MTK_MUX_GMAC123_TO_GEPHY_SGMII | \
  		      MTK_MUX_GMAC123_TO_USXGMII | MTK_MUX_GMAC2_TO_2P5GPHY | \
  		      MTK_QDMA | MTK_SRAM | MTK_PDMA_INT | MTK_RSS | \

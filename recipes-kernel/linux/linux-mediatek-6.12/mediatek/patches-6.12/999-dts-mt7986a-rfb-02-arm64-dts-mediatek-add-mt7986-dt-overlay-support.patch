@@ -1,3 +1,21 @@
+---
+[v4] arm64: dts: mediatek: convert mt7986 to dts-overlay architecture
+
+Convert MT7986 device tree to overlay based architecture. This refactoring
+separates the base DTS keeping common hardware nodes from board specific
+configurations which are now in DTSO overlay files. The base mt7986a-rfb.dts
+keeps essential nodes while disabling storage nodes. This patch includes
+mt7986-spim-nand-nmbm.dtso as an overlay example.
+
+---
+v4: Remove spi0 node from basic dts for adding spim nor ovelray support.
+v3: Add and unify pinctrl nodes into mt7986-pinctrl.dtsi file for centralized
+    pin configuration management.
+v2: Move openwrt-master files to openwrt-25.12 branch after OpenWrt official
+    25.12 branch release.
+v1: Initial mt7986a-rfb basic boot support to boot OpenWrt to shell.
+---
+
 --- a/arch/arm64/boot/dts/mediatek/mt7986a-rfb.dts
 +++ b/arch/arm64/boot/dts/mediatek/mt7986a-rfb.dts
 @@ -8,7 +8,7 @@
@@ -64,7 +82,7 @@
  &mdio {
  	switch: switch@0 {
  		compatible = "mediatek,mt7531";
-@@ -248,15 +279,7 @@
+@@ -122,15 +153,7 @@
  	pinctrl-names = "default";
  	pinctrl-0 = <&spi_flash_pins>;
  	cs-gpios = <0>, <0>;
@@ -155,15 +173,3 @@
 +&{/soc/wifi@18000000} {
 +	mediatek,mtd-eeprom = <&factory 0>;
 +};
---- a/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
-@@ -305,7 +305,8 @@
- 		};
- 
- 		spi0: spi@1100a000 {
--			compatible = "mediatek,mt7986-spi-ipm", "mediatek,spi-ipm";
-+			compatible = "mediatek,ipm-spi-quad",
-+				     "mediatek,spi-ipm";
- 			reg = <0 0x1100a000 0 0x100>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;

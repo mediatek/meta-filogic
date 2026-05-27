@@ -39,6 +39,7 @@ SRC_URI:append = " \
     file://730-net-ethernet-mtk_eth_soc-add-hw-dump-for-forced-rese.patch \
     file://735-net-phy-realtek-rtl8261n.patch \
     file://750-net-pcs-mtk-lynxi-workaround-2500BaseX-no-an.patch \
+    file://755-net-phy-motorcomm-yt8821-bus-collision-workaround.patch \
     file://760-net-usb-r8152-add-LED-configuration-from-OF.patch \
     file://761-dt-bindings-net-add-RTL8152-binding-documentation.patch \
     file://766-net-phy-mediatek-ge-add-LED-configuration-interface.patch \

@@ -1,6 +1,10 @@
 #!/bin/sh
-
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# Copyright (C) 2025 MediaTek Inc.
+#
 # Configuration flags
+
 NFT_ENABLE=1  # 1: use nftables, 0: use iptables
 HW_OFFLOAD=1   # 1: hardware offload path, 0: software fast path
 FLOWTABLE_CONFIG="/etc/flowtable.conf"  # nft flowtable configuration file
@@ -38,10 +42,10 @@ nftables_flowoffload_enable()
 	fi
 
 	# check all of the ETH/WiFi virtual interfaces
-	eth_ifs=$(ls /sys/class/net | grep -E '^(eth|lan|wan|mxl|ppp)')
+	eth_ifs=$(ls /sys/class/net | grep -E '^(eth|lan|wan|mxl|ppp|464)')
 	wifi_ifs=$(iw dev | grep 'Interface' | awk '{print $2}')
 
-	interfaces=$(echo -e "$eth_ifs\n$wifi_ifs")
+	interfaces="$eth_ifs $wifi_ifs"
 
 	if [ -z "$interfaces" ]; then
 		echo "Error: No valid network interfaces found" >&2
@@ -49,7 +53,11 @@ nftables_flowoffload_enable()
 	fi
 
 	# generate ETH/WiFi virtual interfaces list
-	interfaces_list=$(echo $interfaces | tr ' ' ', ')
+	iface_list=""
+	for iface in $interfaces; do
+		[ -n "$iface_list" ] && iface_list="$iface_list, "
+		iface_list="$iface_list\"$iface\""
+	done
 
 	# determine flags line based on hw_path parameter
 	if [ "$hw_path" -eq 1 ]; then
@@ -63,7 +71,7 @@ nftables_flowoffload_enable()
 table inet filter {
 	flowtable f {
 		hook ingress priority filter + 1;
-		devices = { $interfaces_list };
+		devices = { $iface_list };
 		$flags_line
 		counter;
 	}
@@ -84,6 +92,22 @@ EOL
 	if ! nft -f $FLOWTABLE_CONFIG; then
 		echo "Error: Failed to apply nftables configuration" >&2
 		return 1
+	fi
+
+	# add 464xlat ct mark rule if any 464* device exists
+	nftables_464xlat_mark
+}
+
+nftables_464xlat_mark()
+{
+	# check if any network device starting with '464' exists
+	local clat_dev
+	clat_dev=$(ls /sys/class/net | grep -m1 '^464')
+
+	if [ -n "$clat_dev" ]; then
+		# insert rule: for IPv4 UDP packets going out via the detected 464xlat device
+		# with UDP checksum 0, set ct mark to 0x99 to prevent flowtable offload
+		nft "insert rule inet filter forward meta nfproto ipv4 meta oifname \"$clat_dev\" udp checksum 0 ct mark set 0x99"
 	fi
 }
 

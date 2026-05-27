@@ -1,3 +1,12 @@
+---
+[v1] net: ethernet: mtk_ppe: change to internal PPE debugfs
+
+Without this patch, users cannot get the Bind or Unbind entries
+with a single debug command.
+---
+v1: Add internal PPE debugfs interface.
+---
+
 From b325bbc1cf3caf4b26f8b2ccdb45c0b6c534a7d2 Mon Sep 17 00:00:00 2001
 From: Bo-Cun Chen <bc-bocun.chen@mediatek.com>
 Date: Wed, 24 Sep 2025 12:02:44 +0800
@@ -13,11 +22,9 @@ Signed-off-by: Bo-Cun Chen <bc-bocun.chen@mediatek.com>
  .../net/ethernet/mediatek/mtk_ppe_debugfs.c   | 60 +++++++++++++++++++
  3 files changed, 63 insertions(+)
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.c b/drivers/net/ethernet/mediatek/mtk_ppe.c
-index cb08d13..117cce9 100644
 --- a/drivers/net/ethernet/mediatek/mtk_ppe.c
 +++ b/drivers/net/ethernet/mediatek/mtk_ppe.c
-@@ -905,6 +905,7 @@ struct mtk_ppe *mtk_ppe_init(struct mtk_eth *eth, void __iomem *base, int index)
+@@ -905,6 +905,7 @@ struct mtk_ppe *mtk_ppe_init(struct mtk_
  	ppe->base = base;
  	ppe->eth = eth;
  	ppe->dev = dev;
@@ -25,8 +32,6 @@ index cb08d13..117cce9 100644
  	ppe->version = eth->soc->offload_version;
  	ppe->accounting = accounting;
  
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.h b/drivers/net/ethernet/mediatek/mtk_ppe.h
-index 9a4990a..30817a9 100644
 --- a/drivers/net/ethernet/mediatek/mtk_ppe.h
 +++ b/drivers/net/ethernet/mediatek/mtk_ppe.h
 @@ -326,6 +326,7 @@ struct mtk_ppe {
@@ -37,7 +42,7 @@ index 9a4990a..30817a9 100644
  	int version;
  	char dirname[5];
  	bool accounting;
-@@ -401,6 +402,7 @@ int mtk_foe_entry_set_queue(struct mtk_eth *eth, struct mtk_foe_entry *entry,
+@@ -401,6 +402,7 @@ int mtk_foe_entry_set_queue(struct mtk_e
  int mtk_foe_entry_commit(struct mtk_ppe *ppe, struct mtk_flow_entry *entry);
  void mtk_foe_entry_clear(struct mtk_ppe *ppe, struct mtk_flow_entry *entry);
  int mtk_ppe_debugfs_init(struct mtk_ppe *ppe, int index);
@@ -45,11 +50,9 @@ index 9a4990a..30817a9 100644
  void mtk_foe_entry_get_stats(struct mtk_ppe *ppe, struct mtk_flow_entry *entry,
  			     int *idle);
  
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe_debugfs.c b/drivers/net/ethernet/mediatek/mtk_ppe_debugfs.c
-index 9259d09..967db5e 100644
 --- a/drivers/net/ethernet/mediatek/mtk_ppe_debugfs.c
 +++ b/drivers/net/ethernet/mediatek/mtk_ppe_debugfs.c
-@@ -126,6 +126,8 @@ mtk_ppe_debugfs_foe_show(struct seq_file *m, void *private, bool bind)
+@@ -126,6 +126,8 @@ mtk_ppe_debugfs_foe_show(struct seq_file
  			break;
  		}
  
@@ -58,7 +61,7 @@ index 9259d09..967db5e 100644
  		seq_printf(m, " orig=");
  		mtk_print_addr_info(m, &ai);
  
-@@ -193,3 +195,61 @@ int mtk_ppe_debugfs_init(struct mtk_ppe *ppe, int index)
+@@ -193,3 +195,61 @@ int mtk_ppe_debugfs_init(struct mtk_ppe
  
  	return 0;
  }
@@ -120,6 +123,3 @@ index 9259d09..967db5e 100644
 +
 +	return 0;
 +}
--- 
-2.45.2
-
