@@ -89,4 +89,14 @@ SRC_URI:append = " \
     file://0087-mtk-mt76-mt7996-add-support-for-loading-power-limit-.patch \
     file://0088-mtk-mt76-mt7996-rework-beacon-monitor-for-11v-MBSS.patch \
     file://0089-mtk-mt76-mt7996-fix-support-of-EHT-MCS-15.patch \
+    file://0090-wifi-mt76-mt7996-wed-Refactor-wed-init-for-build-pas.patch \
+    file://0091-cp-mtk-mt76-mt7996-fix-testmode-for-QA-tool.patch \
+    file://0092-cp-mtk-mt76-mt7996-fix-frequency-separation-for-station.patch \
+    file://0093-cp-mtk-mt76-mt7996-fix-inability-to-set-mu_aid-0.patch \
+    file://0094-cp-mtk-mt76-mt7999-Fix-channel-switch-change-pp-bitmap-.patch \
+    file://0095-cp-mtk-mt76-mt7996-clear-ieee80211_tx_info-status-befor.patch \
+    file://0096-cp-mtk-mt76-add-link_id-in-TxS.patch \
+    file://0097-cp-mtk-mt76-mt7996-Remove-firmware-log-initialization.patch \
+    file://0098-cp-mtk-mt76-sync-common-part-for-connac2-support.patch \
+    file://0099-cp-mtk-mt76-mt7915-add-connac2-support.patch \
     "

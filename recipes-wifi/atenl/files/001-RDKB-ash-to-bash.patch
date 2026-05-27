@@ -1,28 +1,28 @@
 diff --git a/ated.sh b/ated.sh
-index 9046136..e431296 100644
+index b4f3ca0..571d8af 100644
 --- a/ated.sh
 +++ b/ated.sh
 @@ -1,4 +1,4 @@
 -#!/bin/ash
 +#!/bin/bash
- # This script is used for wrapping atenl daemon to ated
- # 0 is normal mode, 1 is used for doing specific commands such as "sync eeprom all"
- 
+ # SPDX-License-Identifier: GPL-2.0-only
+ #
+ # Copyright (C) 2022 MediaTek Inc.
 diff --git a/iwpriv.sh b/iwpriv.sh
-index cebc82b..2a9b167 100644
+index ffa25c8..3cd6371 100644
 --- a/iwpriv.sh
 +++ b/iwpriv.sh
 @@ -1,4 +1,4 @@
 -#!/bin/ash
 +#!/bin/bash
- 
- interface=$1    # phy0/phy1/ra0
- cmd_type=$2     # set/show/e2p/mac/dump
+ # SPDX-License-Identifier: GPL-2.0-only
+ #
+ # Copyright (C) 2022 MediaTek Inc.
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index c5b202e..2dcbf3a 100644
+index 6137dfd..806db20 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
-@@ -12,6 +12,7 @@ INCLUDE_DIRECTORIES("${backports_dir}/mac80211/uapi")
+@@ -17,6 +17,7 @@ INCLUDE_DIRECTORIES("${backports_dir}/mac80211/uapi")
  
  ADD_EXECUTABLE(atenl main.c eth.c hqa.c nl.c eeprom.c util.c)
  TARGET_LINK_LIBRARIES(atenl nl-tiny)

@@ -1,4 +1,8 @@
 #!/bin/ash
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# Copyright (C) 2022 MediaTek Inc.
+#
 
 interface=$1    # phy0/phy1/ra0
 cmd_type=$2     # set/show/e2p/mac/dump
@@ -43,11 +47,16 @@ function write_dmesg() {
     echo "$1" > /dev/kmsg
 }
 
+function remove_leading_zeros() {
+    echo "$1" | sed 's/^0*\([0-9]\)/\1/'
+}
+
 function record_config() {
     local config=$1
     local tmp_file=$3
 
-    # check it is SOC(mt7986)/Eagle/Kite or PCIE card (mt7915/7916), and write its config
+    # check it is SOC(mt7986)/mt7996/mt7992/mt7990/mt7999 or
+    # PCIE card (mt7915/7916), and write its config
     if [ ${tmp_file} != ${interface_file} ]; then
         if [ $phy_idx -lt $SOC_start_idx ]; then
             config="${config}_PCIE"
@@ -76,7 +85,8 @@ function get_config() {
         return
     fi
 
-    # check it is SOC(mt7986)/Eagle/Kite or PCIE card (mt7915/7916), and write its config
+    # check it is SOC(mt7986)/mt7996/mt7992/mt7990/mt7999 or
+    # PCIE card (mt7915/7916), and write its config
     if [ ${tmp_file} != ${interface_file} ]; then
         if [ $phy_idx -lt $SOC_start_idx ]; then
             config="${config}_PCIE"
@@ -126,7 +136,7 @@ function parse_sku {
             SOC_start_idx="0"
             SOC_end_idx="1"
             connac_ver="3"
-        elif [ ! -z "$(head -c 2 ${eeprom_file} | hexdump | grep "80f0")" ]; then
+        elif [ ! -z "$(head -c 2 ${eeprom_file} | hexdump | grep "80f2")" ]; then
             SOC_start_idx="0"
             SOC_end_idx="2"
             connac_ver="5"
@@ -145,19 +155,19 @@ function parse_sku {
             echo "      echo STARTIDX=1 >> ${interface_file}"
             echo "      echo ENDIDX=2 >> ${interface_file}"
             echo "      echo CONNAC_VER=2 >> ${interface_file}"
-            echo "For Eagle:"
+            echo "For MT7996:"
             echo "      echo STARTIDX=0 >> ${interface_file}"
             echo "      echo ENDIDX=2 >> ${interface_file}"
             echo "      echo CONNAC_VER=3 >> ${interface_file}"
-            echo "For Kite:"
+            echo "For MT7992:"
             echo "      echo STARTIDX=0 >> ${interface_file}"
             echo "      echo ENDIDX=1 >> ${interface_file}"
             echo "      echo CONNAC_VER=3 >> ${interface_file}"
-            echo "For Griffin:"
+            echo "For MT7990:"
             echo "      echo STARTIDX=0 >> ${interface_file}"
             echo "      echo ENDIDX=1 >> ${interface_file}"
             echo "      echo CONNAC_VER=3 >> ${interface_file}"
-            echo "For Blackhawk:"
+            echo "For MT7999:"
             echo "      echo STARTIDX=0 >> ${interface_file}"
             echo "      echo ENDIDX=2 >> ${interface_file}"
             echo "      echo CONNAC_VER=5 >> ${interface_file}"
@@ -697,9 +707,9 @@ function convert_ibf {
         "ATEConTxETxBfGdProc")
             local tx_rate_mode=$(convert_tx_mode ${new_param:0:2})
             local tx_rate_idx=${new_param:3:2}
-            local bw=$(echo ${new_param:6:2} | sed 's/^0//')
-            local channel=${new_param:9:3}
-            local channel2=${new_param:13:3}
+            local bw=$(remove_leading_zeros ${new_param:6:2})
+            local channel=$(remove_leading_zeros ${new_param:9:3})
+            local channel2=$(remove_leading_zeros ${new_param:13:3})
             local band=${new_param:17}
 
             new_cmd="ebf_golden_init"
@@ -717,14 +727,15 @@ function convert_ibf {
         "ATEConTxETxBfInitProc")
             local tx_rate_mode=$(convert_tx_mode ${new_param:0:2})
             local tx_rate_idx=${new_param:3:2}
-            local bw=$(echo ${new_param:6:2} | sed 's/^0//')
+            local bw=$(remove_leading_zeros ${new_param:6:2})
             local tx_rate_nss=${new_param:9:2}
             local tx_stream=${new_param:12:2}
+            local tx_antenna=$((2 ** tx_stream - 1))
             local tx_power=${new_param:15:2}
-            local channel=$(echo ${new_param:18:3} | sed 's/^0//')
-            local channel2=${new_param:22:3}
+            local channel=$(remove_leading_zeros ${new_param:18:3})
+            local channel2=$(remove_leading_zeros ${new_param:22:3})
             local band=${new_param:26:1}
-            local tx_length=$(echo ${new_param:28:5} | sed 's/^0//')
+            local tx_length=$(remove_leading_zeros ${new_param:28:5})
 
             new_cmd="ebf_init"
             do_ate_work "ATESTART"
@@ -732,7 +743,7 @@ function convert_ibf {
             record_config "ATETXBW" ${bw} ${iwpriv_file}
             convert_channel "${channel}:${band}"
             new_param="1"
-            do_cmd "mt76-test phy${phy_idx} set tx_rate_mode=${tx_rate_mode} tx_rate_idx=${tx_rate_idx} tx_rate_nss=${tx_rate_nss} tx_rate_sgi=0 tx_rate_ldpc=1 tx_power=${tx_power},0,0,0 tx_count=10000000 tx_length=${tx_length} tx_ipg=4"
+            do_cmd "mt76-test phy${phy_idx} set tx_rate_mode=${tx_rate_mode} tx_rate_idx=${tx_rate_idx} tx_rate_nss=${tx_rate_nss} tx_rate_sgi=0 tx_rate_ldpc=1 tx_power=${tx_power},0,0,0 tx_count=10000000 tx_length=${tx_length} tx_ipg=4 tx_antenna=${tx_antenna}"
             ;;
         *)
     esac
@@ -1269,7 +1280,7 @@ if [ "${cmd_type}" = "set" ]; then
             param_new="${param},0,0,0"
             ;;
         "ATEMUAID")
-            cmd_new="aid"
+            cmd_new="mu_aid"
             param_new=${param}
             ;;
         "ATETXBW")
@@ -1427,11 +1438,15 @@ elif [ "${cmd_type}" = "dump" ]; then
     do_cmd "mt76-vendor $*"
 elif [ "${cmd_type}" = "switch" ]; then
     eeprom_mode_file=/sys/kernel/debug/ieee80211/phy0/mt76/eeprom_mode
-    eeprom_mode=$(cat ${eeprom_mode_file} | grep "mode" | sed -n 2p | cut -d " " -f 4)
+    eeprom_mode=$(cat ${eeprom_mode_file} | grep "mode" | sed -n 2p | xargs)
     eeprom_testmode_offset="1af"
     testmode_enable="0"
 
-    if [ ${connac_ver} == "2" ]; then
+    if [ ${connac_ver} == "3" ]; then
+        chip_module="mt7996e"
+    elif [ ${connac_ver} == "5" ]; then
+        chip_module="mt7999e"
+    else
         return
     fi
 
@@ -1445,7 +1460,7 @@ elif [ "${cmd_type}" = "switch" ]; then
     do_cmd "uci set wireless.radio2.disabled=${testmode_enable}"
     do_cmd "uci commit"
 
-    if [ "${eeprom_mode}" = "flash" ]; then
+    if [ "${eeprom_mode}" = "flash mode" ]; then
         ## flash mode should set eeprom testmode offset bit
         ## efuse/bin file/default bin mode rely on module param only
         do_cmd "atenl -i ${interface} -c \"eeprom set 0x${eeprom_testmode_offset}=0x${testmode_enable}\""
@@ -1454,7 +1469,7 @@ elif [ "${cmd_type}" = "switch" ]; then
         do_cmd "atenl -i ${interface} -c \"sync eeprom all\""
     fi
 
-    do_cmd "rmmod mt7996e"
+    do_cmd "rmmod ${chip_module}"
     do_cmd "rmmod mt76-connac-lib"
     do_cmd "rmmod mt76"
     do_cmd "rmmod mac80211"
@@ -1465,7 +1480,7 @@ elif [ "${cmd_type}" = "switch" ]; then
     do_cmd "insmod mac80211"
     do_cmd "insmod mt76"
     do_cmd "insmod mt76-connac-lib"
-    do_cmd "insmod mt7996e testmode_enable=${testmode_enable}"
+    do_cmd "insmod ${chip_module} testmode_enable=${testmode_enable}"
     do_cmd "sleep 5"
     do_cmd "killall hostapd"
     do_cmd "killall netifd"

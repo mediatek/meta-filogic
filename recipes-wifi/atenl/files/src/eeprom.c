@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (C) 2022 MediaTek Inc.
+ */
+
 #define _GNU_SOURCE
 #include <fcntl.h>
 #include <sys/mman.h>
@@ -75,7 +80,6 @@ retry:
 			goto out;
 		}
 	}
-
 
 	ret = lseek(fd, 0, SEEK_SET);
 	if (ret) {
@@ -482,42 +486,98 @@ int atenl_eeprom_update_precal(struct atenl *an, int write_offs, int size)
 	return 0;
 }
 
-int atenl_mtd_open(struct atenl *an, int flags)
+static int
+atenl_partition_search(char *file, const char *name, char *data, int data_size)
 {
-	char dev[128], buf[16];
-	char *part_num;
+	char *target = NULL;
+	char dev[128] = {};
 	FILE *f;
-	int fd;
 
-	f = fopen("/proc/mtd", "r");
+	f = fopen(file, "r");
 	if (!f)
-		return -1;
+		return 0;
 
 	while (fgets(dev, sizeof(dev), f)) {
-		if (!strcasestr(dev, an->flash_part))
+		if (!strcasestr(dev, name))
 			continue;
 
-		part_num = strtok(dev, ":");
-		if (part_num)
+		target = strtok(dev, ":");
+		if (target)
 			break;
 	}
 
 	fclose(f);
 
-	if (!part_num)
+	if (!target)
+		return 0;
+
+	if (data) {
+		strncpy(data, target, data_size - 1);
+		data[data_size - 1] = '\0';
+	}
+
+	return 1;
+}
+
+static int
+atenl_ubi_open(struct atenl *an, int flags)
+{
+	int i, fd, part_num, vol_id = -1;
+	char part[16] = {}, buf[128] = {};
+
+	if (!atenl_partition_search("/proc/mtd", "ubi", part, sizeof(part)))
 		return -1;
 
-	/* mtdblockX emulates an mtd device as a block device.
-	 * Use mtdblockX instead of mtdX to avoid padding & buffer handling.
-	 */
-	snprintf(buf, sizeof(buf), "/dev/mtdblock%s", part_num + 3);
+	if (sscanf(part, "mtd%d", &part_num) != 1)
+		return -1;
 
+	snprintf(buf, sizeof(buf), "/sys/class/ubi/ubi%d", part_num);
+	if (access(buf, F_OK))
+		return -1;
+
+	/* search for factory volume */
+	for (i = 0; i < 128; i++) {
+		snprintf(buf, sizeof(buf),
+			"/sys/class/ubi/ubi%d_%d/name", part_num, i);
+
+		if (atenl_partition_search(buf, an->flash_part, NULL, 0)) {
+			vol_id = i;
+			break;
+		}
+	}
+
+	if (vol_id < 0)
+		return -1;
+
+	snprintf(buf, sizeof(buf), "/dev/ubi%d_%d", part_num, vol_id);
 	fd = open(buf, flags);
 
 	return fd;
 }
 
-int atenl_mmc_open(struct atenl *an, int flags)
+static int
+atenl_mtd_open(struct atenl *an, int flags)
+{
+	char part[16] = {}, buf[128] = {};
+	int fd, part_num;
+
+	if (!atenl_partition_search("/proc/mtd", an->flash_part, part, sizeof(part)))
+		return -1;
+
+	if (sscanf(part, "mtd%d", &part_num) != 1)
+		return -1;
+
+	/* mtdblockX emulates an mtd device as a block device.
+	 * Use mtdblockX instead of mtdX to avoid padding & buffer handling.
+	 */
+	snprintf(buf, sizeof(buf), "/dev/mtdblock%d", part_num);
+	fd = open(buf, flags);
+
+	return fd;
+}
+
+static int
+atenl_mmc_open(struct atenl *an, int flags)
 {
 	const char *mmc_dev = "/dev/mmcblk0";
 	int nparts, part_num;
@@ -566,37 +626,125 @@ out:
 	return fd;
 }
 
-void atenl_flash_write(struct atenl *an, int fd, u32 size, bool is_mtd)
+static int
+atenl_ubi_write_handler(int fd, off_t vol_size, u32 offs,
+			u32 size, u8 **buf, u32 *rem)
 {
-	u32 flash_size, offs;
-	int ret = 0;
+#define UBI_VOL_IOC_MAGIC	'O'
+#define UBI_IOCVOLUP		_IOW(UBI_VOL_IOC_MAGIC, 0, int64_t)
+	int64_t update_size;
+	u8 *tmp;
+	int ret;
+
+	/* update buffer and size for full volume write */
+	if (size < vol_size) {
+		tmp = malloc(vol_size);
+		if (!tmp)
+			return -1;
+
+		ret = lseek(fd, 0, SEEK_SET);
+		if (ret < 0)
+			goto fail;
+
+		ret = read(fd, tmp, vol_size);
+		if (ret != (int)vol_size)
+			goto fail;
+
+		memcpy(tmp + offs, *buf, size);
+		*buf = tmp;
+		*rem = vol_size;
+	}
+
+	update_size = (int64_t)*rem;
+	if (ioctl(fd, UBI_IOCVOLUP, &update_size) < 0) {
+		ret = -1;
+		goto fail;
+	}
+
+	return 0;
+
+fail:
+	free(tmp);
+	return ret;
+}
+
+static int
+atenl_flash_write(struct atenl *an, int fd, u8 *data, u32 offs, u32 size,
+		  enum atenl_flash_type type)
+{
+#define UBI_VOL_IOC_MAGIC	'O'
+#define UBI_IOCVOLUP		_IOW(UBI_VOL_IOC_MAGIC, 0, int64_t)
+	static const char * const flash_type[] = {
+		[FLASH_TYPE_MTD] = "MTD",
+		[FLASH_TYPE_EMMC] = "eMMC",
+		[FLASH_TYPE_UBI] = "UBI",
+	};
+	u32 i = 0, rem = size;
+	int ret = -EINVAL;
+	off_t flash_size;
+	u8 *buf = data;
 
 	flash_size = lseek(fd, 0, SEEK_END);
-	if (size > flash_size)
+	if (flash_size == -1 || size + offs > flash_size)
 		goto fail;
 
-	offs = an->flash_offset;
-	ret = lseek(fd, offs, SEEK_SET);
+	/* ubi requires handling for partial write */
+	if (type == FLASH_TYPE_UBI)
+		ret = atenl_ubi_write_handler(fd, flash_size, offs, size,
+					      &buf, &rem);
+	else
+		ret = lseek(fd, offs, SEEK_SET);
 	if (ret < 0)
 		goto fail;
 
-	ret = write(fd, an->eeprom_data, size);
+	while (rem > 0) {
+		ret = write(fd, buf + i, rem);
+		if (ret < 0) {
+			/* write interrupted */
+			if (errno == EINTR)
+				continue;
+			break;
+		}
+
+		rem -= ret;
+		i += ret;
+	}
+
+	if (buf != data)
+		free(buf);
+
 	if (ret < 0)
 		goto fail;
 
 	atenl_info("write to %s partition %s offset 0x%x size 0x%x\n",
-		   is_mtd ? "mtd" : "mmc", an->flash_part, offs, size);
-	return;
+		   flash_type[type], an->flash_part, offs, size);
+	return 0;
 
 fail:
-	atenl_err("Failed to write %s: write size %d (flash size %d) ret = %d\n",
-		  is_mtd ? "mtd" : "mmc", size, flash_size, ret);
+	atenl_err("Failed to write %s: write size %d (flash size %ld) ret = %d\n",
+		  flash_type[type], size, (long)flash_size, ret);
+	return ret;
 }
 
-int atenl_eeprom_write_flash(struct atenl *an)
+static inline int
+atenl_flash_write_eeprom(struct atenl *an, int fd, enum atenl_flash_type type)
 {
 	u32 size = an->eeprom_size;
 	u32 precal_size, *precal_info;
+
+	precal_info = (u32 *)(an->eeprom_data + size);
+	precal_size = precal_info[0] + precal_info[1];
+
+	if (precal_size)
+		size += PRE_CAL_INFO + precal_size;
+
+	return atenl_flash_write(an, fd, an->eeprom_data, an->flash_offset,
+				 size, type);
+}
+
+static int
+atenl_eeprom_write_flash(struct atenl *an)
+{
 	int fd;
 
 	/* flash_offset = -1 for binfile mode */
@@ -605,21 +753,21 @@ int atenl_eeprom_write_flash(struct atenl *an)
 		return 0;
 	}
 
-	precal_info = (u32 *)(an->eeprom_data + size);
-	precal_size = precal_info[0] + precal_info[1];
-
-	if (precal_size)
-		size += PRE_CAL_INFO + precal_size;
+	fd = atenl_ubi_open(an, O_RDWR | O_SYNC);
+	if (fd >= 0) {
+		atenl_flash_write_eeprom(an, fd, FLASH_TYPE_UBI);
+		goto out;
+	}
 
 	fd = atenl_mtd_open(an, O_RDWR | O_SYNC);
 	if (fd >= 0) {
-		atenl_flash_write(an, fd, size, true);
+		atenl_flash_write_eeprom(an, fd, FLASH_TYPE_MTD);
 		goto out;
 	}
 
 	fd = atenl_mmc_open(an, O_RDWR | O_SYNC);
 	if (fd >= 0) {
-		atenl_flash_write(an, fd, size, false);
+		atenl_flash_write_eeprom(an, fd, FLASH_TYPE_EMMC);
 		goto out;
 	}
 
@@ -630,12 +778,14 @@ out:
 	return 0;
 }
 
-int atenl_eeprom_clear_flash(struct atenl *an)
+static int
+atenl_eeprom_clear_flash(struct atenl *an)
 {
+	enum atenl_flash_type type = FLASH_TYPE_EMMC;
 	u32 size = EEPROM_PART_SIZE;
-	u32 flash_size, offs;
-	int fd, ret = 0;
+	u32 flash_size;
 	u8 *buf;
+	int fd;
 
 	/* flash_offset = -1 for binfile mode */
 	if (an->flash_part == NULL || !(~an->flash_offset)) {
@@ -643,38 +793,41 @@ int atenl_eeprom_clear_flash(struct atenl *an)
 		return 0;
 	}
 
-	fd = atenl_mtd_open(an, O_RDWR | O_SYNC);
-	if (fd >= 0)
+	fd = atenl_ubi_open(an, O_RDWR | O_SYNC);
+	if (fd >= 0) {
+		type = FLASH_TYPE_UBI;
 		goto clear;
+	}
+
+	fd = atenl_mtd_open(an, O_RDWR | O_SYNC);
+	if (fd >= 0) {
+		type = FLASH_TYPE_MTD;
+		goto clear;
+	}
 
 	fd = atenl_mmc_open(an, O_RDWR | O_SYNC);
-	if (fd < 0)
-		goto fail;
+	if (fd < 0) {
+		perror("open");
+		goto out;
+	}
 
 clear:
 	flash_size = lseek(fd, 0, SEEK_END);
 	if (size > flash_size)
 		size = flash_size;
 
-	ret = lseek(fd, 0, SEEK_SET);
-	if (ret < 0)
-		goto fail;
-
 	buf = (u8 *)calloc(size, sizeof(char));
 	if (!buf) {
 		perror("calloc");
-		goto fail;
+		goto out;
 	}
 
-	ret = write(fd, buf, size);
-	if (ret < 0)
-		goto fail;
+	if (atenl_flash_write(an, fd, buf, 0, size, type)) {
+		perror("write");
+		goto out;
+	}
 
 	atenl_info("clear flash size 0x%x\n", size);
-	goto out;
-
-fail:
-	atenl_err("Failed to clear flash memory ret = %d\n", ret);
 
 out:
 	free(buf);
