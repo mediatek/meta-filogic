@@ -1,11 +1,11 @@
 diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index bf6b6f8120c1..6a5bff8b0bbc 100644
+index 628a900efcd4..89a52b6713a2 100644
 --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
 +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -5935,6 +5935,7 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
+@@ -6387,6 +6387,7 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
+ 
  	eth->netdev[id]->irq = eth->irq_fe[0];
  	eth->netdev[id]->dev.of_node = np;
- 	eth->netdev[id]->max_mtu = MTK_MAX_RX_LENGTH - MTK_RX_ETH_HLEN;
 +	sprintf (eth->netdev[id]->name, "eth%d",id+1);
  
  	if (MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA)) {

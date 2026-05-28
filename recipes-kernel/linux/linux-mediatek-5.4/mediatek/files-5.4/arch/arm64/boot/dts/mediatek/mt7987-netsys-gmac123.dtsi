@@ -1,4 +1,7 @@
 // SPDX-License-Identifier: (GPL-2.0 OR MIT)
+/*
+ * Copyright (C) 2024 MediaTek Inc.
+ */
 
 #include <dt-bindings/interrupt-controller/irq.h>
 #include <dt-bindings/interrupt-controller/arm-gic.h>
@@ -105,7 +108,7 @@
 			reset-delay-us = <10000>;
 
 			phy11: phy@11 {
-				compatible = "ethernet-phy-id03a2.a411";
+				compatible = "ethernet-phy-ieee802.3-c22";
 				reg = <11>;
 				phy-mode = "2500base-x";
 				airoha,polarity = <1>;
@@ -117,6 +120,8 @@
 				pinctrl-names = "i2p5gbe-led";
 				pinctrl-0 = <&i2p5gbe_led0_pins>;
 				compatible = "ethernet-phy-ieee802.3-c45";
+				interrupts = <GIC_SPI 286 IRQ_TYPE_LEVEL_HIGH>;
+				interrupt-parent = <&gic>;
 				reg = <15>;
 				phy-mode = "internal";
 			};
@@ -124,7 +129,7 @@
 			switch1: switch@1 {
 				compatible = "airoha,an8855";
 				reg = <1>;
-				airoha,extSurge = <1>;
+				airoha,ext-surge = <1>;
 				reset-gpios = <&pio 42 0>;
 			};
 		};

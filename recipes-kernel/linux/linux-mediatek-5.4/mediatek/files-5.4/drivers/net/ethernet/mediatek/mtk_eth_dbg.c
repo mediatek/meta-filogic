@@ -1,18 +1,6 @@
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  *   Copyright (C) 2018 MediaTek Inc.
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; version 2 of the License
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   Copyright (C) 2009-2016 John Crispin <blogic@openwrt.org>
- *   Copyright (C) 2009-2016 Felix Fietkau <nbd@openwrt.org>
- *   Copyright (C) 2013-2016 Michael Lee <igvtee@gmail.com>
  */
 
 #include <linux/trace_seq.h>
@@ -63,120 +51,6 @@ struct mtk_eth_debug {
 struct mtk_eth *g_eth;
 
 struct mtk_eth_debug eth_debug;
-
-void qdma_qos_shaper_ebl(u32 id, bool enable)
-{
-	struct mtk_eth *eth = g_eth;
-	u32 val;
-
-	mtk_w32(eth, (id / MTK_QTX_PER_PAGE), MTK_QDMA_PAGE);
-	if (enable) {
-		if (id < MAX_SWITCH_PORT_NUM) {
-			if (MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA_V1_4)) {
-				val = MTK_QTX_SCH_MIN_RATE_EN | MTK_QTX_SCH_MAX_RATE_EN_V2;
-				val |= FIELD_PREP(MTK_QTX_SCH_MIN_RATE_MAN_V2, 1) |
-				       FIELD_PREP(MTK_QTX_SCH_MIN_RATE_EXP_V2, 4) |
-				       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_MAN_V2, 1) |
-				       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_EXP_V2, 6) |
-				       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_WEIGHT_V2, 4);
-			} else {
-				val = MTK_QTX_SCH_MIN_RATE_EN | MTK_QTX_SCH_MAX_RATE_EN;
-				val |= FIELD_PREP(MTK_QTX_SCH_MIN_RATE_MAN, 1) |
-				       FIELD_PREP(MTK_QTX_SCH_MIN_RATE_EXP, 4) |
-				       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_MAN, 1) |
-				       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_EXP, 6) |
-				       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_WEIGHT, 4);
-			}
-		} else if (id < MAX_SWITCH_PORT_NUM * 2) {
-			val = MTK_QTX_SCH_MIN_RATE_EN;
-			if (MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA_V1_4)) {
-				val |= FIELD_PREP(MTK_QTX_SCH_MIN_RATE_MAN_V2, 1) |
-				       FIELD_PREP(MTK_QTX_SCH_MIN_RATE_EXP_V2, 3) |
-				       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_MAN_V2, 0) |
-				       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_EXP_V2, 0) |
-				       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_WEIGHT_V2, 4);
-			} else {
-				val |= FIELD_PREP(MTK_QTX_SCH_MIN_RATE_MAN, 1) |
-				       FIELD_PREP(MTK_QTX_SCH_MIN_RATE_EXP, 3) |
-				       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_MAN, 0) |
-				       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_EXP, 0) |
-				       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_WEIGHT, 4);
-			}
-		} else {
-			if (MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA_V1_4)) {
-				val = MTK_QTX_SCH_MIN_RATE_EN | MTK_QTX_SCH_MAX_RATE_EN_V2;
-				val |= FIELD_PREP(MTK_QTX_SCH_MIN_RATE_MAN_V2, 1) |
-				       FIELD_PREP(MTK_QTX_SCH_MIN_RATE_EXP_V2, 4) |
-				       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_MAN_V2, 25) |
-				       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_EXP_V2, 5) |
-				       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_WEIGHT_V2, 10);
-			} else {
-				val = MTK_QTX_SCH_MIN_RATE_EN | MTK_QTX_SCH_MAX_RATE_EN;
-				val |= FIELD_PREP(MTK_QTX_SCH_MIN_RATE_MAN, 1) |
-				       FIELD_PREP(MTK_QTX_SCH_MIN_RATE_EXP, 4) |
-				       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_MAN, 25) |
-				       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_EXP, 5) |
-				       FIELD_PREP(MTK_QTX_SCH_MAX_RATE_WEIGHT, 10);
-			}
-		}
-
-		mtk_w32(eth, val, MTK_QTX_SCH(id % MTK_QTX_PER_PAGE));
-	} else {
-		mtk_w32(eth, 0, MTK_QTX_SCH(id % MTK_QTX_PER_PAGE));
-	}
-}
-
-void qdma_qos_disable(void)
-{
-	struct mtk_eth *eth = g_eth;
-	u32 num_of_sch = !MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA_V1_1) ? 4 : 2;
-	u32 val, i;
-
-	for (i = 0; i < MAX_PPPQ_QUEUE_NUM; i++) {
-		qdma_qos_shaper_ebl(i, false);
-		mtk_w32(eth,
-			FIELD_PREP(MTK_QTX_CFG_HW_RESV_CNT_OFFSET, 4) |
-			FIELD_PREP(MTK_QTX_CFG_SW_RESV_CNT_OFFSET, 4),
-			MTK_QTX_CFG(i % MTK_QTX_PER_PAGE));
-	}
-
-	val = (MTK_QDMA_TX_SCH_MAX_WFQ) | (MTK_QDMA_TX_SCH_MAX_WFQ << 16);
-	for (i = 0; i < num_of_sch; i += 2) {
-		if (num_of_sch == 4)
-			mtk_w32(eth, val, MTK_QDMA_TX_4SCH_BASE(i));
-		else
-			mtk_w32(eth, val, MTK_QDMA_TX_2SCH_BASE);
-	}
-}
-EXPORT_SYMBOL(qdma_qos_disable);
-
-void qdma_qos_pppq_ebl(u32 enable)
-{
-	struct mtk_eth *eth = g_eth;
-	u32 num_of_sch = !MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA_V1_1) ? 4 : 2;
-	u32 val, i;
-
-	for (i = 0; i < MAX_PPPQ_QUEUE_NUM; i++) {
-		if (enable)
-			qdma_qos_shaper_ebl(i, true);
-		else
-			qdma_qos_shaper_ebl(i, false);
-
-		mtk_w32(eth,
-			FIELD_PREP(MTK_QTX_CFG_HW_RESV_CNT_OFFSET, 4) |
-			FIELD_PREP(MTK_QTX_CFG_SW_RESV_CNT_OFFSET, 4),
-			MTK_QTX_CFG(i % MTK_QTX_PER_PAGE));
-	}
-
-	val = (MTK_QDMA_TX_SCH_MAX_WFQ) | (MTK_QDMA_TX_SCH_MAX_WFQ << 16);
-	for (i = 0; i < num_of_sch; i += 2) {
-		if (num_of_sch == 4)
-			mtk_w32(eth, val, MTK_QDMA_TX_4SCH_BASE(i));
-		else
-			mtk_w32(eth, val, MTK_QDMA_TX_2SCH_BASE);
-	}
-}
-EXPORT_SYMBOL(qdma_qos_pppq_ebl);
 
 static ssize_t qdma_sched_show(struct file *file, char __user *user_buf,
 			       size_t count, loff_t *ppos)
@@ -235,13 +109,51 @@ static ssize_t qdma_sched_show(struct file *file, char __user *user_buf,
 	return ret_cnt;
 }
 
+static int qdma_rate_exp_man_calc(int rate, int *exp_out, int *man_out)
+{
+	const int exp_units_kbps[] = {
+		1,        // EXP 0: 1 kbps
+		10,       // EXP 1: 10 kbps
+		100,      // EXP 2: 100 kbps
+		1000,     // EXP 3: 1 Mbps
+		10000,    // EXP 4: 10 Mbps
+		100000,   // EXP 5: 100 Mbps
+		1000000   // EXP 6: 1 Gbps
+	};
+	const int num_exp_levels = ARRAY_SIZE(exp_units_kbps);
+	int man, exp, unit_rate;
+
+	if (rate == 0) {
+		*exp_out = 0;
+		*man_out = 0;
+		return 0;
+	}
+
+	for (exp = num_exp_levels - 1; exp >= 0; exp--) {
+		unit_rate = exp_units_kbps[exp];
+
+		if (rate % unit_rate > 0)
+			continue;
+
+		man = rate / unit_rate;
+
+		if (man >= 1 && man <= 127) {
+			*exp_out = exp;
+			*man_out = man;
+			return 0;
+		}
+	}
+
+	return -1;
+}
+
 static ssize_t qdma_sched_write(struct file *file, const char __user *buf,
 				size_t length, loff_t *offset)
 {
 	struct mtk_eth *eth = g_eth;
 	long id = (long)file->private_data;
 	char line[64] = {0}, scheduling[32];
-	int enable, rate, exp = 0, shift = 0;
+	int enable, rate, exp, man, shift = 0;
 	size_t size;
 	u32 qdma_tx_sch, val = 0;
 
@@ -263,10 +175,8 @@ static ssize_t qdma_sched_write(struct file *file, const char __user *buf,
 			return -EINVAL;
 	}
 
-	while (rate > 127) {
-		rate /= 10;
-		exp++;
-	}
+	if (qdma_rate_exp_man_calc(rate, &exp, &man) < 0)
+		return -EINVAL;
 
 	line[length] = '\0';
 
@@ -274,7 +184,7 @@ static ssize_t qdma_sched_write(struct file *file, const char __user *buf,
 		val |= MTK_QDMA_TX_SCH_RATE_EN;
 	if (strcmp(scheduling, "sp") != 0)
 		val |= MTK_QDMA_TX_SCH_MAX_WFQ;
-	val |= FIELD_PREP(MTK_QDMA_TX_SCH_RATE_MAN, rate);
+	val |= FIELD_PREP(MTK_QDMA_TX_SCH_RATE_MAN, man);
 	val |= FIELD_PREP(MTK_QDMA_TX_SCH_RATE_EXP, exp);
 	if (id & 0x1)
 		shift = 16;
@@ -411,7 +321,7 @@ static ssize_t qdma_queue_write(struct file *file, const char __user *buf,
 	if (copy_from_user(line, buf, length))
 		return -EFAULT;
 
-	if (sscanf(line, "%d %d %d %d %d %d %d", &scheduler, &min_enable, &min_rate,
+	if (sscanf(line, "%10d %10d %10d %10d %10d %10d %10d", &scheduler, &min_enable, &min_rate,
 		   &max_enable, &max_rate, &weight, &resv) != 7)
 		return -EFAULT;
 
@@ -571,12 +481,12 @@ static enum mt753x_presence mt753x_sw_detect(struct mtk_eth *eth)
 	return MT753X_ABSENT;
 }
 
-static enum mt753x_presence mt7530_exist(struct mtk_eth *eth)
+static bool mt7530_exist(struct mtk_eth *eth)
 {
 	if (mt753x_presence == MT753X_UNKNOWN)
 		mt753x_presence = mt753x_sw_detect(eth);
 
-	return mt753x_presence;
+	return (mt753x_presence == MT753X_PRESENT);
 }
 
 void mt753x_set_port_link_state(bool up)
@@ -867,7 +777,7 @@ static ssize_t mtketh_debugfs_reset(struct file *file, const char __user *ptr,
 			atomic_set(&force, 0);
 			break;
 		case 1:
-			if (atomic_read(&force) == 1) {
+			if ((atomic_read(&force) == 1) && (atomic_read(&reset_lock) == 0)) {
 				eth->reset.event = MTK_FE_START_RESET;
 				eth->reset.rstctrl_eth = false;
 				schedule_work(&eth->pending_work);
@@ -878,7 +788,7 @@ static ssize_t mtketh_debugfs_reset(struct file *file, const char __user *ptr,
 			atomic_set(&force, 1);
 			break;
 		case 3:
-			if (atomic_read(&force) == 1) {
+			if ((atomic_read(&force) == 1) && (atomic_read(&reset_lock) == 0)) {
 				eth->reset.event = MTK_FE_STOP_TRAFFIC;
 				eth->reset.rstctrl_eth = false;
 				schedule_work(&eth->pending_work);
@@ -892,7 +802,7 @@ static ssize_t mtketh_debugfs_reset(struct file *file, const char __user *ptr,
 			dbg_show_level = 0;
 			break;
 		case 6:
-			if (atomic_read(&force) == 1) {
+			if ((atomic_read(&force) == 1) && (atomic_read(&reset_lock) == 0)) {
 				eth->reset.event = MTK_FE_START_RESET;
 				eth->reset.rstctrl_eth = true;
 				schedule_work(&eth->pending_work);
@@ -900,7 +810,7 @@ static ssize_t mtketh_debugfs_reset(struct file *file, const char __user *ptr,
 				pr_info(" stat:disable\n");
 			break;
 		case 7:
-			if (atomic_read(&force) == 1) {
+			if ((atomic_read(&force) == 1) && (atomic_read(&reset_lock) == 0)) {
 				eth->reset.event = MTK_FE_STOP_TRAFFIC;
 				eth->reset.rstctrl_eth = true;
 				schedule_work(&eth->pending_work);
@@ -981,7 +891,7 @@ static ssize_t eth_debug_level_write(struct file *file, const char __user *ptr,
 	char *p_buf;
 	int ret;
 
-	if ((len > 8) || copy_from_user(buf, ptr, len))
+	if ((len >= sizeof(buf)) || copy_from_user(buf, ptr, len))
 		return -EFAULT;
 
 	buf[len] = '\0';
@@ -1000,6 +910,27 @@ static ssize_t eth_debug_level_write(struct file *file, const char __user *ptr,
 	pr_info("Set eth debug level=%d!\n", eth_debug_level);
 
 	return len;
+}
+
+static int tx_full_cnt_read(struct seq_file *m, void *v)
+{
+	struct mtk_eth *eth = m->private;
+	int i, cnt;
+
+	for (i = 0; i < MTK_MAX_TX_RING_NUM; i++) {
+		cnt = atomic_xchg(&eth->tx_ring[i].full_count, 0);
+		pr_info("tx ring%d full count: %d\n", i, cnt);
+
+		if (MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA))
+			break;
+	}
+
+	return 0;
+}
+
+static int tx_full_cnt_open(struct inode *inode, struct file *file)
+{
+	return single_open(file, tx_full_cnt_read, inode->i_private);
 }
 
 int pse_info_usage(struct seq_file *m, void *private)
@@ -1407,6 +1338,14 @@ static const struct file_operations fops_eth_debug = {
 	.release = single_release,
 };
 
+static const struct file_operations fops_tx_full_cnt = {
+	.owner = THIS_MODULE,
+	.open = tx_full_cnt_open,
+	.read = seq_read,
+	.llseek = seq_lseek,
+	.release = single_release,
+};
+
 void mtketh_debugfs_exit(struct mtk_eth *eth)
 {
 	debugfs_remove_recursive(eth_debug.root);
@@ -1421,7 +1360,7 @@ int mtketh_debugfs_init(struct mtk_eth *eth)
 	eth_debug.root = debugfs_create_dir("mtketh", NULL);
 	if (!eth_debug.root) {
 		dev_notice(eth->dev, "%s:err at %d\n", __func__, __LINE__);
-		ret = -ENOMEM;
+		return -ENOMEM;
 	}
 
 	debugfs_create_file("pse_info", 0444,
@@ -1440,6 +1379,8 @@ int mtketh_debugfs_init(struct mtk_eth *eth)
 			    eth_debug.root, eth,  &fops_eth_reset);
 	debugfs_create_file("eth_debug_level", 0444,
 			    eth_debug.root, eth, &fops_eth_debug);
+	debugfs_create_file("tx_full_cnt", 0444,
+			    eth_debug.root, eth, &fops_tx_full_cnt);
 	if (mt7530_exist(eth)) {
 		debugfs_create_file("mt7530sw_regs", S_IRUGO,
 				    eth_debug.root, eth,
@@ -1498,12 +1439,38 @@ void mii_mgr_write_combine(struct mtk_eth *eth, u16 phy_addr, u16 phy_register,
 
 static void mii_mgr_read_cl45(struct mtk_eth *eth, u16 port, u16 devad, u16 reg, u16 *data)
 {
-	*data = mdiobus_read(eth->mii_bus, port, mdiobus_c45_addr(devad, reg));
+	struct mdio_device *mdiodev = eth->mii_bus->mdio_map[port];
+	struct phy_device *phydev = NULL;
+
+	if (mdiodev)
+		phydev = container_of(mdiodev, struct phy_device, mdio);
+
+	mutex_lock(&eth->mii_bus->mdio_lock);
+
+	if (phydev && phydev->drv && phydev->drv->read_mmd)
+		*data = phydev->drv->read_mmd(phydev, devad, reg);
+	else
+		*data = __mdiobus_read(eth->mii_bus, port, mdiobus_c45_addr(devad, reg));
+
+	mutex_unlock(&eth->mii_bus->mdio_lock);
 }
 
 static void mii_mgr_write_cl45(struct mtk_eth *eth, u16 port, u16 devad, u16 reg, u16 data)
 {
-	mdiobus_write(eth->mii_bus, port, mdiobus_c45_addr(devad, reg), data);
+	struct mdio_device *mdiodev = eth->mii_bus->mdio_map[port];
+	struct phy_device *phydev = NULL;
+
+	if (mdiodev)
+		phydev = container_of(mdiodev, struct phy_device, mdio);
+
+	mutex_lock(&eth->mii_bus->mdio_lock);
+
+	if (phydev && phydev->drv && phydev->drv->write_mmd)
+		phydev->drv->write_mmd(phydev, devad, reg, data);
+	else
+		__mdiobus_write(eth->mii_bus, port, mdiobus_c45_addr(devad, reg), data);
+
+	mutex_unlock(&eth->mii_bus->mdio_lock);
 }
 
 int mtk_do_priv_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
@@ -1585,97 +1552,99 @@ err_copy:
 	return -EFAULT;
 }
 
-static void gdm_reg_dump_v3(struct mtk_eth *eth, u32 gdm_id, u32 mib_base)
+static void gdm_reg_dump_v3(struct seq_file *seq, struct mtk_eth *eth,
+			    u32 gdm_id, u32 mib_base)
 {
-	pr_info("| GDMA%d_RX_GBCNT  : %010u (Rx Good Bytes)	|\n",
-		gdm_id, mtk_r32(eth, mib_base));
-	pr_info("| GDMA%d_RX_GPCNT  : %010u (Rx Good Pkts)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x08));
-	pr_info("| GDMA%d_RX_OERCNT : %010u (overflow error)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x10));
-	pr_info("| GDMA%d_RX_FERCNT : %010u (FCS error)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x14));
-	pr_info("| GDMA%d_RX_SERCNT : %010u (too short)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x18));
-	pr_info("| GDMA%d_RX_LERCNT : %010u (too long)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x1C));
-	pr_info("| GDMA%d_RX_CERCNT : %010u (checksum error)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x20));
-	pr_info("| GDMA%d_RX_FCCNT  : %010u (flow control)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x24));
-	pr_info("| GDMA%d_RX_VDPCNT : %010u (VID drop)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x28));
-	pr_info("| GDMA%d_RX_PFCCNT : %010u (priority flow control)\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x2C));
-	pr_info("| GDMA%d_TX_GBCNT  : %010u (Tx Good Bytes)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x40));
-	pr_info("| GDMA%d_TX_GPCNT  : %010u (Tx Good Pkts)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x48));
-	pr_info("| GDMA%d_TX_SKIPCNT: %010u (abort count)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x50));
-	pr_info("| GDMA%d_TX_COLCNT : %010u (collision count)|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x54));
-	pr_info("| GDMA%d_TX_OERCNT : %010u (overflow error)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x58));
-	pr_info("| GDMA%d_TX_FCCNT  : %010u (flow control)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x60));
-	pr_info("| GDMA%d_TX_PFCCNT : %010u (priority flow control)\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x64));
-	pr_info("|						|\n");
+	seq_printf(seq, "| GDMA%d_RX_GBCNT  : %010u (Rx Good Bytes)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base));
+	seq_printf(seq, "| GDMA%d_RX_GPCNT  : %010u (Rx Good Pkts)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x08));
+	seq_printf(seq, "| GDMA%d_RX_OERCNT : %010u (overflow error)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x10));
+	seq_printf(seq, "| GDMA%d_RX_FERCNT : %010u (FCS error)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x14));
+	seq_printf(seq, "| GDMA%d_RX_SERCNT : %010u (too short)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x18));
+	seq_printf(seq, "| GDMA%d_RX_LERCNT : %010u (too long)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x1C));
+	seq_printf(seq, "| GDMA%d_RX_CERCNT : %010u (checksum error)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x20));
+	seq_printf(seq, "| GDMA%d_RX_FCCNT  : %010u (flow control)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x24));
+	seq_printf(seq, "| GDMA%d_RX_VDPCNT : %010u (VID drop)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x28));
+	seq_printf(seq, "| GDMA%d_RX_PFCCNT : %010u (priority flow control)\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x2C));
+	seq_printf(seq, "| GDMA%d_TX_GBCNT  : %010u (Tx Good Bytes)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x40));
+	seq_printf(seq, "| GDMA%d_TX_GPCNT  : %010u (Tx Good Pkts)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x48));
+	seq_printf(seq, "| GDMA%d_TX_SKIPCNT: %010u (abort count)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x50));
+	seq_printf(seq, "| GDMA%d_TX_COLCNT : %010u (collision count)|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x54));
+	seq_printf(seq, "| GDMA%d_TX_OERCNT : %010u (overflow error)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x58));
+	seq_printf(seq, "| GDMA%d_TX_FCCNT  : %010u (flow control)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x60));
+	seq_printf(seq, "| GDMA%d_TX_PFCCNT : %010u (priority flow control)\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x64));
+	seq_puts(seq, "|						|\n");
 }
 
-static void gdm_reg_dump_v2(struct mtk_eth *eth, u32 gdm_id, u32 mib_base)
+static void gdm_reg_dump_v2(struct seq_file *seq, struct mtk_eth *eth,
+			    u32 gdm_id, u32 mib_base)
 {
-	pr_info("| GDMA%d_RX_GBCNT  : %010u (Rx Good Bytes)	|\n",
-		gdm_id, mtk_r32(eth, mib_base));
-	pr_info("| GDMA%d_RX_GPCNT  : %010u (Rx Good Pkts)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x08));
-	pr_info("| GDMA%d_RX_OERCNT : %010u (overflow error)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x10));
-	pr_info("| GDMA%d_RX_FERCNT : %010u (FCS error)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x14));
-	pr_info("| GDMA%d_RX_SERCNT : %010u (too short)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x18));
-	pr_info("| GDMA%d_RX_LERCNT : %010u (too long)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x1C));
-	pr_info("| GDMA%d_RX_CERCNT : %010u (checksum error)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x20));
-	pr_info("| GDMA%d_RX_FCCNT  : %010u (flow control)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x24));
-	pr_info("| GDMA%d_TX_SKIPCNT: %010u (abort count)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x28));
-	pr_info("| GDMA%d_TX_COLCNT : %010u (collision count)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x2C));
-	pr_info("| GDMA%d_TX_GBCNT  : %010u (Tx Good Bytes)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x30));
-	pr_info("| GDMA%d_TX_GPCNT  : %010u (Tx Good Pkts)	|\n",
-		gdm_id, mtk_r32(eth, mib_base + 0x38));
-	pr_info("|						|\n");
+	seq_printf(seq, "| GDMA%d_RX_GBCNT  : %010u (Rx Good Bytes)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base));
+	seq_printf(seq, "| GDMA%d_RX_GPCNT  : %010u (Rx Good Pkts)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x08));
+	seq_printf(seq, "| GDMA%d_RX_OERCNT : %010u (overflow error)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x10));
+	seq_printf(seq, "| GDMA%d_RX_FERCNT : %010u (FCS error)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x14));
+	seq_printf(seq, "| GDMA%d_RX_SERCNT : %010u (too short)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x18));
+	seq_printf(seq, "| GDMA%d_RX_LERCNT : %010u (too long)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x1C));
+	seq_printf(seq, "| GDMA%d_RX_CERCNT : %010u (checksum error)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x20));
+	seq_printf(seq, "| GDMA%d_RX_FCCNT  : %010u (flow control)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x24));
+	seq_printf(seq, "| GDMA%d_TX_SKIPCNT: %010u (abort count)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x28));
+	seq_printf(seq, "| GDMA%d_TX_COLCNT : %010u (collision count)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x2C));
+	seq_printf(seq, "| GDMA%d_TX_GBCNT  : %010u (Tx Good Bytes)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x30));
+	seq_printf(seq, "| GDMA%d_TX_GPCNT  : %010u (Tx Good Pkts)	|\n",
+		   gdm_id, mtk_r32(eth, mib_base + 0x38));
+	seq_puts(seq, "|						|\n");
 }
 
-static void gdm_cnt_read(struct mtk_eth *eth)
+static void gdm_cnt_read(struct seq_file *seq, struct mtk_eth *eth)
 {
 	u32 i, mib_base;
 
-	pr_info("\n			<<CPU>>\n");
-	pr_info("			   |\n");
-	pr_info("+-----------------------------------------------+\n");
-	pr_info("|		  <<PSE>>		        |\n");
-	pr_info("+-----------------------------------------------+\n");
-	pr_info("			   |\n");
-	pr_info("+-----------------------------------------------+\n");
-	pr_info("|		  <<GDMA>>		        |\n");
+	seq_puts(seq, "\n			<<CPU>>\n");
+	seq_puts(seq, "			   |\n");
+	seq_puts(seq, "+-----------------------------------------------+\n");
+	seq_puts(seq, "|		  <<PSE>>		        |\n");
+	seq_puts(seq, "+-----------------------------------------------+\n");
+	seq_puts(seq, "			   |\n");
+	seq_puts(seq, "+-----------------------------------------------+\n");
+	seq_puts(seq, "|		  <<GDMA>>		        |\n");
 
 	for (i = 0; i < MTK_MAC_COUNT; i++) {
 		mib_base = MTK_GDM1_TX_GBCNT + MTK_STAT_OFFSET * i;
 
 		if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V3))
-			gdm_reg_dump_v3(eth, i + 1, mib_base);
+			gdm_reg_dump_v3(seq, eth, i + 1, mib_base);
 		else
-			gdm_reg_dump_v2(eth, i + 1, mib_base);
+			gdm_reg_dump_v2(seq, eth, i + 1, mib_base);
 	}
 
-	pr_info("+-----------------------------------------------+\n");
+	seq_puts(seq, "+-----------------------------------------------+\n");
 }
 
 void dump_each_port(struct seq_file *seq, struct mtk_eth *eth, u32 base)
@@ -1702,7 +1671,7 @@ int esw_cnt_read(struct seq_file *seq, void *v)
 {
 	struct mtk_eth *eth = g_eth;
 
-	gdm_cnt_read(eth);
+	gdm_cnt_read(seq, eth);
 
 	if (!mt7530_exist(eth))
 		return 0;
@@ -1839,6 +1808,8 @@ void xfi_mib_dump(struct seq_file *seq, u32 gdm_id)
 	PRINT_FORMATTED_XFI_MIB(seq, RX_PAUSE_CNT, GENMASK(15, 0));
 	PRINT_FORMATTED_XFI_MIB(seq, RX_LEN_ERR_CNT, GENMASK(15, 0));
 	PRINT_FORMATTED_XFI_MIB(seq, RX_CRC_ERR_CNT, GENMASK(15, 0));
+	if (eth->soc->caps != MT7988_CAPS)
+		PRINT_FORMATTED_XFI_MIB(seq, RX_RUNT_PKT_CNT, GENMASK(31, 0));
 	PRINT_FORMATTED_XFI_MIB64(seq, RX_UC_PKT_CNT);
 	PRINT_FORMATTED_XFI_MIB64(seq, RX_MC_PKT_CNT);
 	PRINT_FORMATTED_XFI_MIB64(seq, RX_BC_PKT_CNT);
@@ -1851,11 +1822,11 @@ void xfi_mib_dump(struct seq_file *seq, u32 gdm_id)
 int xfi_cnt_read(struct seq_file *seq, void *v)
 {
 	struct mtk_eth *eth = g_eth;
-	bool has_xgmac[MTK_MAX_DEVS] = {0,
-					MTK_HAS_CAPS(eth->soc->caps, MTK_GMAC2_2P5GPHY) ||
-					MTK_HAS_CAPS(eth->soc->caps, MTK_GMAC2_2P5GPHY_V2) ||
-					MTK_HAS_CAPS(eth->soc->caps, MTK_GMAC2_USXGMII),
-					MTK_HAS_CAPS(eth->soc->caps, MTK_GMAC3_USXGMII)};
+	bool has_xgmac[MTK_GMAC_ID_MAX] = {0,
+					   MTK_HAS_CAPS(eth->soc->caps, MTK_GMAC2_2P5GPHY) ||
+					   MTK_HAS_CAPS(eth->soc->caps, MTK_GMAC2_2P5GPHY_V2) ||
+					   MTK_HAS_CAPS(eth->soc->caps, MTK_GMAC2_USXGMII),
+					   MTK_HAS_CAPS(eth->soc->caps, MTK_GMAC3_USXGMII)};
 	int i;
 
 	seq_puts(seq, "+------------------------------------+\n");

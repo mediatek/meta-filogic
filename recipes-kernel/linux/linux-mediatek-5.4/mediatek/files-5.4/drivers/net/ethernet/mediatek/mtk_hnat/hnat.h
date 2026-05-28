@@ -108,6 +108,7 @@
 #define PPE_SB_FIFO_DBG 0x170
 #define PPE_SBW_CTRL 0x174
 #define PPE_SB_WED0_CNT 0x18C
+#define PPE_CAH_DBG 0x190
 #define PPE_FLOW_CHK_STATUS 0x1B0
 
 #define GDMA1_FWD_CFG 0x500
@@ -133,6 +134,7 @@
 #define HASH_DBG (0x3 << 21) /* RW */
 #define TICK_SEL (0x1 << 24) /* RW */
 #define DSCP_TRFC_ECN_EN (0x1 << 25) /* RW */
+#define IS_SP_TAG_EN (0x1 << 26) /* RW */
 
 
 /*PPE_CAH_CTRL mask*/
@@ -150,6 +152,9 @@
 #define TAG_SRH (0xffff << 0) /* RW */
 #define SRH_LNUM (0x7fff << 16) /* RW */
 #define SRH_HIT (0x1 << 31) /* RW */
+
+/*PPE_MIB_SER_CR mask*/
+#define BIT_MIB_BUSY (1 << 16) /* RW */
 
 /*PPE_UNB_AGE mask*/
 #define UNB_DLTA (0xff << 0) /* RW */
@@ -209,6 +214,9 @@
 
 /* PPE Side Band FIFO Debug Mask */
 #define SB_MED_FULL_DRP_EN (0x1 << 11)
+
+/* PPE Cache Debug status Mask */
+#define CAH_DBG_BUSY (0xf << 0)
 
 /*--------------------------------------------------------------------------*/
 /* Descriptor Structure */
@@ -928,7 +936,6 @@ struct hnat_accounting {
 	u64 bytes;
 	u64 packets;
 	struct nf_conntrack_zone zone;
-	u8 dir;
 };
 
 enum mtk_hnat_version {
@@ -937,6 +944,13 @@ enum mtk_hnat_version {
 	MTK_HNAT_V1_3,		/* version 1.3: mt7629		*/
 	MTK_HNAT_V2,		/* version 2:	mt7981, mt7986	*/
 	MTK_HNAT_V3,		/* version 3:	mt7988		*/
+};
+
+enum entry_cmp_flags {
+	ENTRY_CMP_SRC = BIT(0),
+	ENTRY_CMP_DST = BIT(1),
+	/* Return true if any one of the comparisons succeeds */
+	ENTRY_CMP_ANY = ENTRY_CMP_SRC | ENTRY_CMP_DST,
 };
 
 struct mtk_hnat_data {
@@ -957,6 +971,24 @@ struct xlat_conf {
 	struct list_head map_list;
 	struct in6_addr prefix;
 	int prefix_len;
+};
+
+struct hnat_neigh_update {
+	struct list_head head;
+	struct delayed_work work;
+	spinlock_t lock;
+	u32 pending_cnt;
+};
+
+struct hnat_neigh_update_event {
+	struct list_head list;
+	union {
+		__be32 dip;
+		struct in6_addr dip6;
+	};
+	u8 ha[ETH_ALEN];
+	u8 nud_state;
+	u8 tbl_family;
 };
 
 struct mtk_hnat {
@@ -1005,6 +1037,7 @@ struct mtk_hnat {
 	spinlock_t		entry_lock;
 	spinlock_t		flow_entry_lock;
 	struct hlist_head *foe_flow[MAX_PPE_NUM];
+	struct hnat_neigh_update neigh_update;
 	int fe_irq2;
 };
 
@@ -1085,9 +1118,11 @@ enum FoeIpAct {
 #define HASH_MODE_3 3
 
 /*PPE_FLOW_CFG*/
-#define BIT_FUC_FOE BIT(2)
-#define BIT_FMC_FOE BIT(1)
-#define BIT_FBC_FOE BIT(0)
+#define BIT_ALERT_TCP_FIN_RST_SYN BIT(0)
+#define BIT_MD_TOAP_BYP_CRSN0 BIT(1)
+#define BIT_MD_TOAP_BYP_CRSN1 BIT(2)
+#define BIT_MD_TOAP_BYP_CRSN2 BIT(3)
+#define BIT_TCP_IP4F_NAT_EN BIT(6) /*Enable IPv4 fragment + TCP packet NAT*/
 #define BIT_UDP_IP4F_NAT_EN BIT(7) /*Enable IPv4 fragment + UDP packet NAT*/
 #define BIT_IPV6_3T_ROUTE_EN BIT(8)
 #define BIT_IPV6_5T_ROUTE_EN BIT(9)
@@ -1097,7 +1132,7 @@ enum FoeIpAct {
 #define BIT_IPV4_NAPT_EN BIT(13)
 #define BIT_IPV4_DSL_EN BIT(14)
 #define BIT_L2_BRG_EN BIT(15)
-#define BIT_MIB_BUSY BIT(16)
+#define BIT_IP_PROT_CHK_BLIST BIT(16)
 #define BIT_IPV4_NAT_FRAG_EN BIT(17)
 #define BIT_IPV4_HASH_GREK BIT(19)
 #define BIT_IPV6_HASH_GREK BIT(20)
@@ -1134,6 +1169,14 @@ enum FoeIpAct {
 #define BITS_GDM_ALL_FRC_P_PPE2					\
 	(BITS_GDM_UFRC_P_PPE2 | BITS_GDM_BFRC_P_PPE2 |		\
 	 BITS_GDM_MFRC_P_PPE2 | BITS_GDM_OFRC_P_PPE2)
+
+#define BITS_GDM_UFRC_P_TDMA (NR_TDMA_PORT << 12)
+#define BITS_GDM_BFRC_P_TDMA (NR_TDMA_PORT << 8)
+#define BITS_GDM_MFRC_P_TDMA (NR_TDMA_PORT << 4)
+#define BITS_GDM_OFRC_P_TDMA (NR_TDMA_PORT << 0)
+#define BITS_GDM_ALL_FRC_P_TDMA					\
+	(BITS_GDM_UFRC_P_TDMA | BITS_GDM_BFRC_P_TDMA |		\
+	 BITS_GDM_MFRC_P_TDMA | BITS_GDM_OFRC_P_TDMA)
 
 #define BITS_GDM_UFRC_P_CPU_PDMA (NR_PDMA_PORT << 12)
 #define BITS_GDM_BFRC_P_CPU_PDMA (NR_PDMA_PORT << 8)
@@ -1221,6 +1264,7 @@ enum FoeIpAct {
 #define NR_DISCARD 7
 #define NR_WDMA0_PORT 8
 #define NR_WDMA1_PORT 9
+#define NR_TDMA_PORT 10
 #define NR_WDMA2_PORT 13
 #define NR_GMAC3_PORT 15
 #define NR_QDMA_TPORT 1
@@ -1275,6 +1319,7 @@ enum FoeIpAct {
 #define MAX_PPPQ_QUEUE_NUM		(2 * MAX_SWITCH_PORT_NUM + 2)
 #define IS_PPPQ_PATH(dev, skb)						\
 	((IS_DSA_1G_LAN(dev) || IS_DSA_WAN(dev)) ||			\
+	 (IS_ETH_GRP(dev) && is_eth_dev_speed_under(dev, SPEED_1000)) ||\
 	 (FROM_WED(skb) && (IS_DSA_LAN(dev) ||				\
 			    is_eth_dev_speed_under(dev, SPEED_2500))))
 #else
@@ -1337,6 +1382,9 @@ enum FoeIpAct {
 			  (mac_id == MTK_GMAC3_ID) ? NR_GMAC3_PORT :	\
 						    -EINVAL)
 
+#define NEIGH_UPDATE_WORK_DELAY_MS	300
+#define NEIGH_PROCESS_BUDGET		128
+
 extern const struct of_device_id of_hnat_match[];
 extern struct mtk_hnat *hnat_priv;
 
@@ -1370,6 +1418,7 @@ int hnat_dump_ppe_entry(u32 ppe_id, u32 hash);
 bool is_eth_dev_speed_under(const struct net_device *dev, u32 speed);
 extern int dbg_cpu_reason;
 extern int debug_level;
+extern int mcast_mode;
 extern int xlat_toggle;
 extern struct hnat_desc headroom[DEF_ETRY_NUM];
 extern int qos_dl_toggle;
@@ -1378,6 +1427,7 @@ extern int hook_toggle;
 extern int mape_toggle;
 extern int qos_toggle;
 extern int l2br_toggle;
+extern int l4s_toggle;
 extern int tnl_toggle;
 extern int (*mtk_tnl_encap_offload)(struct sk_buff *skb, struct ethhdr *eth);
 extern int (*mtk_tnl_decap_offload)(struct sk_buff *skb);
@@ -1386,7 +1436,7 @@ extern bool (*mtk_crypto_offloadable)(struct sk_buff *skb);
 extern int hnat_bind_crypto_entry(struct sk_buff *skb,
 				  const struct net_device *dev,
 				  int fill_inner_info);
-extern void foe_clear_crypto_entry(struct xfrm_selector sel);
+extern void foe_clear_crypto_entry(u32 cdrt_idx);
 int ext_if_add(struct extdev_entry *ext_entry);
 int ext_if_del(struct extdev_entry *ext_entry);
 void cr_set_bits(void __iomem *reg, u32 bs);
@@ -1406,14 +1456,22 @@ uint32_t hnat_cpu_reason_cnt(struct sk_buff *skb);
 int hnat_enable_hook(void);
 int hnat_disable_hook(void);
 void hnat_cache_ebl(int enable);
+void __hnat_cache_ebl(u32 ppe_id, int enable);
 void hnat_cache_clr(u32 ppe_id);
+void __hnat_cache_clr(u32 ppe_id);
 void hnat_qos_shaper_ebl(u32 id, u32 enable);
+void hnat_neigh_update_init(void);
+void hnat_neigh_update_cleanup(void);
+void hnat_neigh_update_work_handler(struct work_struct *work);
 void exclude_boundary_entry(struct foe_entry *foe_table_cpu);
 void set_gmac_ppe_fwd(int gmac_no, int enable);
 int entry_detail(u32 ppe_id, int index);
 int entry_delete_by_mac(u8 *mac);
 int entry_delete_by_ip(bool is_ipv4, void *addr);
 int entry_delete(u32 ppe_id, int index);
+void __entry_delete(struct foe_entry *entry);
+int entry_mac_cmp(struct foe_entry *entry, u8 *mac, enum entry_cmp_flags flags);
+int entry_ip_cmp(struct foe_entry *entry, bool is_ipv4, void *addr, enum entry_cmp_flags flags);
 int hnat_warm_init(void);
 u32 hnat_get_ppe_hash(struct foe_entry *entry);
 int mtk_ppe_get_xlat_v4_by_v6(struct in6_addr *ipv6, u32 *ipv4);

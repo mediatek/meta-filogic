@@ -1,10 +1,15 @@
+// SPDX-License-Identifier: GPL-2.0-only OR MIT
+/*
+ * Copyright (C) 2021 MediaTek Inc.
+ */
+
 /dts-v1/;
 #include "mt7981-fpga.dtsi"
 / {
 	model = "MediaTek MT7981 FPGA";
 	compatible = "mediatek,mt7981-fpga-spim-nand";
 	chosen {
-		bootargs = "console=ttyS0,115200n1 loglevel=8  \
+		bootargs = "console=ttyS0,115200n1 loglevel=6  \
 				earlycon=uart8250,mmio32,0x11002000";
 	};
 

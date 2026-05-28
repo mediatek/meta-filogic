@@ -1,4 +1,7 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR MIT) */
+// SPDX-License-Identifier: GPL-2.0-only OR MIT
+/*
+ * Copyright (C) 2024 MediaTek Inc.
+ */
 
 #include "mt7987-pinctrl.dtsi"
 
@@ -65,5 +68,18 @@
 		spi-max-frequency = <52000000>;
 		spi-tx-bus-width = <4>;
 		spi-rx-bus-width = <4>;
+	};
+};
+
+&pcie0 {
+	/* slot0 is used for MT76 only */
+	slot0: pcie@0,0 {
+		reg = <0x0000 0 0 0 0>;
+
+		mt7996@0,0 {
+			reg = <0x0000 0 0 0 0>;
+			device_type = "pci";
+			mediatek,mtd-eeprom = <&factory 0x0>;
+		};
 	};
 };

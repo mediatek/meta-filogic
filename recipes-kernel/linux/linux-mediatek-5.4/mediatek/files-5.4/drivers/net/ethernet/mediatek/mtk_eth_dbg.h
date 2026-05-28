@@ -1,18 +1,6 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
 /*
  *   Copyright (C) 2018 MediaTek Inc.
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; version 2 of the License
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   Copyright (C) 2009-2016 John Crispin <blogic@openwrt.org>
- *   Copyright (C) 2009-2016 Felix Fietkau <nbd@openwrt.org>
- *   Copyright (C) 2013-2016 Michael Lee <igvtee@gmail.com>
  */
 
 #ifndef MTK_ETH_DBG_H
@@ -160,6 +148,7 @@
 #define MTK_XFI_RX_PAUSE_CNT		0x190
 #define MTK_XFI_RX_LEN_ERR_CNT		0x194
 #define MTK_XFI_RX_CRC_ERR_CNT		0x198
+#define MTK_XFI_RX_RUNT_PKT_CNT		0x1BC
 #define MTK_XFI_RX_UC_PKT_CNT_L		0x1C0
 #define MTK_XFI_RX_UC_PKT_CNT_H		0x1C4
 #define MTK_XFI_RX_MC_PKT_CNT_L		0x1D0
@@ -329,8 +318,7 @@
 		reg_val |= FIELD_PREP(MTK_GLO_MEM_CMD, MTK_GLO_MEM_READ);		\
 		mtk_w32(eth, reg_val, MTK_GLO_MEM_CTRL);				\
 		reg_val = mtk_r32(eth, MTK_GLO_MEM_DATA(1));				\
-		reg_val &= ~MTK_RING_OPMODE;						\
-		reg_val |= FIELD_PREP(MTK_RING_OPMODE, y);				\
+		reg_val |= FIELD_PREP(MTK_LRO_DATA_VLD, y);				\
 		mtk_w32(eth, reg_val, MTK_GLO_MEM_DATA(1));				\
 		reg_val = FIELD_PREP(MTK_GLO_MEM_IDX, MTK_LRO_MEM_IDX);			\
 		reg_val |= FIELD_PREP(MTK_GLO_MEM_ADDR, MTK_LRO_MEM_CFG_BASE + x);	\
@@ -522,6 +510,7 @@ extern u32 _mtk_mdio_write(struct mtk_eth *eth, int phy_addr,
 		    int phy_reg, u16 write_data);
 
 extern atomic_t force;
+extern atomic_t reset_lock;
 extern int eth_debug_level;
 
 int debug_proc_init(struct mtk_eth *eth);
@@ -533,8 +522,5 @@ int mtk_do_priv_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd);
 void hw_lro_stats_update(u32 ring_no, struct mtk_rx_dma_v2 *rxd);
 void hw_lro_flush_stats_update(u32 ring_no, struct mtk_rx_dma_v2 *rxd);
 void mt753x_set_port_link_state(bool up);
-void qdma_qos_shaper_ebl(u32 id, bool enable);
-void qdma_qos_disable(void);
-void qdma_qos_pppq_ebl(u32 hook_toggle);
 
 #endif /* MTK_ETH_DBG_H */

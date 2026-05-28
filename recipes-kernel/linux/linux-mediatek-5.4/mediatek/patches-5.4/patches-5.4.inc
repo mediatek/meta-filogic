@@ -36,6 +36,10 @@ SRC_URI:append = " \
     file://1020-spi-nor-w25q512jv.patch \
     file://1021-ubnt-ledbar-driver.patch \
     file://999-1021-v5.7-iopoll-introduce-read_poll_timeout-macro.patch \
+    file://999-1022-v6.2-xfrm-packet-mode.patch \
+    file://999-1023-v6.3-bitfield-add-FIELD_PREP_CONST-macro.patch;apply=no \
+    file://999-1024-v5.14-kernel_add-upper_lower_16_bits_helper_functions.patch;apply=no \
+    file://999-1025-v5.15-sysctl-add-some-boundary-constants-to-sysctl_vals.patch \
     file://999-1050-v6.4-backport-jitterrng-2.2.0.patch;apply=no \
     file://999-1051-v5.10-backport-libkcapi.patch \
     file://999-1400-v5.16-spi-add-power-control-when-set_cs.patch \
@@ -63,7 +67,11 @@ SRC_URI:append = " \
     file://999-1720-v5.13-net-phy-add-genphy_c45_pma_suspend-resume.patch \
     file://999-1721-v6.9-net-phy-add-2.5g-and-5g-related-PMA-and-PCS-speed-constants.patch \
     file://999-1722-v6.10-net-phy-realtek-add-rtl8221b-series.patch \
-    file://999-1723-v5.6-net-phy-add-sanity-check-to-read_mmd.patch \
+    file://999-1723-v5.6-net-phy-add-sanity-check-to-read-write-mmd.patch \
+    file://999-1724-v6.3-ethtoo-add-more-ethtool-link-modes.patch;apply=no \
+    file://999-1725-v6.6-net-phy-add-genphy_c45_baset1_helper_functions.patch \
+    file://999-1726-v6.4-net-phy-add-PHYLIB_LEDS.patch;apply=no \
+    file://999-1727-v6.5-leds-trigger-netdev-add-additional-specific-link-speed.patch \
     file://999-1750-v5.18-net-macsec-get-ready-to-backport-from-5-18.patch \
     file://999-1751-01-v5.18-net-macsec-move-some-definitions-in-a-dedicated-header.patch \
     file://999-1752-02-v5.18-net-macsec-introduce-the-macsec_context-structure.patch \
@@ -101,6 +109,8 @@ SRC_URI:append = " \
     file://999-1784-v5.18-net-drivers-get-ready-for-const-netdev-dev_addr.patch \
     file://999-1785-v5.18-net-macsec-Fix-offload-support-for-NETDEV_UNREGISTER-event.patch \
     file://999-1786-v5.18-net-macsec-Verify-that-send_sci-is-on-when-setting-Tx-sci-explicitly.patch \
+    file://999-1787-v5.18-net-dsa-add-support-phylink-mac_select_pcs.patch \
+    file://999-1788-v5.9-net-mdio-handle-bus-level-gpio-post-reset.patch \
     file://999-1800-v6.7-MT7986-ASoC-platform-driver.patch \
     file://999-1801-v6.1-iio-adc-add-rtq6056-support.patch \
     file://999-1802-v6.4-backport-pinctrl-pinconf-setting-combo.patch \
@@ -136,6 +146,7 @@ SRC_URI:append = " \
     file://999-2133-pwm-mediatek-add-longer-period-support.patch \
     file://999-2134-add-pwm-gpio-support.patch \
     file://999-2135-add-pwm-feature-for-mt7987.patch \
+    file://999-2136-add-pwm-hw-breathing-light-feature.patch \
     file://999-2140-mtk-thermal-add-lvts-support.patch \
     file://999-2150-sound-add-some-helpers-to-control-mtk_memif.patch \
     file://999-2151-sound-refine-hw-params-and-hw-prepare.patch \
@@ -143,6 +154,7 @@ SRC_URI:append = " \
     file://999-2153-sound-add-si3218x-spi-driver.patch \
     file://999-2300-mtk-sd-add-mt7986-support.patch \
     file://999-2301-mtk-sd-Add-subsys-clock-control.patch \
+    file://999-2302-add-ddr52-tuning-for-emmc.patch \
     file://999-2328-mtd-add-nmbm-support.patch \
     file://999-2329-ubi-add-configurable-rootdev.patch \
     file://999-2330-mtd-spinand-winbond-Support-for-W25MxxGV-W25NxxKV-series.patch \
@@ -178,8 +190,11 @@ SRC_URI:append = " \
     file://999-2377-integrate-ONFI-and-CASN-manipulation.patch \
     file://999-2377-spi-nor-fix-3byte-4byte-rwmode.patch \
     file://999-2378-Add-CASN-support-for-SPI-NAND.patch \
+    file://999-2378-drivers-spi-mt65xx-add-normal-spi-set-nbits.patch \
     file://999-2380-fix-dirty-race-between-do_tmpfile.patch \
     file://999-2381-mtdsplit-dm-verity.patch;apply=no \
+    file://999-2382-Fix-CASN-page-field-spanning-issues.patch \
+    file://999-2383-Improve-CASN-page-logging.patch \
     file://999-2500-cpufreq-add-the-missing-platform-driver-unregister.patch \
     file://999-2501-cpufreq-Enable-clocks-and-regulators.patch \
     file://999-2502-cpufreq-add-mt7988a-spim-snand-support.patch \
@@ -188,6 +203,7 @@ SRC_URI:append = " \
     file://999-2505-cpufreq-add-mt7987-cpufreq-support.patch \
     file://999-2530-add-pmic-config.patch \
     file://999-2531-iio-add-zts8032-config.patch \
+    file://999-2532-iio-add-zts8232-config.patch \
     file://999-2540-cmdline-boot-parameters.patch \
     file://999-2550-dual-image-mount-rootfs.patch \
     file://999-2560-devapc-add-mt7987-support.patch \
@@ -212,7 +228,6 @@ SRC_URI:append = " \
     file://999-2705-net-dsa-support-hardware-flow-table-offload.patch \
     file://999-2706-crypto-add-eip197-inside-secure-support.patch \
     file://999-2707-mtkhnat-ipv6-fix-pskb-expand-head-limitation.patch \
-    file://999-2708-mtkhnat-add-support-for-virtual-interface-acceleration.patch \
     file://999-2709-fix-race-inside-napi-enable.patch \
     file://999-2710-net-make-napi-disable-symmetric-with-enable.patch \
     file://999-2711-net-fix-premature-exit-from-napi-state-polling-in-napi-disable-v2.patch \
@@ -228,9 +243,9 @@ SRC_URI:append = " \
     file://999-2723-dt-bindings-phy-Add-PHY_TYPE_XPCS-definition.patch \
     file://999-2724-dt-bindings-phy-Add-DT-bindings-for-Xilinx-ZynqMP-PS.patch \
     file://999-2725-iwconfig-wireless-rate-fix.patch;apply=no \
-    file://999-2726-mtkhnat-tnl-interface-offload-check.patch \
     file://999-2727-net-phy-sfp-add-debug-info.patch.patch \
     file://999-2728-net-phy-aquantia-add-mib-read.patch \
+    file://999-2728-xfrm-extend-packet-mode-to-support-esp-tunnel-mode.patch \
     file://999-2730-net-phy-sfp-change-shared-mod-def0.patch \
     file://999-2731-add-default-setting-to-dsa-unused-port.patch \
     file://999-2732-net-dsa-add-MT7531-Gigabit-Ethernet-PHY-setting.patch \
@@ -249,10 +264,15 @@ SRC_URI:append = " \
     file://999-2740-crypto-add-eip197-aes-ctr-support.patch \
     file://999-2741-net-phy-aquantia-add-automatic-firmware-selection.patch \
     file://999-2742-drivers-net-dsa-mxl862xx.patch \
-    file://999-2743-drivers-net-dsa-mxl862xx-kernel-compatible.patch;apply=no \
     file://999-2744-drivers-net-phy-mxl862xx-mxl-gpy.patch \
-    file://999-2745-mtk-gso-skb-headroom-copy.patch \
+    file://999-2745-mtk-frag-gso-skb-headroom-copy.patch \
     file://999-2746-net-macvlan-support-hardware-flow-table-offload.patch \
+    file://999-2747-net-phy-ethtool-add-speed-switch-for-2p5g.patch \
+    file://999-2748-xfrm-add-fragment-before-encrypt.patch \
+    file://999-2749-net-phy-add-Airoha-AN8811HB-PHY-driver.patch \
+    file://999-2750-net-dsa-add-builtin-mt7531-irq-mode.patch \
+    file://999-2751-net-phy-add-phylink-helpful-debug-info.patch \
+    file://999-2752-net-dsa-add-port-egress-floods-prevent-null-deref.patch \
     file://999-2800-misc-add-mtk-platform.patch \
     file://999-2850-fips-140-3-compliance.patch \
     file://999-2900-dts-mt7622-enable-new-mtk-snand-for-ubi.patch \
@@ -260,5 +280,14 @@ SRC_URI:append = " \
     file://999-2910-dm-verity-redo-hash-for-safexel-sha256.patch;apply=no \
     file://999-2911-dm-support-get-device-by-part-uuid-and-label.patch;apply=no \
     file://999-2912-dm-expose-create-parameter-to-sysfs.patch;apply=no \
+    file://999-2913-dm-support-dm-mod-waitfor.patch \
     file://999-4100-mtk-tunnel-offload-support.patch;apply=no \
+    file://999-4101-mtk-tunnel-static-hnat-entry.patch;apply=no \
+    file://999-4500-mtk-gre-offload-support.patch;apply=no \
+    file://999-4500-mtk-ppp-offload-support.patch;apply=no \
+    file://999-4500-mtk-vxlan-offload-support.patch;apply=no \
+    file://999-4501-mtk-l2tp-offload-support.patch;apply=no \
+    file://999-4501-mtk-pptp-offload-support.patch;apply=no \
+    file://999-4502-mtk-net-pppoe-gro.patch;apply=no \
+    file://999-wdt-01-add-clamp-to-set-timeout.patch \
     "

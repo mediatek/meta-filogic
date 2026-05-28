@@ -1,15 +1,7 @@
+// SPDX-License-Identifier: GPL-2.0-only OR MIT
 /*
  * Copyright (c) 2020 MediaTek Inc.
  * Author: Sam.Shih <sam.shih@mediatek.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
  */
 
 #include <dt-bindings/interrupt-controller/irq.h>
@@ -571,6 +563,10 @@
 			 <&topckgen CK_TOP_SPI_SEL>,
 			 <&infracfg_ao CK_INFRA_SPI0_CK>,
 			 <&infracfg_ao CK_INFRA_SPI0_HCK_CK>;
+		assigned-clocks = <&topckgen CK_TOP_SPI_SEL>,
+				  <&infracfg CK_INFRA_SPI0_SEL>;
+		assigned-clock-parents = <&topckgen CK_TOP_CB_M_D2>,
+					 <&topckgen CK_TOP_SPI_SEL>;
 		clock-names = "parent-clk", "sel-clk", "spi-clk", "spi-hclk";
 		status = "disabled";
 	};
@@ -583,6 +579,8 @@
 			 <&topckgen CK_TOP_SPIM_MST_SEL>,
 			 <&infracfg_ao CK_INFRA_SPI1_CK>,
 			 <&infracfg_ao CK_INFRA_SPI1_HCK_CK>;
+		assigned-clocks = <&topckgen CK_TOP_SPIM_MST_SEL>;
+		assigned-clock-parents = <&topckgen CK_TOP_CB_M_D2>;
 		clock-names = "parent-clk", "sel-clk", "spi-clk", "spi-hclk";
 		status = "disabled";
 	};

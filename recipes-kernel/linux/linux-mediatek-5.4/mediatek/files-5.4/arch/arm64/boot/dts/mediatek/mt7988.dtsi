@@ -104,18 +104,26 @@
 			compatible = "operating-points-v2";
 			opp-shared;
 			opp00 {
-				opp-hz = /bits/ 64 <800000000>;
+				opp-hz = /bits/ 64 <400000000>;
 				opp-microvolt = <850000>;
 			};
 			opp01 {
-				opp-hz = /bits/ 64 <1100000000>;
+				opp-hz = /bits/ 64 <600000000>;
 				opp-microvolt = <850000>;
 			};
 			opp02 {
-				opp-hz = /bits/ 64 <1500000000>;
+				opp-hz = /bits/ 64 <800000000>;
 				opp-microvolt = <850000>;
 			};
 			opp03 {
+				opp-hz = /bits/ 64 <1100000000>;
+				opp-microvolt = <850000>;
+			};
+			opp04 {
+				opp-hz = /bits/ 64 <1500000000>;
+				opp-microvolt = <850000>;
+			};
+			opp05 {
 				opp-hz = /bits/ 64 <1800000000>;
 				opp-microvolt = <900000>;
 			};
@@ -152,7 +160,7 @@
 				};
 
 				cpu_trip_active_hot: active-hot {
-					temperature = <120000>;
+					temperature = <117000>;
 					hysteresis = <2000>;
 					type = "active";
 				};
@@ -173,9 +181,7 @@
 			cooling-maps {
 				cpu-active-hot {
 				/* active: dynamic cpu frequency scaling */
-					cooling-device = <&cpu0
-						THERMAL_NO_LIMIT
-						THERMAL_NO_LIMIT>;
+					cooling-device = <&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
 					trip = <&cpu_trip_active_hot>;
 				};
 
@@ -365,10 +371,10 @@
 			no-map;
 		};
 
-		wmcpu_emi: wmcpu-reserved@47CC0000 {
+		wmcpu_emi: wmcpu-reserved@50000000 {
 			compatible = "mediatek,wmcpu-reserved";
 			no-map;
-			reg = <0 0x47CC0000 0 0x00100000>;
+			reg = <0 0x50000000 0 0x0>;
 		};
 
 		wocpu0_emi: wocpu0_emi@4F600000 {

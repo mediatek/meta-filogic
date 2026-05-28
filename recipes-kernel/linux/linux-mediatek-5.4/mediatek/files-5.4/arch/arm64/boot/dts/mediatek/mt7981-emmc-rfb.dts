@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: GPL-2.0-only OR MIT
+/*
+ * Copyright (C) 2021 MediaTek Inc.
+ */
+
 /dts-v1/;
 #include "mt7981.dtsi"
 #include <dt-bindings/input/input.h>
@@ -6,7 +11,7 @@
 	model = "MediaTek MT7981 RFB";
 	compatible = "mediatek,mt7981-emmc-rfb";
 	chosen {
-		bootargs = "console=ttyS0,115200n1 loglevel=8  \
+		bootargs = "console=ttyS0,115200n1 loglevel=6  \
 				earlycon=uart8250,mmio32,0x11002000 \
 				root=PARTLABEL=rootfs rootwait rootfstype=squashfs,f2fs";
 	};
@@ -53,15 +58,16 @@
 };
 
 &mmc0 {
-         pinctrl-names = "default", "state_uhs";
-         pinctrl-0 = <&mmc0_pins_default>;
-         pinctrl-1 = <&mmc0_pins_uhs>;
-         bus-width = <8>;
-         max-frequency = <52000000>;
-         cap-mmc-highspeed;
-         vmmc-supply = <&reg_3p3v>;
-         non-removable;
-         status = "okay";
+	pinctrl-names = "default", "state_uhs";
+	pinctrl-0 = <&mmc0_pins_default>;
+	pinctrl-1 = <&mmc0_pins_uhs>;
+	bus-width = <8>;
+	max-frequency = <52000000>;
+	mmc-ddr-3_3v;
+	cap-mmc-highspeed;
+	vmmc-supply = <&reg_3p3v>;
+	non-removable;
+	status = "okay";
 };
 
 &eth {
@@ -221,6 +227,24 @@
 		mux {
 			function = "flash";
 			groups = "emmc_45";
+		};
+		conf-cmd-dat {
+			pins = "SPI0_CLK", "SPI0_MOSI", "SPI0_MISO",
+			       "SPI0_CS", "SPI0_HOLD", "SPI0_WP",
+			       "SPI1_CLK", "SPI1_MOSI", "SPI1_MISO";
+			input-enable;
+			drive-strength = <MTK_DRIVE_4mA>;
+			mediatek,pull-up-adv = <1>;	/* pull-up 10K */
+		};
+		conf-clk {
+			pins = "SPI1_CS";
+			drive-strength = <MTK_DRIVE_6mA>;
+			mediatek,pull-down-adv = <2>;	/* pull-down 50K */
+		};
+		conf-rst {
+			pins = "PWM0";
+			drive-strength = <MTK_DRIVE_4mA>;
+			mediatek,pull-up-adv = <1>;	/* pull-up 10K */
 		};
 	};
 

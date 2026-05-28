@@ -19,6 +19,7 @@
 
 #define MTK_QDMA_PAGE_SIZE	2048
 #define	MTK_MAX_RX_LENGTH	1536
+#define MTK_MAX_RX_LENGTH_UNIT	1024
 #define MTK_MAX_RX_LENGTH_2K	2048
 #define MTK_MAX_RX_LENGTH_9K	9216
 #define MTK_MIN_TX_LENGTH	60
@@ -61,7 +62,7 @@
 
 #define MTK_HW_LRO_DMA_SIZE	64
 
-#define	MTK_MAX_LRO_RX_LENGTH		(4096 * 3 + MTK_MAX_RX_LENGTH)
+#define	MTK_MAX_LRO_RX_LENGTH		(4096 * 3 + eth->rx_buf_len)
 #define	MTK_MAX_LRO_IP_CNT		2
 #define	MTK_HW_LRO_TIMER_UNIT		1	/* 20 us */
 #define	MTK_HW_LRO_REFRESH_TIME		50000	/* 1 sec. */
@@ -336,6 +337,8 @@
 #define MTK_CTRL_DW0_SDL_OFFSET		(3)
 #define MTK_CTRL_DW0_SDL_MASK		BITS(3, 18)
 
+#define MTK_LRO_VLAN_EN			(0xf << 8)
+#define MTK_LRO_VLAN_VID_CMP_DEPTH	(0x3 << 12)
 #define MTK_ADMA_MODE			BIT(15)
 #define MTK_LRO_MIN_RXD_SDL		(MTK_HW_LRO_SDL_REMAIN_ROOM << 16)
 
@@ -521,6 +524,7 @@
 
 /* QDMA V2 Global Configuration Register */
 #define MTK_CHK_DDONE_EN	BIT(28)
+#define MTK_PKT_RX_WDONE	BIT(27)
 #define MTK_DMAD_WR_WDONE	BIT(26)
 #define MTK_WCOMP_EN		BIT(24)
 #define MTK_RESV_BUF		(0x80 << 16)
@@ -644,6 +648,7 @@
 #define MTK_CDM_TS_FSM_MASK		GENMASK(3, 0)
 
 /*TDMA Register*/
+#define MTK_TDMA_RX_DRX_IDX(x)	(0x610C + (0x10 * x))
 #define MTK_TDMA_GLO_CFG	(0x6204)
 
 /* GMA1 Received Good Byte Count Register */
@@ -685,7 +690,7 @@
 #define TX_DMA_SPTAG_V3            BIT(27)
 
 /* QDMA V2 descriptor txd4 */
-#define EIP197_QDMA_TPORT          3
+#define EIP197_TPORT		   2
 #define TX_DMA_TPORT_SHIFT         0
 #define TX_DMA_TPORT_MASK          0xf
 #define TX_DMA_FPORT_SHIFT_V2      8
@@ -852,7 +857,8 @@
 
 /* Mac control registers */
 #define MTK_MAC_MCR(x)		(0x10100 + (x * 0x100))
-#define MAC_MCR_MAX_RX_JUMBO	FIELD_PREP(GENMASK(31, 28), 2)
+#define MAC_MCR_MAX_RX_JUMBO_MASK	GENMASK(31, 28)
+#define MAC_MCR_MAX_RX_JUMBO(x)	FIELD_PREP(MAC_MCR_MAX_RX_JUMBO_MASK, (x))
 #define MAC_MCR_MAX_RX_MASK	GENMASK(25, 24)
 #define MAC_MCR_MAX_RX(_x)	(MAC_MCR_MAX_RX_MASK & ((_x) << 24))
 #define MAC_MCR_MAX_RX_1518	0x0
@@ -926,6 +932,8 @@
 
 #define MAC_TS_MAC_CFG		(MTK_MAC_TS_CTRL + 0xA8)
 #define CSR_HW_TS_EN(x)		BIT(x)
+
+#define MAC_TS_SECOND_VALUE	(MTK_MAC_TS_CTRL + 0xB0)
 
 #define MAC_TS_RSV		(MTK_MAC_TS_CTRL + 0xB4)
 #define TS_T1_MASK		GENMASK(2, 0)
@@ -1656,6 +1664,7 @@ struct mtk_tx_ring {
 	u32 ring_no;
 	u16 thresh;
 	atomic_t free_count;
+	atomic_t full_count;
 	int dma_size;
 	void *dma_pdma;	/* For MT7628/88 PDMA handling */
 	dma_addr_t phys_pdma;
@@ -1760,6 +1769,7 @@ enum mkt_eth_capabilities {
 	MTK_NETSYS_V1_BIT,
 	MTK_NETSYS_V2_BIT,
 	MTK_NETSYS_RX_V2_BIT,
+	MTK_NETSYS_RX_9K_BIT,
 	MTK_NETSYS_V3_BIT,
 	MTK_HWTSTAMP_BIT,
 	MTK_SOC_MT7628_BIT,
@@ -1816,6 +1826,7 @@ enum mkt_eth_capabilities {
 #define MTK_NETSYS_V1		BIT_ULL(MTK_NETSYS_V1_BIT)
 #define MTK_NETSYS_V2		BIT_ULL(MTK_NETSYS_V2_BIT)
 #define MTK_NETSYS_RX_V2	BIT(MTK_NETSYS_RX_V2_BIT)
+#define MTK_NETSYS_RX_9K	BIT_ULL(MTK_NETSYS_RX_9K_BIT)
 #define MTK_NETSYS_V3		BIT_ULL(MTK_NETSYS_V3_BIT)
 #define MTK_HWTSTAMP		BIT_ULL(MTK_HWTSTAMP_BIT)
 #define MTK_SOC_MT7628		BIT_ULL(MTK_SOC_MT7628_BIT)
@@ -1943,7 +1954,7 @@ enum mkt_eth_capabilities {
 		       MTK_ESW | MTK_GMAC1_USXGMII | MTK_GMAC2_USXGMII | \
 		       MTK_GMAC3_USXGMII | MTK_MUX_GMAC123_TO_USXGMII | \
 		       MTK_GMAC2_2P5GPHY | MTK_MUX_GMAC2_TO_2P5GPHY | MTK_RSS | \
-		       MTK_HWLRO | MTK_NETSYS_RX_V2 | MTK_36BIT_DMA)
+		       MTK_HWLRO | MTK_NETSYS_RX_V2 | MTK_36BIT_DMA | MTK_NETSYS_RX_9K)
 
 #define MT7987_CAPS   (MTK_GMAC1_SGMII | MTK_GMAC2_SGMII | MTK_GMAC3_SGMII |\
 		       MTK_PDMA_INT | MTK_MUX_GMAC123_TO_GEPHY_SGMII | MTK_QDMA_V1_4 | \
@@ -2137,7 +2148,6 @@ struct mtk_usxgmii_pcs {
 	struct regmap		*regmap;
 	struct regmap		*regmap_pextp;
 	struct mutex		regmap_lock;
-	struct mutex		reset_lock;
 	phy_interface_t		interface;
 	bool			link_poll_enable;
 	unsigned long		link_poll_expire;
@@ -2157,6 +2167,7 @@ struct mtk_usxgmii_pcs {
  */
 struct mtk_usxgmii {
 	struct mtk_usxgmii_pcs	pcs[MTK_MAX_DEVS];
+	struct mutex		toprgu_lock;
 	struct regmap		*pll;
 };
 
@@ -2194,7 +2205,6 @@ struct adma_monitor {
 
 struct qdma_monitor {
 	struct qdma_tx_monitor {
-		bool		pse_fc;
 		u8		hang_count;
 	} tx;
 	struct qdma_rx_monitor {
@@ -2211,6 +2221,8 @@ struct tdma_monitor {
 		u8		hang_count;
 	} tx;
 	struct tdma_rx_monitor {
+		u32		pre_rx_didx;
+		u32		pre_opq10;
 		u32		pre_fsm;
 		u8		hang_count;
 	} rx;
@@ -2237,7 +2249,9 @@ struct wdma_monitor {
 
 struct gdm_monitor {
 	struct gdm_tx_monitor {
+		bool		rxfc[MTK_MAX_DEVS];
 		u64		pre_tx_cnt[MTK_MAX_DEVS];
+		u32		pre_rxfc_cnt[MTK_MAX_DEVS];
 		u32		pre_fsm_gdm[MTK_MAX_DEVS];
 		u32		pre_opq_gdm[MTK_MAX_DEVS];
 		u8		hang_count_gdm[MTK_MAX_DEVS];
@@ -2324,11 +2338,13 @@ struct mtk_eth {
 	struct clk			*clks[MTK_CLK_MAX];
 
 	struct mii_bus			*mii_bus;
+	unsigned int			mdc_divider;
 	struct work_struct		pending_work;
 	unsigned long			state;
 
 	struct ptp_clock_info		ptp_info;
 	struct ptp_clock		*ptp_clock;
+	int				ptp_mode;
 	int				tx_ts_enabled;
 	int				rx_ts_enabled;
 
@@ -2346,6 +2362,7 @@ struct mtk_eth {
 	} reset;
 
 	u32				rx_dma_l4_valid;
+	u32				rx_buf_len;
 	int				ip_align;
 	spinlock_t			syscfg0_lock;
 	struct notifier_block		netdevice_notifier;
@@ -2387,12 +2404,14 @@ struct mtk_mac {
 	unsigned int			ptp_tx_class;
 };
 
-/* struct mtk_mux_data -	the structure that holds the private data about the
+#define MTK_MUX_CHANNELS_MAX	2
+
+/* struct mtk_mux_channel -	the structure that holds the private data about the
  *			 Passive MUXs of the SoC
  */
-struct mtk_mux_data {
-	struct device_node		*of_node;
-	struct phylink			*phylink;
+struct mtk_mux_channel {
+	struct device_node *of_node;
+	phy_interface_t phy_mode;
 };
 
 /* struct mtk_mux -	the structure that holds the info about the Passive MUXs of the
@@ -2400,10 +2419,12 @@ struct mtk_mux_data {
  */
 struct mtk_mux {
 	struct delayed_work		poll;
-	struct gpio_desc		*gpio[2];
-	struct mtk_mux_data		*data[2];
+	struct gpio_desc		*mod_def0_gpio;
+	struct gpio_desc		*chan_sel_gpio;
+	struct mtk_mux_channel		channels[MTK_MUX_CHANNELS_MAX];
 	struct mtk_mac			*mac;
-	unsigned int			channel;
+	unsigned int			active_channel;
+	unsigned int			sfp_connected_channel;
 };
 
 /* the struct describing the SoC. these are declared in the soc_xyz.c files */

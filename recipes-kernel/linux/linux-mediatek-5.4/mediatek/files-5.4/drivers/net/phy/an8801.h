@@ -1,6 +1,5 @@
-/*SPDX-License-Identifier: GPL-2.0*/
-/*FILE NAME:  an8801.h
- *PURPOSE:
+/* SPDX-License-Identifier: GPL-2.0 */
+/*PURPOSE:
  *Define Airoha phy driver function
  *
  *NOTES:
@@ -12,10 +11,10 @@
 
 /* NAMING DECLARATIONS
  */
-#define AN8801_DRIVER_VERSION  "1.1.4"
+#define AN8801_DRIVER_VERSION  "1.1.7"
 
 #define DEBUGFS_COUNTER         "counter"
-#define DEBUGFS_INFO            "info"
+#define DEBUGFS_INFO            "driver_info"
 #define DEBUGFS_PBUS_OP         "pbus_op"
 #define DEBUGFS_POLARITY        "polarity"
 #define DEBUGFS_MDIO            "mdio"
@@ -88,9 +87,9 @@
 #define LED_BLK_EVT_1000M_RX        BIT(1)
 #define LED_BLK_EVT_1000M_TX        BIT(0)
 
-#define UNIT_LED_BLINK_DURATION     1024
+#define UNIT_LED_BLINK_DURATION     780
 
-/* Serdes auto negotation restart */
+/* Serdes auto negotiation restart */
 #define AN8801SB_SGMII_AN0_ANRESTART    (0x0200)
 #define AN8801SB_SGMII_AN0_AN_DONE      (0x0001)
 #define AN8801SB_SGMII_AN0_RESET        (0x8000)
@@ -109,8 +108,8 @@
 #define AN8801_RG_PKG_SEL_MSB       BIT(5)
 
 /*
-For reference only
-*/
+ *For reference only
+ */
 /* User-defined.B */
 /* Link on(1G/100M/10M), no activity */
 #define AIR_LED0_ON \
@@ -134,6 +133,9 @@ For reference only
 
 #define LED_BLINK_DURATION(f)       (UNIT_LED_BLINK_DURATION << (f))
 #define LED_GPIO_SEL(led, gpio)     ((led) << ((gpio) * 3))
+
+/* Interrupt GPIO number, should not conflict with LED */
+#define AIR_INTERRUPT_GPIO	3
 
 /* DATA TYPE DECLARATIONS
  */
@@ -206,6 +208,7 @@ struct an8801_priv {
 #endif
 	int                   pol;
 	int                   surge;
+	int		      sgmii_mode;
 };
 
 enum an8801_polarity {
@@ -219,6 +222,12 @@ enum air_surge {
 	AIR_SURGE_0R,
 	AIR_SURGE_5R,
 	AIR_SURGE_LAST = 0xff
+};
+
+enum air_sgmii_mode {
+	AIR_SGMII_AN,
+	AIR_SGMII_FORCE,
+	AIR_SGMII_LAST = 0xff
 };
 
 #endif /* End of __AN8801_H */

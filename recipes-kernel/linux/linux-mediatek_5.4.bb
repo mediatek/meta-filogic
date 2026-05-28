@@ -9,8 +9,8 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}-${PV}/mediatek/wed3:"
 
 KBRANCH ?= "linux-5.4.y"
 
-LINUX_VERSION ?= "5.4.281"
-SRCREV_machine ?= "84d75fd864979b0228cfe7170a359c0a60f04a98"
+LINUX_VERSION ?= "5.4.302"
+SRCREV_machine ?= "9e3157c56ec7917e6a80ea53a8bd752e0037f2cb"
 KMETA = "kernel-meta"
 SRCREV_meta ?= "feeb59687bc0f054af837a5061f8d413ec7c93e9"
 
@@ -92,26 +92,36 @@ do_filogic_patches() {
             fi
             patch -p1 < ${WORKDIR}/0600-net-phylink-propagate-resolved-link-config-via-mac_l.patch
             patch -p1 < ${WORKDIR}/999-1050-v6.4-backport-jitterrng-2.2.0.patch
+            patch -p1 < ${WORKDIR}/999-1023-v6.3-bitfield-add-FIELD_PREP_CONST-macro.patch
+            patch -p1 < ${WORKDIR}/999-1024-v5.14-kernel_add-upper_lower_16_bits_helper_functions.patch
             patch -p1 < ${WORKDIR}/999-2713-mt7531-gsw-internal_phy_calibration.patch
             patch -p1 < ${WORKDIR}/999-2714-mt7531-gsw-port5_external_phy_init.patch
             patch -p1 < ${WORKDIR}/999-2737-net-mt753x-phy-coverity-scan.patch
             patch -p1 < ${WORKDIR}/999-1710-v6.2-net-phy-add-phylink-pcs-support.patch
             patch -p1 < ${WORKDIR}/999-1712-v6.2-net-phy-add-phylink-rate-matching-support.patch
             patch -p1 < ${WORKDIR}/999-1716-v6.6-net-phy-add-phylink-pcs_enable-and-pcs_disable.patch
+            patch -p1 < ${WORKDIR}/999-1724-v6.3-ethtoo-add-more-ethtool-link-modes.patch
+            patch -p1 < ${WORKDIR}/999-1726-v6.4-net-phy-add-PHYLIB_LEDS.patch
             patch -p1 < ${WORKDIR}/999-2725-iwconfig-wireless-rate-fix.patch
             patch -p1 < ${WORKDIR}/999-2739-drivers_net_ethernet_mediatek_hnat.patch
-            patch -p1 < ${WORKDIR}/999-2743-drivers-net-dsa-mxl862xx-kernel-compatible.patch
             patch -p1 < ${WORKDIR}/999-2381-mtdsplit-dm-verity.patch
             patch -p1 < ${WORKDIR}/999-2910-dm-verity-redo-hash-for-safexel-sha256.patch
             patch -p1 < ${WORKDIR}/999-2911-dm-support-get-device-by-part-uuid-and-label.patch
             patch -p1 < ${WORKDIR}/999-2912-dm-expose-create-parameter-to-sysfs.patch
+            for i in ${WORKDIR}/mediatek/nf_hnat/*.patch; do patch -p1 < $i; done
+
             if [ $DISTRO_FlowBlock_ENABLED = 'true' ]; then
                 for i in ${WORKDIR}/mediatek/flow_patch/*.patch; do patch -p1 < $i; done
             fi
-            if [ $DISTRO_logan_ENABLED = 'true' ] ||[ $DISTRO_ccn34_build_ENABLED = 'true' ]; then
-                for i in ${WORKDIR}/mediatek/nf_hnat/*.patch; do patch -p1 < $i; done
-                patch -p1 < ${WORKDIR}/004-rdkb-hnat-bind-ifname.patch
-            fi
+
+            patch -p1 < ${WORKDIR}/004-rdkb-hnat-bind-ifname.patch
+            patch -p1 < ${WORKDIR}/999-4100-mtk-tunnel-offload-support.patch
+            patch -p1 < ${WORKDIR}/999-4101-mtk-tunnel-static-hnat-entry.patch
+            patch -p1 < ${WORKDIR}/999-4500-mtk-gre-offload-support.patch
+            patch -p1 < ${WORKDIR}/999-4500-mtk-ppp-offload-support.patch
+            patch -p1 < ${WORKDIR}/999-4501-mtk-l2tp-offload-support.patch
+            patch -p1 < ${WORKDIR}/999-4501-mtk-pptp-offload-support.patch
+            patch -p1 < ${WORKDIR}/999-4502-mtk-net-pppoe-gro.patch
             touch patch_applied
         fi
 }
