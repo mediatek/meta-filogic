@@ -135,5 +135,6 @@ SRC_URI:append = " \
     file://mtk-0053-hostapd-mtk-add-no_beacon-vendor-command-for-cert.patch \
     file://mtk-0054-hostapd-mtk-Add-support-for-gtk-rekeying-in-hostapd-.patch \
     file://mtk-0055-hostapd-mtk-fix-failure-of-BSS-wise-QoS-map-setting.patch \
-    file://mtk-0056-mtk-hostapd-add-background-radar-standalone-mode.patch \
+    file://mtk-0056-hostapd-mtk-add-background-radar-standalone-mode.patch \
+    file://mtk-0057-hostapd-mtk-avoid-clearing-vht-160-support-during-do.patch \
     "

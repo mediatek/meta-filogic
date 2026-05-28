@@ -56,6 +56,7 @@ SRC_URI:append = " \
     file://783-sync-nl80211.patch \
     file://800-mac80211-mask-nested-A-MSDU-support-for-mesh.patch \
     file://bp-0001-mac80211-backport-add-gfp_t-parameter-to-ieeee80211_.patch \
+    file://bp-0002-Fix-build-fail-for-kernel-5.4.300.patch \
     file://mtk-0001-mac80211-mtk-do-not-setup-twt-when-twt-responder-is-.patch \
     file://mtk-0002-cfg80211-mtk-extend-CAC-time-for-weather-radar-chann.patch \
     file://mtk-0003-mac80211-mtk-it-s-invalid-case-when-frag_threshold-i.patch \

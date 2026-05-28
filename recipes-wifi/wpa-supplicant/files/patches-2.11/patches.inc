@@ -154,4 +154,6 @@ SRC_URI:append = " \
     file://0152-cp-mtk-hostapd-remove-band-idx-from-hostapd.patch \
     file://0153-cp-mtk-hostapd-WPS-use-passphrase-over-psk-file.patch \
     file://0154-cp-mtk-hostapd-add-link-id-for-air-monitor.patch \
+    file://0155-cp-mtk-hostapd-fix-aid-allocation.patch \
+    file://0156-cp-mtk-hostapd-fix-get-set-edcca-vendor-command-for-sin.patch \
     "

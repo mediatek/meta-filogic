@@ -150,7 +150,14 @@ SRC_URI:append = " \
     file://0151-cp-mtk-mt76-mt7996-fix-and-refactor-air-monitor.patch \
     file://0152-cp-mtk-mt76-mt7996-config-rxfilter-to-drop-other-unicas.patch \
     file://0153-cp-mtk-mt76-fix-kernel-warning-for-of_node_put-during-m.patch \
-    file://0154-cp-mtk-mt76-mt7996-add-5T5R-support-for-testmode-RX.patch \
-    file://0155-cp-mtk-mt76-mt7990-add-mt7987-wed-hw-path-support.patch\
-    file://0156-cp-mtk-mt76-mt7990-fix-MT7996_WTBL_BMC_SIZE-for-mt7990.patch\
+    file://0154-cp-mtk-mt76-mt7996-add-testmode-rx-gain-fast-cal-suppor.patch \
+    file://0155-cp-mtk-mt76-mt7996-fix-testmode-rx-stats-issue.patch \
+    file://0156-cp-mtk-mt76-mt7996-Force-to-update-power-after-csa-coun.patch \
+    file://0157-cp-mtk-mt76-mt7996-fix-precal-size-for-mt7996-be14000.patch \
+    file://0158-cp-mtk-mt76-mt7996-Change-beacon-protection-fw-cmd.patch \
+    file://0159-cp-mtk-mt76-mt7996-add-remove-key-for-bigtk.patch \
+    file://0160-cp-mtk-mt76-mt7996-fix-precal-read-offset.patch \
+    file://0161-cp-mtk-mt76-mt7996-support-EDCCA-standard-ETSI_2023.patch \
+    file://0162-cp-mtk-fix-set_edcca-and-get_edcca-command.patch \
+    file://0163-cp-mtk-mt76-mt7996-fix-RX-buffer-size-of-mcu-event.patch \
     "

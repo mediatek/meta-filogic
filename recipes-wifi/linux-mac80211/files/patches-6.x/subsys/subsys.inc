@@ -88,4 +88,5 @@ SRC_URI:append = " \
     file://0085-tmp-disable-ndo_fill_receive_path-ops-for-6.6.patch \
     file://0086-mtk-mac80211-relax-the-DFS-restrictions-for-scanning.patch \
     file://0087-mtk-mac80211-fix-cross-link-csa-issue.patch \
+    file://0088-mtk-Fix-build-fail-for-kernel-5.4.300.patch \
     "

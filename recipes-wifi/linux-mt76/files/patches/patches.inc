@@ -27,6 +27,7 @@ SRC_URI:append = " \
     file://0024-wifi-mt76-mt7915-delete-twt-flow-before-remove-stati.patch \
     file://0025-mtk-mt76-do-not-report-ACK-when-TXS-is-lost.patch \
     file://0026-wifi-mt76-mt7915-fix-register-mapping.patch \
+    file://0027-wifi-mt76-mt7915-update-adie-patch-in-mt7986-power-o.patch \
     file://0999-wifi-mt76-mt7915-build-pass-for-Linux-Kernel-5.4-fix.patch \
     file://1000-wifi-mt76-mt7915-add-mtk-internal-debug-tools-for-mt.patch \
     file://1001-wifi-mt76-mt7915-csi-implement-csi-support.patch \
@@ -84,7 +85,9 @@ SRC_URI:append = " \
     file://1053-wifi-mt76-mt7915-fix-TX-RX-hang-without-SER-hw-bit-t.patch \
     file://1054-wifi-mt76-mt7915-remove-rts-and-cts-protection-enabl.patch \
     file://1055-wifi-mt76-testmode-add-interface-addition-deletion-c.patch \
+    file://1056-wifi-mt76-mt7915-rework-radar-rdd-idx.patch \
     file://1056-wifi-mt76-testmode-fix-rx-stats-issue.patch \
+    file://1057-wifi-mt76-mt7915-add-E3-rebinding-for-MT7981-ifem-79.patch \
     file://2000-wifi-mt76-mt7915-wed-add-wed-tx-support.patch \
     file://2001-wifi-mt76-mt7915-wed-add-wds-support-when-wed-is-ena.patch \
     file://2002-wifi-mt76-mt7915-wed-add-fill-receive-path-to-report.patch \
@@ -105,5 +108,7 @@ SRC_URI:append = " \
     file://2016-wifi-mt76-mt7915-refine-twt-mcu-update-flow.patch \
     file://2017-wifi-mt76-mt7915-add-sanity-check-to-prevent-invalid.patch \
     file://2018-wifi-mt76-mt7915-add-debugfs-knob-to-control-ps-ther.patch \
+    file://2019-wifi-mt76-mt7915-do-not-set-key-for-cipher-CMAC-128.patch \
+    file://2020-mtk-mt76-mt7915-Add-txpower_level-support-per-phy-co.patch \
     file://9999-mt76-revert-for-backports-5.15-wireless-stack.patch \
     "
