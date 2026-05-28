@@ -28,8 +28,6 @@ SRC_URI:append = " \
     file://333-arc-enable-unaligned-access-in-kernel-mode.patch \
     file://342-powerpc-Enable-kernel-XZ-compression-option-on-PPC_8.patch \
     file://350-mips-kernel-fix-detect_memory_region-function.patch \
-    file://360-Revert-MIPS-mm-kmalloc-tlb_vpn-array-to-avoid-stack-.patch \
-    file://361-Revert-MIPS-mm-Prevent-a-TLB-shutdown-on-initial-uni.patch \
     file://400-mtd-mtdsplit-support.patch \
     file://401-mtd-don-t-register-NVMEM-devices-for-partitions-with.patch \
     file://402-mtd-spi-nor-write-support-for-minor-aligned-partitions.patch \
@@ -91,7 +89,6 @@ SRC_URI:append = " \
     file://680-net-add-TCP-fraglist-GRO-support.patch \
     file://681-net-remove-NETIF_F_GSO_FRAGLIST-from-NETIF_F_GSO_SOF.patch \
     file://683-of_net-add-mac-address-to-of-tree.patch \
-    file://685-net-gso-fix-tcp-fraglist-segmentation-after-pull-fro.patch \
     file://686-net-ipv6-fix-TCP-GSO-segmentation-with-NAT.patch \
     file://700-netfilter-nft_flow_offload-handle-netdevice-events-f.patch \
     file://701-netfilter-nf_tables-ignore-EOPNOTSUPP-on-flowtable-d.patch \

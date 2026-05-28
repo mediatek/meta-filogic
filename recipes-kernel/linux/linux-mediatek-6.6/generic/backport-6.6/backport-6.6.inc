@@ -3,6 +3,8 @@ SRC_URI:append = " \
     file://0080-v6.9-smp-Avoid-setup_max_cpus_namespace_collision_shadowing.patch \
     file://065-v6.10-compiler_types.h-Define-__retain.patch \
     file://066-v6.10-bpf-Harden-__bpf_kfunc-against-linker-removal.patch \
+    file://211-01-v6.19-bitfield-Add-less-checking-__FIELD_-GET-PREP.patch \
+    file://211-02-v6.19-bitfield-Add-non-constant-field_-prep-get-helpers.patch \
     file://300-v6.7-arm64-swiotlb-Reduce-the-default-size-if-no-ZONE_DMA.patch \
     file://301-v6.9-kernel.h-removed-REPEAT_BYTE-from-kernel.h.patch \
     file://302-v6.9-kernel.h-Move-upper_-_bits-and-lower_-_bits-to-wordp.patch \
@@ -40,7 +42,6 @@ SRC_URI:append = " \
     file://620-01-v6.7-page_pool-fragment-API-support-for-32-bit-arch-with-.patch \
     file://620-02-v6.7-page_pool-unify-frag_count-handling-in-page_pool_is_.patch \
     file://700-v6.10-net-create-a-dummy-net_device-allocator.patch \
-    file://702-01-v6.7-net-phy-aquantia-move-to-separate-directory.patch \
     file://702-02-v6.7-net-phy-aquantia-move-MMD_VEND-define-to-header.patch \
     file://702-03-v6.7-net-phy-aquantia-add-firmware-load-support.patch \
     file://703-v6.10-flow_offload-add-control-flag-checking-helpers.patch \
@@ -67,7 +68,6 @@ SRC_URI:append = " \
     file://711-v6.8-03-net-phy-at803x-add-support-for-cdt-cross-short-test-.patch \
     file://711-v6.8-04-net-phy-at803x-make-read_status-more-generic.patch \
     file://712-v6.9-net-phy-at803x-add-LED-support-for-qca808x.patch \
-    file://713-v6.9-01-net-phy-move-at803x-PHY-driver-to-dedicated-director.patch \
     file://713-v6.9-02-net-phy-qcom-create-and-move-functions-to-shared-lib.patch \
     file://713-v6.9-03-net-phy-qcom-deatch-qca83xx-PHY-driver-from-at803x.patch \
     file://713-v6.9-04-net-phy-qcom-move-additional-functions-to-shared-lib.patch \
@@ -352,6 +352,8 @@ SRC_URI:append = " \
     file://823-v6.12-0001-nvmem-imx-ocotp-ele-support-i.MX95.patch \
     file://823-v6.12-0002-nvmem-sunplus-ocotp-Use-devm_platform_ioremap_resour.patch \
     file://823-v6.12-0003-nvmem-layouts-add-U-Boot-env-layout.patch \
+    file://825-v6.19-clk-at91-Convert-to-common-field_-get-prep-helpers.patch \
+    file://826-v6.19-iio-mlx90614-Convert-to-common-field_-get-prep-helpe.patch \
     file://831-v6.7-rtc-rtc7301-Support-byte-addressed-IO.patch \
     file://832-v6.7-net-phy-amd-Support-the-Altima-AMI101L.patch \
     file://833-v6.8-leds-core-Add-more-colors-from-DT-bindings-to-led_co.patch.patch \
@@ -405,4 +407,5 @@ SRC_URI:append = " \
     file://906-07-v6.10-crypto-jitter-Use-kvfree_sensitive-to-fix-Coccinelle.patch \
     file://906-08-v6.12-crypto-jitter-set-default-OSR-to-3.patch \
     file://910-v6.13-pmdomain-core-add-dummy-release-function-to-genpd-de.patch \
+    file://911-v6.7-crypto-talitos-stop-using-crypto_ahash-init.patch \
     "
