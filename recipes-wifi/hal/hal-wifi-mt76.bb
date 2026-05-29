@@ -10,7 +10,7 @@ inherit autotools coverity
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
-SRC_URI = "git://gerrit.mediatek.inc/gateway/rdk-b/rdkb_hal;protocol=https;branch=master;destsuffix=git/ \
+SRC_URI = "git://git01.mediatek.com/filogic/rdk-b/rdkb_hal;protocol=https;branch=master;destsuffix=git/ \
         file://LICENSE;subdir=git \
         "
 SRCREV_wifihal = "${AUTOREV}"

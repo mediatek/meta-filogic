@@ -1,5 +1,8 @@
 #!/bin/bash
-
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# Copyright (C) 2023 MediaTek Inc.
+#
 # This script is called from our systemd unit file to mount or unmount
 # a USB drive.
 

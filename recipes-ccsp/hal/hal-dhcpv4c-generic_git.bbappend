@@ -1,4 +1,4 @@
-SRC_URI += "git://gerrit.mediatek.inc/gateway/rdk-b/rdkb_hal;protocol=https;destsuffix=git/source/dhcpv4c/rdkb_hal;branch=master"
+SRC_URI += "git://git01.mediatek.com/filogic/rdk-b/rdkb_hal;protocol=https;destsuffix=git/source/dhcpv4c/rdkb_hal;branch=master"
 
 SRCREV = "${AUTOREV}"
 

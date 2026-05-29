@@ -1,4 +1,8 @@
 #!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# Copyright (C) 2023 MediaTek Inc.
+#
 
 wan_ifname=`syscfg get wan_physical_ifname`
 sec_key=AD7A2BD03EAC835A6F620FDCB506B345

@@ -1,4 +1,9 @@
 #!/bin/bash
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# Copyright (C) 2023 MediaTek Inc.
+#
+
 source /etc/utopia/service.d/service_wan/ppp_helpers.sh
 
 PPP_CONFIG_FILE=/etc/ppp/pppoe.conf

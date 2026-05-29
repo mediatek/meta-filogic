@@ -1,4 +1,8 @@
 #!/bin/bash
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# Copyright (C) 2023 MediaTek Inc.
+#
 
 if [ "$1" == "set" ]; then
     if [ ! -n "$2" ]; then

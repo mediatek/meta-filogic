@@ -1,3 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# Copyright (C) 2023 MediaTek Inc.
+#
+#
+
 inherit kernel-uboot kernel-artifact-names uboot-sign kernel-fitimage
 
 python __anonymous () {

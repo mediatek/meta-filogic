@@ -1,3 +1,7 @@
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# Copyright (C) 2023 MediaTek Inc.
+#
 SUMMARY = "Init filogic "
 SECTION = "applications"
 LICENSE = "GPL-2.0-only"

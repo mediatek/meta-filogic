@@ -1,3 +1,8 @@
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# Copyright (C) 2023 MediaTek Inc.
+#
+
 AC_PREREQ([2.65])
 AC_INIT([hal], [1.0], [BUG-REPORT-ADDRESS])
 AM_INIT_AUTOMAKE([foreign])

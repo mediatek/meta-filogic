@@ -1,4 +1,8 @@
 #!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# Copyright (C) 2021 MediaTek Inc.
+#
 
 lan_mac=`/usr/sbin/mtk_factory_rw.sh -r lan`
 lan2_mac=`/usr/sbin/mtk_factory_rw.sh -r lan2`

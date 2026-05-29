@@ -1,4 +1,9 @@
 #!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# Copyright (C) 2023 MediaTek Inc.
+#
+
 set +e
 
 export PATH=/sbin:/bin:/usr/sbin:/usr/bin
