@@ -30,7 +30,7 @@ SRC_URI:append += " \
     file://rdkb_cfg/iptables.cfg \
     file://rdkb_cfg/turris_rdkb.cfg \
     file://rdkb_cfg/openvswitch.cfg \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'mt76', 'file://rdkb_cfg/mac80211.cfg', 'file://rdkb_cfg/nf_hnat.cfg', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'mt76', 'file://rdkb_cfg/mac80211.cfg', '', d)} \
     file://rdkb_cfg/prplmesh.cfg \
     file://rdkb_cfg/filogic_rdkb.cfg \
     file://rdkb_cfg/bridge_netfilter.cfg \
@@ -71,7 +71,6 @@ do_patch:prepend () {
 do_filogic_patches() {
     cd ${S}
     DISTRO_FlowBlock_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','flow_offload','true','false',d)}"
-    DISTRO_logan_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','logan','true','false',d)}"
     DISTRO_ccn34_build_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','ccn34','true','false',d)}"
     DISTRO_LAN_AS_WAN_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','lan0_as_wan','true','false',d)}"
         if [ ! -e patch_applied ]; then
@@ -93,10 +92,6 @@ do_filogic_patches() {
 
             if [ $DISTRO_FlowBlock_ENABLED = 'true' ]; then
                 for i in ${WORKDIR}/mediatek/flow_patch/*.patch; do patch -p1 < $i; done
-            fi
-            if [ $DISTRO_logan_ENABLED = 'true' ]; then
-                for i in ${WORKDIR}/mediatek/nf_hnat/*.patch; do patch -p1 < $i; done
-                patch -p1 < ${WORKDIR}/004-rdkb-hnat-bind-ifname.patch
             fi
             touch patch_applied
         fi
@@ -148,6 +143,5 @@ kernel_do_install() {
 
 addtask filogic_patches after do_patch before do_compile
 
-KERNEL_MODULE_AUTOLOAD += "${@bb.utils.contains('DISTRO_FEATURES','logan','mtkhnat nf_flow_table_hw','',d)}"
 KERNEL_MODULE_AUTOLOAD_mt7987 += "mtk-2p5ge "
 KERNEL_MODULE_AUTOLOAD_mt7988d += "mtk-2p5ge "
