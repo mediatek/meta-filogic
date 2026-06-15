@@ -1,0 +1,69 @@
+From 79d7b11102e31f3b92afff1c94dd9fe1a8b9a9e4 Mon Sep 17 00:00:00 2001
+From: Paul HENRYS <paul.henrys_ext@softathome.com>
+Date: Mon, 25 Nov 2024 18:47:15 +0100
+Subject: [PATCH] aes: Allow to store randomly generated IV in the FIT
+
+When the initialisation vector is randomly generated, its value shall be
+stored in the FIT together with the encrypted data. The changes allow to
+store the IV in the FIT also in the case where the key is not stored in
+the DTB but retrieved somewhere else at runtime.
+
+Signed-off-by: Paul HENRYS <paul.henrys_ext@softathome.com>
+Reviewed-by: Simon Glass <sjg@chromium.org>
+---
+ include/image.h       | 15 +++++++++++++++
+ lib/aes/aes-encrypt.c |  7 +++++++
+ tools/image-host.c    |  2 +-
+ 3 files changed, 23 insertions(+), 1 deletion(-)
+
+--- a/include/image.h
++++ b/include/image.h
+@@ -1403,6 +1403,21 @@ struct cipher_algo {
+ 		       const unsigned char *data, int data_len,
+ 		       unsigned char **cipher, int *cipher_len);
+ 
++	/**
++	 * add_cipher_data() - Add cipher data to the FIT and device tree
++	 *
++	 * This is used to add the ciphered data to the FIT and other cipher
++	 * related information (key and initialization vector) to a device tree.
++	 *
++	 * @info: Pointer to image cipher information.
++	 * @keydest: Pointer to a device tree where the key and IV can be
++	 *           stored. keydest can be NULL when the key is retrieved at
++	 *           runtime by another mean.
++	 * @fit: Pointer to the FIT image.
++	 * @node_noffset: Offset where the cipher information are stored in the
++	 *                FIT.
++	 * return: 0 on success, a negative error code otherwise.
++	 */
+ 	int (*add_cipher_data)(struct image_cipher_info *info,
+ 			       void *keydest, void *fit, int node_noffset);
+ 
+--- a/lib/aes/aes-encrypt.c
++++ b/lib/aes/aes-encrypt.c
+@@ -84,6 +84,13 @@ int image_aes_add_cipher_data(struct ima
+ 	char name[128];
+ 	int ret = 0;
+ 
++	if (!keydest && !info->ivname) {
++		/* At least, store the IV in the FIT image */
++		ret = fdt_setprop(fit, node_noffset, "iv",
++				  info->iv, info->cipher->iv_len);
++		goto done;
++	}
++
+ 	/* Either create or overwrite the named cipher node */
+ 	parent = fdt_subnode_offset(keydest, 0, FIT_CIPHER_NODENAME);
+ 	if (parent == -FDT_ERR_NOTFOUND) {
+--- a/tools/image-host.c
++++ b/tools/image-host.c
+@@ -499,7 +499,7 @@ fit_image_process_cipher(const char *key
+ 	 * size values
+ 	 * And, if needed, write the iv in the FIT file
+ 	 */
+-	if (keydest) {
++	if (keydest || (!keydest && !info.ivname)) {
+ 		ret = info.cipher->add_cipher_data(&info, keydest, fit, node_noffset);
+ 		if (ret) {
+ 			printf("Failed to add verification data for cipher '%s' in image '%s'\n",

@@ -10,6 +10,9 @@ inherit kernel-uboot kernel-artifact-names uboot-sign kernel-fitimage
 
 python __anonymous () {
     d.appendVarFlag('do_gen_sb_dtb', 'depends', ' rdk-generic-broadband-image:do_hash_rootfs')
+    if not bb.utils.contains('DISTRO_FEATURES', 'firmware_encryption', True, False, d):
+        d.setVarFlag('do_fw_enc_key_derive', 'noexec', '1')
+        d.setVarFlag('do_align_rootfs', 'noexec', '1')
 }
 
 UBOOT_SIGN_ENABLE = "1"
@@ -18,12 +21,26 @@ UBOOT_SIGN_KEYDIR = "${SECURE_BOOT_KEYDIR}"
 
 OFFLINE_SIGN_ENABLE ?= "0"
 
+FW_ENC_ENABLE = "${@bb.utils.contains('DISTRO_FEATURES', 'firmware_encryption', '1', '0', d)}"
+FW_ENC_PLAT_KEYNAME ?= "plat_key"
+FW_ENC_ROE_KEYNAME ?= "roe_key"
+FW_ENC_KERNEL_KEYNAME ?= "kernel_key"
+FW_ENC_ROOTFS_KEYNAME ?= "rootfs_key"
+FW_ENC_KEYDIR = "${SECURE_BOOT_KEYDIR}"
+
+FW_ENC_ROE_SALT ?= "salt/roe_salt.bin"
+FW_ENC_KERNEL_SALT ?= "salt/kernel_salt.bin"
+FW_ENC_ROOTFS_SALT ?= "salt/rootfs_salt.bin"
+
 # Skip embedding public key to u-boot dtb
 UBOOT_DTB_BINARY = ""
 
 FIT_SIGN_ALG = "rsa2048"
 FIT_HASH_ALG = "sha256"
 FIT_PAD_ALG = "pss"
+FIT_ENC_ALG ?= "optee_aes256"
+
+FIT_RAMDISK_DESC ?= "ARM64 RDK-B ramdisk"
 
 #
 # Emit the fitImage ITS rootfs section
@@ -46,6 +63,28 @@ fitimage_emit_section_rootfs() {
 			};
 		};
 EOF
+}
+
+#
+# Emit the fitImage cipher node
+#
+# $1 ... .its filename
+# $2 ... encryption algorithm
+# $3 ... encryption keyname
+fitimage_emit_node_cipher() {
+	enc_algo="$2"
+	enc_keyname="$3"
+
+	if [ "x${FW_ENC_ENABLE}" = "x1" -a -n "$enc_keyname" ] ; then
+		sed -i '$ d' $1
+		cat << EOF >> $1
+                        cipher {
+                                algo = "$enc_algo";
+                                key-name-hint = "$enc_keyname";
+                        };
+                };
+EOF
+	fi
 }
 
 #
@@ -242,6 +281,10 @@ fitimage_assemble_itb() {
 	uboot_prep_kimage
 	fitimage_emit_section_kernel $1 $kernelcount linux.bin "$linux_comp"
 
+	if [ "x${FW_ENC_ENABLE}" = "x1" ] ; then
+		fitimage_emit_node_cipher $1 "${FIT_ENC_ALG}" "${FW_ENC_KERNEL_KEYNAME}"
+	fi
+
 	#
 	# Step 2: Prepare a DTB image section
 	#
@@ -272,6 +315,10 @@ fitimage_assemble_itb() {
 
 			DTBS="$DTBS $DTB"
 			fitimage_emit_section_dtb $1 $DTB $DTB_PATH
+
+			if [ "x${FW_ENC_ENABLE}" = "x1" ] ; then
+				fitimage_emit_node_cipher $1 "${FIT_ENC_ALG}" "${FW_ENC_KERNEL_KEYNAME}"
+			fi
 		done
 	fi
 
@@ -285,6 +332,10 @@ fitimage_assemble_itb() {
 
 			DTBS="$DTBS $DTB"
 			fitimage_emit_section_dtb $1 $DTB "${EXTERNAL_KERNEL_DEVICETREE}/$DTB"
+
+			if [ "x${FW_ENC_ENABLE}" = "x1" ] ; then
+				fitimage_emit_node_cipher $1 "${FIT_ENC_ALG}" "${FW_ENC_KERNEL_KEYNAME}"
+			fi
 		done
 	fi
 
@@ -313,7 +364,15 @@ fitimage_assemble_itb() {
 	#
 	# Step 5: Prepare a ramdisk section.
 	#
-	if [ "x${ramdiskcount}" = "x1" ] && [ "${INITRAMFS_IMAGE_BUNDLE}" != "1" ]; then
+	if [ "x${ramdiskcount}" = "x1" ] && [ "x${FW_ENC_ENABLE}" = "x1" ] ; then
+		# use squashfs as initramfs and mount as ramdisk
+		filename="rdk-generic-broadband-image-${MACHINE}.squashfs-xz"
+		initramfs_path="${DEPLOY_DIR_IMAGE}/${filename}"
+
+		fitimage_emit_section_ramdisk $1 "$ramdiskcount" "$initramfs_path"
+		fitimage_emit_node_cipher $1 "${FIT_ENC_ALG}" "${FW_ENC_ROOTFS_KEYNAME}"
+		sed -i '/ramdisk-'"$ramdiskcount"'/,/};/{s/description = ".*"/description = "${FIT_RAMDISK_DESC}"/}' $1
+	elif [ "x${ramdiskcount}" = "x1" ] && [ "${INITRAMFS_IMAGE_BUNDLE}" != "1" ]; then
 		# Find and use the first initramfs image archive type we find
 		found=
 		for img in ${FIT_SUPPORTED_INITRAMFS_FSTYPES}; do
@@ -422,6 +481,41 @@ fitimage_assemble_itb() {
 	fi
 }
 
+bin2hex() {
+	od -An -t x1 -w128 | sed "s/ //g"
+}
+
+hkdf_key_derive() {
+	key=$(cat $1 | bin2hex)
+	salt=$(cat $2 | bin2hex)
+	out=$3
+
+	openssl kdf \
+		-keylen 32 -binary -out ${out} \
+		-kdfopt digest:SHA2-256 \
+		-kdfopt hexkey:$key \
+		-kdfopt hexsalt:$salt HKDF
+}
+
+do_fw_enc_key_derive() {
+	hkdf_key_derive \
+		"${FW_ENC_KEYDIR}/${FW_ENC_PLAT_KEYNAME}.bin" \
+		"${FW_ENC_KEYDIR}/${FW_ENC_ROE_SALT}" \
+		"${FW_ENC_KEYDIR}/${FW_ENC_ROE_KEYNAME}.bin"
+
+	hkdf_key_derive \
+		"${FW_ENC_KEYDIR}/${FW_ENC_ROE_KEYNAME}.bin" \
+		"${FW_ENC_KEYDIR}/${FW_ENC_KERNEL_SALT}" \
+		"${FW_ENC_KEYDIR}/${FW_ENC_KERNEL_KEYNAME}.bin"
+
+	hkdf_key_derive \
+		"${FW_ENC_KEYDIR}/${FW_ENC_ROE_KEYNAME}.bin" \
+		"${FW_ENC_KEYDIR}/${FW_ENC_ROOTFS_SALT}" \
+		"${FW_ENC_KEYDIR}/${FW_ENC_ROOTFS_KEYNAME}.bin"
+}
+
+addtask fw_enc_key_derive before do_assemble_filogic_secure_boot_fitimage after do_compile
+
 def fdt_patch_dm_verity(d, dtb_path, out_dtb_path):
     import subprocess
 
@@ -495,7 +589,12 @@ python do_gen_sb_dtb () {
     dest = d.getVar('D')
     kernel_devicetree = d.getVar('KERNEL_DEVICETREE')
     kernel_imagedest = d.getVar('KERNEL_IMAGEDEST')
-    rootdev = "/dev/dm-0"
+    enc_enabled = d.getVar('FW_ENC_ENABLE') == "1"
+
+    if enc_enabled:
+        rootdev = "/dev/ram"
+    else:
+        rootdev = "/dev/dm-0"
 
     for dtb in kernel_devicetree.split():
         if dtb.endswith('.dtbo'):
@@ -512,7 +611,11 @@ python do_gen_sb_dtb () {
             secure_dtb = dtb.replace(".dtb", "-sb.dtb")
             secure_dtb_path = "%s/arch/%s/boot/dts/%s" % (build, arch, secure_dtb)
 
-            fdt_patch_dm_verity(d, orig_dtb_path, secure_dtb_path)
+            if enc_enabled:
+                shutil.copy2(orig_dtb_path, secure_dtb_path)
+                fdt_patch_rootdev(d, secure_dtb_path, "bootargs", rootdev, True)
+            else:
+                fdt_patch_dm_verity(d, orig_dtb_path, secure_dtb_path)
 
             base_secure_dtb = os.path.basename(secure_dtb)
             install_path = "%s/%s/%s" % (dest, kernel_imagedest, base_secure_dtb)
@@ -521,10 +624,45 @@ python do_gen_sb_dtb () {
 
 addtask gen_sb_dtb before do_deploy after do_install
 
+python do_align_rootfs () {
+    import os
+
+    deploy_path = d.getVar('DEPLOY_DIR_IMAGE')
+    machine = d.getVar('MACHINE')
+    squashfs_file_path = "%s/rdk-generic-broadband-image-%s.squashfs-xz" % (deploy_path, machine)
+
+    if not os.path.exists(squashfs_file_path):
+        bb.fatal("RootFS file not found: %s" % squashfs_file_path)
+
+    file_size = os.path.getsize(squashfs_file_path)
+
+    pkcs_padding_bytes = 16 - (file_size % 16)
+    if pkcs_padding_bytes == 0:
+        pkcs_padding_bytes = 16
+
+    padding_size = 4096 - ((file_size + pkcs_padding_bytes) % 4096)
+    if padding_size == 4096:
+        padding_size = 0
+
+    if padding_size > 0:
+        with open(squashfs_file_path, 'ab') as f:
+            f.write(b'\x00' * padding_size)
+        bb.note("Aligned rootfs: original size=%x, padded %d zero bytes (total size=%x)" %
+                (file_size, padding_size, file_size + padding_size))
+    else:
+        bb.note("RootFS already aligned, no padding needed (size=%x)" % file_size)
+}
+
+addtask align_rootfs before do_assemble_filogic_secure_boot_fitimage after do_gen_sb_dtb
+
 do_assemble_filogic_secure_boot_fitimage() {
 	if echo ${KERNEL_IMAGETYPES} | grep -wq "fitImage"; then
 		cd ${B}
-		fitimage_assemble_itb fit-filogic-image-sb.its fitImage-filogic-sb "" "1"
+		if [ "x${FW_ENC_ENABLE}" = "x1" ] ; then
+			fitimage_assemble_itb fit-filogic-image-sb.its fitImage-filogic-sb "1" ""
+		else
+			fitimage_assemble_itb fit-filogic-image-sb.its fitImage-filogic-sb "" "1"
+		fi
 	fi
 }
 
