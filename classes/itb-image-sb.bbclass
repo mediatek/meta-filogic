@@ -13,6 +13,8 @@ python __anonymous () {
     if not bb.utils.contains('DISTRO_FEATURES', 'firmware_encryption', True, False, d):
         d.setVarFlag('do_fw_enc_key_derive', 'noexec', '1')
         d.setVarFlag('do_align_rootfs', 'noexec', '1')
+    if not bb.utils.contains('DISTRO_FEATURES', 'anti_rollback', True, False, d):
+        d.setVarFlag('do_gen_fw_ar_ver', 'noexec', '1')
 }
 
 UBOOT_SIGN_ENABLE = "1"
@@ -41,6 +43,10 @@ FIT_PAD_ALG = "pss"
 FIT_ENC_ALG ?= "optee_aes256"
 
 FIT_RAMDISK_DESC ?= "ARM64 RDK-B ramdisk"
+
+ANTI_ROLLBACK = "${@bb.utils.contains('DISTRO_FEATURES', 'anti_rollback', '1', '0', d)}"
+ANTI_ROLLBACK_TABLE ?= "${TOPDIR}/../fw_ar_table.xml"
+AUTO_AR_CONF ?= "auto_ar_conf"
 
 #
 # Emit the fitImage ITS rootfs section
@@ -128,6 +134,7 @@ fitimage_emit_section_config_itb() {
 	setup_line=""
 	default_line=""
 	loadables_line=""
+	fw_ar_ver_line=""
 
 	# conf node name is selected based on dtb ID if it is present,
 	# otherwise its selected based on kernel ID
@@ -183,6 +190,11 @@ fitimage_emit_section_config_itb() {
 		fi
 	fi
 
+	if [ "x${ANTI_ROLLBACK}" = "x1" ] ; then
+		fw_ar_ver=$(sed -n 's/^FW_AR_VER\t:=\t*//p' $(dirname ${ANTI_ROLLBACK_TABLE})/${AUTO_AR_CONF}.mk)
+		fw_ar_ver_line="fw_ar_ver = <${fw_ar_ver}>;"
+	fi
+
 	cat << EOF >> $its_file
                 $default_line
                 $conf_node {
@@ -193,6 +205,7 @@ fitimage_emit_section_config_itb() {
                         $ramdisk_line
                         $bootscr_line
                         $setup_line
+                        $fw_ar_ver_line
                         hash-1 {
                                 algo = "$conf_csum";
                         };
@@ -516,6 +529,21 @@ do_fw_enc_key_derive() {
 
 addtask fw_enc_key_derive before do_assemble_filogic_secure_boot_fitimage after do_compile
 
+python do_gen_fw_ar_ver () {
+    import os
+    import subprocess
+
+    ar_table = d.getVar('ANTI_ROLLBACK_TABLE')
+    auto_ar_conf = d.getVar('AUTO_AR_CONF')
+    ar_conf_dir = os.path.dirname(ar_table)
+    ar_conf_file = "%s/%s.mk" % (ar_conf_dir, auto_ar_conf)
+    cmd = "ar-tool fw_ar_table create_ar_conf %s %s" % (ar_table, ar_conf_file)
+    subprocess.check_call(cmd, shell=True)
+}
+
+addtask gen_fw_ar_ver before do_assemble_filogic_secure_boot_fitimage after do_compile
+do_gen_fw_ar_ver[file-checksums] = "${ANTI_ROLLBACK_TABLE}:True"
+
 def fdt_patch_dm_verity(d, dtb_path, out_dtb_path):
     import subprocess
 
@@ -687,4 +715,4 @@ python do_fit_image_filogic_secure_boot_deploy () {
 
 addtask fit_image_filogic_secure_boot_deploy before do_deploy after do_assemble_filogic_secure_boot_fitimage
 
-DEPENDS += "fdt-patch-dm-verify-native"
+DEPENDS += "fdt-patch-dm-verify-native ar-tool-native"
