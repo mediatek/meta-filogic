@@ -39,6 +39,7 @@ SRC_URI:append += " \
     ${@bb.utils.contains('DISTRO_FEATURES','ccn34','file://rdkb_cfg/eip-197.cfg','',d)} \
     ${@bb.utils.contains('DISTRO_FEATURES','usb3','file://rdkb_cfg/usb.cfg','',d)} \
     ${@bb.utils.contains('DISTRO_FEATURES','secure_boot','file://rdkb_cfg/secure_boot.cfg','',d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES','optee','file://rdkb_cfg/optee.cfg','',d)} \
 "
 
 KERNEL_DEVICETREE_mt7988_bpi4 += " \
