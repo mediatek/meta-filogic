@@ -4,7 +4,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/GPL-2.0;md5=801f80980d171dd6425
 
 inherit module
 
-SRC_URI = "git://git01.mediatek.com/openwrt/feeds/mtk-openwrt-feeds;protocol=https;branch=master;destsuffix=git"
+SRC_URI = "git://github.com/mediatek/mtk-openwrt-feeds;protocol=https;branch=main;destsuffix=git"
 SRCREV = "${AUTOREV}"
 
 S = "${WORKDIR}/git/feed/kernel/crypto-eip/src"

@@ -7,7 +7,7 @@ RPROVIDES:${PN} = "hal-fwupgrade"
 
 DEPENDS += "ccsp-common-library halinterface"
 DEPENDS_kirkstone += " rdkb-halif-fwupgrade"
-SRC_URI = "git://git01.mediatek.com/filogic/rdk-b/rdkb_hal;branch=master;protocol=https;name=fwupgradehal \
+SRC_URI = "git://github.com/mediatek/rdkb_hal;branch=main;protocol=https;name=fwupgradehal \
            file://LICENSE;subdir=git \
           "
 
