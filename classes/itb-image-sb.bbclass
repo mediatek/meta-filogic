@@ -15,6 +15,8 @@ python __anonymous () {
         d.setVarFlag('do_align_rootfs', 'noexec', '1')
     if not bb.utils.contains('DISTRO_FEATURES', 'anti_rollback', True, False, d):
         d.setVarFlag('do_gen_fw_ar_ver', 'noexec', '1')
+    if not bb.utils.contains('DISTRO_FEATURES', 'optee', True, False, d):
+        d.setVarFlag('do_add_optee_reserved_memory', 'noexec', '1')
 }
 
 UBOOT_SIGN_ENABLE = "1"
@@ -651,6 +653,46 @@ python do_gen_sb_dtb () {
 }
 
 addtask gen_sb_dtb before do_deploy after do_install
+
+# Modify OP-TEE reserved memory in device tree
+# Directly modify /reserved-memory/secmon@43000000 with fixed size 0x570000
+do_add_optee_reserved_memory() {
+	for dtb in ${KERNEL_DEVICETREE}; do
+		if [ "${dtb##*.}" = "dtbo" ]; then
+			continue
+		fi
+
+		dtb=`echo ${dtb} | sed 's,\.dtb$,-sb.dtb,g'`
+		dtb_path="${B}/arch/${ARCH}/boot/dts/$dtb"
+
+		if [ ! -e "$dtb_path" ]; then
+			bbwarn "DTB file not found: $dtb_path, skipping reserved memory modification"
+			continue
+		fi
+
+		bbnote "Modifying OP-TEE reserved memory in $dtb_path"
+		bbnote "  Setting /reserved-memory/secmon@43000000 size to 0x570000"
+
+		# Check if fdtput is available
+		if [ ! -x "${STAGING_BINDIR_NATIVE}/fdtput" ]; then
+			bbwarn "fdtput not found, skipping DTB modification"
+			continue
+		fi
+
+		# Directly modify the secmon@43000000 node
+		# reg format: <addr_high addr_low size_high size_low> for 64-bit addressing
+		${STAGING_BINDIR_NATIVE}/fdtput "$dtb_path" "/reserved-memory/secmon@43000000" -tx reg \
+			0 0x43000000 0 0x570000
+
+		if [ $? -eq 0 ]; then
+			bbnote "  Successfully updated /reserved-memory/secmon@43000000"
+		else
+			bbwarn "  Failed to update /reserved-memory/secmon@43000000"
+		fi
+	done
+}
+
+addtask add_optee_reserved_memory before do_assemble_filogic_secure_boot_fitimage after do_gen_sb_dtb
 
 python do_align_rootfs () {
     import os
