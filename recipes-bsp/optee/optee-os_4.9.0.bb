@@ -20,6 +20,9 @@ EXTRA_OEMAKE += " \
 	CFG_DRAM_SIZE="0x40000000" \
 "
 
+EARLY_TA_PATH = "$(find ${STAGING_DIR_HOST}/usr/lib/early -type f)"
+EXTRA_OEMAKE += 'EARLY_TA_PATHS="${EARLY_TA_PATH}"'
+
 do_deploy() {
     install -d ${DEPLOYDIR}
     install -m 644 ${S}/out/arm-plat-mediatek/core/tee.bin ${DEPLOYDIR}/tee.bin

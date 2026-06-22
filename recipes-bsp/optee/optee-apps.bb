@@ -46,15 +46,22 @@ do_install() {
 	install ${S}/install_dir/bin/* ${D}${bindir} || true
 	install -m 644 ${S}/install_dir/lib/optee_armtz/* \
 		${D}${nonarch_base_libdir}/optee_armtz/ || true
+	install ${S}/install_dir/ta/early/*.stripped.elf \
+		${D}/usr/lib/early/apps || true
 	install -m 644 ${S}/install_dir/include/* \
 		${D}${includedir} || true
 }
+
+PACKAGES =+ "${PN}-earlyta"
 
 FILES:${PN} = " \
 	${bindir} \
 	${nonarch_base_libdir}/optee_armtz/ \
 "
 FILES:${PN}-dev = "${includedir}"
+FILES:${PN}-earlyta = "/usr/lib/early/apps"
+
+ERROR_QA:remove = "already-stripped"
 
 RDEPENDS:${PN} = "optee-client"
 
