@@ -10,6 +10,8 @@ LICENSE = "BSD-2-Clause"
 
 inherit python3native
 
+require optee-ta-sign.inc
+
 DEPENDS = "optee-client optee-os-tadevkit python3-cryptography-native openssl"
 
 S = "${WORKDIR}/git"

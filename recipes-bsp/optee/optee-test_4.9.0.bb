@@ -11,6 +11,8 @@ LICENSE = "BSD-2-Clause & GPL-2.0-only"
 
 inherit python3native
 
+require optee-ta-sign.inc
+
 DEPENDS = "optee-client optee-os-tadevkit optee-apps python3-cryptography-native openssl"
 LIC_FILES_CHKSUM = "file://LICENSE.md;md5=a8fa504109e4cd7ea575bc49ea4be560 \
 			file://LICENSE-BSD;md5=dca16d6efa93b55d0fd662ae5cd6feeb \
