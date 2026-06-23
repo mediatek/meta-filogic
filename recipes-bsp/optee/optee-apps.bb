@@ -31,7 +31,7 @@ EXTRA_OEMAKE += " \
 EXTRA_OEMAKE += " \
 		CFG_MTK_RNG=y \
 		CFG_MTK_SECURE_STORAGE=y \
-		CFG_FW_ENC_EARLY_TA=y \
+		${@bb.utils.contains('DISTRO_FEATURES', 'firmware_encryption', 'CFG_FW_ENC_EARLY_TA=y', '', d)} \
 		CFG_OVERLAYFS_ENCRYPTION_TA=y \
 "
 
