@@ -51,6 +51,10 @@ EXTRA_OEMAKE += " \
     DEBUG=0 \
 "
 
+EXTRA_OEMAKE += " \
+	${@bb.utils.contains('DISTRO_FEATURES', 'emmc', 'CFG_RPMB_FS=y CFG_REE_FS=n', '', d)} \
+"
+
 LDFLAGS = ""
 CFLAGS += "--sysroot=${STAGING_DIR_HOST}"
 
