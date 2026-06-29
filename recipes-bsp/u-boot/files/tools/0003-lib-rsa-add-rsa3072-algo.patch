@@ -1,0 +1,212 @@
+From 2a4b0d5890deb0c973f8db7bb03adad96aff1050 Mon Sep 17 00:00:00 2001
+From: Jamin Lin <jamin_lin@aspeedtech.com>
+Date: Wed, 19 Jan 2022 16:23:21 +0800
+Subject: [PATCH] rsa: adds rsa3072 algorithm
+
+Add to support rsa 3072 bits algorithm in tools
+for image sign at host side and adds rsa 3072 bits
+verification in the image binary.
+
+Add test case in vboot for sha384 with rsa3072 algorithm testing.
+
+Signed-off-by: Jamin Lin <jamin_lin@aspeedtech.com>
+Reviewed-by: Simon Glass <sjg@chromium.org>
+---
+ configs/sandbox_defconfig                   |  1 +
+ include/u-boot/rsa.h                        |  1 +
+ lib/rsa/rsa-verify.c                        |  6 +++
+ test/py/tests/test_vboot.py                 | 12 +++++-
+ test/py/tests/vboot/sign-configs-sha384.its | 45 +++++++++++++++++++++
+ test/py/tests/vboot/sign-images-sha384.its  | 42 +++++++++++++++++++
+ tools/image-sig-host.c                      |  7 ++++
+ 7 files changed, 112 insertions(+), 2 deletions(-)
+ create mode 100644 test/py/tests/vboot/sign-configs-sha384.its
+ create mode 100644 test/py/tests/vboot/sign-images-sha384.its
+
+diff --git a/configs/sandbox_defconfig b/configs/sandbox_defconfig
+index 19cde8739738..d0886b7071f1 100644
+--- a/configs/sandbox_defconfig
++++ b/configs/sandbox_defconfig
+@@ -312,3 +312,4 @@ CONFIG_TEST_FDTDEC=y
+ CONFIG_UNIT_TEST=y
+ CONFIG_UT_TIME=y
+ CONFIG_UT_DM=y
++CONFIG_SHA384=y
+diff --git a/include/u-boot/rsa.h b/include/u-boot/rsa.h
+index 01b480d0f3ed..b9634e38d9a9 100644
+--- a/include/u-boot/rsa.h
++++ b/include/u-boot/rsa.h
+@@ -111,6 +111,7 @@ int padding_pss_verify(struct image_sign_info *info,
+ #define RSA_DEFAULT_PADDING_NAME		"pkcs-1.5"
+ 
+ #define RSA2048_BYTES	(2048 / 8)
++#define RSA3072_BYTES	(3072 / 8)
+ #define RSA4096_BYTES	(4096 / 8)
+ 
+ /* This is the minimum/maximum key size we support, in bits */
+diff --git a/lib/rsa/rsa-verify.c b/lib/rsa/rsa-verify.c
+index 32c7507024b8..112664059c9f 100644
+--- a/lib/rsa/rsa-verify.c
++++ b/lib/rsa/rsa-verify.c
+@@ -595,6 +595,12 @@ U_BOOT_CRYPTO_ALGO(rsa2048) = {
+ 	.verify = rsa_verify,
+ };
+ 
++U_BOOT_CRYPTO_ALGO(rsa3072) = {
++	.name = "rsa3072",
++	.key_len = RSA3072_BYTES,
++	.verify = rsa_verify,
++};
++
+ U_BOOT_CRYPTO_ALGO(rsa4096) = {
+ 	.name = "rsa4096",
+ 	.key_len = RSA4096_BYTES,
+diff --git a/test/py/tests/test_vboot.py b/test/py/tests/test_vboot.py
+index 095e00cce365..b080d482af91 100644
+--- a/test/py/tests/test_vboot.py
++++ b/test/py/tests/test_vboot.py
+@@ -45,6 +45,8 @@
+     ['sha256-pss-pad', 'sha256', '-pss', '-E -p 0x10000', False, False],
+     ['sha256-pss-required', 'sha256', '-pss', None, True, False],
+     ['sha256-pss-pad-required', 'sha256', '-pss', '-E -p 0x10000', True, True],
++    ['sha384-basic', 'sha384', '', None, False, False],
++    ['sha384-pad', 'sha384', '', '-E -p 0x10000', False, False],
+ ]
+ 
+ @pytest.mark.boardspec('sandbox')
+@@ -180,10 +182,16 @@ def create_rsa_pair(name):
+             name: Name of of the key (e.g. 'dev')
+         """
+         public_exponent = 65537
++
++        if sha_algo == "sha384":
++            rsa_keygen_bits = 3072
++        else:
++            rsa_keygen_bits = 2048
++
+         util.run_and_log(cons, 'openssl genpkey -algorithm RSA -out %s%s.key '
+-                     '-pkeyopt rsa_keygen_bits:2048 '
++                     '-pkeyopt rsa_keygen_bits:%d '
+                      '-pkeyopt rsa_keygen_pubexp:%d' %
+-                     (tmpdir, name, public_exponent))
++                     (tmpdir, name, rsa_keygen_bits, public_exponent))
+ 
+         # Create a certificate containing the public key
+         util.run_and_log(cons, 'openssl req -batch -new -x509 -key %s%s.key '
+diff --git a/test/py/tests/vboot/sign-configs-sha384.its b/test/py/tests/vboot/sign-configs-sha384.its
+new file mode 100644
+index 000000000000..2869401991ed
+--- /dev/null
++++ b/test/py/tests/vboot/sign-configs-sha384.its
+@@ -0,0 +1,45 @@
++/dts-v1/;
++
++/ {
++	description = "Chrome OS kernel image with one or more FDT blobs";
++	#address-cells = <1>;
++
++	images {
++		kernel {
++			data = /incbin/("test-kernel.bin");
++			type = "kernel_noload";
++			arch = "sandbox";
++			os = "linux";
++			compression = "none";
++			load = <0x4>;
++			entry = <0x8>;
++			kernel-version = <1>;
++			hash-1 {
++				algo = "sha384";
++			};
++		};
++		fdt-1 {
++			description = "snow";
++			data = /incbin/("sandbox-kernel.dtb");
++			type = "flat_dt";
++			arch = "sandbox";
++			compression = "none";
++			fdt-version = <1>;
++			hash-1 {
++				algo = "sha384";
++			};
++		};
++	};
++	configurations {
++		default = "conf-1";
++		conf-1 {
++			kernel = "kernel";
++			fdt = "fdt-1";
++			signature {
++				algo = "sha384,rsa3072";
++				key-name-hint = "dev";
++				sign-images = "fdt", "kernel";
++			};
++		};
++	};
++};
+diff --git a/test/py/tests/vboot/sign-images-sha384.its b/test/py/tests/vboot/sign-images-sha384.its
+new file mode 100644
+index 000000000000..be1a9a653c7f
+--- /dev/null
++++ b/test/py/tests/vboot/sign-images-sha384.its
+@@ -0,0 +1,42 @@
++/dts-v1/;
++
++/ {
++	description = "Chrome OS kernel image with one or more FDT blobs";
++	#address-cells = <1>;
++
++	images {
++		kernel {
++			data = /incbin/("test-kernel.bin");
++			type = "kernel_noload";
++			arch = "sandbox";
++			os = "linux";
++			compression = "none";
++			load = <0x4>;
++			entry = <0x8>;
++			kernel-version = <1>;
++			signature {
++				algo = "sha384,rsa3072";
++				key-name-hint = "dev";
++			};
++		};
++		fdt-1 {
++			description = "snow";
++			data = /incbin/("sandbox-kernel.dtb");
++			type = "flat_dt";
++			arch = "sandbox";
++			compression = "none";
++			fdt-version = <1>;
++			signature {
++				algo = "sha384,rsa3072";
++				key-name-hint = "dev";
++			};
++		};
++	};
++	configurations {
++		default = "conf-1";
++		conf-1 {
++			kernel = "kernel";
++			fdt = "fdt-1";
++		};
++	};
++};
+diff --git a/tools/image-sig-host.c b/tools/image-sig-host.c
+index 8ed6998dab04..d0133aec4c81 100644
+--- a/tools/image-sig-host.c
++++ b/tools/image-sig-host.c
+@@ -55,6 +55,13 @@ struct crypto_algo crypto_algos[] = {
+ 		.add_verify_data = rsa_add_verify_data,
+ 		.verify = rsa_verify,
+ 	},
++	{
++		.name = "rsa3072",
++		.key_len = RSA3072_BYTES,
++		.sign = rsa_sign,
++		.add_verify_data = rsa_add_verify_data,
++		.verify = rsa_verify,
++	},
+ 	{
+ 		.name = "rsa4096",
+ 		.key_len = RSA4096_BYTES,

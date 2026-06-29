@@ -1,0 +1,56 @@
+From 1b99c15d73c10a7f5953e7cd69264754f5f604ba Mon Sep 17 00:00:00 2001
+From: Loic Poulain <loic.poulain@linaro.org>
+Date: Thu, 31 Oct 2024 10:15:31 +0100
+Subject: [PATCH] lib: rsa: Set conventional salt length RSA-PSS parameter
+
+RFC 3447 says that Typical salt length are either 0 or the length
+of the output of the digest algorithm, RFC 4055 also recommends
+hash value length as the salt length. Moreover, By convention,
+most of the signing infrastructures/libraries use the length of
+the digest algorithm (such as google cloud kms:
+                      https://cloud.google.com/kms/docs/algorithms).
+
+If the salt-length parameter is not set, openssl default to the
+maximum allowed value, which is a openssl 'specificity', so this
+works well for local signing, but restricts compatibility with
+other engines (e.g pkcs11/libkmsp11):
+
+```
+returning 0x71 from C_SignInit due to status INVALID_ARGUMENT:
+    at rsassa_pss.cc:53: expected salt length for key XX is 32,
+    but 478 was supplied in the parameters
+Could not obtain signature: error:41000070:PKCS#11 module::Mechanism invalid
+```
+
+To improve compatibility, we set the default RSA-PSS salt-length
+value to the conventional one. A further improvement could consist
+in making it configurable as signature FIT node attribute.
+
+rfc3447: https://datatracker.ietf.org/doc/html/rfc3447
+rfc4055: https://datatracker.ietf.org/doc/html/rfc4055
+
+Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
+---
+ lib/rsa/rsa-sign.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/lib/rsa/rsa-sign.c b/lib/rsa/rsa-sign.c
+index 2304030e32f4..fa9e143b4ca8 100644
+--- a/lib/rsa/rsa-sign.c
++++ b/lib/rsa/rsa-sign.c
+@@ -428,6 +428,15 @@ static int rsa_sign_with_key(EVP_PKEY *pkey, struct padding_algo *padding_algo,
+ 			ret = rsa_err("Signer padding setup failed");
+ 			goto err_sign;
+ 		}
++
++		/* Per RFC 3447 (and convention) the Typical salt length is the
++		 * length of the output of the digest algorithm.
++		 */
++		if (EVP_PKEY_CTX_set_rsa_pss_saltlen(ckey,
++						     checksum_algo->checksum_len) <= 0) {
++			ret = rsa_err("Signer salt length setup failed");
++			goto err_sign;
++		}
+ 	}
+ 
+ 	for (i = 0; i < region_count; i++) {
