@@ -1,5 +1,8 @@
 # SPDX-License-Identifier: GPL-2.0-only
 #
+# Derived from meta/classes/kernel-fitimage.bbclass in
+# https://code.rdkcentral.com/r/q/project:rdk/components/opensource/oe/openembedded-core
+#
 # Copyright (C) 2023 MediaTek Inc.
 #
 #
