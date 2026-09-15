@@ -80,6 +80,7 @@ SRC_URI:append = " \
     file://194-dts-mt7968a-add-ramoops.patch \
     file://195-dts-mt7986a-bpi-r3-leds-port-names-and-wifi-eeprom.patch \
     file://196-dts-mt7986a-bpi-r3-use-all-ubi-nand-layout.patch \
+    file://197-arm64-dts-mediatek-mt7986-correct-timer-frequency.patch \
     file://198-dts-mt7988a-enable-wed.patch \
     file://199-arm64-dts-mediatek-mt7986-increase-ATF-reserved-memo.patch \
     file://200-phy-phy-mtk-tphy-Add-hifsys-support.patch \
@@ -164,6 +165,8 @@ SRC_URI:append = " \
     file://999-crypto-03-avoid-rcu-stall.patch \
     file://999-crypto-04-extend-xfrm-packet-mode.patch \
     file://999-crypto-05-add-xfrm-fragment-before-encrypt.patch \
+    file://999-crypto-06-macsec-defer-crypto-aead-free-to-workqueue.patch \
+    file://999-crypto-07-xfrm-backport-kernel-7.1-fix-return-value-for-async-algo.patch \
     file://999-devapc-01-soc-mediatek-add-mt798x-support.patch \
     file://999-dsa-01-mt7530_mdio-add-individual-polarity-control-for-SGMII.patch \
     file://999-dsa-02-add-mt7531-netlink-support.patch \
@@ -172,6 +175,7 @@ SRC_URI:append = " \
     file://999-dsa-05-add-mxl862xx-tag8021q-driver.patch \
     file://999-dsa-06-fix-mt7531-vlan-del-to-override-fid.patch \
     file://999-dsa-07-add-mt7531-dual-cpu-port.patch \
+    file://999-dsa-08-add-mxl862xx-serdes-port1-mux-selection.patch \
     file://999-dts-01-arm64-dts-mediatek-add-mt7987-basic-device-tree.patch \
     file://999-dts-02-arm64-dts-mediatek-add-mt7988-multiple-thermal-zones.patch \
     file://999-dts-03-arm64-dts-mediatek-add-mt7987-multiple-thermal-zones.patch \
@@ -279,6 +283,7 @@ SRC_URI:append = " \
     file://999-ephy-aqr113c-03-add-software-reset-to-aqr107_probe.patch \
     file://999-ephy-aqr113c-04-add-mib-debugfs.patch \
     file://999-ephy-as21xxx-01-update-driver-to-v1.9.2.patch \
+    file://999-ephy-common-01-add-EEE-ADV2-broken-modes-support.patch \
     file://999-ephy-cux3410-01-add-cux3410-support.patch \
     file://999-ephy-en8811h-01-update-driver-to-v2.0.7.patch \
     file://999-ephy-gbe-01-align-phy-lib-with-openwrt-2410.patch \
@@ -326,7 +331,6 @@ SRC_URI:append = " \
     file://999-eth-38-mtk_eth_soc-add-IEEE1588v2-support-for-NETSYSv3.1.patch \
     file://999-eth-39-mtk_eth_soc-add-crypto-tx-support.patch \
     file://999-eth-41-mtk_eth_soc-change-to-internal-ppe-debugfs.patch \
-    file://999-eth-42-mtk_eth_soc-add-roaming-handler.patch \
     file://999-eth-43-mtk_eth_soc-fix-mtk_eth_offload_init-memory-leak.patch \
     file://999-eth-44-mtk_eth_soc-add-mt7988-l4s-support.patch \
     file://999-eth-45-mtk_eth_soc-add-464xlat-support.patch.patch \
@@ -340,6 +344,8 @@ SRC_URI:append = " \
     file://999-eth-52-mtk_eth_soc-add-skb-headroom-copy.patch \
     file://999-eth-52-mtk_eth_soc-use-per-MAC-SGMII-syscfg0-mask.patch \
     file://999-eth-53-mtk_eth_soc-fix-spurious-mdio-timeout.patch \
+    file://999-eth-54-mtk_eth_soc-add-misc-interrupt.patch \
+    file://999-eth-55-fix-memory-leak-on-page-pool-creation-failure.patch \
     file://999-eth-90-mtk_eth_soc-support-proprietary-debugfs.patch \
     file://999-fitblk-01-parse-and-mount-ramdisk.patch \
     file://999-gsw-01-add-mt7531-support.patch \

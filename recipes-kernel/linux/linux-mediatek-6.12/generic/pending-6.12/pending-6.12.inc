@@ -88,6 +88,7 @@ SRC_URI:append = " \
     file://701-netfilter-nf_tables-ignore-EOPNOTSUPP-on-flowtable-d.patch \
     file://702-net-ethernet-mtk_eth_soc-enable-threaded-NAPI.patch \
     file://703-phy-add-detach-callback-to-struct-phy_driver.patch \
+    file://704-net-dsa-support-EPROBE_DEFER-when-reading-the-port-M.patch \
     file://705-net-dsa-tag_mtk-add-padding-for-tx-packets.patch \
     file://706-net-phy-populate-host_interfaces-when-attaching-PHY.patch \
     file://710-bridge-add-knob-for-filtering-rx-tx-BPDU-pack.patch \

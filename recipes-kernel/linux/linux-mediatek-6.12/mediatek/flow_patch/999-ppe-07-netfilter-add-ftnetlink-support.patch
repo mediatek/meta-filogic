@@ -1,9 +1,16 @@
 ---
-[v1] netfilter: add ftnetlink support
+[v2] netfilter: add ftnetlink support
 
 Without this patch, users are unable to delete or flush flow rule and
 PPE entries via the FTNL application.
 ---
+v2:
+ - register the subsystem in nfnl_lockdep_names[]
+ - add MODULE_ALIAS_NFNL_SUBSYS() for autoload, and MODULE_DESCRIPTION()
+ - fix Kconfig deps: NF_FLOW_TABLE + NETFILTER_NETLINK
+ - use nla_get_be16() for the __be16 port fields
+ - demote the per-delete printk() to pr_debug()
+ - flush with an explicit NULL device instead of the always-NULL skb->dev
 v1: Add flow table netlink subsystem (ftnetlink) for userspace flow management.
 ---
 
@@ -18,10 +25,11 @@ PPE entries via the FTNL application.
 Signed-off-by: Bo-Cun Chen <bc-bocun.chen@mediatek.com>
 ---
  include/uapi/linux/netfilter/nfnetlink.h |   3 +-
- net/netfilter/Kconfig                    |   9 +
+ net/netfilter/Kconfig                    |  11 +
  net/netfilter/Makefile                   |   1 +
- net/netfilter/nf_flow_table_netlink.c    | 235 +++++++++++++++++++++++
- 4 files changed, 247 insertions(+), 1 deletion(-)
+ net/netfilter/nf_flow_table_netlink.c    | 241 +++++++++++++++++++++++
+ net/netfilter/nfnetlink.c                |   1 +
+ 5 files changed, 256 insertions(+), 1 deletion(-)
  create mode 100644 net/netfilter/nf_flow_table_netlink.c
 
 --- a/include/uapi/linux/netfilter/nfnetlink.h
@@ -38,16 +46,18 @@ Signed-off-by: Bo-Cun Chen <bc-bocun.chen@mediatek.com>
  #define NFNL_MSG_BATCH_BEGIN		NLMSG_MIN_TYPE
 --- a/net/netfilter/Kconfig
 +++ b/net/netfilter/Kconfig
-@@ -742,6 +742,15 @@ config NF_FLOW_TABLE_PROCFS
+@@ -742,6 +742,17 @@ config NF_FLOW_TABLE_PROCFS
  	  This option enables for the flow table offload statistics
  	  to be shown in procfs under net/netfilter/nf_flowtable.
  
 +config NF_FLOW_TABLE_NETLINK
 +	tristate "Netfilter flow table netlink module"
-+	depends on NETFILTER_INGRESS
-+	depends on NF_CONNTRACK
++	depends on NF_FLOW_TABLE
++	depends on NETFILTER_NETLINK
 +	help
-+	  This option adds the flow table core infrastructure.
++	  This option adds a netlink interface (nfnetlink subsystem
++	  "flowtable") to delete or flush flow table entries from
++	  userspace.
 +
 +	  To compile it as a module, choose M here.
 +
@@ -60,13 +70,13 @@ Signed-off-by: Bo-Cun Chen <bc-bocun.chen@mediatek.com>
  endif
  
  obj-$(CONFIG_NF_FLOW_TABLE_INET) += nf_flow_table_inet.o
-+obj-$(CONFIG_NF_FLOW_TABLE_NETLINK)	+= nf_flow_table_netlink.o
++obj-$(CONFIG_NF_FLOW_TABLE_NETLINK) += nf_flow_table_netlink.o
  
  # generic X tables
  obj-$(CONFIG_NETFILTER_XTABLES) += x_tables.o xt_tcpudp.o
 --- /dev/null
 +++ b/net/netfilter/nf_flow_table_netlink.c
-@@ -0,0 +1,240 @@
+@@ -0,0 +1,241 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * Copyright (C) 2023 MediaTek Inc.
@@ -178,8 +188,8 @@ Signed-off-by: Bo-Cun Chen <bc-bocun.chen@mediatek.com>
 +		return -EINVAL;
 +
 +	tuple->l4proto = nla_get_u8(tb[FTA_PROTO_NUM]);
-+	tuple->src_port = nla_get_u16(tb[FTA_PROTO_SPORT]);
-+	tuple->dst_port = nla_get_u16(tb[FTA_PROTO_DPORT]);
++	tuple->src_port = nla_get_be16(tb[FTA_PROTO_SPORT]);
++	tuple->dst_port = nla_get_be16(tb[FTA_PROTO_DPORT]);
 +
 +	return err;
 +}
@@ -210,12 +220,12 @@ Signed-off-by: Bo-Cun Chen <bc-bocun.chen@mediatek.com>
 +	if (!tb[FTA_TUPLE_PROTO])
 +		return -EINVAL;
 +	err = ftnetlink_parse_tuple_proto(tb[FTA_TUPLE_PROTO], tuple);
++	if (err < 0)
++		return err;
 +
-+	if (err >= 0)
-+		printk("tuple info:sip=%pI4,dip=%pI4 proto=%d "
-+		       "sport=%d dport=%d\n",
-+		       &tuple->src_v4, &tuple->dst_v4, tuple->l4proto,
-+		       ntohs(tuple->src_port), ntohs(tuple->dst_port));
++	pr_debug("tuple info:sip=%pI4,dip=%pI4 proto=%d sport=%d dport=%d\n",
++		 &tuple->src_v4, &tuple->dst_v4, tuple->l4proto,
++		 ntohs(tuple->src_port), ntohs(tuple->dst_port));
 +
 +	return err;
 +}
@@ -251,9 +261,8 @@ Signed-off-by: Bo-Cun Chen <bc-bocun.chen@mediatek.com>
 +static int ftnetlink_flush_table(struct sk_buff *skb, const struct nfnl_info *info,
 +				 const struct nlattr * const cda[])
 +{
-+	struct net_device *dev = skb->dev;
-+
-+	nf_flow_table_cleanup(dev);
++	/* NULL device tears down every flow in all flow tables. */
++	nf_flow_table_cleanup(NULL);
 +
 +	return 0;
 +}
@@ -305,5 +314,17 @@ Signed-off-by: Bo-Cun Chen <bc-bocun.chen@mediatek.com>
 +}
 +
 +MODULE_LICENSE("GPL");
++MODULE_DESCRIPTION("Netfilter flow table netlink interface");
++MODULE_ALIAS_NFNL_SUBSYS(NFNL_SUBSYS_FLOWTABLE);
 +module_init(ftnetlink_init);
 +module_exit(ftnetlink_exit);
+--- a/net/netfilter/nfnetlink.c
++++ b/net/netfilter/nfnetlink.c
+@@ -74,6 +74,7 @@ static const char *const nfnl_lockdep_na
+ 	[NFNL_SUBSYS_NFTABLES] = "nfnl_subsys_nftables",
+ 	[NFNL_SUBSYS_NFT_COMPAT] = "nfnl_subsys_nftcompat",
+ 	[NFNL_SUBSYS_HOOK] = "nfnl_subsys_hook",
++	[NFNL_SUBSYS_FLOWTABLE] = "nfnl_subsys_flowtable",
+ };
+ 
+ static const int nfnl_group2type[NFNLGRP_MAX+1] = {

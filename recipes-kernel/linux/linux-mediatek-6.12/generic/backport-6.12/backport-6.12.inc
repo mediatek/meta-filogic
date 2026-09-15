@@ -42,11 +42,11 @@ SRC_URI:append = " \
     file://420-02-v6.16-mtd-nand-brcmnand-fix-NAND-timeout-when-accessing-eM.patch \
     file://420-03-v6.16-mtd-rawnand-brcmnand-legacy-exec_op-implementation.patch \
     file://422-v6.17-spi-spi-qpic-snand-unregister-ECC-engine-on-probe-er.patch \
-    file://429-01-v6.18-mtd-spinand-fix-direct-mapping-creation-sizes.patch \
-    file://429-02-v6.18-mtd-spinand-try-a-regular-dirmap-if-creating-a-di.patch \
-    file://429-03-v6.18-mtd-spinand-repeat-reading-in-regular-mode-if-con.patch \
     file://434-v6.19-mtd-spinand-esmt-add-support-for-F50L1G41LC.patch \
     file://435-v6.19-mtd-spinand-add-support-for-FudanMicro-FM25S01BI3.patch \
+    file://436-v7.3-mtd-spinand-fmsh-add-support-for-FM25G01B-FM25G02B.patch \
+    file://437-v7.3-mtd-spinand-fmsh-fix-FM25G01B-FM25G02B-Quad-IO-read-dummy-cycles.patch \
+    file://438-v7.3-mtd-spinand-add-support-for-HeYangTek-HYF1GQ4UDACAE.patch \
     file://500-01-v6.13-block-add-support-for-defining-read-only-partitions.patch \
     file://500-02-v6.13-block-introduce-add_disk_fwnode.patch \
     file://500-03-v6.13-mmc-block-attach-partitions-fwnode-if-found-in-mmc-c.patch \
@@ -112,6 +112,7 @@ SRC_URI:append = " \
     file://613-05-v6.19-net-dsa-b53-fix-BCM5325-65-ARL-entry-multicast-port-masks.patch \
     file://613-06-v6.19-net-dsa-b53-fix-BCM5325-65-ARL-entry-VIDs.patch \
     file://613-07-v6.19-net-dsa-b53-allow-VID-0-for-BCM5325-65.patch \
+    file://615-v6.18-net-l2tp-reset-skb-control-buffer.patch \
     file://622-v6.18-ppp-remove-rwlock-usage.patch \
     file://623-v6.18-pppoe-remove-rwlock-usage.patch \
     file://624-v6.18-pppoe-drop-sock-reference-counting-on-fast-path.patch \
@@ -227,6 +228,7 @@ SRC_URI:append = " \
     file://781-27-v6.16-net-phy-realtek-add-RTL8127-internal-PHY.patch \
     file://781-28-v6.18-net-phy-realtek-convert-RTL8226-CG-to-c45-only.patch \
     file://781-29-v6.18-net-phy-realtek-enable-serdes-option-mode-for-RTL8226-CG.patch \
+    file://781-v7.1-net-mvneta-support-EPROBE_DEFER-when-reading-MAC-add.patch \
     file://782-01-v6.16-net-phy-pass-PHY-driver-to-.match_phy_device-OP.patch \
     file://782-04-v6.16-net-phy-introduce-genphy_match_phy_device.patch \
     file://782-05-v6.16-net-phy-Add-support-for-Aeonsemi-AS21xxx-PHYs.patch \
@@ -282,5 +284,6 @@ SRC_URI:append = " \
     file://923-v7.1-crypto-testmgr-Add-test-vectors-for-authenc-hmac-md5.patch \
     file://930-v7.1-crypto-safexcel-Group-authenc-ciphersuites.patch \
     file://931-v7.1-crypto-safexcel-Add-support-for-authenc-hmac-md5-sui.patch \
+    file://945-v6.16-irqchip-msi-lib-Honour-the-MSI_FLAG_NO_AFFINITY-flag.patch \
     file://990-v7.0-sign-file-use-only-openssl-cms-api-for-signing.patch \
     "

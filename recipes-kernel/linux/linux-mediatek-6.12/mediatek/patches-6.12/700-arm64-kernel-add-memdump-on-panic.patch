@@ -39,10 +39,10 @@
  subdir- += vdso vdso32
 --- a/arch/arm64/kernel/memdump.c
 +++ b/arch/arm64/kernel/memdump.c
-@@ -0,0 +1,219 @@
+@@ -0,0 +1,281 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
-+ * Copyright (C) 2025 MediaTek Inc.
++ * Copyright (C) 2026 MediaTek Inc.
 + *
 + * Author: Weijie Gao <weijie.gao@mediatek.com>
 + */
@@ -51,6 +51,8 @@
 +#define CONFIG_KEXEC_CORE	1
 +
 +#include <linux/kernel.h>
++#include <linux/gfp.h>
++#include <linux/mm.h>
 +#include <linux/arm-smccc.h>
 +#include <linux/printk.h>
 +#include <linux/crash_core.h>
@@ -75,6 +77,9 @@
 +
 +/* core dump info */
 +#define MEMDUMP_CORE_VER			2
++
++/* parameters */
++#define MIN_RSVD_MEM_RANGES			8
 +
 +struct memdump_core_info {
 +	u32 crc;
@@ -104,23 +109,26 @@
 +
 +struct crash_mem_priv {
 +	unsigned int nr_ranges;
++	unsigned int max_ranges;
 +	struct memdump_mem_range *ranges;
 +};
 +
 +static struct memdump_core_info *mdump_core_info;
 +static struct pt_regs *mdump_panic_regs;
-+
-+static int get_nr_ram_ranges_callback(struct resource *res, void *arg)
-+{
-+	unsigned int *nr_ranges = arg;
-+
-+	(*nr_ranges)++;
-+	return 0;
-+}
++static size_t core_info_size;
++static bool warn_max_range;
 +
 +static int log_ram_headers_callback(struct resource *res, void *arg)
 +{
 +	struct crash_mem_priv *cmem = arg;
++
++	if (cmem->nr_ranges >= cmem->max_ranges) {
++		if (!warn_max_range) {
++			pr_warn("Memory range in dump is truncated\n");
++			warn_max_range = true;
++		}
++		return 0;
++	}
 +
 +	cmem->ranges[cmem->nr_ranges].va_start = (u64)__va(res->start);
 +	cmem->ranges[cmem->nr_ranges].pa_start = res->start;
@@ -134,11 +142,9 @@
 +{
 +	struct memdump_mem_range *mem_ranges;
 +	struct crash_mem_priv cmpriv;
-+	uint32_t cpu, nr_ranges = 0;
++	size_t len, used_size;
 +	uintptr_t *note_buf;
-+	size_t len;
-+
-+	walk_system_ram_res(0, -1, &nr_ranges, get_nr_ram_ranges_callback);
++	u32 cpu;
 +
 +	mdump_core_info->ver = MEMDUMP_CORE_VER;
 +	mdump_core_info->nr_cpus = NR_CPUS;
@@ -160,8 +166,11 @@
 +	}
 +
 +	mem_ranges = (struct memdump_mem_range *)((uintptr_t)note_buf + NR_CPUS * sizeof(uintptr_t));
++	used_size = (uintptr_t)mem_ranges - (uintptr_t)mdump_core_info;
++
 +	mdump_core_info->mem_ranges_pa = __pa(mem_ranges);
 +
++	cmpriv.max_ranges = (core_info_size - used_size) / sizeof(struct memdump_mem_range);
 +	cmpriv.nr_ranges = 0;
 +	cmpriv.ranges = mem_ranges;
 +
@@ -177,6 +186,7 @@
 +
 +	mdump_core_info->len = len;
 +
++	mdump_core_info->crc = 0;
 +	mdump_core_info->crc = crc32(0xffffffff, mdump_core_info, len) ^ 0xffffffff;
 +
 +	dcache_clean_inval_poc((unsigned long)mdump_core_info, len);
@@ -185,13 +195,19 @@
 +void arm64_atf_memory_dump(int reboot_timeout)
 +{
 +	struct arm_smccc_res res;
++	uintptr_t core_pa = 0;
 +
-+	prepare_mdump_core_info();
++	if (!mdump_core_info || !mdump_panic_regs) {
++		pr_err("Memory dump core info not available\n");
++	} else {
++		prepare_mdump_core_info();
++		core_pa = __pa(mdump_core_info);
++	}
 +
 +	pr_emerg("Starting Memory dump SMCC\n");
 +
-+	arm_smccc_smc(MTK_SIP_EMERG_MEM_DUMP, reboot_timeout,
-+		      __pa(mdump_core_info), 0, 0, 0, 0, 0, &res);
++	arm_smccc_smc(MTK_SIP_EMERG_MEM_DUMP, reboot_timeout, core_pa,
++		      0, 0, 0, 0, 0, &res);
 +
 +	pr_err("Memory dump SMCC failed\n");
 +}
@@ -200,12 +216,16 @@
 +{
 +	struct pt_regs *saved_regs = (struct pt_regs *)mdump_panic_regs;
 +	struct pt_regs fixed_regs;
-+	u32 cpu = smp_processor_id();
++	u32 cpu;
++
++	if (!mdump_core_info || !mdump_panic_regs)
++		return;
 +
 +	crash_setup_regs(&fixed_regs, regs);
 +	crash_save_vmcoreinfo();
 +
 +	/* for crashing cpu */
++	cpu = smp_processor_id();
 +	crash_save_cpu(&fixed_regs, cpu);
 +
 +	mdump_core_info->panic_regs_valid = true;
@@ -220,6 +240,9 @@
 +void arm64_atf_memory_dump_save_cpu_regs(struct pt_regs *regs, unsigned int cpu)
 +{
 +	struct pt_regs *saved_regs = (struct pt_regs *)mdump_panic_regs;
++
++	if (!mdump_panic_regs)
++		return;
 +
 +	memcpy(&saved_regs[cpu + 1], regs, sizeof(*regs));
 +
@@ -240,18 +263,57 @@
 +	BUG();
 +}
 +
++static void *__init alloc_zero_pages(size_t size, u32 *retorder)
++{
++	struct page *page;
++	u32 order;
++
++	order = get_order(size);
++
++	page = alloc_pages(GFP_KERNEL | __GFP_ZERO, order);
++	if (!page)
++		return NULL;
++
++	if (retorder)
++		*retorder = order;
++
++	return page_address(page);
++}
++
++static int __init get_nr_ram_ranges_callback(struct resource *res, void *arg)
++{
++	unsigned int *nr_ranges = arg;
++
++	(*nr_ranges)++;
++	return 0;
++}
++
 +static int __init memdump_core_info_init(void)
 +{
-+	mdump_core_info = (struct memdump_core_info *)get_zeroed_page(GFP_KERNEL);
++	u32 core_order, nr_ranges = 0;
++	size_t size;
++
++	walk_system_ram_res(0, -1, &nr_ranges, get_nr_ram_ranges_callback);
++	nr_ranges += MIN_RSVD_MEM_RANGES;
++
++	size = sizeof(struct memdump_core_info);
++	size += NR_CPUS * sizeof(uintptr_t);
++	size += nr_ranges * sizeof(struct memdump_mem_range);
++
++	mdump_core_info = (struct memdump_core_info *)alloc_zero_pages(size, &core_order);
 +	if (!mdump_core_info) {
 +		pr_warn("Memory allocation for memdump_core_info failed\n");
 +		return -ENOMEM;
 +	}
 +
-+	mdump_panic_regs = (struct pt_regs *)get_zeroed_page(GFP_KERNEL);
++	core_info_size = (1UL << core_order) * PAGE_SIZE;
++
++	size = (NR_CPUS + 1) * sizeof(struct pt_regs);
++	mdump_panic_regs = (struct pt_regs *)alloc_zero_pages(size, NULL);
 +	if (!mdump_panic_regs) {
 +		pr_warn("Memory allocation for pt_regs failed\n");
-+		free_page((unsigned long)mdump_core_info);
++		free_pages((unsigned long)mdump_core_info, core_order);
++		mdump_core_info = NULL;
 +		return -ENOMEM;
 +	}
 +
