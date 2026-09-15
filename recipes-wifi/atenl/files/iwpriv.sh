@@ -842,7 +842,7 @@ function convert_dfs {
     local param=$2
 
     case ${cmd} in
-        "DfsRxCtrl")
+        "DfsRxCtrl"|"ATEDEDICATEDRX")
             local offchan_ch="$(echo $param | cut -d ':' -f1)"
             local offchan_bw="$(echo $param | cut -d ':' -f2)"
 
@@ -1040,6 +1040,10 @@ function do_ate_work() {
             ;;
         "RXGAINCAL")
             do_cmd "mt76-test ${interface} set state=rx_gain_cal"
+            do_cmd "atenl -i ${interface} -c \"eeprom rx gain sync\""
+            ;;
+        "RXGAINRESULT")
+            do_cmd "mt76-test ${interface} set state=rx_gain_dump"
             do_cmd "atenl -i ${interface} -c \"eeprom rx gain sync\""
             ;;
         *)
@@ -1332,7 +1336,7 @@ if [ "${cmd_type}" = "set" ]; then
             set_mac_addr ${cmd} ${param}
             skip=1
             ;;
-        "DfsRxCtrl"|"DfsRxHist")
+        "DfsRxCtrl"|"DfsRxHist"|"ATEDEDICATEDRX")
             convert_dfs ${cmd} ${param}
             skip=1
             ;;

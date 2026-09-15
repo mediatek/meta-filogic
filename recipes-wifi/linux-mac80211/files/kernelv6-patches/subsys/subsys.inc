@@ -139,4 +139,7 @@ SRC_URI:append = " \
     file://0137-mtk-ieee80211-fix-definition-of-EHT-MCS-15-capabilit.patch \
     file://0138-cp-mtk-mac80211-handleing-link_id-in-TxS.patch \
     file://0139-cp-mtk-mac80211-fix-__ieee80211_link_copy_chanctx_to_vl.patch \
+    file://0140-mtk-mac80211-Fix-jiffies-conversion-macro-guard.patch \
+    file://0141-cp-mtk-mac80211-add-missing-parameter-check-for-twt-ope.patch \
+    file://0142-cp-mtk-mac80211-fix-mld-sta-could-not-join-multi-link-b.patch \
     "

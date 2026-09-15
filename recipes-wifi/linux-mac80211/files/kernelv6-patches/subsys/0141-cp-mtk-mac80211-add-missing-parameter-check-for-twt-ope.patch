@@ -1,0 +1,41 @@
+From ed370be9c3e01aa90f804cecb72a579bc8b9fff5 Mon Sep 17 00:00:00 2001
+From: Howard Hsu <howard-yh.hsu@mediatek.com>
+Date: Mon, 22 Jun 2026 14:24:19 +0800
+Subject: [PATCH] mtk: mac80211: add missing parameter check for twt operations
+
+Add checks for NL80211_ATTR_BROADCAST_TWT_PARAMS attribute in
+nl80211_add_broadcast_twt and nl80211_del_broadcast_twt functions
+to ensure valid parameters are provided for TWT operations.
+
+Signed-off-by: Howard Hsu <howard-yh.hsu@mediatek.com>
+---
+ net/wireless/nl80211.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index c44f62fc..c78d7487 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -18216,6 +18216,9 @@ nl80211_add_broadcast_twt(struct sk_buff *skb, struct genl_info *info)
+ 	if (wdev->iftype != NL80211_IFTYPE_AP)
+ 		return -EOPNOTSUPP;
+ 
++	if (!info->attrs[NL80211_ATTR_BROADCAST_TWT_PARAMS])
++		return -EINVAL;
++
+ 	ret = nla_parse_nested(tb, NL80211_BROADCAST_TWT_ATTR_MAX,
+ 			       info->attrs[NL80211_ATTR_BROADCAST_TWT_PARAMS],
+ 			       nl80211_broadcast_twt_policy, info->extack);
+@@ -18273,6 +18276,9 @@ nl80211_del_broadcast_twt(struct sk_buff *skb, struct genl_info *info)
+ 	if (wdev->iftype != NL80211_IFTYPE_AP)
+ 		return -EOPNOTSUPP;
+ 
++	if (!info->attrs[NL80211_ATTR_BROADCAST_TWT_PARAMS])
++		return -EINVAL;
++
+ 	ret = nla_parse_nested(tb, NL80211_BROADCAST_TWT_ATTR_MAX,
+ 			       info->attrs[NL80211_ATTR_BROADCAST_TWT_PARAMS],
+ 			       nl80211_broadcast_twt_policy, info->extack);
+-- 
+2.45.2
+

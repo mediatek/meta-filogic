@@ -356,7 +356,11 @@ atenl_hqa_eeprom_bulk(struct atenl *an, struct atenl_data *data)
 		u16 val;
 		size_t i;
 
-		if (offset >= an->eeprom_size || (len > sizeof(hdr->data) - 2))
+		/*
+		 * hdr is overlaid on data->buf, which is smaller than hdr->data.
+		 * Leave room for the two-byte response status before bulk data.
+		 */
+		if (offset >= an->eeprom_size || len > RACFG_DATA_MAX_SIZE - 2)
 			return -EINVAL;
 
 		if (cmd == HQA_CMD_READ_EEPROM_BULK) {
@@ -369,6 +373,12 @@ atenl_hqa_eeprom_bulk(struct atenl *an, struct atenl_data *data)
 				*(u16 *)(hdr->data + 2 + i) = val;
 			}
 		} else { /* write eeprom */
+			size_t write_len = DIV_ROUND_UP(len, 2) * 2;
+
+			/* The write loop always copies complete u16 values. */
+			if (write_len > an->eeprom_size - offset)
+				return -EINVAL;
+
 			for (i = 0; i < DIV_ROUND_UP(len, 2); i++) {
 				val = ntohs(v[i + 2]);
 				memcpy(&an->eeprom_data[offset + i * 2], &val, 2);

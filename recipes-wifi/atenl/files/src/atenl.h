@@ -31,6 +31,7 @@
 #define ETH_P_RACFG		0x2880
 #define RACFG_PKT_MAX_SIZE	1600
 #define RACFG_HLEN		12
+#define RACFG_DATA_MAX_SIZE	(RACFG_PKT_MAX_SIZE - ETH_HLEN - RACFG_HLEN)
 #define RACFG_MAGIC_NO		0x18142880
 #define PRE_CAL_INFO		16
 #define DPD_INFO_CH_SHIFT	30
@@ -327,6 +328,10 @@ enum {
 
 #define MT_EE_CAL_RX_GAIN_SIZE			748
 
+#define MT_EE_CONNAC5_DO_RX_GAIN_CAL(_band)	(0x1411 + (_band) * 0x400)
+#define MT_EE_CONNAC5_RX_GAIN_CAL		0x5b00
+#define MT_EE_CONNAC5_CAL_RX_GAIN_SIZE		0x440
+
 enum {
 	MT7976_ONE_ADIE_DBDC		= 0x7,
 	MT7975_ONE_ADIE_SINGLE_BAND	= 0x8, /* AX7800 */
@@ -459,6 +464,11 @@ static inline bool is_mt7981(struct atenl *an)
 static inline bool is_mt7986(struct atenl *an)
 {
 	return an->chip_id == MT7986_DEVICE_ID;
+}
+
+static inline bool is_connac2(struct atenl *an)
+{
+	return is_mt7915(an) || is_mt7916(an) || is_mt7981(an) || is_mt7986(an);
 }
 
 static inline bool is_mt7996(struct atenl *an)

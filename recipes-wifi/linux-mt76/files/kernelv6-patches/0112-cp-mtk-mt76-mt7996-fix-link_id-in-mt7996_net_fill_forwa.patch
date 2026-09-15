@@ -1,0 +1,40 @@
+From 2b041c4e0441e4c37fc7141cfd4994ebedbbf387 Mon Sep 17 00:00:00 2001
+From: Shayne Chen <shayne.chen@mediatek.com>
+Date: Thu, 3 Sep 2026 15:23:54 +0800
+Subject: [PATCH] mtk: mt76: mt7996: fix link_id in
+ mt7996_net_fill_forward_path()
+
+Problem:
+fixup! mtk: mt76: mt7996: Fix inconsistent QoS mapping between SW and HW
+The link BSS and link STA use the unmatched link_id.
+
+Root Cause:
+Wrongly use msta->deflink_id to get mt7999_vif_link.
+
+Solution:
+Use local link_id instead of the deflink_id.
+
+Feature:
+WED
+
+Signed-off-by: Shayne Chen <shayne.chen@mediatek.com>
+---
+ mt7996/main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/mt7996/main.c b/mt7996/main.c
+index 01e55d877..2cedaffbe 100644
+--- a/mt7996/main.c
++++ b/mt7996/main.c
+@@ -3021,7 +3021,7 @@ mt7996_net_fill_forward_path(struct ieee80211_hw *hw,
+ 	u8 tid = mvif->qos_map[path->mtk_wdma.tid >> 2];
+ 	u8 link_id = (sta->mlo && tid % 2) ? msta->seclink_id : msta->deflink_id;
+ 
+-	link = mt7996_vif_link(dev, vif, msta->deflink_id);
++	link = mt7996_vif_link(dev, vif, link_id);
+ 	if (!link)
+ 		return -EIO;
+ 
+-- 
+2.45.2
+

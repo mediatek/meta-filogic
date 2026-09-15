@@ -1047,11 +1047,21 @@ atenl_nl_ibf_profile_update_all(struct atenl *an, struct atenl_data *data,
 void
 atenl_get_rx_gain_cal_result(struct atenl *an)
 {
-	if (!is_connac3(an))
+	int band;
+
+	if (is_connac2(an))
 		return;
 
-	atenl_eeprom_read_from_driver(an, MT_EE_DO_RX_GAIN_CAL, 1);
-	atenl_eeprom_read_from_driver(an, MT_EE_RX_GAIN_CAL, MT_EE_CAL_RX_GAIN_SIZE);
+	if (is_connac3(an)) {
+		atenl_eeprom_read_from_driver(an, MT_EE_DO_RX_GAIN_CAL, 1);
+		atenl_eeprom_read_from_driver(an, MT_EE_RX_GAIN_CAL, MT_EE_CAL_RX_GAIN_SIZE);
+		return;
+	}
+
+	for (band = 0; band < MAX_BAND_NUM; band++)
+		atenl_eeprom_read_from_driver(an, MT_EE_CONNAC5_DO_RX_GAIN_CAL(band), 1);
+	atenl_eeprom_read_from_driver(an, MT_EE_CONNAC5_RX_GAIN_CAL,
+				      MT_EE_CONNAC5_CAL_RX_GAIN_SIZE);
 }
 
 #define NL_OPS_GROUP(cmd, ...)	[HQA_CMD_##cmd] = { __VA_ARGS__ }

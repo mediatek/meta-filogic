@@ -110,4 +110,6 @@ SRC_URI:append = " \
     file://0108-cp-mtk-wifi-mt76-cherrypick-bugfix-from-upstream.patch \
     file://0109-cp-mtk-mt76-mt7996-disable-beacons-when-going-offchanne.patch \
     file://0110-cp-mtk-mt76-mt7996-Fix-spinlock-usage-to-prevent-AP-pan.patch \
+    file://0111-cp-mtk-mt76-mt7996-Refactor-WMM-PBC-for-special-cases.patch \
+    file://0112-cp-mtk-mt76-mt7996-fix-link_id-in-mt7996_net_fill_forwa.patch \
     "
