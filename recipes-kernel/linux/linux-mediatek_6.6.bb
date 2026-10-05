@@ -24,11 +24,11 @@ SRC_URI = " \
     file://004-rdkb-hnat-bind-ifname.patch;apply=no \
     file://003-rdkb-refactor-bpi-r4-dts.patch;apply=no \
     "
-SRC_URI:append_filogic += " \
+SRC_URI:append_filogic = " \
     file://mediatek/filogic.cfg \
 "
 
-SRC_URI:append += " \
+SRC_URI:append = " \
     file://rdkb_cfg/iptables.cfg \
     file://rdkb_cfg/turris_rdkb.cfg \
     file://rdkb_cfg/openvswitch.cfg \
@@ -62,9 +62,9 @@ require linux-mediatek6-6.inc
 export DTC_FLAGS = '-@'
 
 do_patch:prepend () {
-    cp -Rfp ${WORKDIR}/generic/files/* ${S}/
-	cp -Rfp ${WORKDIR}/mediatek/files/* ${S}/
-    cp -Rfp ${WORKDIR}/mediatek/files-6.6/* ${S}/
+    cp -Rfp ${UNPACKDIR}/generic/files/* ${S}/
+	cp -Rfp ${UNPACKDIR}/mediatek/files/* ${S}/
+    cp -Rfp ${UNPACKDIR}/mediatek/files-6.6/* ${S}/
 }
 
 do_filogic_patches() {
@@ -74,12 +74,12 @@ do_filogic_patches() {
     DISTRO_ccn34_build_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','ccn34','true','false',d)}"
     DISTRO_LAN_AS_WAN_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','lan0_as_wan','true','false',d)}"
         if [ $DISTRO_ccn34_build_ENABLED = 'true' ]; then
-            rm -rf ${WORKDIR}/mediatek/nf_hnat/999-41*.patch
-            rm -rf ${WORKDIR}/mediatek/nf_hnat/999-45*.patch
+            rm -rf ${UNPACKDIR}/mediatek/nf_hnat/999-41*.patch
+            rm -rf ${UNPACKDIR}/mediatek/nf_hnat/999-45*.patch
         fi
         if [ ! -e patch_applied ]; then
-            patch -p1 < ${WORKDIR}/001-rdkb-eth-mtk-change-ifname-for.patch
-            patch -p1 < ${WORKDIR}/003-rdkb-refactor-bpi-r4-dts.patch
+            patch -p1 < ${UNPACKDIR}/001-rdkb-eth-mtk-change-ifname-for.patch
+            patch -p1 < ${UNPACKDIR}/003-rdkb-refactor-bpi-r4-dts.patch
 
             patch -p1 < ${WORKDIR}/863-arm64-dts-mt7986-add-sound-wm8960.patch
             patch -p1 < ${WORKDIR}/999-2000-arm64-dts-mt7988-move-phys-to-sgmiipcs-and-usxgmiisy.patch
@@ -97,11 +97,11 @@ do_filogic_patches() {
             patch -p1 < ${WORKDIR}/999-cpufreq-03-mediatek-enable-using-efuse-cali-data-for-mt7988-cpu-volt.patch
 
             if [ $DISTRO_FlowBlock_ENABLED = 'true' ]; then
-                for i in ${WORKDIR}/mediatek/flow_patch/*.patch; do patch -p1 < $i; done
+                for i in ${UNPACKDIR}/mediatek/flow_patch/*.patch; do patch -p1 < $i; done
             fi
             if [ $DISTRO_logan_ENABLED = 'true' ]; then
-                for i in ${WORKDIR}/mediatek/nf_hnat/*.patch; do patch -p1 < $i; done
-                patch -p1 < ${WORKDIR}/004-rdkb-hnat-bind-ifname.patch
+                for i in ${UNPACKDIR}/mediatek/nf_hnat/*.patch; do patch -p1 < $i; done
+                patch -p1 < ${UNPACKDIR}/004-rdkb-hnat-bind-ifname.patch
             fi
             touch patch_applied
         fi

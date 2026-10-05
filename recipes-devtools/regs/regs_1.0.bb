@@ -4,11 +4,11 @@ LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=c188eeeb69c0a05d0545816f1458a0c9"
 
 SRC_URI = " \
-    file://COPYING;subdir=git/src \
-    file://src;subdir=git \
+    file://COPYING;subdir=${BP}/src \
+    file://src;subdir=${BP} \
     "
 
-S = "${WORKDIR}/git/src"
+S = "${UNPACKDIR}/${PN}-${PV}/src"
 
 do_compile() {
     ${CC} ${CFLAGS} ${LDFLAGS} regs.c -o regs

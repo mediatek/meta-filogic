@@ -8,11 +8,11 @@ DEPENDS += "libnl-tiny"
 inherit pkgconfig cmake
 
 SRC_URI = " \
-    file://COPYING;subdir=git/src \
-    file://src;subdir=git \
+    file://COPYING;subdir=${BP}/src \
+    file://src;subdir=${BP} \
     "
 
-S = "${WORKDIR}/git/src"
+S = "${UNPACKDIR}/${PN}-${PV}/src"
 
 CFLAGS:append = " -I=${includedir}/libnl-tiny "
-
+EXTRA_OECMAKE += "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"

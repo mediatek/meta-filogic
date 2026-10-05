@@ -14,14 +14,15 @@ SRC_URI = " \
     file://wmm_script;subdir=git \
     "
 
-
-S = "${WORKDIR}/git/src"
+S = "${UNPACKDIR}/git/src"
 
 CFLAGS:append = " -DWIFI_HAL_VERSION_3 -DMTK_UCI_SUPPORT -luci "
 CFLAGS:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'wifi_eht', '-DSINGLE_WIPHY_SUPPORT', '', d)}"
 CFLAGS:append = " -I=${includedir}/ccsp "
+CFLAGS:append:wrynose = " -Wno-error=implicit-function-declaration"
+
 do_install:append() {
     install -d ${D}${sbindir}
-    install -m 0755 ${WORKDIR}/build/wifi_test_tool ${D}${sbindir}/wifi
-    install -m 0755 ${WORKDIR}/git/wmm_script/wmm-*.sh ${D}${sbindir}
+    install -m 0755 ${B}/wifi_test_tool ${D}${sbindir}/wifi
+    install -m 0755 ${UNPACKDIR}/git/wmm_script/wmm-*.sh ${D}${sbindir}
 }

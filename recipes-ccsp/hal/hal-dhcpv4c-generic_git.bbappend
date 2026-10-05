@@ -1,7 +1,9 @@
-SRC_URI += "git://github.com/mediatek/rdkb_hal;protocol=https;destsuffix=git/source/dhcpv4c/rdkb_hal;branch=main"
+SRC_URI:remove = "${CMF_GITHUB_ROOT}/hardware-abstraction-layer;protocol=https;${BRANCH_hardware_abstraction_layer};name=dhcpv4hal"
+SRC_URI = "${CMF_GITHUB_ROOT}/hardware-abstraction-layer;protocol=https;${BRANCH_hardware_abstraction_layer};destsuffix=${BP};name=dhcpv4hal"
+SRC_URI += "git://github.com/mediatek/rdkb_hal;protocol=https;destsuffix=${BP}/source/dhcpv4c/rdkb_hal;branch=main"
 
 SRCREV = "${AUTOREV}"
-
+S = "${UNPACKDIR}/${BP}/source/dhcpv4c"
 #CFLAGS:append = " -DUDHCPC_SWITCH "
 
 do_configure:prepend(){

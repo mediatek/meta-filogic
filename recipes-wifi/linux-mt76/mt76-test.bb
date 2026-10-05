@@ -13,8 +13,8 @@ require mt76.inc
 require mt76-3x.inc
 
 SRC_URI = " \
-    git://git@github.com/openwrt/mt76.git;protocol=https;branch=master \
-    file://COPYING;subdir=git \
+    git://git@github.com/openwrt/mt76.git;protocol=https;branch=master;destsuffix=${BPN}-${PV} \
+    file://COPYING;subdir=${BP} \
     file://5000-mt76-add-internal-wed_tiny-header-file.patch;apply=no\
     ${@bb.utils.contains('DISTRO_FEATURES','kernelv6','file://kernelv6-patches/;apply=no','',d)} \
     "
@@ -29,9 +29,9 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 CFLAGS:append = " -I=${includedir}/libnl-tiny -I${STAGING_KERNEL_BUILDDIR}/usr/include/mac80211/uapi "
 
-S = "${WORKDIR}/git/tools"
-PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES','wifi_eht','${WORKDIR}/patches-3.x','${WORKDIR}/patches',d)}"
-PATCH_SRC_kernelv6 = "${WORKDIR}/kernelv6-patches"
+S = "${UNPACKDIR}/${BPN}-${PV}/tools"
+PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES','wifi_eht','${UNPACKDIR}/patches-3.x','${UNPACKDIR}/patches',d)}"
+PATCH_SRC:kernelv6 = "${UNPACKDIR}/kernelv6-patches"
 
 SRC_URI += "file://${@bb.utils.contains('DISTRO_FEATURES','wifi_eht','patches-3.x/','patches/',d)};apply=no"
 
@@ -45,8 +45,7 @@ do_mtk_patches() {
 }
 addtask mtk_patches after do_patch before do_configure
 
-
-
+INSANE_SKIP:mt76-test-dbg += "buildpaths"
 
 
 

@@ -41,7 +41,7 @@ SRC_URI:append_mt7986-32bit += " \
     file://mediatek/patches-32bit-5.4/401-pinctrl-add-mt7986-driver-32bit.patch \
     file://mediatek/patches-32bit-5.4/999-add_armv7_support_for_panther.patch \
 "
-SRC_URI:append += " \
+SRC_URI:append = " \
     file://rdkb_cfg/iptables.cfg \
     file://rdkb_cfg/turris_rdkb.cfg \
     file://rdkb_cfg/openvswitch.cfg \
@@ -73,9 +73,9 @@ SRC_URI:remove_mt7986-32bit = " \
 require linux-mediatek.inc
 
 do_patch:prepend () {
-    cp -Rfp ${WORKDIR}/generic/files/* ${S}/
-    cp -Rfp ${WORKDIR}/generic/files-5.4/* ${S}/
-    cp -Rfp ${WORKDIR}/mediatek/files-5.4/* ${S}/
+    cp -Rfp ${UNPACKDIR}/generic/files/* ${S}/
+    cp -Rfp ${UNPACKDIR}/generic/files-5.4/* ${S}/
+    cp -Rfp ${UNPACKDIR}/mediatek/files-5.4/* ${S}/
 }
 
 do_filogic_patches() {
@@ -85,10 +85,10 @@ do_filogic_patches() {
     DISTRO_ccn34_build_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','ccn34','true','false',d)}"
     DISTRO_LAN_AS_WAN_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','lan0_as_wan','true','false',d)}"
         if [ ! -e patch_applied ]; then
-            patch -p1 < ${WORKDIR}/001-rdkb-eth-mtk-change-ifname-for.patch
-            patch -p1 < ${WORKDIR}/003-rdkb-mtd-kernel-ubi-relayout.patch
+            patch -p1 < ${UNPACKDIR}/001-rdkb-eth-mtk-change-ifname-for.patch
+            patch -p1 < ${UNPACKDIR}/003-rdkb-mtd-kernel-ubi-relayout.patch
             if [ $DISTRO_LAN_AS_WAN_ENABLED = 'true' ]; then
-                patch -p1 < ${WORKDIR}/002-bpi_r4-lan0_as_wan.patch
+                patch -p1 < ${UNPACKDIR}/002-bpi_r4-lan0_as_wan.patch
             fi
             patch -p1 < ${WORKDIR}/0600-net-phylink-propagate-resolved-link-config-via-mac_l.patch
             patch -p1 < ${WORKDIR}/999-1050-v6.4-backport-jitterrng-2.2.0.patch
@@ -111,7 +111,7 @@ do_filogic_patches() {
             for i in ${WORKDIR}/mediatek/nf_hnat/*.patch; do patch -p1 < $i; done
 
             if [ $DISTRO_FlowBlock_ENABLED = 'true' ]; then
-                for i in ${WORKDIR}/mediatek/flow_patch/*.patch; do patch -p1 < $i; done
+                for i in ${UNPACKDIR}/mediatek/flow_patch/*.patch; do patch -p1 < $i; done
             fi
 
             patch -p1 < ${WORKDIR}/004-rdkb-hnat-bind-ifname.patch

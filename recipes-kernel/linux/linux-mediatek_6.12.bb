@@ -22,11 +22,11 @@ SRC_URI = " \
     file://generic/defconfig \
     file://001-rdkb-eth-mtk-change-ifname-for.patch;apply=no \
     "
-SRC_URI:append_filogic += " \
+SRC_URI:append:filogic = " \
     file://mediatek/filogic.cfg \
 "
 
-SRC_URI:append += " \
+SRC_URI:append = " \
     file://rdkb_cfg/iptables.cfg \
     file://rdkb_cfg/turris_rdkb.cfg \
     file://rdkb_cfg/openvswitch.cfg \
@@ -42,7 +42,7 @@ SRC_URI:append += " \
     ${@bb.utils.contains('DISTRO_FEATURES','optee','file://rdkb_cfg/optee.cfg','',d)} \
 "
 
-KERNEL_DEVICETREE_mt7988_bpi4 += " \
+KERNEL_DEVICETREE:mt7988:bpi4 += " \
     mediatek/mt7988a-bananapi-bpi-r4-spim-nand.dtbo \
     mediatek/mt7988a-bananapi-bpi-r4-spim-nand-nmbm.dtbo \
     "
@@ -60,26 +60,26 @@ SRC_URI:remove = " \
 
 
 require linux-mediatek6-12.inc
-
+ERROR_QA:remove = "patch-fuzz patch-status"
 export DTC_FLAGS = '-@'
 
 do_patch:prepend () {
-    cp -Rfp ${WORKDIR}/generic/files/* ${S}/
-	cp -Rfp ${WORKDIR}/mediatek/files/* ${S}/
-    cp -Rfp ${WORKDIR}/mediatek/files-6.12/* ${S}/
+    cp -Rfp ${UNPACKDIR}/generic/files/* ${STAGING_KERNEL_DIR}/
+    cp -Rfp ${UNPACKDIR}/mediatek/files/* ${STAGING_KERNEL_DIR}/
+    cp -Rfp ${UNPACKDIR}/mediatek/files-6.12/* ${STAGING_KERNEL_DIR}/
 }
 
 do_filogic_patches() {
-    cd ${S}
+    cd ${STAGING_KERNEL_DIR}
     DISTRO_FlowBlock_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','flow_offload','true','false',d)}"
     DISTRO_ccn34_build_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','ccn34','true','false',d)}"
     DISTRO_LAN_AS_WAN_ENABLED="${@bb.utils.contains('DISTRO_FEATURES','lan0_as_wan','true','false',d)}"
         if [ ! -e patch_applied ]; then
 
-            for i in ${WORKDIR}/mediatek/patches-6.12/*.patch; do patch -p1 < $i; done
-            patch -p1 < ${WORKDIR}/001-rdkb-eth-mtk-change-ifname-for.patch
+            for i in ${UNPACKDIR}/mediatek/patches-6.12/*.patch; do patch -p1 < $i; done
+            patch -p1 < ${UNPACKDIR}/001-rdkb-eth-mtk-change-ifname-for.patch
             if [ $DISTRO_FlowBlock_ENABLED = 'true' ]; then
-                for i in ${WORKDIR}/mediatek/flow_patch/*.patch; do patch -p1 < $i; done
+                for i in ${UNPACKDIR}/mediatek/flow_patch/*.patch; do patch -p1 < $i; done
             fi
             touch patch_applied
         fi
@@ -125,8 +125,6 @@ kernel_do_install() {
 	install -m 0644 .config ${D}/${KERNEL_IMAGEDEST}/config-${KERNEL_VERSION}
 	install -m 0644 vmlinux ${D}/${KERNEL_IMAGEDEST}/vmlinux-${KERNEL_VERSION}
 	[ -e Module.symvers ] && install -m 0644 Module.symvers ${D}/${KERNEL_IMAGEDEST}/Module.symvers-${KERNEL_VERSION}
-	install -d ${D}${sysconfdir}/modules-load.d
-	install -d ${D}${sysconfdir}/modprobe.d
 }
 
 addtask filogic_patches after do_patch before do_compile

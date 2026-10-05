@@ -10,14 +10,14 @@ inherit autotools coverity
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
-SRC_URI = "git://github.com/mediatek/rdkb_hal;branch=main;protocol=https;destsuffix=git/ \
+SRC_URI = "git://github.com/mediatek/rdkb_hal;protocol=https;branch=main;destsuffix=git/ \
         file://LICENSE;subdir=git \
         "
 SRCREV_wifihal = "${AUTOREV}"
 SRCREV_FORMAT = "wifihal"
 
 PV = "${RDK_RELEASE}+git${SRCPV}"
-S = "${WORKDIR}/git/src/wifi/"
+S = "${UNPACKDIR}/git/src/wifi/"
 
 DEPENDS += "rdk-wifi-halif libnl libev hostapd wpa-supplicant"
 CFLAGS:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'extender', '-D_TURRIS_EXTENDER_', '', d)}"
@@ -25,6 +25,13 @@ CFLAGS:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'wifi_eht', '-DSINGLE_
 CFLAGS:append = " -I=${includedir}/ccsp -I=${includedir}/libnl3"
 CFLAGS:append = " -DWIFI_HAL_VERSION_3 -DDYNAMIC_IF_NAME"
 LDFLAGS:append = " -lnl-nf-3 -lnl-route-3 -lnl-3 -lnl-xfrm-3 -lnl-genl-3 -lev -lwpa_client -lpthread"
+
+CFLAGS:append:wrynose = " \
+    -Wno-error=implicit-function-declaration \
+    -Wno-error=incompatible-pointer-types \
+    -Wno-error=return-mismatch \
+    -Wno-error=format \
+"
 
 RDEPENDS:${PN}_dunfell += " wpa-supplicant"
 RDEPENDS:${PN} += "wpa-supplicant"

@@ -4,15 +4,16 @@ LICENSE = "LGPL-2.1-only"
 LIC_FILES_CHKSUM = "file://nl.c;startline=4;endline=7;md5=f16bd5d25e622bb3001bab76be1f9f91"
 SECTION = "libs"
 
-SRC_URI = "git://git.openwrt.org/project/libnl-tiny.git;branch=master"
+SRC_URI = "git://git.openwrt.org/project/libnl-tiny.git;branch=master;destsuffix=${BPN}-git"
 SRCREV = "965c4bf49658342ced0bd6e7cb069571b4a1ddff"
 SRCREV_kernelv6 = "40493a655d8caa2ccf5206dde1e733abe2920432"
 
 PV = "git${SRCPV}"
 
 inherit cmake pkgconfig
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${BPN}-git"
 
 FILES_SOLIBSDEV = ""
 FILES:${PN} += "${libdir}/*.so"
 INSANE_SKIP:${PN} += "dev-so"
+EXTRA_OECMAKE = '-DCMAKE_POLICY_VERSION_MINIMUM=3.5'

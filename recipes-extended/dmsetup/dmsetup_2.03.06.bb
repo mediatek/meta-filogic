@@ -24,7 +24,6 @@ inherit autotools-brokensep pkgconfig systemd license
 LVM2_PACKAGECONFIG = "dmeventd"
 LVM2_PACKAGECONFIG:append:class-target = " \
     ${@bb.utils.filter('DISTRO_FEATURES', 'selinux', d)} \
-    ${@incompatible_license_contains('GPLv3', '', 'thin-provisioning-tools', d)} \
 "
 
 # odirect is always enabled because there currently is a bug in

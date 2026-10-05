@@ -6,7 +6,7 @@
 # Copyright (C) 2026 MediaTek Inc.
 #
 
-inherit kernel-uboot kernel-artifact-names uboot-sign kernel-fitimage
+inherit kernel-uboot kernel-artifact-names uboot-sign_backport 
 inherit mtk_key_derive
 
 python __anonymous () {
@@ -711,14 +711,12 @@ python do_align_rootfs () {
 addtask align_rootfs before do_assemble_filogic_secure_boot_fitimage after do_gen_sb_dtb
 
 do_assemble_filogic_secure_boot_fitimage() {
-	if echo ${KERNEL_IMAGETYPES} | grep -wq "fitImage"; then
 		cd ${B}
 		if [ "x${FW_ENC_ENABLE}" = "x1" ] ; then
 			fitimage_assemble_itb fit-filogic-image-sb.its fitImage-filogic-sb "1" ""
 		else
 			fitimage_assemble_itb fit-filogic-image-sb.its fitImage-filogic-sb "" "1"
 		fi
-	fi
 }
 
 addtask assemble_filogic_secure_boot_fitimage before do_deploy after do_gen_sb_dtb

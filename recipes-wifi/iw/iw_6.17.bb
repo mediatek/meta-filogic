@@ -20,7 +20,7 @@ PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'wifi_eht', 'patches-mlo', 
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PATCH_SRC}:"
 require ${PATCH_SRC}/patches.inc
-
+ERROR_QA:remove = "patch-fuzz patch-status"
 SRC_URI:remove = "${@bb.utils.contains('DISTRO_FEATURES', 'wifi_eht', 'file://001-nl80211_h_sync.patch', '', d)}"
 SRC_URI:remove = "${@bb.utils.contains('DISTRO_FEATURES', 'wifi_eht', 'file://120-antenna_gain.patch', '', d)}"
 

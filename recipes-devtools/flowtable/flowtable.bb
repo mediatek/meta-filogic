@@ -7,11 +7,11 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=751419260aa954499f7abaabaa882bbe"
 DEPENDS = "libnfnetlink libmnl"
 
 SRC_URI = " \
-    file://COPYING;subdir=git/src \
-    file://src;subdir=git \
+    file://COPYING;subdir=${BP}/src \
+    file://src;subdir=${BP} \
     "
 
-S = "${WORKDIR}/git/src"
+S = "${UNPACKDIR}/${PN}-${PV}/src"
 
 CFLAGS:prepend = " \
     -fPIC -D_GNU_SOURCE \

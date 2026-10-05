@@ -12,6 +12,8 @@ DEPENDS += "parted-native u-boot"
 # our rootfs also contains the linux kernel and, in case of the SD image, bootloader
 # and preloader
 IMAGE_NAME_SUFFIX = ".bin"
+#To create .bin image for wrynose
+YOCTO_IMAGE_NAME_SUFFIX:wrynose = "${IMAGE_NAME_SUFFIX}"
 
 inherit image_types
 

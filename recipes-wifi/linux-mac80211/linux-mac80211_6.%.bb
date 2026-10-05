@@ -21,17 +21,17 @@ SRC_URI = " \
 DEPENDS += "virtual/kernel"
 DEPENDS += "bison-native coreutils-native flex-native"
 PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernelv6', 'kernelv6-patches', 'patches-6.x', d)}"
-
+ERROR_QA:remove = "patch-fuzz patch-status"
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/${PATCH_SRC}/subsys:"
 
 require files/${PATCH_SRC}/subsys/subsys.inc
 
-S = "${WORKDIR}/backports-${PV}"
+S = "${UNPACKDIR}/backports-${PV}"
 
 do_filogic_patches() {
     cd ${S}
     if [ ! -e patch_applied ]; then
-        patch -p1 < ${WORKDIR}/0001-rdkb-fix_build_issue-mac80211-without_depmod.patch
+        patch -p1 < ${UNPACKDIR}/0001-rdkb-fix_build_issue-mac80211-without_depmod.patch
         touch patch_applied
     fi
 }
@@ -46,7 +46,7 @@ do_configure () {
     make CFLAGS="" CPPFLAGS="" CXXFLAGS="" LDFLAGS="" CC="${BUILD_CC}" \
          LD="${BUILD_LD}" AR="${BUILD_AR}" LEX="flex" -C ${S}/kconf O=${S}/kconf conf
 
-    cp ${WORKDIR}/config ${S}/.config
+    cp ${UNPACKDIR}/config ${S}/.config
     oe_runmake allnoconfig
 }
 

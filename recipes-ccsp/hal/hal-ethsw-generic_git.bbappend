@@ -1,7 +1,9 @@
-SRC_URI += "git://github.com/mediatek/rdkb_hal;protocol=https;branch=main;destsuffix=git/source/ethsw/rdkb_hal"
+SRC_URI:remove = "${CMF_GITHUB_ROOT}/hardware-abstraction-layer;protocol=https;${BRANCH_hardware_abstraction_layer};name=ethswhal"
+SRC_URI = "${CMF_GITHUB_ROOT}/hardware-abstraction-layer;protocol=https;${BRANCH_hardware_abstraction_layer};destsuffix=${BP};name=ethswhal"
+SRC_URI += "git://github.com/mediatek/rdkb_hal;protocol=https;branch=main;destsuffix=${BP}/source/ethsw/rdkb_hal"
 
 SRCREV = "${AUTOREV}"
-
+S = "${UNPACKDIR}/${BP}/source/ethsw"
 CFLAGS:append = "${@bb.utils.contains('DISTRO_FEATURES', 'rdkb_wan_manager', ' -DFEATURE_RDKB_WAN_MANAGER ', '', d)}"
 
 CFLAGS:append = "${@bb.utils.contains('DISTRO_FEATURES', 'three_gmac', ' -DTHREE_GMACS_SUPPORT ', '', d)}"

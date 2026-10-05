@@ -8,8 +8,8 @@ SRC_URI:append = " \
 do_filogic_patches() {
     cd ${S}
         if [ ! -e patch_applied ]; then
-            patch -p1 < ${WORKDIR}/sta-network.patch
-            patch -p1 < ${WORKDIR}/0002-Add-EHT-support.patch
+            patch -p1 < ${UNPACKDIR}/sta-network.patch
+            patch -p1 < ${UNPACKDIR}/0002-Add-EHT-support.patch
             touch patch_applied
         fi
 }

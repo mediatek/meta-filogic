@@ -7,7 +7,7 @@ SRC_URI = " \
 	file://src/firmware/ifpp.bin \
 	"
 
-S = "${WORKDIR}"
+S = "${UNPACKDIR}"
 
 inherit allarch
 

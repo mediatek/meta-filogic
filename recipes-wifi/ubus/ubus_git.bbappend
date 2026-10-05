@@ -71,16 +71,18 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 inherit ${@d.getVar('DISTRO', True) == 'rdk' and 'systemd' or 'base'}
 
-SRC_URI:append_rdk += "\
+SRC_URI:append:rdk = "\
     file://ubusd.service \
 "
 
 SYSTEMD_SERVICE:${PN}_rdk = "ubusd.service"
 
-do_install:append_rdk() {
+do_install:append:rdk() {
     # Install systemd unit files
     install -d ${D}${systemd_unitdir}/system
-    install -m 0644 ${WORKDIR}/ubusd.service ${D}${systemd_unitdir}/system
+    install -m 0644 ${UNPACKDIR}/ubusd.service ${D}${systemd_unitdir}/system
         sed -i -e 's,@SBINDIR@,${sbindir},g' \
             ${D}${systemd_unitdir}/system/ubusd.service
 }
+
+EXTRA_OECMAKE += "-DCMAKE_INSTALL_LIBDIR=${libdir}"

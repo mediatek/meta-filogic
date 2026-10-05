@@ -7,7 +7,7 @@
 #
 #
 
-inherit kernel-uboot kernel-artifact-names uboot-sign kernel-fitimage
+inherit kernel-uboot kernel-artifact-names uboot-sign_backport
 
 python __anonymous () {
         d.appendVarFlag('do_assemble_filogic_fitimage', 'depends', ' rdk-generic-broadband-image:do_hash_rootfs')
@@ -33,7 +33,7 @@ def get_fit_replacement_type(d):
     return replacementtype
 
 KERNEL_IMAGETYPE_REPLACEMENT ?= "${@get_fit_replacement_type(d)}"
-DEPENDS:append = " ${@'u-boot-tools-native dtc-native' if 'fitImage' in (d.getVar('KERNEL_IMAGETYPES') or '').split() else ''}"
+DEPENDS:append = " u-boot-tools-native dtc-native "
 
 python __anonymous () {
         # Override KERNEL_IMAGETYPE_FOR_MAKE variable, which is internal
@@ -719,10 +719,9 @@ fitimage_assemble_itb() {
 }
 
 do_assemble_filogic_fitimage() {
-	if echo ${KERNEL_IMAGETYPES} | grep -wq "fitImage"; then
 		cd ${B}
 		fitimage_assemble_itb fit-filogic-image.its fitImage-filogic
-	fi
+
 }
 
 addtask assemble_filogic_fitimage before do_deploy after do_hash_rootfs

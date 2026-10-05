@@ -15,7 +15,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files/${PATCH_SRC}:"
 SRCREV ?= "96e48a05aa0a82e91e3cab75506297e433e253d0"
 require version.inc
 
-SRC_URI = "git://w1.fi/hostap.git;protocol=https;branch=main \
+SRC_URI = "git://w1.fi/hostap.git;protocol=https;branch=main;destsuffix=${BPN}-${PV} \
            file://wpa-supplicant.sh \
            file://wpa_supplicant.conf \
            file://wpa_supplicant.conf-sane \
@@ -26,10 +26,10 @@ SRC_URI = "git://w1.fi/hostap.git;protocol=https;branch=main \
            file://003-fix_wpa_supplicant_build_issue.patch;apply=no \
            "
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${BPN}-${PV}"
 PATCHDEST ?= "${S}"
 require files/${PATCH_SRC}/patches.inc
-
+ERROR_QA:remove = "patch-fuzz patch-status"
 inherit pkgconfig systemd
 
 PACKAGECONFIG ?= "openssl"
@@ -43,9 +43,9 @@ do_filogic_patches() {
     cd ${S}
 	IS_KERNEL_V6="${@bb.utils.contains('DISTRO_FEATURES','kernelv6','true','false',d)}"
         if [ ! -e patch_applied ]; then
-            patch -p1 < ${WORKDIR}/002-rdkb-add-ucode-support.patch
+            patch -p1 < ${UNPACKDIR}/002-rdkb-add-ucode-support.patch
 	    if [ $IS_KERNEL_V6 = 'false' ]; then
-		patch -p1 < ${WORKDIR}/003-fix_wpa_supplicant_build_issue.patch
+		patch -p1 < ${UNPACKDIR}/003-fix_wpa_supplicant_build_issue.patch
 	    fi
             touch patch_applied
         fi
@@ -62,7 +62,7 @@ do_configure () {
 
 do_configure:append () {
 	# from Openwrt defconfig
-	install -m 0644 ${WORKDIR}/wpa_supplicant-full.config wpa_supplicant/.config
+	install -m 0644 ${UNPACKDIR}/wpa_supplicant-full.config wpa_supplicant/.config
 
 	# RDKB
 	echo "CONFIG_BUILD_WPA_CLIENT_SO=y" >> wpa_supplicant/.config
@@ -108,15 +108,15 @@ do_install () {
 	oe_runmake -C wpa_supplicant DESTDIR="${D}" install
 
 	install -d ${D}${docdir}/wpa_supplicant
-	install -m 644 wpa_supplicant/README ${WORKDIR}/wpa_supplicant.conf ${D}${docdir}/wpa_supplicant
+	install -m 644 wpa_supplicant/README ${UNPACKDIR}/wpa_supplicant.conf ${D}${docdir}/wpa_supplicant
 
 	install -d ${D}${sysconfdir}
-	install -m 600 ${WORKDIR}/wpa_supplicant.conf-sane ${D}${sysconfdir}/wpa_supplicant.conf
+	install -m 600 ${UNPACKDIR}/wpa_supplicant.conf-sane ${D}${sysconfdir}/wpa_supplicant.conf
 
 	install -d ${D}${sysconfdir}/network/if-pre-up.d/
 	install -d ${D}${sysconfdir}/network/if-post-down.d/
 	install -d ${D}${sysconfdir}/network/if-down.d/
-	install -m 755 ${WORKDIR}/wpa-supplicant.sh ${D}${sysconfdir}/network/if-pre-up.d/wpa-supplicant
+	install -m 755 ${UNPACKDIR}/wpa-supplicant.sh ${D}${sysconfdir}/network/if-pre-up.d/wpa-supplicant
 	ln -sf ../if-pre-up.d/wpa-supplicant ${D}${sysconfdir}/network/if-post-down.d/wpa-supplicant
 
 	install -d ${D}/${sysconfdir}/dbus-1/system.d
@@ -130,7 +130,7 @@ do_install () {
 	fi
 
 	install -d ${D}/etc/default/volatiles
-	install -m 0644 ${WORKDIR}/99_wpa_supplicant ${D}/etc/default/volatiles
+	install -m 0644 ${UNPACKDIR}/99_wpa_supplicant ${D}/etc/default/volatiles
 
 	install -d ${D}${includedir}
 	install -m 0644 ${S}/src/common/wpa_ctrl.h ${D}${includedir}

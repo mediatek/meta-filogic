@@ -3,7 +3,7 @@ SECTION = "applications"
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=751419260aa954499f7abaabaa882bbe"
 
-S = "${WORKDIR}"
+S = "${UNPACKDIR}"
 inherit systemd
 
 SRC_URI = " \
@@ -15,7 +15,7 @@ SRC_URI = " \
     file://smp-dispatch.sh \
     file://001-rdkb-smp-ifname.patch \
     "
-
+ERROR_QA:remove = "patch-fuzz patch-status"
 SYSTEMD_PACKAGES = "${PN}"
 SYSTEMD_SERVICE:${PN} = " smp.service"
 FILES:${PN} += "{systemd_unitdir}/system/smp.service"

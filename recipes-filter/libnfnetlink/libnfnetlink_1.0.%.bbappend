@@ -1,5 +1,4 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
-SRC_URI:append = "\
-    file://remove_iwpriv.patch \
-"
+
+SRC_URI:append = "file://0001-rdkb-support-netfilter-netlink-ftnl-tools.patch"
 ERROR_QA:remove = "patch-fuzz patch-status"

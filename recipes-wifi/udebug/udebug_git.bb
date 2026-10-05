@@ -1,20 +1,19 @@
 DESCRIPTION = "OpenWrt debug service"
 SECTION = "utils"
 LICENSE = "GPL-2.0-only"
-LIC_FILES_CHKSUM = "file://COPYING;md5=751419260aa954499f7abaabaa882bbe"
+LIC_FILES_CHKSUM = "file://${UNPACKDIR}/COPYING;md5=751419260aa954499f7abaabaa882bbe"
 
 SRC_URI = " \
-    git://git.openwrt.org/project/udebug.git;protocol=https;branch=master \
+    git://git.openwrt.org/project/udebug.git;protocol=https;branch=master;destsuffix=${BPN}-git \
     file://udebug.config \
     file://udebug.init \
-    file://COPYING;subdir=git \
+    file://COPYING \
 "
 
 SRCREV = "875e1a7af6ca9d86524d18169c3a79f4a1920053"
 PV = "git${SRCPV}"
 
-S = "${WORKDIR}/git"
-
+S = "${UNPACKDIR}/${BPN}-git"
 
 DEPENDS += "libnl-tiny libubox ubus ucode"
 

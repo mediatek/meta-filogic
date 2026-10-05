@@ -9,7 +9,7 @@ do_filogic_patches() {
     cd ${S}
 
     if [ ! -e filogic_patch_applied ] && [ $DISTRO_ONE_WIFI_ENABLED = 'false' ] && ([ "${PROJECT_BRANCH}" != "rdkb-2025q2-kirkstone" ]); then
-        patch -p1 < ${WORKDIR}/fix_build_fail.patch
+        patch -p1 < ${UNPACKDIR}/fix_build_fail.patch
         touch filogic_patch_applied
     fi
 }

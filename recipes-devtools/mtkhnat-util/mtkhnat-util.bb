@@ -8,16 +8,17 @@ DEPENDS += "libnl-tiny uci"
 inherit autotools coverity
 
 SRC_URI = " \
-    file://COPYING;subdir=git/src \
-    file://src;subdir=git \
+    file://COPYING;subdir=${BP}/src \
+    file://src;subdir=${BP} \
     "
 
-S = "${WORKDIR}/git/src"
+S = "${UNPACKDIR}/${PN}-${PV}/src"
 
 CFLAGS:append = " -luci "
+CFLAGS:append:wrynose = " -Wno-incompatible-pointer-types "
 
 do_install:append() {
     install -d ${D}${sysconfdir}
     install -d ${D}${sysconfdir}/config
-    install -m 0755 ${WORKDIR}/git/src/mtkhnat.config ${D}${sysconfdir}/config/mtkhnat
+    install -m 0755 ${UNPACKDIR}/${PN}-${PV}/src/mtkhnat.config ${D}${sysconfdir}/config/mtkhnat
 }

@@ -20,7 +20,7 @@ BB_NUMBER_THREADS = "1"
 do_configure[noexec] = "1"
 
 # Include Paths
-INCLUDE_FLAGS_ALL=" \
+INCLUDE_FLAGS_ALL = " \
 	-I${S}/ddk/inc \
 	-I${S}/ddk/inc/crypto-eip/ddk \
 	-I${S}/ddk/inc/crypto-eip/ddk/configs \
@@ -65,7 +65,7 @@ PKG_MAKE_FLAGS = " \
 	CONFIG_INET_ESP=y \
 	"
 
-EXTRA_CFLAGS+=" \
+EXTRA_CFLAGS += " \
 	${INCLUDE_FLAGS_ALL} \
 	-DEIP197_BUS_VERSION_AXI3 \
 	-DDRIVER_64BIT_HOST \

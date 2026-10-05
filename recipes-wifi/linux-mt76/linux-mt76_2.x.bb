@@ -23,8 +23,8 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files/patches:"
 FILESEXTRAPATHS:prepend := "${THISDIR}/src:"
 
 require files/patches/patches.inc
-SRC_URI:append += "file://5000-mt76-add-internal-wed_tiny-header-file.patch"
-SRC_URI:append += "file://5001-mt76-mt7915-disable-wed.patch"
+SRC_URI:append = " file://5000-mt76-add-internal-wed_tiny-header-file.patch "
+SRC_URI:append = " file://5001-mt76-mt7915-disable-wed.patch "
 
 S = "${WORKDIR}/git"
 
@@ -80,32 +80,32 @@ do_install() {
 do_install:append () {
     install -d ${D}/${base_libdir}/firmware/mediatek/
 
-    install -m 644 ${WORKDIR}/src/firmware/mt7915_rom_patch.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7915_wa.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7915_wm.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7915_eeprom.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7915_eeprom_dbdc.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${UNPACKDIR}/src/firmware/mt7915_rom_patch.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${UNPACKDIR}/src/firmware/mt7915_wa.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${UNPACKDIR}/src/firmware/mt7915_wm.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${UNPACKDIR}/src/firmware/mt7915_eeprom.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${UNPACKDIR}/src/firmware/mt7915_eeprom_dbdc.bin ${D}${base_libdir}/firmware/mediatek/
 
-    install -m 644 ${WORKDIR}/src/firmware/mt7916_rom_patch.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7916_wa.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7916_wm.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7916_eeprom.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${UNPACKDIR}/src/firmware/mt7916_rom_patch.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${UNPACKDIR}/src/firmware/mt7916_wa.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${UNPACKDIR}/src/firmware/mt7916_wm.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${UNPACKDIR}/src/firmware/mt7916_eeprom.bin ${D}${base_libdir}/firmware/mediatek/
 }
 
-do_install:append_mt7986 () {
+do_install:append:mt7986 () {
     install -d ${D}/${base_libdir}/firmware/mediatek/
 
-    install -m 644 ${WORKDIR}/src/firmware/mt7986_rom_patch.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7986_rom_patch_mt7975.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7986_wa.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7986_wm.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7986_wm_mt7975.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7986_eeprom_mt7975_dual.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7986_eeprom_mt7976_dbdc.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7986_eeprom_mt7976.bin  ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7986_eeprom_mt7976_dual.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7986_wo_0.bin ${D}${base_libdir}/firmware/mediatek/
-    install -m 644 ${WORKDIR}/src/firmware/mt7986_wo_1.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${UNPACKDIR}/src/firmware/mt7986_rom_patch.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${UNPACKDIR}/src/firmware/mt7986_rom_patch_mt7975.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${UNPACKDIR}/src/firmware/mt7986_wa.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${UNPACKDIR}/src/firmware/mt7986_wm.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${UNPACKDIR}/src/firmware/mt7986_wm_mt7975.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${UNPACKDIR}/src/firmware/mt7986_eeprom_mt7975_dual.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${UNPACKDIR}/src/firmware/mt7986_eeprom_mt7976_dbdc.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${UNPACKDIR}/src/firmware/mt7986_eeprom_mt7976.bin  ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${UNPACKDIR}/src/firmware/mt7986_eeprom_mt7976_dual.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${UNPACKDIR}/src/firmware/mt7986_wo_0.bin ${D}${base_libdir}/firmware/mediatek/
+    install -m 644 ${UNPACKDIR}/src/firmware/mt7986_wo_1.bin ${D}${base_libdir}/firmware/mediatek/
 }
 
 FILES:${PN} += "${base_libdir}/firmware/mediatek/*"

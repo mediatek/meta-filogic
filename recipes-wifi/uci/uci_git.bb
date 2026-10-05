@@ -5,13 +5,13 @@ LICENSE = "${LICENSE_NAME}"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/${LICENSE_NAME};md5=1a6d268fd218675ffea8be556788b780"
 
 SRC_URI = " \
-    git://git.openwrt.org/project/uci.git;branch=master \
+    git://git.openwrt.org/project/uci.git;branch=master;destsuffix=${BPN}-git \
 "
 
 SRCREV = "f84f49f00fb70364f58b4cce72f1796a7190d370"
 PV = "1.0.0+git${SRCPV}"
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${BPN}-git"
 
 
 DEPENDS += "libubox"
@@ -24,7 +24,7 @@ FILES:${PN} = "${bindir}/uci ${libdir}/libuci.so"
 
 inherit cmake
 
-EXTRA_OECMAKE = " -DBUILD_LUA=OFF -DCMAKE_SKIP_RPATH=TRUE"
+EXTRA_OECMAKE = " -DBUILD_LUA=OFF -DCMAKE_SKIP_RPATH=TRUE -DCMAKE_POLICY_VERSION_MINIMUM=3.5"
 
 do_install() {
     install -d ${D}${libdir}

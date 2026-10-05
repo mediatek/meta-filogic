@@ -7,14 +7,14 @@ SRC_URI = " \
     file://EthMD32.dm.bin \
     file://EthMD32.DSP.bin \
 "
-S = "${WORKDIR}"
+S = "${UNPACKDIR}"
 
 inherit allarch
 
 do_install() {
     install -d ${D}/${base_libdir}/firmware/
-    install -m 644 ${WORKDIR}/EthMD32.dm.bin ${D}${base_libdir}/firmware/
-    install -m 644 ${WORKDIR}/EthMD32.DSP.bin ${D}${base_libdir}/firmware/
+    install -m 644 ${UNPACKDIR}/EthMD32.dm.bin ${D}${base_libdir}/firmware/
+    install -m 644 ${UNPACKDIR}/EthMD32.DSP.bin ${D}${base_libdir}/firmware/
 }
 
 FILES:${PN} += "${base_libdir}/firmware/*"

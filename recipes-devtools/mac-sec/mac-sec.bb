@@ -3,7 +3,7 @@ SECTION = "applications"
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=751419260aa954499f7abaabaa882bbe"
 
-S = "${WORKDIR}"
+S = "${UNPACKDIR}"
 inherit systemd
 
 SRC_URI = " \
@@ -19,7 +19,7 @@ FILES:${PN} += "{systemd_unitdir}/system/MACSec.service"
 
 do_install() {
     install -d ${D}${sbindir}
-    install -m 0755 ${WORKDIR}/MACSec.sh ${D}${sbindir}
+    install -m 0755 ${UNPACKDIR}/MACSec.sh ${D}${sbindir}
     install -d ${D}${systemd_unitdir}/system/
     install -m 0644 ${S}/MACSec.service ${D}${systemd_unitdir}/system
 }

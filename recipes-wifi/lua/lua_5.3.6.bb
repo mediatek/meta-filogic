@@ -31,7 +31,7 @@ PACKAGECONFIG ??= "readline"
 PACKAGECONFIG[readline] = ",,readline"
 
 UCLIBC_PATCHES += "file://uclibc-pthread.patch"
-SRC_URI:append_libc-uclibc = "${UCLIBC_PATCHES}"
+SRC_URI:append:libc-uclibc = "${UCLIBC_PATCHES}"
 
 TARGET_CC_ARCH += " -fPIC ${LDFLAGS}"
 EXTRA_OEMAKE = "'CC=${CC} -fPIC' 'MYCFLAGS=${CFLAGS} -fPIC' MYLDFLAGS='${LDFLAGS}'"
@@ -57,8 +57,8 @@ do_install () {
         install
     install -d ${D}${libdir}/pkgconfig
 
-    sed -e s/@VERSION@/${PV}/ ${WORKDIR}/lua.pc.in > ${WORKDIR}/lua.pc
-    install -m 0644 ${WORKDIR}/lua.pc ${D}${libdir}/pkgconfig/
+    sed -e s/@VERSION@/${PV}/ ${UNPACKDIR}/lua.pc.in > ${UNPACKDIR}/lua.pc
+    install -m 0644 ${UNPACKDIR}/lua.pc ${D}${libdir}/pkgconfig/
     rmdir ${D}${datadir}/lua/5.3
     rmdir ${D}${datadir}/lua
 }

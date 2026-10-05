@@ -10,13 +10,13 @@ DEPENDS += "uci lua ubus libnl-tiny"
 
 SRCREV = "9cec6b4dd2df80d4c02bad322a5db14203a92cba"
 
-SRC_URI = "git://git.openwrt.org/project/iwinfo.git;branch=master \
+SRC_URI = "git://git.openwrt.org/project/iwinfo.git;branch=master;destsuffix=${BPN}-${PV} \
            file://0002-fix-order-of-linker-cmdline-to-help-linking.patch \
            file://0003-Replace-typedef-loaL_reg-with-luaL_Reg.patch \
            "
 
-S = "${WORKDIR}/git"
-
+S = "${UNPACKDIR}/${BPN}-${PV}"
+ERROR_QA:remove = "patch-fuzz patch-status"
 CFLAGS += "-fPIC -D_GNU_SOURCE"
 CFLAGS += " -I=${includedir}/libnl-tiny "
 # iwinfo breaks with parallel make
@@ -27,6 +27,7 @@ EXTRA_OEMAKE = "\
     'SOVERSION=openwrt' \
 "
 
+CFLAGS:append:wrynose = " -Wno-error=implicit-function-declaration"
 do_install() {
 	install -D -m 0755 ${B}/libiwinfo.so ${D}${libdir}/libiwinfo.so.openwrt
     install -D -m 0755 ${B}/iwinfo.so ${D}${libdir}/lua/iwinfo.so

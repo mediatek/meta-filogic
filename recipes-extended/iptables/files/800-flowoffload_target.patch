@@ -1,3 +1,4 @@
+Upstream-Status: Pending
 --- /dev/null
 +++ b/extensions/libxt_FLOWOFFLOAD.c
 @@ -0,0 +1,72 @@

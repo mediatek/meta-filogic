@@ -4,7 +4,7 @@
 #
 #
 
-inherit kernel-uboot kernel-artifact-names uboot-sign kernel-fitimage
+inherit kernel-uboot kernel-artifact-names uboot-sign_backport kernel-fitimage 
 
 python __anonymous () {
         d.appendVarFlag('do_gen_sb_dtb', 'depends', ' rdk-generic-broadband-image:do_hash_rootfs')

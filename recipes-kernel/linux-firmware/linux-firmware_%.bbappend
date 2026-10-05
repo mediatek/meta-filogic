@@ -16,5 +16,5 @@ PACKAGES =+ "${PN}-airoha"
 
 do_install:append() {
 	mkdir -p ${TOPDIR}/firmware/airoha
-	cp -rf ${WORKDIR}/${PN}-${PV}/airoha/* ${TOPDIR}/firmware/airoha
+	cp -rf ${UNPACKDIR}/${PN}-${PV}/airoha/* ${TOPDIR}/firmware/airoha
 }

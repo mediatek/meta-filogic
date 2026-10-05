@@ -4,11 +4,11 @@ LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=751419260aa954499f7abaabaa882bbe"
 
 SRC_URI = " \
-    file://COPYING;subdir=git/src \
-    file://src;subdir=git \
+    file://COPYING;subdir=${BP}/src \
+    file://src;subdir=${BP} \
     "
 
-S = "${WORKDIR}/git/src"
+S = "${UNPACKDIR}/${BP}/src"
 
 inherit native 
 

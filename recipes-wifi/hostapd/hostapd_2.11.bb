@@ -20,7 +20,7 @@ SRCREV ?= "96e48a05aa0a82e91e3cab75506297e433e253d0"
 require version.inc
 
 SRC_URI = " \
-    git://w1.fi/hostap.git;protocol=https;branch=main \
+    git://w1.fi/hostap.git;protocol=https;branch=main;destsuffix=${BPN}-${PV} \
     file://hostapd-full.config \
     file://hostapd-2G-EHT.conf \
     file://hostapd-5G-EHT.conf \
@@ -39,59 +39,58 @@ SRC_URI = " \
     file://002-rdkb-add-ucode-support.patch;apply=no \
 "
 
-
-B = "${WORKDIR}/git/hostapd"
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${BPN}-${PV}"
 PATCHDEST ?= "${S}"
 require files/${PATCH_SRC}/patches.inc
 
-inherit update-rc.d systemd pkgconfig features_check
+inherit update-rc.d systemd pkgconfig
 INITSCRIPT_NAME = "hostapd"
 
 SYSTEMD_AUTO_ENABLE:${PN} = "enable"
 SYSTEMD_SERVICE:${PN} = "hostapd.service"
 SYSTEMD_SERVICE:${PN} += " init-uci-config.service"
 INSANE_SKIP:${PN} += "file-rdeps"
-
+ERROR_QA:remove = "patch-fuzz patch-status"
 
 do_configure:append() {
-    install -m 0644 ${WORKDIR}/hostapd-full.config ${B}/.config
+    install -m 0644 ${UNPACKDIR}/hostapd-full.config ${S}/hostapd/.config
+    echo "# Example wpa_supplicant build time configuration" >> ${S}/wpa_supplicant/.config
 
-    echo "CONFIG_MBO=y" >> ${B}/.config
-    echo "CONFIG_WPS_UPNP=y" >> ${B}/.config
-    echo "CONFIG_DPP=y" >> ${B}/.config
-    echo "CONFIG_DPP2=y" >> ${B}/.config
-    echo "CONFIG_DPP3=y" >> ${B}/.config
+    echo "CONFIG_MBO=y" >> ${S}/hostapd/.config
+    echo "CONFIG_WPS_UPNP=y" >> ${S}/hostapd/.config
+    echo "CONFIG_DPP=y" >> ${S}/hostapd/.config
+    echo "CONFIG_DPP2=y" >> ${S}/hostapd/.config
+    echo "CONFIG_DPP3=y" >> ${S}/hostapd/.config
 
-    echo "CONFIG_ACS=y" >> ${B}/.config
-    echo "CONFIG_IEEE80211AX=y" >> ${B}/.config
-    echo "CONFIG_TLS=openssl" >> ${B}/.config
-    echo "CONFIG_SAE=y" >> ${B}/.config
-    echo "CONFIG_OWE=y" >> ${B}/.config
-    echo "CONFIG_SUITEB192=y" >> ${B}/.config
-    echo "CONFIG_AP=y" >> ${B}/.config
-    echo "CONFIG_MESH=y" >> ${B}/.config
-    echo "CONFIG_WEP=y" >> ${B}/.config
-    echo "CONFIG_FILS=y" >> ${B}/.config
-    echo "CONFIG_IEEE80211BE=y" >> ${B}/.config
-    echo "CONFIG_TESTING_OPTIONS=y" >> ${B}/.config
-    echo "CONFIG_UCODE=y" >> ${B}/.config
-    echo "CONFIG_LIBNL20=y" >> ${B}/.config
-    echo "CONFIG_LIBNL_TINY=y" >> ${B}/.config
-    echo "CONFIG_AFC=y" >> ${B}/.config
-    echo "CONFIG_SAE_PK=y" >> ${B}/.config
-    echo "CONFIG_HS20=y" >> ${B}/.config
-    echo "CONFIG_HE_OVERRIDES=y" >> ${B}/.config
-    echo "CONFIG_EHT_OVERRIDES=y" >> ${B}/.config
-    echo "CONFIG_P2P_MANAGER=y" >> ${B}/.config
-    echo "CONFIG_DEBUG_LINUX_TRACING=y" >> ${B}/.config
-    echo "CONFIG_CTRL_IFACE_MIB=y" >> ${B}/.config
+    echo "CONFIG_ACS=y" >> ${S}/hostapd/.config
+    echo "CONFIG_IEEE80211AX=y" >> ${S}/hostapd/.config
+    echo "CONFIG_TLS=openssl" >> ${S}/hostapd/.config
+    echo "CONFIG_SAE=y" >> ${S}/hostapd/.config
+    echo "CONFIG_OWE=y" >> ${S}/hostapd/.config
+    echo "CONFIG_SUITEB192=y" >> ${S}/hostapd/.config
+    echo "CONFIG_AP=y" >> ${S}/hostapd/.config
+    echo "CONFIG_MESH=y" >> ${S}/hostapd/.config
+    echo "CONFIG_WEP=y" >> ${S}/hostapd/.config
+    echo "CONFIG_FILS=y" >> ${S}/hostapd/.config
+    echo "CONFIG_IEEE80211BE=y" >> ${S}/hostapd/.config
+    echo "CONFIG_TESTING_OPTIONS=y" >> ${S}/hostapd/.config
+    echo "CONFIG_UCODE=y" >> ${S}/hostapd/.config
+    echo "CONFIG_LIBNL20=y" >> ${S}/hostapd/.config
+    echo "CONFIG_LIBNL_TINY=y" >> ${S}/hostapd/.config
+    echo "CONFIG_AFC=y" >> ${S}/hostapd/.config
+    echo "CONFIG_SAE_PK=y" >> ${S}/hostapd/.config
+    echo "CONFIG_HS20=y" >> ${S}/hostapd/.config
+    echo "CONFIG_HE_OVERRIDES=y" >> ${S}/hostapd/.config
+    echo "CONFIG_EHT_OVERRIDES=y" >> ${S}/hostapd/.config
+    echo "CONFIG_P2P_MANAGER=y" >> ${S}/hostapd/.config
+    echo "CONFIG_DEBUG_LINUX_TRACING=y" >> ${S}/hostapd/.config
+    echo "CONFIG_CTRL_IFACE_MIB=y" >> ${S}/hostapd/.config
 }
 
 do_filogic_patches() {
     cd ${S}
         if [ ! -e patch_applied ]; then
-            patch -p1 < ${WORKDIR}/002-rdkb-add-ucode-support.patch
+            patch -p1 < ${UNPACKDIR}/002-rdkb-add-ucode-support.patch
             touch patch_applied
         fi
 }
@@ -106,22 +105,24 @@ do_compile() {
 
 do_install() {
          install -d ${D}${sbindir} ${D}${sysconfdir} ${D}${systemd_unitdir}/system/ ${D}${base_libdir}/rdk ${D}${datadir}/hostap
-         install -m 0755 ${B}/hostapd ${D}${sbindir}
-         install -m 0755 ${B}/hostapd_cli ${D}${sbindir}
-         install -m 0644 ${WORKDIR}/hostapd-2G-EHT.conf ${D}${sysconfdir}/hostapd-2G.conf
-         install -m 0644 ${WORKDIR}/hostapd-5G-EHT.conf ${D}${sysconfdir}/hostapd-5G.conf
-         install -m 0644 ${WORKDIR}/hostapd-6G-EHT.conf ${D}${sysconfdir}/hostapd-6G.conf
-         install -m 0644 ${WORKDIR}/board.json ${D}${sysconfdir}
-         install -m 0644 ${WORKDIR}/hostapd.service ${D}${systemd_unitdir}/system
-         install -m 0755 ${WORKDIR}/hostapd-init-EHT.sh ${D}${base_libdir}/rdk/hostapd-init.sh
-         install -m 0644 ${WORKDIR}/init-uci-config.service ${D}${systemd_unitdir}/system
-         install -m 0755 ${WORKDIR}/mac80211-EHT.sh ${D}${sbindir}/mac80211.sh
-         install -m 0755 ${WORKDIR}/${UC_SRC}/hostapd.uc ${D}${datadir}/hostap
-         install -m 0755 ${WORKDIR}/${UC_SRC}/wdev.uc ${D}${datadir}/hostap
-         install -m 0755 ${WORKDIR}/${UC_SRC}/common.uc ${D}${datadir}/hostap
-         install -m 0755 ${WORKDIR}/${UC_SRC}/wpa_supplicant.uc ${D}${datadir}/hostap
-         install -m 0755 ${WORKDIR}/wifi-detect.uc ${D}${datadir}/hostap
-         install -m 0755 ${WORKDIR}/mac80211.uc ${D}${datadir}/hostap
+         #install -m 0755 ${B}/hostapd ${D}${sbindir}
+         #install -m 0755 ${B}/hostapd_cli ${D}${sbindir}
+         install -m 0755 ${S}/hostapd/hostapd ${D}${sbindir}
+         install -m 0755 ${S}/hostapd/hostapd_cli ${D}${sbindir}
+         install -m 0644 ${UNPACKDIR}/hostapd-2G-EHT.conf ${D}${sysconfdir}/hostapd-2G.conf
+         install -m 0644 ${UNPACKDIR}/hostapd-5G-EHT.conf ${D}${sysconfdir}/hostapd-5G.conf
+         install -m 0644 ${UNPACKDIR}/hostapd-6G-EHT.conf ${D}${sysconfdir}/hostapd-6G.conf
+         install -m 0644 ${UNPACKDIR}/board.json ${D}${sysconfdir}
+         install -m 0644 ${UNPACKDIR}/hostapd.service ${D}${systemd_unitdir}/system
+         install -m 0755 ${UNPACKDIR}/hostapd-init-EHT.sh ${D}${base_libdir}/rdk/hostapd-init.sh
+         install -m 0644 ${UNPACKDIR}/init-uci-config.service ${D}${systemd_unitdir}/system
+         install -m 0755 ${UNPACKDIR}/mac80211-EHT.sh ${D}${sbindir}/mac80211.sh
+         install -m 0755 ${UNPACKDIR}/${UC_SRC}/hostapd.uc ${D}${datadir}/hostap
+         install -m 0755 ${UNPACKDIR}/${UC_SRC}/wdev.uc ${D}${datadir}/hostap
+         install -m 0755 ${UNPACKDIR}/${UC_SRC}/common.uc ${D}${datadir}/hostap
+         install -m 0755 ${UNPACKDIR}/${UC_SRC}/wpa_supplicant.uc ${D}${datadir}/hostap
+         install -m 0755 ${UNPACKDIR}/wifi-detect.uc ${D}${datadir}/hostap
+         install -m 0755 ${UNPACKDIR}/mac80211.uc ${D}${datadir}/hostap
 }
 
 FILES:${PN} += " \

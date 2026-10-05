@@ -5,7 +5,7 @@ LICENSE = "${LICENSE_NAME}"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=b42eb47dc3802282b0d1be1bc8f5336c"
 
 SRC_URI = " \
-    git://git@github.com/jow-/ucode.git;protocol=https;branch=master \
+    git://git@github.com/jow-/ucode.git;protocol=https;branch=master;destsuffix=${BPN}-git \
     file://0001-change-cmakelist.patch \
     file://100-add-include-for-older-kernels.patch \
     file://110-uloop-allow-reusing-the-existing-environment.patch \
@@ -17,9 +17,9 @@ SRC_URI = " \
 SRCREV = "85922056ef7abeace3cca3ab28bc1ac2d88e31b1"
 PV = "git${SRCPV}"
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/${BPN}-git"
 
-
+ERROR_QA:remove = "patch-fuzz patch-status"
 DEPENDS += "libnl-tiny libubox ubus uci"
 
 INSANE_SKIP:${PN} += "file-rdeps dev-deps dev-so"
@@ -44,4 +44,4 @@ EXTRA_OECMAKE = "\
 	-DSOCKET_SUPPORT=OFF \
 	-DZLIB_SUPPORT=OFF \
 	"
-
+CFLAGS:append:wrynose = " -Wno-error=discarded-qualifiers"

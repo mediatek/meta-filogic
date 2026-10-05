@@ -36,8 +36,8 @@ FILES:${PN} += "{systemd_unitdir}/system/ksmbd.service"
 
 do_install:append () {
 	install -d ${D}${systemd_unitdir}/system/
-	install -m 0644 ${WORKDIR}/ksmbd.service ${D}${systemd_unitdir}/system
+	install -m 0644 ${UNPACKDIR}/ksmbd.service ${D}${systemd_unitdir}/system
     install -d ${D}/etc/ksmbd
-    install -m 0644 ${WORKDIR}/smb.conf ${D}/etc/ksmbd
+    install -m 0644 ${UNPACKDIR}/smb.conf ${D}/etc/ksmbd
     install -m 0644 ${S}//Documentation/configuration.txt ${D}/etc/ksmbd
 }

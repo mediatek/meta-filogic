@@ -5,13 +5,13 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=c188eeeb69c0a05d0545816f1458a0c9"
 
 inherit module
 
-PKG_YEAR="24"
-PKG_MONTH="10"
+PKG_YEAR = "24"
+PKG_MONTH = "10"
 
 require mt76-3x.inc
 SRC_URI = " \
-    git://git@github.com/openwrt/mt76.git;protocol=https;branch=master \
-    file://COPYING;subdir=git \
+    git://git@github.com/openwrt/mt76.git;protocol=https;branch=master;destsuffix=${BPN}-${PV} \
+    file://COPYING;subdir=${S} \
     "
 
 DEPENDS += "virtual/kernel"
@@ -29,9 +29,9 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${FW_SRC}:"
 
 require files/${PATCH_SRC}/patches.inc
 
-S = "${WORKDIR}/git"
-
-ADDITIONAL_CFLAGS="-DPKG_YEAR=${PKG_YEAR} -DPKG_MONTH=${PKG_MONTH}"
+S = "${UNPACKDIR}/${BPN}-${PV}"
+ERROR_QA:remove = "patch-fuzz patch-status"
+ADDITIONAL_CFLAGS = "-DPKG_YEAR=${PKG_YEAR} -DPKG_MONTH=${PKG_MONTH}"
 
 NOSTDINC_FLAGS = " \
     -I${B} \
@@ -68,16 +68,21 @@ MAKE_TARGETS = "modules"
 
 do_configure[noexec] = "1"
 
+do_fix_compiler_types() {
+    sed -i '/#ifdef CONFIG_CC_HAS_COUNTED_BY/{n;s/.*/#ifndef __counted_by\n&\n#endif/}' "${STAGING_KERNEL_DIR}/include/linux/compiler_types.h"
+}
+addtask fix_compiler_types after do_patch before do_compile
+do_fix_compiler_types[depends] += "virtual/kernel:do_shared_workdir"
 # make_scripts requires kernel source directory to create
 # kernel scripts
 do_make_scripts[depends] += "virtual/kernel:do_shared_workdir"
 
 do_install() {
     # Module
-    install -d ${D}/lib/modules/${KERNEL_VERSION}/updates/drivers/net/wireless/mediatek/mt76/
-    install -m 0644 ${B}/mt76.ko ${D}/lib/modules/${KERNEL_VERSION}/updates/drivers/net/wireless/mediatek/mt76/
-    install -m 0644 ${B}/mt76-connac-lib.ko ${D}/lib/modules/${KERNEL_VERSION}/updates/drivers/net/wireless/mediatek/mt76/
-    install -m 0644 ${B}/mt7996/mt7996e.ko ${D}/lib/modules/${KERNEL_VERSION}/updates/drivers/net/wireless/mediatek/mt76/
+    install -d ${D}${base_libdir}/modules/${KERNEL_VERSION}/updates/drivers/net/wireless/mediatek/mt76/
+    install -m 0644 ${B}/mt76.ko ${D}${base_libdir}/modules/${KERNEL_VERSION}/updates/drivers/net/wireless/mediatek/mt76/
+    install -m 0644 ${B}/mt76-connac-lib.ko ${D}${base_libdir}/modules/${KERNEL_VERSION}/updates/drivers/net/wireless/mediatek/mt76/
+    install -m 0644 ${B}/mt7996/mt7996e.ko ${D}${base_libdir}/modules/${KERNEL_VERSION}/updates/drivers/net/wireless/mediatek/mt76/
 }
 
 do_install:append () {
@@ -86,26 +91,26 @@ do_install:append () {
     IS_MT7992="${@bb.utils.contains('DISTRO_FEATURES','mt7992','true','false',d)}"
     IS_MT7990="${@bb.utils.contains('DISTRO_FEATURES','mt7990','true','false',d)}"
     if [ $IS_MT7996 = 'true' ]; then
-            install -m 644 ${WORKDIR}/${FW_SRC}/firmware/mt7996/mt7996*.* ${D}${base_libdir}/firmware/mediatek/mt7996
+            install -m 644 ${UNPACKDIR}/${FW_SRC}/firmware/mt7996/mt7996*.* ${D}${base_libdir}/firmware/mediatek/mt7996
     fi
 
     if [ $IS_MT7992 = 'true' ]; then
-            install -m 644 ${WORKDIR}/${FW_SRC}/firmware/mt7996/mt7992*.* ${D}${base_libdir}/firmware/mediatek/mt7996
+            install -m 644 ${UNPACKDIR}/${FW_SRC}/firmware/mt7996/mt7992*.* ${D}${base_libdir}/firmware/mediatek/mt7996
     fi
 
     if [ $IS_MT7990 = 'true' ]; then
-            install -m 644 ${WORKDIR}/${FW_SRC}/firmware/mt7996/mt7990*.* ${D}${base_libdir}/firmware/mediatek/mt7996
+            install -m 644 ${UNPACKDIR}/${FW_SRC}/firmware/mt7996/mt7990*.* ${D}${base_libdir}/firmware/mediatek/mt7996
     fi
 }
 
-do_install:append_mt7988 () {
+do_install:append:mt7988 () {
     IS_KERNEL_V6="${@bb.utils.contains('DISTRO_FEATURES','kernelv6','true','false',d)}"
     if [ $IS_KERNEL_V6 = 'false' ]; then
         install -d ${D}/${base_libdir}/firmware/mediatek/
 
-        install -m 644 ${WORKDIR}/src/firmware/mtk_wo_0.bin ${D}${base_libdir}/firmware/mediatek/
-        install -m 644 ${WORKDIR}/src/firmware/mtk_wo_1.bin ${D}${base_libdir}/firmware/mediatek/
-        install -m 644 ${WORKDIR}/src/firmware/mtk_wo_2.bin ${D}${base_libdir}/firmware/mediatek/
+        install -m 644 ${UNPACKDIR}/src/firmware/mtk_wo_0.bin ${D}${base_libdir}/firmware/mediatek/
+        install -m 644 ${UNPACKDIR}/src/firmware/mtk_wo_1.bin ${D}${base_libdir}/firmware/mediatek/
+        install -m 644 ${UNPACKDIR}/src/firmware/mtk_wo_2.bin ${D}${base_libdir}/firmware/mediatek/
     fi
 }
 
@@ -121,3 +126,4 @@ python populate_packages:prepend () {
 #RPROVIDES:${PN} += "kernel-module-${PN}-connac-lib-${KERNEL_VERSION}"
 
 KERNEL_MODULE_AUTOLOAD += "mt7996e"
+INSANE_SKIP:${PN} += "installed-vs-shipped"

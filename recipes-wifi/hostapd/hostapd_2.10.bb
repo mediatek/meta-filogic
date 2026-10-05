@@ -33,7 +33,7 @@ require files/patches/patches.inc
 B = "${WORKDIR}/git/hostapd"
 S = "${WORKDIR}/git"
 
-inherit update-rc.d systemd pkgconfig features_check
+inherit update-rc.d systemd pkgconfig
 INITSCRIPT_NAME = "hostapd"
 
 SYSTEMD_AUTO_ENABLE:${PN} = "enable"
@@ -45,11 +45,11 @@ do_unpack:append() {
 }
 
 do_copy_openwrt_src() {
-    cp -Rfp ${WORKDIR}/src/* ${S}/
+    cp -Rfp ${UNPACKDIR}/src/* ${S}/
 }
 
 do_configure:append() {
-    install -m 0644 ${WORKDIR}/hostapd-full.config ${B}/.config
+    install -m 0644 ${UNPACKDIR}/hostapd-full.config ${B}/.config
 
     echo "CONFIG_MBO=y" >> ${B}/.config
     echo "CONFIG_WPS_UPNP=y" >> ${B}/.config
@@ -73,7 +73,7 @@ do_configure:append() {
 do_filogic_patches() {
     cd ${S}
         if [ ! -e patch_applied ]; then
-            patch -p1 < ${WORKDIR}/001-rdkb-remove-ubus-support.patch
+            patch -p1 < ${UNPACKDIR}/001-rdkb-remove-ubus-support.patch
             touch patch_applied
         fi
 }
@@ -90,15 +90,15 @@ do_install() {
          install -d ${D}${sbindir} ${D}${sysconfdir} ${D}${systemd_unitdir}/system/ ${D}${base_libdir}/rdk
          install -m 0755 ${B}/hostapd ${D}${sbindir}
          install -m 0755 ${B}/hostapd_cli ${D}${sbindir}
-         install -m 0644 ${WORKDIR}/hostapd-2G.conf ${D}${sysconfdir}
-         install -m 0644 ${WORKDIR}/hostapd-5G.conf ${D}${sysconfdir}
-         install -m 0644 ${WORKDIR}/hostapd-6G.conf ${D}${sysconfdir}
-         install -m 0644 ${WORKDIR}/hostapd-5G-7915.conf ${D}${sysconfdir}
-         install -m 0644 ${WORKDIR}/hostapd-5G-7916.conf ${D}${sysconfdir}
-         install -m 0644 ${WORKDIR}/hostapd.service ${D}${systemd_unitdir}/system
-         install -m 0755 ${WORKDIR}/hostapd-init.sh ${D}${base_libdir}/rdk
-         install -m 0644 ${WORKDIR}/init-uci-config.service ${D}${systemd_unitdir}/system
-         install -m 0755 ${WORKDIR}/mac80211.sh ${D}${sbindir}
+         install -m 0644 ${UNPACKDIR}/hostapd-2G.conf ${D}${sysconfdir}
+         install -m 0644 ${UNPACKDIR}/hostapd-5G.conf ${D}${sysconfdir}
+         install -m 0644 ${UNPACKDIR}/hostapd-6G.conf ${D}${sysconfdir}
+         install -m 0644 ${UNPACKDIR}/hostapd-5G-7915.conf ${D}${sysconfdir}
+         install -m 0644 ${UNPACKDIR}/hostapd-5G-7916.conf ${D}${sysconfdir}
+         install -m 0644 ${UNPACKDIR}/hostapd.service ${D}${systemd_unitdir}/system
+         install -m 0755 ${UNPACKDIR}/hostapd-init.sh ${D}${base_libdir}/rdk
+         install -m 0644 ${UNPACKDIR}/init-uci-config.service ${D}${systemd_unitdir}/system
+         install -m 0755 ${UNPACKDIR}/mac80211.sh ${D}${sbindir}
 }
 
 FILES:${PN} += " \

@@ -9,11 +9,11 @@ DEPENDS += "libubox"
 inherit autotools systemd pkgconfig
 
 SRC_URI = " \
-    file://COPYING;subdir=git/src \
-    file://src;subdir=git \
+    file://COPYING;subdir=${BP}/src \
+    file://src;subdir=${BP} \
     "
 
-S = "${WORKDIR}/git/src"
+S = "${UNPACKDIR}/${PN}-${PV}/src"
 
 META_LDFLAGS_ADD = "-lubox"
 
@@ -21,7 +21,8 @@ LDFLAGS:remove = "-Wl,--as-needed"
 
 CFLAGS:append = " -Wall -flto"
 LDFLAGS:append = " -flto=jobserver ${META_LDFLAGS_ADD}"
-
+CFLAGS:append:wrynose = " -std=gnu89"
+do_configure[noexec] = "1"
 do_compile:prepend(){
     cd ${S}
 }

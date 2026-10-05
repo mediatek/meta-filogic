@@ -6,19 +6,21 @@ PROVIDES = "hal-fwupgrade"
 RPROVIDES:${PN} = "hal-fwupgrade"
 
 DEPENDS += "ccsp-common-library halinterface"
-DEPENDS_kirkstone += " rdkb-halif-fwupgrade"
-SRC_URI = "git://github.com/mediatek/rdkb_hal;branch=main;protocol=https;name=fwupgradehal \
-           file://LICENSE;subdir=git \
+DEPENDS += " rdkb-halif-fwupgrade"
+SRC_URI = "git://github.com/mediatek/rdkb_hal;branch=main;protocol=https;destsuffix=${BP};name=fwupgradehal \
+           file://LICENSE;subdir=${UNPACKDIR}/${BP} \
           "
 
 SRCREV_fwupgradehal = "${AUTOREV}"
 SRCREV_FORMAT = "fwupgradehal"
 
 
-S = "${WORKDIR}/git/src/fwupgrade"
+S = "${UNPACKDIR}/${BP}/src/fwupgrade"
 
 CFLAGS += "-DFEATURE_SUPPORT_RDKLOG"
 CFLAGS:append = " -I=${includedir}/ccsp "
+
+CFLAGS:append:wrynose = " -Wno-error=implicit-function-declaration -Wno-error=return-mismatch "
 
 inherit autotools coverity
 

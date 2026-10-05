@@ -1,0 +1,15 @@
+Source: RDKM
+Upstream-Status: Pending
+
+Index: ubus-git/lua/ubus.c
+===================================================================
+--- ubus-git.orig/lua/ubus.c
++++ ubus-git/lua/ubus.c
+@@ -25,7 +25,6 @@
+ 
+ #if LUA_VERSION_NUM > 501
+ #define luaL_optint luaL_optinteger
+-#define lua_objlen lua_rawlen
+ #endif
+ 
+ static lua_State *state;
