@@ -1,2 +1,2 @@
 PV:kernelv6 = "6.18.7"
-SHASUM-kernelv6 = "623e5cf46ca8e81fd413f4f465e2580a0143e24929f9c22ce1ba7c34f2872989"
+SRCREV:kernelv6 = "${AUTOREV}"

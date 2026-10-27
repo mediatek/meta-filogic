@@ -18,11 +18,14 @@ SRC_URI[sha256sum] = "7d182e498289ab39b257da6780d562e415377107f50358ee5b55b8cfe4
 
 PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'wifi_eht', 'patches-mlo', 'patches', d)}"
 
+SRC_URI:remove:kernelv6 = "http://www.kernel.org/pub/software/network/iw/${BP}.tar.xz"
+SRC_URI:append:kernelv6 = " \
+    git://github.com/mediatek/softmac_iw.git;protocol=https;branch=mp4.3-6.12;destsuffix=${BPN}-${PV} \
+    "
+SRCREV:kernelv6 = "${AUTOREV}"
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PATCH_SRC}:"
-require ${PATCH_SRC}/patches.inc
+require ${@bb.utils.contains('DISTRO_FEATURES','kernelv6','','${PATCH_SRC}/patches.inc',d)}
 ERROR_QA:remove = "patch-fuzz patch-status"
-SRC_URI:remove = "${@bb.utils.contains('DISTRO_FEATURES', 'wifi_eht', 'file://001-nl80211_h_sync.patch', '', d)}"
-SRC_URI:remove = "${@bb.utils.contains('DISTRO_FEATURES', 'wifi_eht', 'file://120-antenna_gain.patch', '', d)}"
 
 inherit pkgconfig
 

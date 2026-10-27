@@ -7,10 +7,9 @@ LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://hostapd/README;md5=1d4e9322770561b9c7d7fa4ac618547e"
 
 DEPENDS = "dbus libnl-tiny ubus ucode udebug"
-PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernelv6', 'kernelv6-patches', 'patches-${PV}', d)}"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
-FILESEXTRAPATHS:prepend := "${THISDIR}/files/${PATCH_SRC}:"
+FILESEXTRAPATHS:prepend := "${@bb.utils.contains('DISTRO_FEATURES', 'kernelv6', '', '${THISDIR}/files/patches-${PV}:', d)}"
 
 SRCREV ?= "96e48a05aa0a82e91e3cab75506297e433e253d0"
 require version.inc
@@ -26,9 +25,14 @@ SRC_URI = "git://w1.fi/hostap.git;protocol=https;branch=main;destsuffix=${BPN}-$
            file://003-fix_wpa_supplicant_build_issue.patch;apply=no \
            "
 
+SRC_URI:remove:kernelv6 = "git://w1.fi/hostap.git;protocol=https;branch=main;destsuffix=${BPN}-${PV}"
+SRC_URI:append:kernelv6 = " \
+    git://github.com/mediatek/softmac_hostapd.git;protocol=https;branch=mp4.3-6.12;destsuffix=${BPN}-${PV} \
+    "
+
 S = "${UNPACKDIR}/${BPN}-${PV}"
 PATCHDEST ?= "${S}"
-require files/${PATCH_SRC}/patches.inc
+require ${@bb.utils.contains('DISTRO_FEATURES','kernelv6','','files/patches-${PV}/patches.inc',d)}
 ERROR_QA:remove = "patch-fuzz patch-status"
 inherit pkgconfig systemd
 

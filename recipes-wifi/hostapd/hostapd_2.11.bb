@@ -9,10 +9,9 @@ DEPENDS:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'telemetry2_0', 'tele
 LDFLAGS:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'telemetry2_0', ' -ltelemetry_msgsender ', '', d)}"
 RDEPENDS:${PN} += "gawk ucode udebug"
 
-PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernelv6', 'kernelv6-patches', 'patches-${PV}', d)}"
 UC_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernelv6', 'kernelv6-uc-files', 'uc-files', d)}"
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
-FILESEXTRAPATHS:prepend := "${THISDIR}/files/${PATCH_SRC}:"
+FILESEXTRAPATHS:prepend := "${@bb.utils.contains('DISTRO_FEATURES', 'kernelv6', '', '${THISDIR}/files/patches-${PV}:', d)}"
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/${UC_SRC}:"
 
 SRCREV ?= "96e48a05aa0a82e91e3cab75506297e433e253d0"
@@ -38,11 +37,14 @@ SRC_URI = " \
     ${@bb.utils.contains('DISTRO_FEATURES','kernelv6','','file://src-${PV}',d)} \
     file://002-rdkb-add-ucode-support.patch;apply=no \
 "
+SRC_URI:remove:kernelv6 = "git://w1.fi/hostap.git;protocol=https;branch=main;destsuffix=${BPN}-${PV}"
+SRC_URI:append:kernelv6 = " \
+    git://github.com/mediatek/softmac_hostapd.git;protocol=https;branch=mp4.3-6.12;destsuffix=${BPN}-${PV} \
+    "
 
 S = "${UNPACKDIR}/${BPN}-${PV}"
 PATCHDEST ?= "${S}"
-require files/${PATCH_SRC}/patches.inc
-
+require ${@bb.utils.contains('DISTRO_FEATURES','kernelv6','','files/patches-${PV}/patches.inc',d)}
 inherit update-rc.d systemd pkgconfig
 INITSCRIPT_NAME = "hostapd"
 

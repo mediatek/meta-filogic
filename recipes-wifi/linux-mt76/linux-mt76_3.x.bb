@@ -11,23 +11,27 @@ PKG_MONTH = "10"
 require mt76-3x.inc
 SRC_URI = " \
     git://git@github.com/openwrt/mt76.git;protocol=https;branch=master;destsuffix=${BPN}-${PV} \
-    file://COPYING;subdir=${S} \
     "
-
+SRC_URI:remove:kernelv6 = "git://git@github.com/openwrt/mt76.git;protocol=https;branch=master;destsuffix=${BPN}-${PV}"
+SRC_URI:append:kernelv6 = " \
+    git://github.com/mediatek/softmac_mt76.git;protocol=https;branch=mp4.3-6.12;destsuffix=${BPN}-${PV} \
+    "
+SRC_URI:append = " \
+    file://COPYING;subdir=${BP} \
+    "
 DEPENDS += "virtual/kernel"
 DEPENDS += "linux-mac80211"
 
-PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernelv6', 'kernelv6-patches', 'patches-${PV}', d)}"
 FW_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernelv6', 'kernelv6-src', 'src', d)}"
 
 SRC_URI += " \
     file://${FW_SRC} \
     "
 
-FILESEXTRAPATHS:prepend := "${THISDIR}/files/${PATCH_SRC}:"
+FILESEXTRAPATHS:prepend := "${@bb.utils.contains('DISTRO_FEATURES', 'kernelv6', '', '${THISDIR}/files/patches-${PV}:', d)}"
 FILESEXTRAPATHS:prepend := "${THISDIR}/${FW_SRC}:"
 
-require files/${PATCH_SRC}/patches.inc
+require ${@bb.utils.contains('DISTRO_FEATURES','kernelv6','','files/patches-${PV}/patches.inc',d)}
 
 S = "${UNPACKDIR}/${BPN}-${PV}"
 ERROR_QA:remove = "patch-fuzz patch-status"

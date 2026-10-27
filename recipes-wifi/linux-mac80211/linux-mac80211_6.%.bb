@@ -17,15 +17,16 @@ SRC_URI = " \
     file://0001-rdkb-fix_build_issue-mac80211-without_depmod.patch;apply=no \
     "
 
+SRC_URI:remove:kernelv6 = "http://sources.openwrt.org/backports-${PV}.tar.zst"
+SRC_URI:append:kernelv6 = " \
+    git://github.com/mediatek/softmac_mac80211.git;protocol=https;branch=mp4.3-6.12;destsuffix=backports-${PV} \
+    "
 
 DEPENDS += "virtual/kernel"
 DEPENDS += "bison-native coreutils-native flex-native"
-PATCH_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernelv6', 'kernelv6-patches', 'patches-6.x', d)}"
 ERROR_QA:remove = "patch-fuzz patch-status"
-FILESEXTRAPATHS:prepend := "${THISDIR}/files/${PATCH_SRC}/subsys:"
-
-require files/${PATCH_SRC}/subsys/subsys.inc
-
+FILESEXTRAPATHS:prepend := "${@bb.utils.contains('DISTRO_FEATURES', 'kernelv6', '', '${THISDIR}/files/patches-6.x/subsys:', d)}"
+require ${@bb.utils.contains('DISTRO_FEATURES','kernelv6','','files/patches-6.x/subsys/subsys.inc',d)}
 S = "${UNPACKDIR}/backports-${PV}"
 
 do_filogic_patches() {
