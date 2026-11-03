@@ -156,6 +156,14 @@ SRC_URI:append = " \
     file://960-asus-hack-u-boot-ignore-mtdparts.patch \
     file://965-dts-mt7988a-add-trng-support.patch \
     file://966-pcie-mediatek-gen3-Add-WIFI-HW-reset-flow.patch \
+    file://999-backport-01-v6.14-net-phylink-use-pcs_neg_mode-in-phylink_mac_pcs_get_state.patch \
+    file://999-backport-02-v6.14--net-phylink-pass-neg_mode-into-.pcs_get_state-method.patch \
+    file://999-backport-03-v6.14-net-phylink-pass-neg_mode-into-c22-state-decoder.patch \
+    file://999-backport-04-v6.14--net-phylink-use-neg_mode-in-phylink_mii_c22_pcs_decode_state.patch \
+    file://999-backport-05-v6.14--net-phylink-provide-fixed-state-for-1000base-X-and-2500base-X.patch \
+    file://999-backport-06-v6.18-net-ethtool-change-rx-ring-count-query-path.patch \
+    file://999-backport-07-v6.18-mtk_eth_soc-use-generic-allocator-for-SRAM.patch \
+    file://999-backport-08-v6.18-arm64-dts-mediatek-mt7988-add-generic-sram-node.patch \
     file://999-clk-02-clk-mediatek-mt7988-mark-sej-clks-as-critical.patch \
     file://999-clk-03-clk-mediatek-mt7988-mark-spi0-and-pextp-clks-as-critical.patch \
     file://999-clk-04-clk-mediatek-mt7988-mark-usb-pipe-clks-as-critical.patch \
@@ -169,6 +177,7 @@ SRC_URI:append = " \
     file://999-crypto-07-xfrm-backport-kernel-7.1-fix-return-value-for-async-algo.patch \
     file://999-devapc-01-soc-mediatek-add-mt798x-support.patch \
     file://999-dsa-01-mt7530_mdio-add-individual-polarity-control-for-SGMII.patch \
+    file://999-dsa-02-add-an8855-dsa-downstream.patch \
     file://999-dsa-02-add-mt7531-netlink-support.patch \
     file://999-dsa-03-add-an8855-netlink-support.patch \
     file://999-dsa-04-add-mxl862xx-tag-formats.patch \
@@ -176,6 +185,7 @@ SRC_URI:append = " \
     file://999-dsa-06-fix-mt7531-vlan-del-to-override-fid.patch \
     file://999-dsa-07-add-mt7531-dual-cpu-port.patch \
     file://999-dsa-08-add-mxl862xx-serdes-port1-mux-selection.patch \
+    file://999-dsa-09-add-mxl862xx-tag8021q-pppq-mapping.patch \
     file://999-dts-01-arm64-dts-mediatek-add-mt7987-basic-device-tree.patch \
     file://999-dts-02-arm64-dts-mediatek-add-mt7988-multiple-thermal-zones.patch \
     file://999-dts-03-arm64-dts-mediatek-add-mt7987-multiple-thermal-zones.patch \
@@ -193,6 +203,7 @@ SRC_URI:append = " \
     file://999-dts-15-arm64-dts-mediatek-mt7987-add-pciephy-node-for-pcie-lane-mux.patch \
     file://999-dts-16-arm64-dts-mediatek-align-mt7981-spi2-compatible.patch \
     file://999-dts-17-arm64-dts-mediatek-extend-mt7988-WiFi-reserved-memory-to-10M.patch \
+    file://999-dts-18-arm64-dts-mediatek-fix-mt7988-watchdog-interrupt-number.patch \
     file://999-dts-mt7981-rfb-01-arm64-dts-mediatek-add-mt7981-nor-overlay-dts.patch \
     file://999-dts-mt7981-rfb-02-arm64-dts-mediatek-add-mt7981-spim-nand-overlay-dts.patch \
     file://999-dts-mt7981-rfb-03-add-pwm-pin-and-devices.patch \
@@ -285,7 +296,7 @@ SRC_URI:append = " \
     file://999-ephy-as21xxx-01-update-driver-to-v1.9.2.patch \
     file://999-ephy-common-01-add-EEE-ADV2-broken-modes-support.patch \
     file://999-ephy-cux3410-01-add-cux3410-support.patch \
-    file://999-ephy-en8811h-01-update-driver-to-v2.0.7.patch \
+    file://999-ephy-en8811h-01-update-driver-to-v2.0.8.patch \
     file://999-ephy-gbe-01-align-phy-lib-with-openwrt-2410.patch \
     file://999-ephy-gbe-02-align-driver-file-with-openwrt-2410.patch \
     file://999-ephy-gpy211-add-mxl862xx-integrated-phy.patch \
@@ -293,13 +304,13 @@ SRC_URI:append = " \
     file://999-ephy-i2p5g-02-add-irq-support-to-all-built-in-phy.patch \
     file://999-ephy-i2p5g-03-fix-reg-helper-and-add-fw-lock-protect.patch \
     file://999-ephy-i2p5g-04-add-delay-for-writing-mmd.patch \
+    file://999-ephy-i2p5g-05-fix-irq-timing.patch \
     file://999-eth-01-mtk_eth_soc-add-individual-polarity-control-for-SGMII.patch \
     file://999-eth-02-mtk_eth_soc-remove-pextp-reset-for-SerDes-phy.patch \
     file://999-eth-03-mtk_eth_soc-revise-xgmac-force-mode.patch \
     file://999-eth-04-mtk_eth_soc-support-forced-reset-control.patch \
     file://999-eth-05-mtk_eth_soc-refactor-hw-dump-for-forced-reset.patch \
     file://999-eth-06-mtk_eth_soc-support-ethernet-passive-mux.patch \
-    file://999-eth-07-mtk_eth_soc-fix-panic-issue-with-napi_enable.patch \
     file://999-eth-08-mtk_eth_soc-add-register-definitions-for-rss-lro-reg.patch \
     file://999-eth-09-mtk_eth_soc-add-rss-support.patch \
     file://999-eth-10-mtk_eth_soc-add-hw-lro-support.patch \
@@ -313,7 +324,7 @@ SRC_URI:append = " \
     file://999-eth-18-mtk_eth_soc-refactor-PSE-PPE-port-link-down.patch \
     file://999-eth-19-mtk_eth_soc-add-ETH-ports-link-down-flow.patch \
     file://999-eth-20-mtk_eth_soc-add-HQoS-configuration-restore.patch \
-    file://999-eth-22-mtk_eth_soc-add-mtk_validate_sram_range.patch \
+    file://999-eth-22-mtk_eth_soc-use-generic-allocator-for-MT7987.patch \
     file://999-eth-23-mtk_eth_soc-add-non-DSA-devices-handling.patch \
     file://999-eth-24-mtk_eth_soc-add-2500Mbps-maximum-rate-limit-for-NETSYSv3.patch \
     file://999-eth-25-mtk_eth_soc-record-both-GMAC-and-XGMAC.patch \
@@ -345,13 +356,23 @@ SRC_URI:append = " \
     file://999-eth-52-mtk_eth_soc-use-per-MAC-SGMII-syscfg0-mask.patch \
     file://999-eth-53-mtk_eth_soc-fix-spurious-mdio-timeout.patch \
     file://999-eth-54-mtk_eth_soc-add-misc-interrupt.patch \
-    file://999-eth-55-fix-memory-leak-on-page-pool-creation-failure.patch \
+    file://999-eth-55-mtk_eth_soc-fix-memory-leak-on-page-pool-creation-failure.patch \
+    file://999-eth-56-mtk_eth_soc-add-per-SoC-QDMA-TX-queue-count-and-register-paging.patch \
+    file://999-eth-56-mtk_eth_soc-remove-netsys-v1-restriction-for-small-frag-check.patch \
+    file://999-eth-57-mtk_eth_soc-add-per-conduit-DSA-user-port-to-QDMA-queue-map.patch \
+    file://999-eth-58-mtk_eth_soc-xfrm-add-decrypt-cdrt-handle.patch \
+    file://999-eth-59-mtk_eth_soc-split-mtk_ppe_start-stop-handling-from-mtk_open-stop.patch \
     file://999-eth-90-mtk_eth_soc-support-proprietary-debugfs.patch \
     file://999-fitblk-01-parse-and-mount-ramdisk.patch \
     file://999-gsw-01-add-mt7531-support.patch \
     file://999-gsw-02-add-an8855-support.patch \
     file://999-i2c-01-add-zts8032-driver.patch \
     file://999-i2c-02-add-zts8232-driver.patch \
+    file://999-kdb-01-kdb-fix-bp-ss-stuck.patch \
+    file://999-kdb-02-kdb-add-arm64-disassembly-command.patch \
+    file://999-kdb-03-kdb-add-regs-command.patch \
+    file://999-kdb-04-kdb-add-mii-command.patch \
+    file://999-kdb-05-kdb-add-switch-command.patch \
     file://999-lvts-01-thermal-mediatek-backport-kernel-6.18-lvts-driver.patch \
     file://999-lvts-02-thermal-mediatek-improve-mt798x-config.patch \
     file://999-net-01-netdevice-add-macvlan-device-path-type.patch \
@@ -370,6 +391,7 @@ SRC_URI:append = " \
     file://999-pcs-07-mtk-lynxi-add-link_poll-mechanism.patch \
     file://999-pcs-08-mtk_usxgmii-add-link_poll-mechanism.patch \
     file://999-phy-01-mediatek-phy-mtk-pcie-add-mt7987-pcie-lane-mux-support.patch \
+    file://999-phy-02-phylink-handle-stale-USXGMII-codeword-when-line-side.patch \
     file://999-pinctel-01-fix-mt7981-pinctrl-pinconf-offset.patch \
     file://999-pmdomain-01-mt7988-add-power-domain-driver.patch \
     file://999-pwm-02-add-long-period-support.patch \
@@ -382,7 +404,9 @@ SRC_URI:append = " \
     file://999-sfp-06-add-some-FS-copper-SFP-fixes.patch \
     file://999-sfp-07-add-tplink-2500basex-disable-autoneg.patch \
     file://999-spi-01-fix-calibration-message.patch \
+    file://999-spi-02-fix-spi-calibration-ret-check.patch \
     file://999-spi-mt65xx-01-fix-dual-quad-mode-of-transfer-one-op.patch \
+    file://999-spi-mt65xx-02-move-tickdly-setting-into-compatible-config.patch \
     file://999-spi-nand-01-integrate-ONFI-and-CASN-manipulation.patch \
     file://999-spi-nand-02-Add-CASN-support.patch \
     file://999-spi-nand-03-Fix-CASN-page-field-spanning-issues.patch \
@@ -391,6 +415,7 @@ SRC_URI:append = " \
     file://999-tnl-03-mtk-ppp-offload-support.patch \
     file://999-tnl-06-mtk-pptp-offload-seq-cnt.patch \
     file://999-tnl-07-l2tp-add-fill-forward-path.patch \
+    file://999-tnl-08-pptp-add-fill-forward-path.patch \
     file://999-tnl-90-pptp-bypass-seq-check.patch \
     file://999-tphy-01-phy-mtk-tphy-Add-PCIe-2-lane-efuse-support.patch \
     file://999-tphy-02-phy-mtk-tphy-add-auto-load-valid-check-mechanism.patch \

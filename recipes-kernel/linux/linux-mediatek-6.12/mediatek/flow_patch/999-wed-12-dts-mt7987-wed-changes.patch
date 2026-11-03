@@ -10,9 +10,9 @@ Subject: [PATCH 12/15] dts mt7987 wed changes
 
 --- a/arch/arm64/boot/dts/mediatek/mt7987-netsys.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt7987-netsys.dtsi
-@@ -52,6 +52,7 @@
- 					 <&apmixedsys CLK_APMIXED_SGMPLL>,
+@@ -55,6 +55,7 @@
  					 <&apmixedsys CLK_APMIXED_SGMPLL>;
+ 		sram = <&eth_sram>;
  		mediatek,ethsys = <&ethsys>;
 +		mediatek,wed = <&wed0>;
  		mediatek,infracfg = <&topmisc>;
@@ -20,7 +20,7 @@ Subject: [PATCH 12/15] dts mt7987 wed changes
  		pinctrl-0 = <&mdio0_pins>;
 --- a/arch/arm64/boot/dts/mediatek/mt7987.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt7987.dtsi
-@@ -642,15 +642,9 @@
+@@ -639,15 +639,9 @@
  			status = "disabled";
  		};
  

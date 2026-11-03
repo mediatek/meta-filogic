@@ -1,0 +1,192 @@
+---
+[v1] netfilter: ftnetlink: add flow teardown by MAC
+
+Without this patch, users are unable to delete the flow rules and PPE
+entries of a given client via the FTNL application, only a single 5-tuple
+or the whole table.
+---
+v1: Add FT_MSG_DEL_MAC to ftnetlink, add flow teardown by MAC.
+---
+
+From 4fbdc39bd0d9223dce34feaa3a43b25a3728bc66 Mon Sep 17 00:00:00 2001
+From: "chak-kei.lam" <chak-kei.lam@mediatek.com>
+Date: Thu, 8 Oct 2026 16:00:00 +0800
+Subject: [PATCH] netfilter: ftnetlink: add flow teardown by MAC
+
+Without this patch, users are unable to delete the flow rules and PPE
+entries of a given client via the FTNL application, only a single 5-tuple
+or the whole table.
+
+Add FT_MSG_DEL_MAC, which tears down every flow sent to or from a MAC
+address in the requesting netns and waits for the hardware entries to be
+removed:
+
+	ftnl -D --mac aa:bb:cc:dd:ee:ff
+
+Signed-off-by: chak-kei.lam <chak-kei.lam@mediatek.com>
+---
+ include/net/netfilter/nf_flow_table.h |  1 +
+ net/netfilter/nf_flow_table_core.c    | 36 ++++++++++++++++++++-------
+ net/netfilter/nf_flow_table_netlink.c | 30 +++++++++++++++++++++-
+ 3 files changed, 57 insertions(+), 10 deletions(-)
+
+diff --git a/include/net/netfilter/nf_flow_table.h b/include/net/netfilter/nf_flow_table.h
+index 6fa7acb..e435449 100644
+--- a/include/net/netfilter/nf_flow_table.h
++++ b/include/net/netfilter/nf_flow_table.h
+@@ -301,6 +301,7 @@ void nf_flow_table_gc_run(struct nf_flowtable *flow_table);
+ void nf_flow_table_gc_cleanup(struct nf_flowtable *flowtable,
+ 			      struct net_device *dev);
+ void nf_flow_table_cleanup(struct net_device *dev);
++void nf_flow_table_cleanup_mac_sync(struct net *net, const u8 *mac);
+ 
+ int nf_flow_table_init(struct nf_flowtable *flow_table);
+ void nf_flow_table_free(struct nf_flowtable *flow_table);
+diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
+index cef6da8..e9dfd35 100644
+--- a/net/netfilter/nf_flow_table_core.c
++++ b/net/netfilter/nf_flow_table_core.c
+@@ -23,14 +23,15 @@ static LIST_HEAD(flowtables);
+ 
+ #if IS_ENABLED(CONFIG_NET_SWITCHDEV)
+ static struct workqueue_struct *flow_mac_cleanup_wq;
++#endif
+ 
++/* Also used on the stack by nf_flow_table_cleanup_mac_sync(), work unused */
+ struct flow_mac_cleanup_work {
+ 	struct work_struct	work;
+ 	struct net		*net;
+ 	u8			mac[ETH_ALEN];
+ 	bool			found;
+ };
+-#endif
+ 
+ static void
+ flow_offload_fill_dir(struct flow_offload *flow,
+@@ -404,7 +405,6 @@ void flow_offload_teardown_by_tuple(struct flow_offload_tuple *tuple)
+ }
+ EXPORT_SYMBOL_GPL(flow_offload_teardown_by_tuple);
+ 
+-#if IS_ENABLED(CONFIG_NET_SWITCHDEV)
+ static void nf_flow_table_do_cleanup_mac(struct nf_flowtable *flowtable,
+ 					 struct flow_offload *flow, void *data)
+ {
+@@ -444,17 +444,13 @@ static void nf_flow_table_do_cleanup_mac(struct nf_flowtable *flowtable,
+ }
+ 
+ /* Tear down the flows going to @mac, so they get rebuilt for wherever it lives
+- * now. Takes flowtable_lock, so it cannot run from the notifier.
++ * now, and wait for the hardware entries to be removed. Takes flowtable_lock,
++ * so it must be called from process context.
+  */
+-static void flow_mac_cleanup_work_handler(struct work_struct *work)
++static void __nf_flow_table_cleanup_mac(struct flow_mac_cleanup_work *cleanup)
+ {
+-	struct flow_mac_cleanup_work *cleanup =
+-		container_of(work, struct flow_mac_cleanup_work, work);
+ 	struct nf_flowtable *flowtable;
+ 
+-	pr_debug("nf_flow_table: processing roaming cleanup for mac=%pM\n",
+-		 cleanup->mac);
+-
+ 	mutex_lock(&flowtable_lock);
+ 	list_for_each_entry(flowtable, &flowtables, list) {
+ 		cleanup->found = false;
+@@ -470,6 +466,28 @@ static void flow_mac_cleanup_work_handler(struct work_struct *work)
+ 		nf_flow_table_offload_flush(flowtable);
+ 	}
+ 	mutex_unlock(&flowtable_lock);
++}
++
++/* Synchronous version for userspace requests (ftnetlink). */
++void nf_flow_table_cleanup_mac_sync(struct net *net, const u8 *mac)
++{
++	struct flow_mac_cleanup_work cleanup = { .net = net };
++
++	ether_addr_copy(cleanup.mac, mac);
++	__nf_flow_table_cleanup_mac(&cleanup);
++}
++EXPORT_SYMBOL_GPL(nf_flow_table_cleanup_mac_sync);
++
++#if IS_ENABLED(CONFIG_NET_SWITCHDEV)
++static void flow_mac_cleanup_work_handler(struct work_struct *work)
++{
++	struct flow_mac_cleanup_work *cleanup =
++		container_of(work, struct flow_mac_cleanup_work, work);
++
++	pr_debug("nf_flow_table: processing roaming cleanup for mac=%pM\n",
++		 cleanup->mac);
++
++	__nf_flow_table_cleanup_mac(cleanup);
+ 
+ 	pr_debug("nf_flow_table: roaming cleanup complete for mac=%pM\n",
+ 		 cleanup->mac);
+diff --git a/net/netfilter/nf_flow_table_netlink.c b/net/netfilter/nf_flow_table_netlink.c
+index 191a354..7b52b43 100644
+--- a/net/netfilter/nf_flow_table_netlink.c
++++ b/net/netfilter/nf_flow_table_netlink.c
+@@ -11,19 +11,22 @@
+ #include <linux/netlink.h>
+ #include <net/netlink.h>
+ #include <net/ip.h>
++#include <linux/etherdevice.h>
+ #include <linux/netfilter/nfnetlink.h>
+ #include <net/netfilter/nf_flow_table.h>
+ 
+ enum ft_netlink_msg_types {
+-	FT_MSG_DEL,
++	FT_MSG_DEL,		/* by 5-tuple */
+ 	FT_MSG_ADD,
+ 	FT_MSG_FLUSH,
++	FT_MSG_DEL_MAC,
+ 	FT_MSG_MAX
+ };
+ 
+ enum ftattr_type {
+ 	FTA_UNSPEC,
+ 	FTA_TUPLE,
++	FTA_MAC,
+ 	__FTA_MAX
+ };
+ #define FTA_MAX (__FTA_MAX - 1)
+@@ -188,8 +191,27 @@ static int ftnetlink_flush_table(struct sk_buff *skb, const struct nfnl_info *in
+ 	return 0;
+ }
+ 
++static int ftnetlink_del_mac(struct sk_buff *skb, const struct nfnl_info *info,
++			     const struct nlattr * const cda[])
++{
++	const u8 *mac;
++
++	if (!cda[FTA_MAC])
++		return -EINVAL;
++
++	mac = nla_data(cda[FTA_MAC]);
++	if (!is_valid_ether_addr(mac))
++		return -EINVAL;
++
++	/* tear down the flows sent to or from @mac and wait for the hw */
++	nf_flow_table_cleanup_mac_sync(info->net, mac);
++
++	return 0;
++}
++
+ static const struct nla_policy ft_nla_policy[FTA_MAX + 1] = {
+ 	[FTA_TUPLE] = { .type = NLA_NESTED },
++	[FTA_MAC] = NLA_POLICY_EXACT_LEN(ETH_ALEN),
+ };
+ 
+ static const struct nfnl_callback flow_table_cb[FT_MSG_MAX] = {
+@@ -211,6 +233,12 @@ static const struct nfnl_callback flow_table_cb[FT_MSG_MAX] = {
+ 		.attr_count	= FTA_MAX,
+ 		.policy		= ft_nla_policy
+ 	},
++	[FT_MSG_DEL_MAC] = {
++		.call		= ftnetlink_del_mac,
++		.type		= NFNL_CB_MUTEX,
++		.attr_count	= FTA_MAX,
++		.policy		= ft_nla_policy
++	},
+ };
+ 
+ static const struct nfnetlink_subsystem ftnl_subsys = {

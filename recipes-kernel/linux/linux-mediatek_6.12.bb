@@ -7,8 +7,8 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}-${PV}/mediatek/flow_patch:"
 
 KBRANCH ?= "linux-6.12.y"
 
-LINUX_VERSION ?= "6.12.108"
-SRCREV_machine ?= "064531c7e30cd67b79c0c694ac97f00c7796f4d6"
+LINUX_VERSION ?= "6.12.113"
+SRCREV_machine ?= "7fdb7c1824a1f9979d648d7ae28ac446bcee9c6e"
 KMETA = "kernel-meta"
 SRCREV_meta ?= "39c7e069b8475a8751d1a584a6181e072033f25d"
 
@@ -42,9 +42,14 @@ SRC_URI:append = " \
     ${@bb.utils.contains('DISTRO_FEATURES','optee','file://rdkb_cfg/optee.cfg','',d)} \
 "
 
-KERNEL_DEVICETREE:mt7988:bpi4 += " \
+KERNEL_DEVICETREE:mt7988:bpi4:append = " \
     mediatek/mt7988a-bananapi-bpi-r4-spim-nand.dtbo \
     mediatek/mt7988a-bananapi-bpi-r4-spim-nand-nmbm.dtbo \
+    "
+KERNEL_DEVICETREE:append = " \
+    mediatek/filogic-binfile.dtbo \
+    mediatek/filogic-wifi7.dtbo \
+    mediatek/filogic-wifi8.dtbo \
     "
 
 require ${PN}-${PV}/generic/backport-6.12/backport-6.12.inc

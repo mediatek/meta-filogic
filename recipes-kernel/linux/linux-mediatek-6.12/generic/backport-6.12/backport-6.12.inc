@@ -2,7 +2,6 @@
 SRC_URI:append = " \
     file://010-v6.19-nvmem-layouts-u-boot-env-add-optional-env-size-property.patch \
     file://152-v6.16-net-wireguard-add-nonstring-annotation-to-fix-build-with-GCC15.patch \
-    file://201-v6.13-of-property-add-of_graph_get_next_port.patch \
     file://202-v6.13-clk-Provide-devm_clk_bulk_get_all_enabled-helper.patch \
     file://203-01-v6.13-of-address-Rework-bus-matching-to-avoid-warnings.patch \
     file://203-02-v6.13-of-address-Fix-WARN-when-attempting-translating-non-.patch \
@@ -69,6 +68,7 @@ SRC_URI:append = " \
     file://601-11-v6.14-net-mvpp2-implement-pcs_inband_caps-method.patch \
     file://601-12-v6.14-net-phylink-add-negotiation-of-in-band-capabilities.patch \
     file://601-13-v6.14-net-phylink-remove-phylink_phy_no_inband.patch \
+    file://601-v7.1-net-add-netdev_from_priv-helper.patch \
     file://602-01-v6.14-net-pcs-pcs-lynx-implement-pcs_inband_caps-method.patch \
     file://602-02-v6.14-net-pcs-pcs-mtk-lynxi-implement-pcs_inband_caps-meth.patch \
     file://602-03-v6.14-net-pcs-xpcs-implement-pcs_inband_caps-method.patch \
@@ -119,6 +119,11 @@ SRC_URI:append = " \
     file://626-v6.16-net-bridge-locally-receive-all-multicast-packets-if-.patch \
     file://630-v6.13-net-usb-qmi_wwan-add-Quectel-RG255C.patch \
     file://630-v6.14-PM-sleep-wakeirq-Introduce-device-managed-variant-of.patch \
+    file://650-v6.13-net-phylink-allow-mac_select_pcs-to-remove-a-PCS.patch \
+    file://651-v6.14-net-phylink-add-support-for-PCS-supported_interfaces.patch \
+    file://652-v6.15-net-phylink-force-link-down-on-major_config-failure.patch \
+    file://653-01-v7.0-net-phylink-simplify-phylink_resolve-phylink_major_c.patch \
+    file://653-02-v7.0-net-phylink-introduce-helpers-for-replaying-link-cal.patch \
     file://700-01-v7.0-net-sched-Export-mq-functions-for-reuse.patch \
     file://700-02-v7.0-net-sched-sch_cake-Factor-out-config-variables-into-.patch \
     file://700-03-v7.0-net-sched-sch_cake-Add-cake_mq-qdisc-for-using-cake-.patch \
@@ -128,11 +133,11 @@ SRC_URI:append = " \
     file://700-07-v7.0-net-sched-cake-avoid-separate-allocation-of-struct-c.patch \
     file://701-01-v7.0-net-sched-sch_cake-avoid-sync-overhead-when-unlimite.patch \
     file://701-02-v7.0-net-sched-sch_cake-fixup-cake_mq-rate-adjustment-for.patch \
+    file://702-v7.0-net-phylink-fix-NULL-pointer-deref-in-phylink_major_.patch \
     file://710-v6.16-igc-enable-HW-vlan-tag-insertion-stripping-by-defaul.patch \
     file://720-01-v6.13-net-phy-mediatek-ge-soc-Fix-coding-style.patch \
     file://720-02-v6.13-net-phy-mediatek-ge-soc-Shrink-line-wrapping-to-80-c.patch \
     file://720-03-v6.13-net-phy-mediatek-ge-soc-Propagate-error-code-correct.patch \
-    file://720-04-v6.13-net-phy-mediatek-Re-organize-MediaTek-ethernet-phy-d.patch \
     file://720-05-v6.13-net-phy-mediatek-Move-LED-helper-functions-into-mtk-.patch \
     file://720-06-v6.13-net-phy-mediatek-Improve-readability-of-mtk-phy-lib..patch \
     file://720-07-v6.13-net-phy-mediatek-Integrate-read-write-page-helper-fu.patch \
@@ -159,9 +164,20 @@ SRC_URI:append = " \
     file://732-v6.18-wifi-mt76-wed-use-proper-wed-reference-in-mt76-wed-d.patch \
     file://733-v6.18-net-mtk-wed-add-dma-mask-limitation-and-GFP_DMA32-fo.patch \
     file://735-v6.13-net-phy-avoid-undefined-behavior-in-_led_polarity_se.patch \
+    file://737-01-v7.3-net-phylink-allow-PHYs-to-be-attached-in-802.3z-inba.patch \
+    file://737-03-v7.3-net-phylink-correctly-validate-returned-PCS-in-phyli.patch \
     file://740-v6.13-net-dsa-mv88e6xxx-Support-LED-control.patch \
     file://741-v6.13-net-dsa-mv88e6xxx-fix-unreleased-fwnode_handle-in-se.patch \
     file://742-v6.17-net-dsa-mv88e6xxx-Fix-fwnode-reference-leaks-in-mv88.patch \
+    file://743-01-v6.15-net-dsa-mt7530-utilize-REGMAP_IRQ-for-interrupt-handling.patch \
+    file://743-02-v6.17-net-dsa-mt7530-constify-struct-regmap_config.patch \
+    file://743-03-v7.1-net-dsa-mt7530-fix-CPU-port-VLAN-not-being-reset-to-unaware.patch \
+    file://743-04-v7.1-net-dsa-mt7530-untag-VLAN-aware-bridge-PVID.patch \
+    file://743-05-v7.2-net-dsa-mt7530-error-out-on-failed-reads-ATC-VTCR-polling.patch \
+    file://743-06-v7.3-net-dsa-mt7530-check-bus_read-error-in-core_rmw.patch \
+    file://743-07-v7.3-net-dsa-mt7530-check-CORE_PLL_GROUP4-access.patch \
+    file://743-08-v7.3-net-dsa-mt7530-check-register-writes-in-fdb-vlan-cmd.patch \
+    file://743-09-v7.3-net-dsa-mt7530-serialize-regmap-IRQ-chip-like.patch \
     file://780-01-v6.13-r8169-remove-original-workaround-for-RTL8125-broken-.patch \
     file://780-02-v6.13-r8169-enable-SG-TSO-on-selected-chip-versions-per-de.patch \
     file://780-03-v6.13-r8169-implement-additional-ethtool-stats-ops.patch \

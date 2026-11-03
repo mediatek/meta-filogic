@@ -115,6 +115,13 @@ SRC_URI:append = " \
     file://736-03-net-ethernet-mtk_eth_soc-improve-keeping-track-of-of.patch \
     file://736-04-net-ethernet-mediatek-fix-ppe-flow-accounting-for-L2.patch \
     file://736-05-net-ethernet-mtk_eth_soc-zero-initialize-PPE-flow-ta.patch \
+    file://737-01-net-phylink-keep-and-use-MAC-supported_interfaces-in.patch \
+    file://737-02-net-phylink-introduce-internal-phylink-PCS-handling.patch \
+    file://737-03-net-pcs-implement-Firmware-node-support-for-PCS-driv.patch \
+    file://737-04-net-phylink-save-phylink-instance-fwnode-on-phylink_.patch \
+    file://737-05-net-phylink-support-PCS-provider-release.patch \
+    file://737-06-net-phylink-support-late-PCS-provider-attach.patch \
+    file://737-07-net-phylink-add-.pcs_link_down-PCS-OP.patch \
     file://737-net-ethernet-mtk_eth_soc-add-paths-and-SerDes-modes-.patch \
     file://738-01-net-ethernet-mtk_eth_soc-reduce-rx-ring-size-for-older.patch \
     file://738-02-net-ethernet-mtk_eth_soc-do-not-enable-page-pool-sta.patch \
@@ -124,6 +131,7 @@ SRC_URI:append = " \
     file://739-05-net-pcs-add-driver-for-MediaTek-USXGMII-PCS.patch \
     file://740-net-phy-motorcomm-Add-missing-include.patch \
     file://741-net-phy-broadcom-update-dependency-condition.patch \
+    file://770-06-dt-bindings-net-ethernet-controller-permit-to-define.patch \
     file://780-ARM-kirkwood-add-missing-linux-if_ether.h-for-ETH_AL.patch \
     file://790-bus-mhi-core-add-SBL-state-callback.patch \
     file://791-tg3-Fix-DMA-allocations-on-57766-devices.patch \
