@@ -1,36 +1,9 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /* Copyright (C) 2021-2022 Mediatek Inc. */
 
-#include <signal.h>
-#include <sys/select.h>
-#include <sys/wait.h>
 #include "atenl.h"
 
-static const char *progname;
-bool atenl_enable;
-
-void sig_handler(int signum)
-{
-	atenl_enable = false;
-}
-
-void atenl_init_signals()
-{
-	if (signal(SIGINT, sig_handler) == SIG_ERR)
-		goto out;
-	if (signal(SIGTERM, sig_handler) == SIG_ERR)
-		goto out;
-	if (signal(SIGABRT, sig_handler) == SIG_ERR)
-		goto out;
-	if (signal(SIGUSR1, sig_handler) == SIG_ERR)
-		goto out;
-	if (signal(SIGUSR2, sig_handler) == SIG_ERR)
-		goto out;
-
-	return;
-out:
-	perror("signal");
-}
+bool atenl_debug;
 
 static int phy_lookup_idx(struct atenl *an, const char *phyname)
 {
@@ -62,119 +35,74 @@ static int phy_lookup_idx(struct atenl *an, const char *phyname)
 	return atoi(buf);
 }
 
-static int get_default_bridge_name(struct atenl *an)
-{
-	char buf[128];
-	FILE *f;
-	int ret;
-
-	ret = snprintf(buf, sizeof(buf), "/sbin/procd");
-	if (snprintf_error(sizeof(buf), ret))
-		return -1;
-
-	f = fopen(buf, "r");
-
-	/* This procd is openwrt only */
-	if (f) {
-		an->bridge_name = BRIDGE_NAME_OPENWRT;
-		fclose(f);
-	} else {
-		an->bridge_name = BRIDGE_NAME_RDKB;
-	}
-
-	return 0;
-}
-
-static void usage(void)
+static void usage(char *progname)
 {
 	printf("Usage:\n");
-	printf("  %s [-u] [-i phyX]\n", progname);
+	printf("  %s -i phyX -c <command>\n", progname);
 	printf("options:\n"
 	       "  -h = show help text\n"
 	       "  -i = phy name of driver interface, please use first phy for dbdc\n"
-	       "  -u = use unicast to respond to HQADLL\n"
-	       "  -b = specify your bridge name\n"
 	       "  -c = eeprom-related command\n"
-	       "  -p = specify the flash partition name and offset (<name>:<offs>)\n");
+	       "  -p = specify the flash partition name and offset (<name>:<offs>)\n"
+	       "  -d = show debug log\n");
 	printf("examples:\n"
-	       "  %s -u -i phy0 -b br-lan\n", progname);
-
-	exit(EXIT_FAILURE);
-}
-
-static void atenl_handler_run(struct atenl *an)
-{
-	int count, sock_eth = an->sock_eth;
-	fd_set readfds;
-
-	atenl_info("Start atenl HQA command handler\n");
-
-	while (atenl_enable) {
-		FD_ZERO(&readfds);
-		FD_SET(sock_eth, &readfds);
-		count = select(sock_eth + 1, &readfds, NULL, NULL, NULL);
-
-		if (count < 0) {
-			atenl_err("%s: select failed, %s\n", __func__, strerror(errno));
-		} else if (count == 0) {
-			usleep(1000);
-		} else {
-			if (!FD_ISSET(sock_eth, &readfds))
-				continue;
-			atenl_hqa_proc_cmd(an);
-		}
-	}
-
-	atenl_dbg("HQA command handler end\n");
+	       "  %s -i phy0 -c \"eeprom read 0\"\n", progname);
 }
 
 int main(int argc, char **argv)
 {
-	int opt, phy_idx, ret = 0;
-	char *phy = "phy0", *cmd = NULL;
-	char *token;
+	char *progname, *phy = "phy0", *cmd = NULL;
+	int opt, phy_idx, ret = -1;
 	struct atenl *an;
+	char *token;
 
 	progname = argv[0];
 
 	an = calloc(1, sizeof(struct atenl));
-	if (!an)
-		return -ENOMEM;
+	if (!an) {
+		atenl_err("Failed to allocate memory for atenl\n");
+		return -1;
+	}
 
 	while(1) {
-		opt = getopt(argc, argv, "hi:uc:b:p:");
+		opt = getopt(argc, argv, "hdi:c:p:");
 		if (opt == -1)
 			break;
 
 		switch (opt) {
-			case 'h':
-				usage();
+		case 'h':
+			usage(progname);
+			ret = 0;
+			goto out;
+		case 'd':
+			atenl_debug = true;
+			break;
+		case 'i':
+			phy = optarg;
+			break;
+		case 'c':
+			cmd = optarg;
+			break;
+		case 'p':
+			token = strtok(optarg, ":");
+			if (!token)
 				goto out;
-			case 'i':
-				phy = optarg;
-				break;
-			case 'b':
-				an->bridge_name = optarg;
-				break;
-			case 'u':
-				an->unicast = true;
-				printf("Opt: use unicast to send response\n");
-				break;
-			case 'c':
-				cmd = optarg;
-				break;
-			case 'p':
-				token = strtok(optarg, ":");
-				if (!token)
-					break;
-				an->flash_part = token;
-				an->flash_offset = strtol(strtok(NULL, ":"), NULL, 0);
-				break;
-			default:
-				atenl_err("Not supported option: %c\n", opt);
+			an->flash_part = token;
+
+			token = strtok(NULL, ":");
+			if (!token)
 				goto out;
+			an->flash_offset = strtol(token, NULL, 0);
+			break;
+		default:
+			atenl_err("Not supported option: %c\n", opt);
+			goto out;
 		}
 	}
+
+	ret = atenl_nl_init(an);
+	if (ret)
+		goto out;
 
 	phy_idx = phy_lookup_idx(an, phy);
 	if (phy_idx < 0 || phy_idx > UCHAR_MAX) {
@@ -182,48 +110,16 @@ int main(int argc, char **argv)
 		goto out;
 	}
 
-	if (cmd) {
-		atenl_eeprom_cmd_handler(an, phy_idx, cmd);
+	if (!cmd) {
+		atenl_err("No command specified\n");
+		usage(progname);
 		goto out;
 	}
 
-	atenl_enable = true;
-	atenl_init_signals();
-
-	if (!an->bridge_name) {
-		ret = get_default_bridge_name(an);
-		if (ret) {
-			atenl_err("Get default bridge name failed\n");
-			goto out;
-		}
-
-		atenl_info("Bridge name is not specified, use default bridge name: %s\n", an->bridge_name);
-	} else {
-		atenl_info("Currently using bridge name: %s\n", an->bridge_name);
-	}
-
-	/* background ourself */
-	if (!fork()) {
-		ret = atenl_eeprom_init(an, phy_idx);
-		if (ret)
-			goto out;
-
-		ret = atenl_eth_init(an);
-		if (ret)
-			goto out;
-
-		atenl_handler_run(an);
-	} else {
-		usleep(800000);
-	}
-
-	ret = 0;
+	ret = atenl_eeprom_cmd_handler(an, phy_idx, cmd);
 out:
-	if (an->sock_eth)
-		close(an->sock_eth);
-	if (an->eeprom_fd || an->eeprom_data)
-		atenl_eeprom_close(an);
-
+	atenl_eeprom_close(an);
+	unl_free(&an->unl);
 	free(an->cal);
 	free(an);
 

@@ -22,14 +22,14 @@ SRC_URI:append = " \
 DEPENDS += "virtual/kernel"
 DEPENDS += "linux-mac80211"
 
-FW_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernelv6', 'kernelv6-src', 'src', d)}"
+FW_SRC = "${@bb.utils.contains('DISTRO_FEATURES', 'kernelv6', '${BPN}-${PV}', 'src', d)}"
 
 SRC_URI += " \
-    file://${FW_SRC} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'kernelv6', '', 'file://src', d)} \
     "
 
 FILESEXTRAPATHS:prepend := "${@bb.utils.contains('DISTRO_FEATURES', 'kernelv6', '', '${THISDIR}/files/patches-${PV}:', d)}"
-FILESEXTRAPATHS:prepend := "${THISDIR}/${FW_SRC}:"
+FILESEXTRAPATHS:prepend := "${@bb.utils.contains('DISTRO_FEATURES', 'kernelv6', '', '${THISDIR}/src:', d)}"
 
 require ${@bb.utils.contains('DISTRO_FEATURES','kernelv6','','files/patches-${PV}/patches.inc',d)}
 

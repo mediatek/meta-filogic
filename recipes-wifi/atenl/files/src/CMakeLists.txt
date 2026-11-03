@@ -15,7 +15,7 @@ FIND_PATH(
 )
 INCLUDE_DIRECTORIES("${backports_dir}/mac80211/uapi")
 
-ADD_EXECUTABLE(atenl main.c eth.c hqa.c nl.c eeprom.c util.c)
+ADD_EXECUTABLE(atenl main.c nl.c eeprom.c util.c)
 TARGET_LINK_LIBRARIES(atenl nl-tiny)
 
 SET(CMAKE_INSTALL_PREFIX /usr)
