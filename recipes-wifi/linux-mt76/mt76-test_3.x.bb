@@ -7,8 +7,6 @@ DEPENDS += "libnl-tiny linux-mac80211"
 
 inherit pkgconfig cmake
 
-PV = "1.0"
-
 require mt76.inc
 require mt76-3x.inc
 
