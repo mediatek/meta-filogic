@@ -10,7 +10,7 @@ SRC_URI:append += " \
 do_filogic_patches() {
     cd ${S}
     if [ ! -e filogic_patch_applied ]; then
-        patch  -p1 < ${WORKDIR}/Fix-dmcli-can-not-set-password.patch ${S}/source/TR-181/ml/cosa_wifi_dml.c
+        patch  -p1 < ${UNPACKDIR}/Fix-dmcli-can-not-set-password.patch ${S}/source/TR-181/ml/cosa_wifi_dml.c
         touch filogic_patch_applied
     fi
 }
